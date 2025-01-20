@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("sample");
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Level_1");
       
     }
     public void StartTestScene()
