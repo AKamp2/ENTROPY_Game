@@ -22,14 +22,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Up-Down",
-                    "type": "PassThrough",
-                    "id": "e284bdb1-2ff8-4f74-80f3-6a88bcbcd4d6",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Roll",
                     "type": "PassThrough",
                     "id": "be519aae-7c29-4c10-b651-ab7be039d030",
@@ -46,7 +38,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "MouseX",
+                    "name": "LookX",
                     "type": "PassThrough",
                     "id": "81257672-9649-464c-ba9a-1b6d161e81ae",
                     "expectedControlType": "Axis",
@@ -54,7 +46,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "MouseY",
+                    "name": "LookY",
                     "type": "PassThrough",
                     "id": "cfd5f24f-4179-4e92-b48b-f5d9abb39e93",
                     "expectedControlType": "Axis",
@@ -81,6 +73,14 @@
                     "name": "Throw",
                     "type": "Button",
                     "id": "e31e4715-29c6-4d9f-b958-bb29b0ac175c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "OffWall",
+                    "type": "Button",
+                    "id": "b5d2d613-ece4-400e-9f1b-e83d6c87dc27",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -220,72 +220,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Up-DownKeyBoard",
-                    "id": "9bd2d980-4005-445e-a4c3-4ce2ee411da8",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Up-Down",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "aadaede2-d849-43e6-a887-e398adba782e",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Up-Down",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "24cdde2a-5376-442c-a1f8-528f5710b384",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Up-Down",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Up-DownController",
-                    "id": "0c63ce83-2a15-483b-acf4-1beae9b95cf0",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Up-Down",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "b48b383e-56c6-4b7d-a7d3-dda15f898a75",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Up-Down",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "b4ecdce9-e561-4f1b-8a25-1cf1bc40a8b9",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Up-Down",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "RollKeyboard",
                     "id": "18106df7-7a0f-49be-9cbe-9eb532357754",
                     "path": "1DAxis",
@@ -332,7 +266,7 @@
                 {
                     "name": "negative",
                     "id": "89e857db-1e0f-43fd-a974-a6b37f873b3b",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -343,7 +277,7 @@
                 {
                     "name": "positive",
                     "id": "f0942402-c295-41f7-b214-d5dee7592a3c",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -364,8 +298,30 @@
                 },
                 {
                     "name": "",
+                    "id": "853468e5-c4ef-4897-b3ea-5296d7781a48",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "f214837e-cd75-4b5f-b348-0f5ebacd461b",
                     "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9e1fec7f-1b6b-47bb-9df4-c704988b956e",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -386,8 +342,30 @@
                 },
                 {
                     "name": "",
+                    "id": "11d9e84b-e0e6-40e9-ab05-2db70f849b18",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Throw",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "d9cd0f7d-70d9-4734-af52-d6bf1184f033",
                     "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f987a0bf-a241-4797-b787-ed1d605ebe21",
+                    "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -402,18 +380,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MouseY",
+                    "action": "LookY",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "9f1112af-29e1-4bb4-b456-58ae0f44b950",
-                    "path": "<Gamepad>/leftStick/y",
+                    "path": "<Gamepad>/rightStick/y",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MouseY",
+                    "action": "LookY",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -424,7 +402,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MouseX",
+                    "action": "LookX",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -435,7 +413,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MouseX",
+                    "action": "LookX",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f579df2f-dfc5-4aa0-8641-905c297c8e1c",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OffWall",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b1ea3467-d752-431b-9ded-17da6aae378c",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OffWall",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -35,14 +35,6 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Up-Down"",
-                    ""type"": ""PassThrough"",
-                    ""id"": ""e284bdb1-2ff8-4f74-80f3-6a88bcbcd4d6"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""Roll"",
                     ""type"": ""PassThrough"",
                     ""id"": ""be519aae-7c29-4c10-b651-ab7be039d030"",
@@ -59,7 +51,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""MouseX"",
+                    ""name"": ""LookX"",
                     ""type"": ""PassThrough"",
                     ""id"": ""81257672-9649-464c-ba9a-1b6d161e81ae"",
                     ""expectedControlType"": ""Axis"",
@@ -67,7 +59,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""MouseY"",
+                    ""name"": ""LookY"",
                     ""type"": ""PassThrough"",
                     ""id"": ""cfd5f24f-4179-4e92-b48b-f5d9abb39e93"",
                     ""expectedControlType"": ""Axis"",
@@ -94,6 +86,14 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""name"": ""Throw"",
                     ""type"": ""Button"",
                     ""id"": ""e31e4715-29c6-4d9f-b958-bb29b0ac175c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""OffWall"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5d2d613-ece4-400e-9f1b-e83d6c87dc27"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -233,72 +233,6 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""Up-DownKeyBoard"",
-                    ""id"": ""9bd2d980-4005-445e-a4c3-4ce2ee411da8"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Up-Down"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""aadaede2-d849-43e6-a887-e398adba782e"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Up-Down"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""24cdde2a-5376-442c-a1f8-528f5710b384"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Up-Down"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""Up-DownController"",
-                    ""id"": ""0c63ce83-2a15-483b-acf4-1beae9b95cf0"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Up-Down"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""b48b383e-56c6-4b7d-a7d3-dda15f898a75"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Up-Down"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""b4ecdce9-e561-4f1b-8a25-1cf1bc40a8b9"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Up-Down"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": ""RollKeyboard"",
                     ""id"": ""18106df7-7a0f-49be-9cbe-9eb532357754"",
                     ""path"": ""1DAxis"",
@@ -345,7 +279,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 {
                     ""name"": ""negative"",
                     ""id"": ""89e857db-1e0f-43fd-a974-a6b37f873b3b"",
-                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -356,7 +290,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 {
                     ""name"": ""positive"",
                     ""id"": ""f0942402-c295-41f7-b214-d5dee7592a3c"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -377,8 +311,30 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""853468e5-c4ef-4897-b3ea-5296d7781a48"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""f214837e-cd75-4b5f-b348-0f5ebacd461b"",
                     ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9e1fec7f-1b6b-47bb-9df4-c704988b956e"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -399,8 +355,30 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""11d9e84b-e0e6-40e9-ab05-2db70f849b18"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Throw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""d9cd0f7d-70d9-4734-af52-d6bf1184f033"",
                     ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f987a0bf-a241-4797-b787-ed1d605ebe21"",
+                    ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -415,18 +393,18 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""MouseY"",
+                    ""action"": ""LookY"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""9f1112af-29e1-4bb4-b456-58ae0f44b950"",
-                    ""path"": ""<Gamepad>/leftStick/y"",
+                    ""path"": ""<Gamepad>/rightStick/y"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""MouseY"",
+                    ""action"": ""LookY"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -437,7 +415,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""MouseX"",
+                    ""action"": ""LookX"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -448,7 +426,29 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""MouseX"",
+                    ""action"": ""LookX"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f579df2f-dfc5-4aa0-8641-905c297c8e1c"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OffWall"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1ea3467-d752-431b-9ded-17da6aae378c"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OffWall"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -610,14 +610,14 @@ public class @PlayerController : IInputActionCollection, IDisposable
         m_PlayerControls = asset.FindActionMap("PlayerControls", throwIfNotFound: true);
         m_PlayerControls_Thrust = m_PlayerControls.FindAction("Thrust", throwIfNotFound: true);
         m_PlayerControls_Strafe = m_PlayerControls.FindAction("Strafe", throwIfNotFound: true);
-        m_PlayerControls_UpDown = m_PlayerControls.FindAction("Up-Down", throwIfNotFound: true);
         m_PlayerControls_Roll = m_PlayerControls.FindAction("Roll", throwIfNotFound: true);
         m_PlayerControls_Grab = m_PlayerControls.FindAction("Grab", throwIfNotFound: true);
-        m_PlayerControls_MouseX = m_PlayerControls.FindAction("MouseX", throwIfNotFound: true);
-        m_PlayerControls_MouseY = m_PlayerControls.FindAction("MouseY", throwIfNotFound: true);
+        m_PlayerControls_LookX = m_PlayerControls.FindAction("LookX", throwIfNotFound: true);
+        m_PlayerControls_LookY = m_PlayerControls.FindAction("LookY", throwIfNotFound: true);
         m_PlayerControls_Pause = m_PlayerControls.FindAction("Pause", throwIfNotFound: true);
         m_PlayerControls_Interact = m_PlayerControls.FindAction("Interact", throwIfNotFound: true);
         m_PlayerControls_Throw = m_PlayerControls.FindAction("Throw", throwIfNotFound: true);
+        m_PlayerControls_OffWall = m_PlayerControls.FindAction("OffWall", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
         m_Dialogue_ContinueDialogue = m_Dialogue.FindAction("ContinueDialogue", throwIfNotFound: true);
@@ -681,28 +681,28 @@ public class @PlayerController : IInputActionCollection, IDisposable
     private IPlayerControlsActions m_PlayerControlsActionsCallbackInterface;
     private readonly InputAction m_PlayerControls_Thrust;
     private readonly InputAction m_PlayerControls_Strafe;
-    private readonly InputAction m_PlayerControls_UpDown;
     private readonly InputAction m_PlayerControls_Roll;
     private readonly InputAction m_PlayerControls_Grab;
-    private readonly InputAction m_PlayerControls_MouseX;
-    private readonly InputAction m_PlayerControls_MouseY;
+    private readonly InputAction m_PlayerControls_LookX;
+    private readonly InputAction m_PlayerControls_LookY;
     private readonly InputAction m_PlayerControls_Pause;
     private readonly InputAction m_PlayerControls_Interact;
     private readonly InputAction m_PlayerControls_Throw;
+    private readonly InputAction m_PlayerControls_OffWall;
     public struct PlayerControlsActions
     {
         private @PlayerController m_Wrapper;
         public PlayerControlsActions(@PlayerController wrapper) { m_Wrapper = wrapper; }
         public InputAction @Thrust => m_Wrapper.m_PlayerControls_Thrust;
         public InputAction @Strafe => m_Wrapper.m_PlayerControls_Strafe;
-        public InputAction @UpDown => m_Wrapper.m_PlayerControls_UpDown;
         public InputAction @Roll => m_Wrapper.m_PlayerControls_Roll;
         public InputAction @Grab => m_Wrapper.m_PlayerControls_Grab;
-        public InputAction @MouseX => m_Wrapper.m_PlayerControls_MouseX;
-        public InputAction @MouseY => m_Wrapper.m_PlayerControls_MouseY;
+        public InputAction @LookX => m_Wrapper.m_PlayerControls_LookX;
+        public InputAction @LookY => m_Wrapper.m_PlayerControls_LookY;
         public InputAction @Pause => m_Wrapper.m_PlayerControls_Pause;
         public InputAction @Interact => m_Wrapper.m_PlayerControls_Interact;
         public InputAction @Throw => m_Wrapper.m_PlayerControls_Throw;
+        public InputAction @OffWall => m_Wrapper.m_PlayerControls_OffWall;
         public InputActionMap Get() { return m_Wrapper.m_PlayerControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -718,21 +718,18 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 @Strafe.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnStrafe;
                 @Strafe.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnStrafe;
                 @Strafe.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnStrafe;
-                @UpDown.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnUpDown;
-                @UpDown.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnUpDown;
-                @UpDown.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnUpDown;
                 @Roll.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnRoll;
                 @Roll.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnRoll;
                 @Roll.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnRoll;
                 @Grab.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnGrab;
                 @Grab.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnGrab;
                 @Grab.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnGrab;
-                @MouseX.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMouseX;
-                @MouseX.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMouseX;
-                @MouseX.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMouseX;
-                @MouseY.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMouseY;
-                @MouseY.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMouseY;
-                @MouseY.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMouseY;
+                @LookX.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLookX;
+                @LookX.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLookX;
+                @LookX.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLookX;
+                @LookY.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLookY;
+                @LookY.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLookY;
+                @LookY.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnLookY;
                 @Pause.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnPause;
                 @Pause.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnPause;
                 @Pause.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnPause;
@@ -742,6 +739,9 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 @Throw.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnThrow;
                 @Throw.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnThrow;
                 @Throw.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnThrow;
+                @OffWall.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnOffWall;
+                @OffWall.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnOffWall;
+                @OffWall.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnOffWall;
             }
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -752,21 +752,18 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 @Strafe.started += instance.OnStrafe;
                 @Strafe.performed += instance.OnStrafe;
                 @Strafe.canceled += instance.OnStrafe;
-                @UpDown.started += instance.OnUpDown;
-                @UpDown.performed += instance.OnUpDown;
-                @UpDown.canceled += instance.OnUpDown;
                 @Roll.started += instance.OnRoll;
                 @Roll.performed += instance.OnRoll;
                 @Roll.canceled += instance.OnRoll;
                 @Grab.started += instance.OnGrab;
                 @Grab.performed += instance.OnGrab;
                 @Grab.canceled += instance.OnGrab;
-                @MouseX.started += instance.OnMouseX;
-                @MouseX.performed += instance.OnMouseX;
-                @MouseX.canceled += instance.OnMouseX;
-                @MouseY.started += instance.OnMouseY;
-                @MouseY.performed += instance.OnMouseY;
-                @MouseY.canceled += instance.OnMouseY;
+                @LookX.started += instance.OnLookX;
+                @LookX.performed += instance.OnLookX;
+                @LookX.canceled += instance.OnLookX;
+                @LookY.started += instance.OnLookY;
+                @LookY.performed += instance.OnLookY;
+                @LookY.canceled += instance.OnLookY;
                 @Pause.started += instance.OnPause;
                 @Pause.performed += instance.OnPause;
                 @Pause.canceled += instance.OnPause;
@@ -776,6 +773,9 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 @Throw.started += instance.OnThrow;
                 @Throw.performed += instance.OnThrow;
                 @Throw.canceled += instance.OnThrow;
+                @OffWall.started += instance.OnOffWall;
+                @OffWall.performed += instance.OnOffWall;
+                @OffWall.canceled += instance.OnOffWall;
             }
         }
     }
@@ -907,14 +907,14 @@ public class @PlayerController : IInputActionCollection, IDisposable
     {
         void OnThrust(InputAction.CallbackContext context);
         void OnStrafe(InputAction.CallbackContext context);
-        void OnUpDown(InputAction.CallbackContext context);
         void OnRoll(InputAction.CallbackContext context);
         void OnGrab(InputAction.CallbackContext context);
-        void OnMouseX(InputAction.CallbackContext context);
-        void OnMouseY(InputAction.CallbackContext context);
+        void OnLookX(InputAction.CallbackContext context);
+        void OnLookY(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnThrow(InputAction.CallbackContext context);
+        void OnOffWall(InputAction.CallbackContext context);
     }
     public interface IDialogueActions
     {

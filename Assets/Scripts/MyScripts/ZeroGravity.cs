@@ -40,19 +40,19 @@ public class ZeroGravity : MonoBehaviour
 
     public GameObject respawnLoc;
 
-/*    // Smooth rotation variables
-    private float targetRotationHoriz = 0.0f;
-    private float targetRotationVert = 0.0f;
-    private float targetRotationZ = 0.0f;
+    /*    // Smooth rotation variables
+        private float targetRotationHoriz = 0.0f;
+        private float targetRotationVert = 0.0f;
+        private float targetRotationZ = 0.0f;
 
-    [SerializeField]
-    private float rotationSmoothTime = 0.1f; // Adjust this value to control the smoothness (higher = slower, more floaty)
-    [SerializeField]
-    private float rollSmoothTime = 0.15f; // Slightly slower smooth time for roll to make it feel floatier
+        [SerializeField]
+        private float rotationSmoothTime = 0.1f; // Adjust this value to control the smoothness (higher = slower, more floaty)
+        [SerializeField]
+        private float rollSmoothTime = 0.15f; // Slightly slower smooth time for roll to make it feel floatier
 
-    private float currentVelocityX = 0.0f;
-    private float currentVelocityY = 0.0f;
-    private float currentVelocityZ = 0.0f;*/
+        private float currentVelocityX = 0.0f;
+        private float currentVelocityY = 0.0f;
+        private float currentVelocityZ = 0.0f;*/
 
     private bool canMove = true;
 
@@ -70,7 +70,8 @@ public class ZeroGravity : MonoBehaviour
     [Header("== Grabbing Settings ==")]
     // Grabbing mechanic variables
     private bool isGrabbing = false;
-    private Transform grabbedBar;
+    private Transform potentialGrabbedBar = null; //tracks a potential grabbable bar that the player looks at
+    private Transform grabbedBar; //stores the bar the player is currently grabbing
     [SerializeField]
     private LayerMask barLayer; // Set a specific layer containing bars to grab onto
     [SerializeField]
@@ -95,7 +96,7 @@ public class ZeroGravity : MonoBehaviour
     public InputActionReference grab;
     private float thrust1D;
     private float strafe1D;
-    private float upDown1D;
+    private float offWall;
     private bool nearBarrier;
 
     [SerializeField]
@@ -132,7 +133,7 @@ public class ZeroGravity : MonoBehaviour
 
         //set the crosshair and grabber sprites accordingly;
         crosshair.sprite = crosshairIcon;
-        
+
 
         grabber.sprite = null;
         grabber.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -141,19 +142,20 @@ public class ZeroGravity : MonoBehaviour
     }
 
     // Update is called once per frame
+    #region Update Method
     void FixedUpdate()
     {
         if (canMove)
         {
             RotateCam();
-            LookingAtButton();
+            HandleRaycast();
             HandleGrabMovement();
-            PropelOffWall();
-            UpdateGrabberPosition();
-            UIText();
+            DetectBarrierAndBounce();
         }
     }
+    #endregion 
 
+    #region Player Control Methods
     private void RotateCam()
     {
         // Horizontal and vertical rotation
@@ -179,54 +181,50 @@ public class ZeroGravity : MonoBehaviour
         cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
     }
 
-    private void PropelOffWall()
+    private void PropelOffWall(Vector3 wallNormal)
     {
-        // Adjust the forward thrust based on your requirements
-        Vector3 propelDirection = cam.transform.forward * propelOffWallThrust;
+        Vector3 propelDirection = Vector3.zero;
 
-        if (nearBarrier && upDown1D > 0.1f)
+        propelDirection += -cam.transform.forward * offWall * propelOffWallThrust;
+
+        rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+        Debug.Log("Propelled away from wall");
+    }
+
+    // Detect nearby barriers and apply bounce force
+    private void DetectBarrierAndBounce()
+    {
+        float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, barrierLayer);
+
+        if (hitColliders.Length > 0)
         {
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
+            Vector3 totalBounceForce = Vector3.zero;
 
-            float screenWidth = Screen.width;
-            float screenHeight = Screen.height;
-
-            Vector2 paddedMin = new Vector2(screenPoint.x - grabPadding, screenPoint.y - grabPadding);
-            Vector2 paddedMax = new Vector2(screenPoint.x + grabPadding, screenPoint.y + grabPadding);
-
-            bool barrierHit = false; // Track if a barrier was hit
-
-            for (float x = paddedMin.x; x < paddedMax.x; x += grabPadding / 2)
+            foreach (Collider barrier in hitColliders)
             {
-                for (float y = paddedMin.y; y < paddedMax.y; y += grabPadding / 2)
-                {
-                    Ray ray = cam.ScreenPointToRay(new Vector3(x, y, 0));
-                    RaycastHit hit;
+                // Get the closest point on the barrier to the player
+                Vector3 closestPoint = barrier.ClosestPoint(transform.position);
 
-                    // Check if the raycast hits a barrier
-                    if (Physics.Raycast(ray, out hit, boundingSphere.radius, barrierLayer) && hit.transform.CompareTag("Barrier"))
-                    {
-                        barrierHit = true; // Mark that we hit a barrier
-                        break;
-                    }
-                }
+                // Calculate the wall normal (direction from wall to player)
+                Vector3 wallNormal = (transform.position - closestPoint).normalized;
 
-                if (barrierHit)
-                    break;
+                // Ensure a minimum bounce force to prevent sticking
+                Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
+                float bounceStrength = Mathf.Max(rb.velocity.magnitude * 0.3f, 10f); // Minimum force of 10
+
+                // Accumulate bounce forces
+                totalBounceForce += reflectDirection * bounceStrength;
             }
 
-            if (barrierHit)
-            {
-                // Propelling away from the wall
-                rb.AddForce(-propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-                Debug.Log("Propelling away from Barrier");
-            }
-            else
-            {
-                // Regular forward propulsion
-                rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-                Debug.Log("Propelling forward, no barrier detected");
-            }
+            // Reset velocity to prevent stopping
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+
+            // Apply the bounce force instantly
+            rb.AddForce(totalBounceForce, ForceMode.Impulse);
+
+            Debug.Log("Bounced off wall with force: " + totalBounceForce);
         }
     }
 
@@ -234,8 +232,18 @@ public class ZeroGravity : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Barrier") && collision.gameObject.CompareTag("Barrier"))
         {
-            nearBarrier = true;
-            grabUIText.text = "'SPACEBAR'";
+            Debug.Log("colliding with wall");
+            //create a normal from the wall to the player
+            Vector3 wallNormal = (transform.position - collision.transform.position).normalized;
+            //determine the reflected velocity based on the normal
+            Vector3 reflectDirection = Vector3.Reflect(rb.velocity, wallNormal).normalized;
+            //calculate a bounce force off the wall
+            Vector3 bounceForce = Vector3.zero;
+            bounceForce += reflectDirection * (propelOffWallThrust) * Time.deltaTime;
+            //apply the force
+            rb.AddForce(bounceForce, ForceMode.VelocityChange);
+            //debugging
+            Debug.Log("Bounced off wall with force: " + bounceForce);
         }
     }
 
@@ -262,208 +270,54 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Creates a raycast to find if the player is within range of the bar in front of them
-    /// </summary>
-    /// <returns></returns>
-    private bool IsInRangeofBar()
+    private void HandleDoorInteraction(Transform button)
     {
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
-        float screenWidth = Screen.width;
-        float screenHeight = Screen.height;
-        Vector2 paddedMin = new Vector2(screenPoint.x - grabPadding, screenPoint.y - grabPadding);
-        Vector2 paddedMax = new Vector2(screenPoint.x + grabPadding, screenPoint.y + grabPadding);
-
-        for (float x = paddedMin.x; x < paddedMax.x; x += grabPadding / 2)
-        {
-            for (float y = paddedMin.y; y < paddedMax.y; y += grabPadding / 2)
-            {
-                Ray ray = cam.ScreenPointToRay(new Vector3(x, y, 0));
-                if (Physics.Raycast(ray, grabRange, barLayer))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private void LookingAtButton()
-    {
-
-        RaycastHit hit;
-        if (Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hit, 3.0f))
-        {
-            if (hit.transform.gameObject.tag == "DoorButton" && doorManager.CurrentSelectedDoor != hit.transform.parent.gameObject)
-            {
-               
-                GameObject g = hit.transform.parent.gameObject;
-                DoorScript ds = g.GetComponent<DoorScript>();
-
-                Debug.Log(ds);
-
-                if (ds.DoorState != DoorScript.States.Locked && ds.DoorState != DoorScript.States.Broken)
-                {
-                    doorManager.CurrentSelectedDoor = g;
-                    doorManager.DoorUI.SetActive(true);
-
-                }
-                else
-                {
-                    doorManager.CurrentSelectedDoor = null;
-                }
-
-                
-
-            }
-            else if (hit.transform.gameObject.tag != "DoorButton" && doorManager.CurrentSelectedDoor != null)
-            {
-                doorManager.DoorUI.SetActive(false);
-                doorManager.CurrentSelectedDoor = null;
-            }
-          
-        }
-        else
-        {
-            doorManager.DoorUI.SetActive(false);
-            doorManager.CurrentSelectedDoor = null;
-        }
-
-
-
-
+        //store the gameobject of the detected item and store it
+        GameObject door = button.parent.gameObject;
+        //set the selected door in the door manager as this door
+        doorManager.CurrentSelectedDoor = door;
+        //show the door UI
+        doorManager.DoorUI.SetActive(true);
     }
 
     // Try to grab a bar by raycasting
-    private void TryGrabBar()
+    private void TryGrabBar(Transform bar)
     {
-
-        // Get the position of the crosshair in screen space
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
-
-        // Apply padding to the screen point
-        float screenWidth = Screen.width;
-        float screenHeight = Screen.height;
-
-        Vector2 paddedMin = new Vector2(screenPoint.x - grabPadding, screenPoint.y - grabPadding);
-        Vector2 paddedMax = new Vector2(screenPoint.x + grabPadding, screenPoint.y + grabPadding);
-
-        for (float x = paddedMin.x; x < paddedMax.x; x += grabPadding / 2)
-        {
-            for (float y = paddedMin.y; y < paddedMax.y; y += grabPadding / 2)
-            {
-                Ray ray = cam.ScreenPointToRay(new Vector3(x, y, 0));
-                RaycastHit hit;
-
-                if (Physics.Raycast(ray, out hit, grabRange, barLayer))
-                {
-                    Debug.Log("Raycast hit: " + hit.transform.name); // Debug the hit
-
-                    // Check if the object has the "Grabbable" tag
-                    if (hit.transform.CompareTag("Grabbable"))
-                    {
-                        grabbedBar = hit.transform;
-                        isGrabbing = true;
-
-                        // Stop movement by reducing velocity and angular velocity
-                        rb.velocity = rb.velocity * 0f;  // Reduce velocity to 10% of its current value
-                        rb.angularVelocity = Vector3.zero;  // Stop rotation completely
-
-                        Debug.Log("Grabbing the handle: " + grabbedBar.name);
-                        return;
-                    }
-                }
-            }
-        }
-        Debug.Log("Raycast did not hit anything");
+        grabbedBar = bar;
+        isGrabbing = true;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        grabber.sprite = closedHand;
     }
 
     // This method will update the crosshair's position based on the nearest grabbable object
-    private void UpdateGrabberPosition()
+    private void UpdateGrabberPosition(Transform rayPt)
     {
-        Transform closestObject = GetClosestGrabbableObject();
+        //create a screenpoint based on the raycast hit
+        Vector3 screenPoint = cam.WorldToScreenPoint(rayPt.position);
+        grabber.rectTransform.position = screenPoint;
 
-        if (closestObject != null && !isGrabbing)
+        //handle UI hand updating
+        if (!isGrabbing)
         {
-            // Convert the closest object's world position to screen position
-            Vector3 screenPoint = cam.WorldToScreenPoint(closestObject.transform.position);
-
-            // Update the grabber's position to match the object's screen position
-            grabber.rectTransform.position = screenPoint;
-            //set the hand icon on the bar
             grabber.sprite = openHand;
-            grabber.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            grabber.color = Color.white;
+            grabUIText.text = "press and hold 'Right Mouse Button'";
         }
-        else if(isGrabbing)
+        if (isGrabbing)
         {
-            // Convert the closest object's world position to screen position
-            Vector3 screenPoint = cam.WorldToScreenPoint(closestObject.transform.position);
-
-            // Update the grabber's position to match the object's screen position
-            grabber.rectTransform.position = screenPoint;
-            //set the closed hand icon on the bar
             grabber.sprite = closedHand;
-            grabber.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-        }
-        else 
-        {
-            // If no grabbable object is within range, reset grabber to center of the screen
-           grabber.rectTransform.position = new Vector2(Screen.width / 2, Screen.height / 2);
-            //set the grabber to null
-            grabber.sprite = null;
-            grabber.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+            grabber.color = Color.white;
+            grabUIText.text = "WASD";
         }
     }
 
-    // Method to find the closest grabbable object within grab range
-    private Transform GetClosestGrabbableObject()
+    private void ResetUI()
     {
-        RaycastHit[] hits = Physics.SphereCastAll(cam.transform.position, grabRange, cam.transform.forward, grabRange, barLayer);
-        Transform closestObject = null;
-        float closestDistance = Mathf.Infinity;
-
-        if (IsInRangeofBar())
-        {
-            foreach (RaycastHit hit in hits)
-            {
-                if (hit.transform.CompareTag("Grabbable"))
-                {
-                    float distance = Vector3.Distance(cam.transform.position, hit.transform.position);
-
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestObject = hit.transform;
-                    }
-                }
-            }
-        }
-
-        return closestObject;
-    }
-
-
-    private void UIText()
-    {
-        if (showTutorialMessages)
-        {
-            if (isGrabbing)
-            {
-                grabUIText.text = "'WASD'";
-            }
-            else if (IsInRangeofBar() && !isGrabbing)
-            {
-                grabUIText.text = "press and hold 'Right Mouse Button'";
-            }
-            else if (!isGrabbing && !IsInRangeofBar() && !nearBarrier)
-            {
-                grabUIText.text = null;
-            }
-        }
-        else if (!showTutorialMessages)
-        {
-            return;
-        }
+        grabUIText.text = null;
+        grabber.sprite = null;
+        grabber.color = new Color(0, 0, 0, 0);
+        /*doorManager.DoorUI.SetActive(false);*/
     }
 
     //Player uses WASD to propel themselves faster, only while currently grabbing a bar
@@ -519,6 +373,50 @@ public class ZeroGravity : MonoBehaviour
 
     }
 
+    private void HandleRaycast()
+    {
+        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        RaycastHit hit;
+
+        Debug.DrawRay(ray.origin, ray.direction * grabRange, Color.red, 0.1f); // Debug visualization
+
+        if (Physics.Raycast(ray, out hit, grabRange, barLayer | barrierLayer))
+        {
+            Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
+
+            if (hit.transform.CompareTag("Grabbable"))
+            {
+                //update the ui hand to be on the bar player is looking at and in range of
+                UpdateGrabberPosition(hit.transform);
+                //store the potential bar for grabbing
+                potentialGrabbedBar = hit.transform;
+            }
+            if (hit.transform.CompareTag("Barrier"))
+            {
+                Debug.Log("Barrier detected: " + hit.transform.name);
+                grabUIText.text = "'SPACEBAR'";
+                //if looking at the wall, press space to push off of
+                if (offWall > 0.1f)
+                {
+                    PropelOffWall(hit.normal);
+                    Debug.Log("Propeled off wall");
+                }
+            }
+            //need this to send to UI manager
+            if (hit.transform.CompareTag("DoorButton"))
+            {
+                //show door UI
+                HandleDoorInteraction(hit.transform);
+            }
+        }
+        else
+        {
+            ResetUI();
+            potentialGrabbedBar = null;
+        }
+    }
+    #endregion
+
     void OnDrawGizmos()
     {
         // Visualize the crosshair padding as a box in front of the camera
@@ -569,9 +467,9 @@ public class ZeroGravity : MonoBehaviour
     {
         strafe1D = context.ReadValue<float>();
     }
-    public void OnUpDown(InputAction.CallbackContext context)
+    public void OffWall(InputAction.CallbackContext context)
     {
-        upDown1D = context.ReadValue<float>();
+        offWall = context.ReadValue<float>();
     }
     public void OnRoll(InputAction.CallbackContext context)
     {
@@ -579,9 +477,9 @@ public class ZeroGravity : MonoBehaviour
     }
     public void OnGrab(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && potentialGrabbedBar != null)
         {
-            TryGrabBar();
+            TryGrabBar(potentialGrabbedBar);
         }
         else if (context.canceled)
         {

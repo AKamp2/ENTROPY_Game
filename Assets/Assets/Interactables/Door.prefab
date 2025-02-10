@@ -183,10 +183,6 @@ MonoBehaviour:
     m_ActionName: PlayerControls/Strafe[/Keyboard/a,/Keyboard/d]
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: e284bdb1-2ff8-4f74-80f3-6a88bcbcd4d6
-    m_ActionName: PlayerControls/Up-Down[/Keyboard/c,/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
     m_ActionId: be519aae-7c29-4c10-b651-ab7be039d030
     m_ActionName: PlayerControls/Roll[/Keyboard/q,/Keyboard/e]
   - m_PersistentCalls:
@@ -249,6 +245,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: b57040e2-355a-4bb5-902a-ae436699338b
     m_ActionName: UI/Pause[/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b5d2d613-ece4-400e-9f1b-e83d6c87dc27
+    m_ActionName: PlayerControls/OffWall[/Keyboard/space]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: PlayerControls
@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 1379403608373867710}
   m_Layer: 6
   m_Name: DoorPart
-  m_TagString: Untagged
+  m_TagString: Barrier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
