@@ -191,7 +191,6 @@ public class ZeroGravity : MonoBehaviour
         Debug.Log("Propelled away from wall");
     }
 
-    // Detect nearby barriers and apply bounce force
     private void DetectBarrierAndBounce()
     {
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
@@ -199,59 +198,41 @@ public class ZeroGravity : MonoBehaviour
 
         if (hitColliders.Length > 0)
         {
-            Vector3 totalBounceForce = Vector3.zero;
+            Vector3 totalBounceDirection = Vector3.zero;
+            Vector3 strongestBounce = Vector3.zero;
+            float originalSpeed = rb.velocity.magnitude; // Store initial velocity magnitude
 
             foreach (Collider barrier in hitColliders)
             {
-                // Get the closest point on the barrier to the player
                 Vector3 closestPoint = barrier.ClosestPoint(transform.position);
-
-                // Calculate the wall normal (direction from wall to player)
                 Vector3 wallNormal = (transform.position - closestPoint).normalized;
-
-                // Ensure a minimum bounce force to prevent sticking
                 Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
-                float bounceStrength = Mathf.Max(rb.velocity.magnitude * 0.3f, 10f); // Minimum force of 10
 
-                // Accumulate bounce forces
-                totalBounceForce += reflectDirection * bounceStrength;
+                totalBounceDirection += reflectDirection;
+
+                //track the first/strongest reflection in case of near-zero average
+                if (strongestBounce == Vector3.zero)
+                {
+                    strongestBounce = reflectDirection;
+                }
             }
 
-            // Reset velocity to prevent stopping
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
+            totalBounceDirection.Normalize(); // Get an averaged bounce direction
 
-            // Apply the bounce force instantly
-            rb.AddForce(totalBounceForce, ForceMode.Impulse);
+            //if the total bounce results near zero use strongest bounce
+            if (totalBounceDirection.magnitude < 0.1f)
+            {
+                totalBounceDirection = strongestBounce;
+            }
 
-            Debug.Log("Bounced off wall with force: " + totalBounceForce);
-        }
-    }
+            // Maintain the original speed but reduce slightly to prevent infinite bouncing energy gain
+            float bounceSpeed = originalSpeed * 0.7f; // 70% of initial speed to prevent gaining energy
 
-    private void OnTriggerEnter(Collider collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Barrier") && collision.gameObject.CompareTag("Barrier"))
-        {
-            Debug.Log("colliding with wall");
-            //create a normal from the wall to the player
-            Vector3 wallNormal = (transform.position - collision.transform.position).normalized;
-            //determine the reflected velocity based on the normal
-            Vector3 reflectDirection = Vector3.Reflect(rb.velocity, wallNormal).normalized;
-            //calculate a bounce force off the wall
-            Vector3 bounceForce = Vector3.zero;
-            bounceForce += reflectDirection * (propelOffWallThrust) * Time.deltaTime;
-            //apply the force
-            rb.AddForce(bounceForce, ForceMode.VelocityChange);
-            //debugging
-            Debug.Log("Bounced off wall with force: " + bounceForce);
-        }
-    }
+            // Apply new velocity
+            rb.velocity = totalBounceDirection * bounceSpeed;
+            //rb.angularVelocity = Vector3.zero;
 
-    private void OnTriggerExit(Collider collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Barrier") && collision.gameObject.CompareTag("Barrier"))
-        {
-            nearBarrier = false;
+            Debug.Log($"Bounce Direction: {totalBounceDirection}, Speed After Bounce: {rb.velocity.magnitude}");
         }
     }
 

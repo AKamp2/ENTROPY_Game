@@ -323,7 +323,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""f214837e-cd75-4b5f-b348-0f5ebacd461b"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
