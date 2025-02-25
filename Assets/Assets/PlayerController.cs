@@ -92,7 +92,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": ""OffWall"",
-                    ""type"": ""Button"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""b5d2d613-ece4-400e-9f1b-e83d6c87dc27"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",

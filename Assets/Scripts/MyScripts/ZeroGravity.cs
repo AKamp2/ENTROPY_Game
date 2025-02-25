@@ -105,6 +105,7 @@ public class ZeroGravity : MonoBehaviour
 
     // Track if the movement keys were released
     private bool movementKeysReleased;
+    private bool spaceKeyReleased;
 
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -181,14 +182,27 @@ public class ZeroGravity : MonoBehaviour
         cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
     }
 
-    private void PropelOffWall(Vector3 wallNormal)
+    private void PropelOffWall()
     {
-        Vector3 propelDirection = Vector3.zero;
+        // Check space button is currently being pressed 
+        bool isPushing = Mathf.Abs(offWall) > 0.1f;
 
-        propelDirection += -cam.transform.forward * offWall * propelOffWallThrust;
+        if(spaceKeyReleased && isPushing)
+        {
+            Vector3 propelDirection = Vector3.zero;
 
-        rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-        Debug.Log("Propelled away from wall");
+            propelDirection += -cam.transform.forward * offWall * propelOffWallThrust;
+
+            rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+            // Set the flag to false since keys are now pressed
+            spaceKeyReleased = false;
+        }
+        //update the flag if the space key is not being pressed
+        else if(!isPushing)
+        {
+
+            spaceKeyReleased = true;
+        }
     }
 
     private void DetectBarrierAndBounce()
@@ -379,7 +393,7 @@ public class ZeroGravity : MonoBehaviour
                 //if looking at the wall, press space to push off of
                 if (offWall > 0.1f)
                 {
-                    PropelOffWall(hit.normal);
+                    PropelOffWall();
                     Debug.Log("Propeled off wall");
                 }
             }
