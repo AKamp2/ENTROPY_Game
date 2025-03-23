@@ -152,6 +152,17 @@ public class ZeroGravity : MonoBehaviour
             HandleRaycast();
             HandleGrabMovement();
             DetectBarrierAndBounce();
+            //handle grabber icon logic
+            if (isGrabbing && grabbedBar != null)
+            {
+                //keep grabber locked to grabbed bar
+                UpdateGrabberPosition(grabbedBar);
+            }
+            else
+            {
+                //update to closest bar in view 
+                UpdateClosestBarInView();
+            }
         }
     }
     #endregion 
@@ -275,36 +286,110 @@ public class ZeroGravity : MonoBehaviour
         doorManager.DoorUI.SetActive(true);
     }
 
-    // Try to grab a bar by raycasting
-    private void TryGrabBar(Transform bar)
+    private void UpdateClosestBarInView()
     {
-        grabbedBar = bar;
-        isGrabbing = true;
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        grabber.sprite = closedHand;
+        //check for all nearby bars to the player
+        Collider[] nearbyBars = Physics.OverlapSphere(transform.position, grabRange, barLayer);
+        //initialize a transform for the closest bar and distance to that bar
+        Transform closestBar = null;
+        float closestDistance = Mathf.Infinity;
+
+        //check through each bar in our array
+        foreach (Collider bar in nearbyBars)
+        {
+            //set specifications for the viewport
+            Vector3 viewportPoint = cam.WorldToViewportPoint(bar.transform.position);
+
+            //check if the bar is in the viewport and in front of the player
+            if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
+            {
+                float distanceToBar = Vector3.Distance(transform.position, bar.transform.position);
+                if (distanceToBar < closestDistance)
+                {
+                    closestDistance = distanceToBar;
+                    closestBar = bar.transform;
+                }
+            }
+        }
+
+        if (closestBar != null)
+        {
+            // Update the grabber if a new bar is detected
+            if (potentialGrabbedBar != closestBar)
+            {
+                potentialGrabbedBar = closestBar;
+                UpdateGrabberPosition(potentialGrabbedBar);
+            }
+        }
+        else
+        {
+            // Hide grabber if no bar is in range
+            HideGrabber();
+        }
     }
 
-    // This method will update the crosshair's position based on the nearest grabbable object
-    private void UpdateGrabberPosition(Transform rayPt)
+    // this method will update the grabber icon's position based on the nearest grabbable object
+    private void UpdateGrabberPosition(Transform bar)
     {
-        //create a screenpoint based on the raycast hit
-        Vector3 screenPoint = cam.WorldToScreenPoint(rayPt.position);
-        grabber.rectTransform.position = screenPoint;
+        //check if their is a bar in the viewport
+        if (bar != null)
+        {
+            //set it as a screen point
+            Vector3 screenPoint = cam.WorldToScreenPoint(bar.position);
 
-        //handle UI hand updating
-        if (!isGrabbing)
-        {
-            grabber.sprite = openHand;
-            grabber.color = Color.white;
-            grabUIText.text = "press and hold 'Right Mouse Button'";
+            // Update grabber position
+            grabber.rectTransform.position = screenPoint;
+
+            // Set hand icon to open by default
+            if (!isGrabbing)
+            {
+                grabber.sprite = openHand;
+                grabber.color = Color.white;
+            }
+            else if (isGrabbing)
+            {
+                grabber.sprite = closedHand;
+                grabber.color = Color.white;
+            }
         }
-        if (isGrabbing)
+        //if there is no bar
+        else
         {
+            //remove the grabber
+            HideGrabber();
+        }
+    }
+
+    // this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
+    public void HideGrabber()
+    {
+        grabber.sprite = null;
+        grabber.color = new Color(0, 0, 0, 0); //transparent
+    }
+
+    public void GrabBar()
+    {
+            isGrabbing = true;
+            grabbedBar = potentialGrabbedBar;
+
+            //lock grabbed bar and change icon
+            UpdateGrabberPosition(grabbedBar);
             grabber.sprite = closedHand;
-            grabber.color = Color.white;
-            grabUIText.text = "WASD";
-        }
+
+            //set the velocities to zero so that the player stops when they grab the bar
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+    }
+
+    // Release the bar and enable movement again
+    private void ReleaseBar()
+    {
+            isGrabbing = false;
+            grabbedBar = null;
+            Debug.Log("Released the handle");
+
+            //resume dynamic bar detection
+            UpdateClosestBarInView();
     }
 
     private void ResetUI()
@@ -359,17 +444,14 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
-    // Release the bar and enable movement again
-    private void ReleaseBar()
-    {
-        isGrabbing = false;
-        grabbedBar = null;
-        Debug.Log("Released the handle");
-
-    }
-
     private void HandleRaycast()
     {
+        if (isGrabbing)
+        {
+            //skip raycast if already holding a bar
+            return;
+        }
+
         Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         RaycastHit hit;
 
@@ -379,30 +461,12 @@ public class ZeroGravity : MonoBehaviour
         {
             Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
 
-            if (hit.transform.CompareTag("Grabbable"))
-            {
-                //update the ui hand to be on the bar player is looking at and in range of
-                UpdateGrabberPosition(hit.transform);
-                //store the potential bar for grabbing
-                potentialGrabbedBar = hit.transform;
-            }
-            if (hit.transform.CompareTag("Barrier"))
-            {
-                Debug.Log("Barrier detected: " + hit.transform.name);
-                grabUIText.text = "'SPACEBAR'";
-                //if looking at the wall, press space to push off of
-                if (offWall > 0.1f)
-                {
-                    PropelOffWall();
-                    Debug.Log("Propeled off wall");
-                }
-            }
-            //need this to send to UI manager
-            if (hit.transform.CompareTag("DoorButton"))
-            {
-                //show door UI
-                HandleDoorInteraction(hit.transform);
-            }
+            //use the helper methods to manage the player ui
+            RayCastHandleGrab(hit);
+
+            RayCastHandleBounce(hit);
+
+            RayCastHandleDoorButton(hit);
         }
         else
         {
@@ -410,6 +474,42 @@ public class ZeroGravity : MonoBehaviour
             potentialGrabbedBar = null;
         }
     }
+
+    //helper methods for raycast handling
+    public void RayCastHandleGrab(RaycastHit hit)
+    {
+        if (hit.transform.CompareTag("Grabbable"))
+        {
+            potentialGrabbedBar = hit.transform;
+            UpdateGrabberPosition(potentialGrabbedBar);
+        }
+    }
+
+    public void RayCastHandleBounce(RaycastHit hit)
+    {
+        if (hit.transform.CompareTag("Barrier"))
+        {
+            Debug.Log("Barrier detected: " + hit.transform.name);
+            grabUIText.text = "'SPACEBAR'";
+            //if looking at the wall, press space to push off of
+            if (offWall > 0.1f)
+            {
+                PropelOffWall();
+                Debug.Log("Propeled off wall");
+            }
+        }
+    }
+
+    public void RayCastHandleDoorButton(RaycastHit hit)
+    {
+        //need this to send to UI manager
+        if (hit.transform.CompareTag("DoorButton"))
+        {
+            //show door UI
+            HandleDoorInteraction(hit.transform);
+        }
+    }
+
     #endregion
 
     void OnDrawGizmos()
@@ -474,7 +574,7 @@ public class ZeroGravity : MonoBehaviour
     {
         if (context.performed && potentialGrabbedBar != null)
         {
-            TryGrabBar(potentialGrabbedBar);
+            GrabBar();
         }
         else if (context.canceled)
         {
