@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class ZeroGravity : MonoBehaviour
+public class ZeroGravityBackup : MonoBehaviour
 {
     [SerializeField]
     private Rigidbody rb;
@@ -39,6 +39,8 @@ public class ZeroGravity : MonoBehaviour
     private float rotationZ = 0.0f;
 
     public GameObject respawnLoc;
+
+
 
     /*    // Smooth rotation variables
         private float targetRotationHoriz = 0.0f;
@@ -198,7 +200,7 @@ public class ZeroGravity : MonoBehaviour
         // Check space button is currently being pressed 
         bool isPushing = Mathf.Abs(offWall) > 0.1f;
 
-        if(spaceKeyReleased && isPushing)
+        if (spaceKeyReleased && isPushing)
         {
             Vector3 propelDirection = Vector3.zero;
 
@@ -209,7 +211,7 @@ public class ZeroGravity : MonoBehaviour
             spaceKeyReleased = false;
         }
         //update the flag if the space key is not being pressed
-        else if(!isPushing)
+        else if (!isPushing)
         {
 
             spaceKeyReleased = true;
@@ -369,27 +371,27 @@ public class ZeroGravity : MonoBehaviour
 
     public void GrabBar()
     {
-            isGrabbing = true;
-            grabbedBar = potentialGrabbedBar;
+        isGrabbing = true;
+        grabbedBar = potentialGrabbedBar;
 
-            //lock grabbed bar and change icon
-            UpdateGrabberPosition(grabbedBar);
-            grabber.sprite = closedHand;
+        //lock grabbed bar and change icon
+        UpdateGrabberPosition(grabbedBar);
+        grabber.sprite = closedHand;
 
-            //set the velocities to zero so that the player stops when they grab the bar
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
+        //set the velocities to zero so that the player stops when they grab the bar
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     // Release the bar and enable movement again
     private void ReleaseBar()
     {
-            isGrabbing = false;
-            grabbedBar = null;
-            Debug.Log("Released the handle");
+        isGrabbing = false;
+        grabbedBar = null;
+        Debug.Log("Released the handle");
 
-            //resume dynamic bar detection
-            UpdateClosestBarInView();
+        //resume dynamic bar detection
+        UpdateClosestBarInView();
     }
 
     private void ResetUI()

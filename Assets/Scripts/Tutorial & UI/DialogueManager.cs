@@ -5,9 +5,9 @@ using TMPro;
 
 public class DialogueManager : MonoBehaviour
 {
-    public static DialogueManager Instance { get; private set; }
+    public static DialogueManager Instance { get; private set; } // Singleton instance
 
-    // Dialogue sequences and UI references
+    // UI elements for dialogue display
     public DialogueSequence[] dialogueSequences;
     public Canvas dialogueCanvas;
     public TextMeshProUGUI nameTextUI;
@@ -15,21 +15,21 @@ public class DialogueManager : MonoBehaviour
     public AudioSource audioSource;
     public float typewriterSpeed = 0.08f;
 
-    // Events and input control
+    // Events for handling dialogue completion
     public event Action<int> OnDialogueEnd;
     private PlayerController playerController;
-    public GameObject player; //need reference to player GameObject
+    public GameObject player; // Reference to player GameObject
     private ZeroGravity playerManager;
 
-    // Dialogue sequence tracking
+    // Tracking dialogue progress
     private int currentDialogueIndex = 0;
     private int currentSequenceIndex = -1;
     private bool isSkipping = false;
     private bool isDialogueActive = false;
 
-    public bool IsDialogueActive => isDialogueActive;
+    public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
 
-    // Initialization
+    // Ensures only one instance of DialogueManager exists
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -37,7 +37,6 @@ public class DialogueManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
         playerController = new PlayerController();
@@ -48,29 +47,22 @@ public class DialogueManager : MonoBehaviour
 
     private void Start()
     {
-        //get reference to playerManager
-        playerManager = player.GetComponent<ZeroGravity>();
-        // Hide dialogue canvas on start
-        dialogueCanvas.enabled = false;
+        playerManager = player.GetComponent<ZeroGravity>(); // Get reference to player movement manager
+        dialogueCanvas.enabled = false; // Hide dialogue UI initially
     }
 
     private void Update()
     {
-        // Check for skip input each frame, only if not viewing puzzle (can move is true)
-        if (playerManager.CanMove == true)
+        // Allow skipping dialogue only if the player can move (not in a puzzle)
+        if (playerManager.CanMove && playerController.Dialogue.ContinueDialogue.triggered)
         {
-            if (playerController.Dialogue.ContinueDialogue.triggered)
-            {
-                isSkipping = true;
-            }
+            isSkipping = true;
         }
-        
     }
 
     /// <summary>
-    /// Starts a dialogue sequence by index
+    /// Starts a dialogue sequence based on the given index.
     /// </summary>
-    /// <param name="sequenceIndex">The sequence to start</param>
     public void StartDialogueSequence(int sequenceIndex)
     {
         if (sequenceIndex < dialogueSequences.Length)
@@ -84,30 +76,28 @@ public class DialogueManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Displays the dialogue sequence on the UI
+    /// Handles displaying dialogue one line at a time.
     /// </summary>
-    /// <returns>IEnumerator for coroutine control</returns>
     private IEnumerator DisplayDialogue()
     {
         DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
 
         while (currentDialogueIndex < currentSequence.dialogues.Length)
         {
-            // Get current dialogue and set name
             Dialogue currentDialogue = currentSequence.dialogues[currentDialogueIndex];
             nameTextUI.text = currentDialogue.characterName;
 
-            // Play audio clip if available
+            // Play audio if available
             if (currentDialogue.audioClip != null)
             {
                 audioSource.clip = currentDialogue.audioClip;
                 audioSource.Play();
             }
 
-            // Display dialogue with typewriter effect
+            // Show text with typewriter effect
             yield return StartCoroutine(TypewriterEffect(currentDialogue.dialogueText, currentDialogue.audioClip));
 
-            // Grace period for skipping
+            // Wait for player input to continue
             yield return new WaitForSeconds(0.5f);
             yield return new WaitUntil(() => playerController.Dialogue.ContinueDialogue.triggered);
 
@@ -115,30 +105,27 @@ public class DialogueManager : MonoBehaviour
             currentDialogueIndex++;
         }
 
-        // Dialogue sequence complete
+        // End dialogue
         isDialogueActive = false;
         dialogueCanvas.enabled = false;
         OnDialogueEnd?.Invoke(currentSequenceIndex);
     }
 
     /// <summary>
-    /// Displays the dialogue text using a typewritter effect
+    /// Displays text with a typewriter effect.
     /// </summary>
-    /// <param name="dialogueText">The text to display with the effect</param>
-    /// <param name="audioClip">Audio clip to set typewritting speed</param>
-    /// <returns>IEnumerator for coroutine control</returns>
     private IEnumerator TypewriterEffect(string dialogueText, AudioClip audioClip)
     {
         dialogueTextUI.text = "";
         isSkipping = false;
 
-        // Determine typewriter speed based on audio clip length if available
+        // Adjust speed if an audio clip is present
         if (audioClip != null)
         {
             typewriterSpeed = audioClip.length / dialogueText.Length - 0.02f;
         }
 
-        foreach (char letter in dialogueText.ToCharArray())
+        foreach (char letter in dialogueText)
         {
             dialogueTextUI.text += letter;
 
@@ -154,7 +141,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Pauses the current dialogue, stopping any audio and disabling input.
+    /// Pauses dialogue, disabling input and stopping audio.
     /// </summary>
     public void PauseDialogue()
     {
@@ -167,7 +154,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Restarts the current dialogue sequence from the last dialogue index.
+    /// Resumes dialogue from the last dialogue index.
     /// </summary>
     public void ResumeDialogue()
     {
@@ -179,6 +166,3 @@ public class DialogueManager : MonoBehaviour
         }
     }
 }
-
-// Example of starting a dialogue sequence outside of the DialogueManager script:
-// DialogueManager.Instance?.StartDialogueSequence(int);

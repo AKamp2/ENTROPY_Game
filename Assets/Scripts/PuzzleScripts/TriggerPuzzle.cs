@@ -18,7 +18,7 @@ public class TriggerPuzzle : MonoBehaviour
 
     public GameObject crosshair; // Reference to the crosshair image
     public GameObject playerUICanvas;
-    public GameObject interactionText; // Reference to the TextMeshPro component for the interaction message
+    public GameObject interactionCanvas; // Reference to the TextMeshPro component for the interaction message
     private ZeroGravity playerManager;
 
     //audio
@@ -81,11 +81,11 @@ public class TriggerPuzzle : MonoBehaviour
                 // Check distance to show/hide interaction text
                 if (Vector3.Distance(player.transform.position, transform.position) <= interactionDistance)
                 {
-                    interactionText.SetActive(true);
+                    interactionCanvas.SetActive(true);
                 }
                 else
                 {
-                    interactionText.SetActive(false);
+                    interactionCanvas.SetActive(false);
                 }
             }
             

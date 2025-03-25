@@ -497,7 +497,7 @@ public class DrawPuzzle : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         audioSource.PlayOneShot(puzzleWin);
         connectedPanel.GetComponent<TriggerPuzzle>().puzzleComplete = true;
-        connectedPanel.GetComponent<TriggerPuzzle>().interactionText.SetActive(false);
+        connectedPanel.GetComponent<TriggerPuzzle>().interactionCanvas.SetActive(false);
         yield return new WaitForSeconds(1f); // Wait for 1 second
         
         
