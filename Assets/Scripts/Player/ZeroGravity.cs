@@ -279,43 +279,37 @@ public class ZeroGravity : MonoBehaviour
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, barrierLayer);
 
-        if (hitColliders.Length > 0)
+        if (hitColliders.Length == 0)
         {
-            Vector3 totalBounceDirection = Vector3.zero;
-            Vector3 strongestBounce = Vector3.zero;
-            float originalSpeed = rb.velocity.magnitude; // Store initial velocity magnitude
+            return; //no collision, no bounce 
+        }
 
-            foreach (Collider barrier in hitColliders)
+        Vector3 avgBounceDirection = Vector3.zero;
+        int bounceCount = 0;
+        float ogSpeed = rb.velocity.magnitude; //store initial velocity magnitude
+
+        foreach (Collider barrier in hitColliders)
+        {
+            Vector3 closestPoint = barrier.ClosestPoint(transform.position);
+            Vector3 wallNormal = (transform.position - closestPoint).normalized;
+            Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
+
+            // get bounce directions
+            avgBounceDirection += reflectDirection;
+            bounceCount++;
+
+            // Early exit if multiple bounces aren't needed
+            if (bounceCount >= 1)
             {
-                Vector3 closestPoint = barrier.ClosestPoint(transform.position);
-                Vector3 wallNormal = (transform.position - closestPoint).normalized;
-                Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
-
-                totalBounceDirection += reflectDirection;
-
-                //track the first/strongest reflection in case of near-zero average
-                if (strongestBounce == Vector3.zero)
-                {
-                    strongestBounce = reflectDirection;
-                }
+                break;
             }
+        }
 
-            totalBounceDirection.Normalize(); // Get an averaged bounce direction
-
-            //if the total bounce results near zero use strongest bounce
-            if (totalBounceDirection.magnitude < 0.1f)
-            {
-                totalBounceDirection = strongestBounce;
-            }
-
-            // Maintain the original speed but reduce slightly to prevent infinite bouncing energy gain
-            float bounceSpeed = originalSpeed * 0.7f; // 70% of initial speed to prevent gaining energy
-
-            // Apply new velocity
-            rb.velocity = totalBounceDirection * bounceSpeed;
-            //rb.angularVelocity = Vector3.zero;
-
-            Debug.Log($"Bounce Direction: {totalBounceDirection}, Speed After Bounce: {rb.velocity.magnitude}");
+        if (bounceCount > 0)
+        {
+            avgBounceDirection.Normalize(); // average direction
+            float bounceSpeed = ogSpeed * .75f; // keep 75% of initial speed so it doesn't gain 
+            rb.velocity = avgBounceDirection * bounceSpeed;
         }
     }
 
