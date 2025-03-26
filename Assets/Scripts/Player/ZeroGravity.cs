@@ -386,23 +386,33 @@ public class ZeroGravity : MonoBehaviour
         //check if their is a bar in the viewport
         if (bar != null)
         {
-            //set it as a screen point
+            //set the position of the bar as a screen point
             Vector3 screenPoint = cam.WorldToScreenPoint(bar.position);
 
-            // Update grabber position
-            grabber.rectTransform.position = screenPoint;
+            if(screenPoint.z > 0)
+            {
+                //update grabber position
+                grabber.rectTransform.position = screenPoint;
+                
+                //set hand icon open is not grabbing
+                if (!isGrabbing)
+                {
+                    grabber.sprite = openHand;
+                    grabber.color = Color.white;
+                }
+                //set closed hand icon if grabbing
+                else if (isGrabbing)
+                {
+                    grabber.sprite = closedHand;
+                    grabber.color = Color.white;
+                }
+            }
+            else
+            {
+                //hide the grabber when the bar is behind the camera
+                HideGrabber();
+            }
 
-            // Set hand icon to open by default
-            if (!isGrabbing)
-            {
-                grabber.sprite = openHand;
-                grabber.color = Color.white;
-            }
-            else if (isGrabbing)
-            {
-                grabber.sprite = closedHand;
-                grabber.color = Color.white;
-            }
         }
         //if there is no bar
         else
