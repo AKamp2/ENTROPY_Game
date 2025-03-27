@@ -8,27 +8,16 @@ using System;
 
 public class ZeroGravity : MonoBehaviour
 {
+    [Header("== Player Elements ==")]
     [SerializeField]
     private Rigidbody rb;
     [SerializeField]
     private CapsuleCollider boundingSphere;
     [SerializeField]
     public Camera cam;
-    //Variables for camera turn and UI interaction
     [SerializeField]
-    private GameObject characterPivot;
-    [SerializeField]
-    private UnityEngine.UI.Image crosshair;
-    [SerializeField]
-    private UnityEngine.UI.Image grabber;
-    [SerializeField]
-    private Sprite openHand;
-    [SerializeField]
-    private Sprite closedHand;
-    [SerializeField]
-    private Sprite crosshairIcon;
 
-    [SerializeField]
+    //look sensitivity
     private float sensitivityX = 8.0f;
     [SerializeField]
     private float sensitivityY = 8.0f;
@@ -38,24 +27,46 @@ public class ZeroGravity : MonoBehaviour
     private float rotationVert = 0.0f;
     private float rotationZ = 0.0f;
 
+    //respawn reference
     public GameObject respawnLoc;
 
+    [Header("== UI Canvas ==")]
+    //canvas elements
+    [SerializeField]
+    private GameObject characterPivot;
+    [SerializeField]
+    private UnityEngine.UI.Image crosshair;
+    [SerializeField]
+    private UnityEngine.UI.Image grabber;
+    [SerializeField]
+    private UnityEngine.UI.Image inputIndicator;
+    [SerializeField]
+    private UnityEngine.UI.Image healthIndicator;
+
+    //sprite assets
+    //grabber
+    [SerializeField]
+    private Sprite openHand;
+    [SerializeField]
+    private Sprite closedHand;
+    [SerializeField]
+    private Sprite crosshairIcon;
+
+    //input indicators
+    [SerializeField]
+    private Sprite wasdIndicator;
+    [SerializeField]
+    private Sprite spaceIndicator;
+    [SerializeField]
+    private Sprite rightClickIndicator;
+    [SerializeField]
+    private Sprite leftClickIndicator;
+    [SerializeField]
+    private Sprite keyFIndicator;
 
 
 
-    /*    // Smooth rotation variables
-        private float targetRotationHoriz = 0.0f;
-        private float targetRotationVert = 0.0f;
-        private float targetRotationZ = 0.0f;
-
-        [SerializeField]
-        private float rotationSmoothTime = 0.1f; // Adjust this value to control the smoothness (higher = slower, more floaty)
-        [SerializeField]
-        private float rollSmoothTime = 0.15f; // Slightly slower smooth time for roll to make it feel floatier
-
-        private float currentVelocityX = 0.0f;
-        private float currentVelocityY = 0.0f;
-        private float currentVelocityZ = 0.0f;*/
+    
 
     //used for freezing the camera movement while completing the puzzle.
     private bool canMove = true;
@@ -94,8 +105,13 @@ public class ZeroGravity : MonoBehaviour
     //Propel off bar 
     [SerializeField]
     private float propelThrust = 50000f;
+
+    [Header("== Push Off Wall Settings ==")]
     [SerializeField]
     private float propelOffWallThrust = 50000f;
+    private Transform potentialWall = null;
+    [SerializeField]
+    private float magnitudeMinimum = 0.75f;
 
 
     [Header("== UI Settings ==")]
@@ -104,11 +120,12 @@ public class ZeroGravity : MonoBehaviour
     private bool showTutorialMessages = true;
 
     //Input Values
-    public InputActionReference grab;
+    [SerializeField]
+    private InputActionReference grab;
+    [SerializeField]
+    private InputActionReference pushOffWall;
     private float thrust1D;
     private float strafe1D;
-    private float offWall;
-    private bool nearBarrier;
 
     [SerializeField]
     private DoorManager doorManager;
@@ -117,7 +134,6 @@ public class ZeroGravity : MonoBehaviour
 
     // Track if the movement keys were released
     private bool movementKeysReleased;
-    private bool spaceKeyReleased;
 
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -166,9 +182,12 @@ public class ZeroGravity : MonoBehaviour
         //set the crosshair and grabber sprites accordingly;
         crosshair.sprite = crosshairIcon;
 
-
+        //erase the grabber
         grabber.sprite = null;
-        grabber.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+        grabber.color = new Color(0, 0, 0, 0);
+        //erase the input indicator
+        inputIndicator.sprite = null;
+        inputIndicator.color = new Color(0, 0, 0, 0);
 
         doorManager = FindObjectOfType<DoorManager>();
         tutorialManager = FindObjectOfType<TutorialManager>();
@@ -187,14 +206,17 @@ public class ZeroGravity : MonoBehaviour
                 {
                     HandleGrabMovement();
                 }
-                HandleRaycast();
-
                 DetectBarrierAndBounce();
+                HandleRaycast();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null)
                 {
                     //keep grabber locked to grabbed bar
                     UpdateGrabberPosition(grabbedBar);
+                    //grabUIText.text = "'W A S D'";
+                    //set the sprite for input indicator to the wasd indicator
+                    inputIndicator.sprite = wasdIndicator;
+                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
                 }
                 else
                 {
@@ -205,9 +227,9 @@ public class ZeroGravity : MonoBehaviour
             else
             {
                 RotateCam();
-                HandleRaycast();
                 HandleGrabMovement();
                 DetectBarrierAndBounce();
+                HandleRaycast();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null)
                 {
@@ -253,24 +275,16 @@ public class ZeroGravity : MonoBehaviour
 
     private void PropelOffWall()
     {
-        // Check space button is currently being pressed 
-        bool isPushing = Mathf.Abs(offWall) > 0.1f;
-
-        if (spaceKeyReleased && isPushing)
+        if(rb.velocity.magnitude < magnitudeMinimum)
         {
+            //zero the initial velocities ensuring a direct push back
+            //rb.velocity = Vector3.zero;
+            //rb.angularVelocity = Vector3.zero;
+            //create a vector for the new velocity
             Vector3 propelDirection = Vector3.zero;
-
-            propelDirection += -cam.transform.forward * offWall * propelOffWallThrust;
+            propelDirection -= cam.transform.forward * propelOffWallThrust;
 
             rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-            // Set the flag to false since keys are now pressed
-            spaceKeyReleased = false;
-        }
-        //update the flag if the space key is not being pressed
-        else if (!isPushing)
-        {
-
-            spaceKeyReleased = true;
         }
     }
 
@@ -366,16 +380,24 @@ public class ZeroGravity : MonoBehaviour
 
         if (closestBar != null)
         {
-            // Update the grabber if a new bar is detected
+            //update the grabber if a new bar is detected
             if (potentialGrabbedBar != closestBar)
             {
                 potentialGrabbedBar = closestBar;
                 UpdateGrabberPosition(potentialGrabbedBar);
+                //if in tutorial mode
+                if (tutorialMode)
+                {
+                    //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
+                    //set the sprite for the right click
+                    inputIndicator.sprite = rightClickIndicator;
+                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                }
             }
         }
         else
         {
-            // Hide grabber if no bar is in range
+            //hide grabber if no bar is in range
             HideGrabber();
         }
     }
@@ -448,7 +470,6 @@ public class ZeroGravity : MonoBehaviour
     {
         isGrabbing = false;
         grabbedBar = null;
-        Debug.Log("Released the handle");
 
         //resume dynamic bar detection
         UpdateClosestBarInView();
@@ -457,8 +478,12 @@ public class ZeroGravity : MonoBehaviour
     private void ResetUI()
     {
         grabUIText.text = null;
+        //erase the grabber
         grabber.sprite = null;
         grabber.color = new Color(0, 0, 0, 0);
+        //erase the input indicator
+        inputIndicator.sprite = null;
+        inputIndicator.color = new Color(0, 0, 0, 0);
         /*doorManager.DoorUI.SetActive(false);*/
     }
 
@@ -487,7 +512,7 @@ public class ZeroGravity : MonoBehaviour
                     //release the bar and calculate the vector to propel based on the forward look
                     ReleaseBar();
                     propelDirection += cam.transform.forward * thrust1D * propelThrust;
-                    Debug.Log("Propelled forward or back");
+                    //Debug.Log("Propelled forward or back");
                 }
                 //if A or D are pressed
                 else if (isStrafing)
@@ -495,7 +520,7 @@ public class ZeroGravity : MonoBehaviour
                     //release the bar and calculate the vector to propel based on the right look
                     ReleaseBar();
                     propelDirection += cam.transform.right * strafe1D * propelThrust;
-                    Debug.Log("Propelled right or left");
+                    //Debug.Log("Propelled right or left");
                 }
                 //add the propel force to the rigid body
                 rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
@@ -525,19 +550,23 @@ public class ZeroGravity : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, grabRange, barLayer | barrierLayer))
         {
-            Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
+            //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
 
-            //use the helper methods to manage the player ui
             RayCastHandleGrab(hit);
-
-            RayCastHandleBounce(hit);
-
             RayCastHandleDoorButton(hit);
+
+            //if the current velocity is less than the parameter we set
+            if(rb.velocity.magnitude < magnitudeMinimum)
+            {
+                //we handle interaction with pushing off the wall
+                RayCastHandlePushOffWall(hit);
+            }
         }
         else
         {
             ResetUI();
             potentialGrabbedBar = null;
+            potentialWall = null;
         }
     }
 
@@ -547,22 +576,6 @@ public class ZeroGravity : MonoBehaviour
         if (hit.transform.CompareTag("Grabbable"))
         {
             potentialGrabbedBar = hit.transform;
-            UpdateGrabberPosition(potentialGrabbedBar);
-        }
-    }
-
-    public void RayCastHandleBounce(RaycastHit hit)
-    {
-        if (hit.transform.CompareTag("Barrier"))
-        {
-            Debug.Log("Barrier detected: " + hit.transform.name);
-            grabUIText.text = "'SPACEBAR'";
-            //if looking at the wall, press space to push off of
-            if (offWall > 0.1f)
-            {
-                PropelOffWall();
-                Debug.Log("Propeled off wall");
-            }
         }
     }
 
@@ -573,6 +586,22 @@ public class ZeroGravity : MonoBehaviour
         {
             //show door UI
             HandleDoorInteraction(hit.transform);
+        }
+    }
+
+    public void RayCastHandlePushOffWall(RaycastHit hit)
+    {
+        if(hit.transform.CompareTag("Barrier"))
+        {
+            potentialWall = hit.transform;
+            //if in tutorial mode
+            if (tutorialMode && grabUIText.text == null)
+            {
+                //grabUIText.text = "'SPACEBAR'";
+                //set the sprite for the space bar indicator
+                inputIndicator.sprite = spaceIndicator;
+                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            }
         }
     }
 
@@ -630,7 +659,15 @@ public class ZeroGravity : MonoBehaviour
     }
     public void OffWall(InputAction.CallbackContext context)
     {
-        offWall = context.ReadValue<float>();
+        if(context.performed && potentialWall != null)
+        {
+            Debug.Log("space pressed");
+            PropelOffWall();
+        }
+        else if (context.canceled)
+        {
+            DetectBarrierAndBounce();
+        }
     }
     public void OnRoll(InputAction.CallbackContext context)
     {
