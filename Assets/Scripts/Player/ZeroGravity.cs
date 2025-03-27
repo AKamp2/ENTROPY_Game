@@ -190,13 +190,13 @@ public class ZeroGravity : MonoBehaviour
 
         //erase the grabber
         grabber.sprite = null;
-        grabber.color = new Color(0, 0, 0, 0);
+        grabber.color = new Color(0, 0, 0, 0); //transparent
         //erase the input indicator
         inputIndicator.sprite = null;
-        inputIndicator.color = new Color(0, 0, 0, 0);
+        inputIndicator.color = new Color(0, 0, 0, 0); // transparent
         //hide the health indicator
-        healthIndicator.sprite = dangerIndicator;
-        healthIndicator.color = Color.white; //transparent
+        healthIndicator.sprite = null;
+        healthIndicator.color = new Color(0, 0, 0, 0); //transparent
 
         doorManager = FindObjectOfType<DoorManager>();
         tutorialManager = FindObjectOfType<TutorialManager>();
