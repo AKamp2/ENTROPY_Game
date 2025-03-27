@@ -15,9 +15,10 @@ public class ZeroGravity : MonoBehaviour
     private CapsuleCollider boundingSphere;
     [SerializeField]
     public Camera cam;
-    [SerializeField]
+
 
     //look sensitivity
+    [SerializeField]
     private float sensitivityX = 8.0f;
     [SerializeField]
     private float sensitivityY = 8.0f;
@@ -29,6 +30,9 @@ public class ZeroGravity : MonoBehaviour
 
     //respawn reference
     public GameObject respawnLoc;
+
+    //player health trackers
+    private int playerHealth = 3;
 
     [Header("== UI Canvas ==")]
     //canvas elements
@@ -64,9 +68,11 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private Sprite keyFIndicator;
 
-
-
-    
+    //health indicators
+    [SerializeField]
+    private Sprite dangerIndicator;
+    [SerializeField]
+    private Sprite highDangerIndicator; 
 
     //used for freezing the camera movement while completing the puzzle.
     private bool canMove = true;
@@ -188,9 +194,15 @@ public class ZeroGravity : MonoBehaviour
         //erase the input indicator
         inputIndicator.sprite = null;
         inputIndicator.color = new Color(0, 0, 0, 0);
+        //hide the health indicator
+        healthIndicator.sprite = dangerIndicator;
+        healthIndicator.color = Color.white; //transparent
 
         doorManager = FindObjectOfType<DoorManager>();
         tutorialManager = FindObjectOfType<TutorialManager>();
+
+        //set the player health
+        playerHealth = 3;
     }
 
     // Update is called once per frame
