@@ -56,6 +56,11 @@ public class PauseMenu : MonoBehaviour
         Cursor.visible = false;
     }
 
+    public void LastCheckpoint()
+    {
+        Debug.Log("Load Last Checkpoint selected");
+    }
+
     public void Pause()
     {
         pauseMenuUI.SetActive(true);

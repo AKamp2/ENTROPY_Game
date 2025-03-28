@@ -32,6 +32,7 @@ public class ZeroGravity : MonoBehaviour
     public GameObject respawnLoc;
 
     //player health trackers
+    [SerializeField]
     private int playerHealth = 4;
     [SerializeField]
     private int maxHealth = 4;
