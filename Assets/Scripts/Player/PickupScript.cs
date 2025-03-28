@@ -23,6 +23,8 @@ public class PickupScript : MonoBehaviour
 
     private GameObject current;
 
+    public bool hasThrownObject = false; //for tutorial section for detecting throwing
+
     // Start is called before the first frame update
     void Start()
     {
@@ -130,6 +132,7 @@ public class PickupScript : MonoBehaviour
         heldObj.transform.parent = null;
         heldObjRb.AddForce(cam.transform.forward * throwForce);
         heldObj = null;
+        hasThrownObject = true;
 
         transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward * (throwForce));
 

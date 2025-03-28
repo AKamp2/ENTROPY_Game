@@ -200,6 +200,11 @@ public class ZeroGravity : MonoBehaviour
         set { canRoll = value; }
     }
 
+    public bool HasPropelled
+    {
+        get { return movementKeysReleased;  }
+    }
+
     public bool IsDead
     {
         get { return isDead; }
@@ -506,7 +511,7 @@ public class ZeroGravity : MonoBehaviour
                 potentialGrabbedBar = closestBar;
                 UpdateGrabberPosition(potentialGrabbedBar);
                 //if in tutorial mode
-                if (tutorialMode)
+                if (tutorialMode && canGrab)
                 {
                     //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
                     //set the sprite for the right click
@@ -525,43 +530,52 @@ public class ZeroGravity : MonoBehaviour
     // this method will update the grabber icon's position based on the nearest grabbable object
     private void UpdateGrabberPosition(Transform bar)
     {
-        //check if their is a bar in the viewport
-        if (bar != null)
+        if (canGrab)
         {
-            //set the position of the bar as a screen point
-            Vector3 screenPoint = cam.WorldToScreenPoint(bar.position);
-
-            if(screenPoint.z > 0)
+            //check if their is a bar in the viewport
+            if (bar != null)
             {
-                //update grabber position
-                grabber.rectTransform.position = screenPoint;
-                
-                //set hand icon open is not grabbing
-                if (!isGrabbing)
+                //set the position of the bar as a screen point
+                Vector3 screenPoint = cam.WorldToScreenPoint(bar.position);
+
+                if (screenPoint.z > 0)
                 {
-                    grabber.sprite = openHand;
-                    grabber.color = Color.white;
+                    //update grabber position
+                    grabber.rectTransform.position = screenPoint;
+
+                    //set hand icon open is not grabbing
+                    if (!isGrabbing)
+                    {
+                        grabber.sprite = openHand;
+                        grabber.color = Color.white;
+                    }
+                    //set closed hand icon if grabbing
+                    else if (isGrabbing)
+                    {
+                        grabber.sprite = closedHand;
+                        grabber.color = Color.white;
+                    }
                 }
-                //set closed hand icon if grabbing
-                else if (isGrabbing)
+                else
                 {
-                    grabber.sprite = closedHand;
-                    grabber.color = Color.white;
+                    //hide the grabber when the bar is behind the camera
+                    HideGrabber();
                 }
+
             }
+            //if there is no bar
             else
             {
-                //hide the grabber when the bar is behind the camera
+                //remove the grabber
                 HideGrabber();
             }
-
         }
-        //if there is no bar
         else
         {
             //remove the grabber
             HideGrabber();
         }
+
     }
 
     // this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
@@ -690,6 +704,7 @@ public class ZeroGravity : MonoBehaviour
                 }
                 //add the propel force to the rigid body
                 rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+                
                 // Set the flag to false since keys are now pressed
                 movementKeysReleased = false;
             }
@@ -760,7 +775,7 @@ public class ZeroGravity : MonoBehaviour
         {
             potentialWall = hit.transform;
             //if in tutorial mode
-            if (tutorialMode && grabUIText.text == null)
+            if (tutorialMode && grabUIText.text == null && canPushOff)
             {
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator
