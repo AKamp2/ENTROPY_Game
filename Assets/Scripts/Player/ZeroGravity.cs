@@ -32,6 +32,7 @@ public class ZeroGravity : MonoBehaviour
     public GameObject respawnLoc;
 
     //player health trackers
+    [SerializeField]
     private int playerHealth = 3;
 
     [Header("== UI Canvas ==")]
@@ -119,6 +120,9 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float magnitudeMinimum = 0.75f;
 
+    [SerializeField]
+    private float dangerSpeed = 10f;
+
 
     [Header("== UI Settings ==")]
     [SerializeField]
@@ -133,6 +137,8 @@ public class ZeroGravity : MonoBehaviour
     private float thrust1D;
     private float strafe1D;
 
+
+    [Header("== World Element Managers ==")]
     [SerializeField]
     private DoorManager doorManager;
     [SerializeField]
@@ -254,7 +260,8 @@ public class ZeroGravity : MonoBehaviour
                     UpdateClosestBarInView();
                 }
             }
-
+            //track the player health and update the ui based on what health the player is on
+            HandleHealthUI();
         }
     }
     #endregion 
@@ -305,6 +312,8 @@ public class ZeroGravity : MonoBehaviour
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, barrierLayer);
 
+        Debug.Log(hitColliders.Length);
+
         if (hitColliders.Length == 0)
         {
             return; //no collision, no bounce 
@@ -313,6 +322,8 @@ public class ZeroGravity : MonoBehaviour
         Vector3 avgBounceDirection = Vector3.zero;
         int bounceCount = 0;
         float ogSpeed = rb.velocity.magnitude; //store initial velocity magnitude
+
+        Debug.Log(ogSpeed);
 
         foreach (Collider barrier in hitColliders)
         {
@@ -323,7 +334,6 @@ public class ZeroGravity : MonoBehaviour
             // get bounce directions
             avgBounceDirection += reflectDirection;
             bounceCount++;
-
             // Early exit if multiple bounces aren't needed
             if (bounceCount >= 1)
             {
@@ -336,6 +346,13 @@ public class ZeroGravity : MonoBehaviour
             avgBounceDirection.Normalize(); // average direction
             float bounceSpeed = ogSpeed * .75f; // keep 75% of initial speed so it doesn't gain 
             rb.velocity = avgBounceDirection * bounceSpeed;
+        }
+
+        //check if the bounce is a hard bounce
+        if (ogSpeed >= dangerSpeed)
+        {
+            //decrease the player's health by 1
+            DecreaseHealth(1);
         }
     }
 
@@ -499,6 +516,61 @@ public class ZeroGravity : MonoBehaviour
         /*doorManager.DoorUI.SetActive(false);*/
     }
 
+    //Health Methods
+    private void HandleHealthUI()
+    {
+        switch (playerHealth)
+        {
+            case 3:
+                healthIndicator.sprite = null;
+                healthIndicator.color = new Color(0, 0, 0, 0);
+                break;
+            case 2:
+                healthIndicator.sprite = dangerIndicator;
+                healthIndicator.color = Color.white;
+                break;
+            case 1:
+                healthIndicator.sprite = highDangerIndicator;
+                healthIndicator.color = Color.white;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void InjuredByDoor(Transform brokenDoor)
+    {
+        //instantiate the door
+        GameObject doorObj = Instantiate(brokenDoor.parent.gameObject);
+        DoorScript door = doorObj.GetComponent<DoorScript>();
+
+        if (door.IsClosing && doorObj != null)
+        {
+            //decrease the player's health
+            DecreaseHealth(2);
+            PropelBackFromDoor();
+        }
+    }
+
+    //helper method for propelling away from the door when hit
+    private void PropelBackFromDoor()
+    {
+        //set velocity to zero
+        rb.velocity = Vector3.zero;
+
+        //calculate the backward direction
+        Vector3 propelDirection = -cam.transform.forward * propelThrust;
+
+        //apply the force
+        rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+    }
+
+    private void DecreaseHealth(int i)
+    {
+        //decrease the player health by however many is inputted
+        playerHealth -= i;
+    }
+
     //Player uses WASD to propel themselves faster, only while currently grabbing a bar
     private void PropelOffBar()
     {
@@ -566,6 +638,7 @@ public class ZeroGravity : MonoBehaviour
 
             RayCastHandleGrab(hit);
             RayCastHandleDoorButton(hit);
+            RayCastHandleClosingDoor(hit);
 
             //if the current velocity is less than the parameter we set
             if(rb.velocity.magnitude < magnitudeMinimum)
@@ -598,6 +671,17 @@ public class ZeroGravity : MonoBehaviour
         {
             //show door UI
             HandleDoorInteraction(hit.transform);
+        }
+    }
+
+    private void RayCastHandleClosingDoor(RaycastHit hit)
+    {
+        //check if the raycast hits a door
+        if (hit.transform.CompareTag("Door"))
+        {
+            Debug.Log("detecting door");
+            //get injured by the door
+            InjuredByDoor(hit.transform);
         }
     }
 

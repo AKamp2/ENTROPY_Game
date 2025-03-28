@@ -35,6 +35,9 @@ public class DoorScript : MonoBehaviour
     private Vector3 openPos;
     private Vector3 closedPos;
 
+    //bool to track when doors are closing. Used for collision detection 
+    private bool isClosing = false;
+
     [SerializeField]
     private List<GameObject> buttons = new List<GameObject>();
     [SerializeField]
@@ -51,6 +54,12 @@ public class DoorScript : MonoBehaviour
     private Color yellowBase = new Color(1.0f, 0.99f, 0.37f);
     private Color yellowEmis = new Color(1.0f, 0.56f, 0.22f);
 
+    //public property for is closing bool
+    public bool IsClosing
+    {
+        get { return isClosing; }
+    }
+
     public States DoorState
     {
         get { return states; }
@@ -65,6 +74,7 @@ public class DoorScript : MonoBehaviour
         closedPos = doorPart.position;
         Vector3 right = doorPart.forward * -1;
         openPos = closedPos + right * openSize;
+        isClosing = false;
 
         if (states == States.Open)
         {
@@ -123,12 +133,18 @@ public class DoorScript : MonoBehaviour
                         // sin function
                         float t = 0.5f * Mathf.Sin(sinTime - Mathf.PI / 2f) + 0.5f;
                         doorPart.position = Vector3.Lerp(openPos, closedPos, t);
+
+                        //set isClosing as false
+                        isClosing = true;
                     }
                     else
                     {
                         states = States.Closed;
                         SetButtonColor(greenBase, greenEmis);
                         sinTime = 0.0f;
+
+                        //set isClosing as false
+                        isClosing = false;
                     }
 
                         break;
@@ -144,6 +160,8 @@ public class DoorScript : MonoBehaviour
                         float t = 0.5f * Mathf.Sin(sinTime - Mathf.PI / 2f) + 0.5f;
                         doorPart.position = Vector3.Lerp(closedPos, openPos, t);
 
+                        isClosing = false;
+
                         if (doorPart.position == openPos)
                         {
                             brokenBool = true;
@@ -158,6 +176,8 @@ public class DoorScript : MonoBehaviour
                         // sin function
                         float t = 0.5f * Mathf.Sin(sinTime - Mathf.PI / 2f) + 0.5f;
                         doorPart.position = Vector3.Lerp(openPos, closedPos, t);
+
+                        isClosing = true;
 
                         if (doorPart.position == closedPos)
                         {
