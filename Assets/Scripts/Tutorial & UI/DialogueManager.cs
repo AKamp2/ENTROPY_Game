@@ -26,10 +26,10 @@ public class DialogueManager : MonoBehaviour
     private int currentSequenceIndex = -1;
     private bool isSkipping = false;
     private bool isDialogueActive = false;
+    private bool tutorialSkipped = false;
 
     public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
 
-    // Ensures only one instance of DialogueManager exists
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -63,10 +63,11 @@ public class DialogueManager : MonoBehaviour
     /// <summary>
     /// Starts a dialogue sequence based on the given index.
     /// </summary>
-    public void StartDialogueSequence(int sequenceIndex)
+    public void StartDialogueSequence(int sequenceIndex, bool tutorialSkipped = false)
     {
         if (sequenceIndex < dialogueSequences.Length)
         {
+            this.tutorialSkipped = tutorialSkipped;
             currentSequenceIndex = sequenceIndex;
             currentDialogueIndex = 0;
             dialogueCanvas.enabled = true;
@@ -85,6 +86,14 @@ public class DialogueManager : MonoBehaviour
         while (currentDialogueIndex < currentSequence.dialogues.Length)
         {
             Dialogue currentDialogue = currentSequence.dialogues[currentDialogueIndex];
+
+            // Skip this dialogue if tutorial is skipped and this dialogue is marked to be skipped with the tutorial
+            if (tutorialSkipped && currentDialogue.skipWithTutorial)
+            {
+                currentDialogueIndex++;
+                continue;
+            }
+
             nameTextUI.text = currentDialogue.characterName;
 
             // Play audio if available
@@ -137,32 +146,6 @@ public class DialogueManager : MonoBehaviour
             }
 
             yield return new WaitForSeconds(typewriterSpeed);
-        }
-    }
-
-    /// <summary>
-    /// Pauses dialogue, disabling input and stopping audio.
-    /// </summary>
-    public void PauseDialogue()
-    {
-        if (isDialogueActive)
-        {
-            StopCoroutine(nameof(DisplayDialogue));
-            audioSource.Pause();
-            playerController.Dialogue.ContinueDialogue.Disable();
-        }
-    }
-
-    /// <summary>
-    /// Resumes dialogue from the last dialogue index.
-    /// </summary>
-    public void ResumeDialogue()
-    {
-        if (isDialogueActive)
-        {
-            StartCoroutine(DisplayDialogue());
-            audioSource.UnPause();
-            playerController.Dialogue.ContinueDialogue.Enable();
         }
     }
 }

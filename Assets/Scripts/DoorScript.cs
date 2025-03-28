@@ -233,6 +233,14 @@ public class DoorScript : MonoBehaviour
         }
     }
 
+    public void UnlockDoor()
+    {
+        if (states == States.Locked)
+        {
+            states = States.Opening;
+        }
+    }
+
     private void GetChildButtons()
     {
         foreach (Transform child in transform)

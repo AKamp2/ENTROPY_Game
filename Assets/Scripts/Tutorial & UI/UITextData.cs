@@ -7,6 +7,7 @@ public class Dialogue
     public string characterName;
     public string dialogueText;
     public AudioClip audioClip;
+    public bool skipWithTutorial;
 }
 
 [System.Serializable]
