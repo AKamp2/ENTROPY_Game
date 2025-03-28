@@ -45,7 +45,11 @@ public class TutorialManager : MonoBehaviour
 
         if (isWaitingForAction)
         {
-            if (currentStep == 1 && playerController.IsGrabbing) CompleteStep();
+            if (currentStep == 1 && playerController.IsGrabbing)
+            {
+                CompleteStep();
+            }
+                
             else if (currentStep == 2 && playerController.HasPropelled)
             {
                 CompleteStep();

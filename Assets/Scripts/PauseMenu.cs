@@ -11,6 +11,7 @@ public class PauseMenu : MonoBehaviour
 
     private PlayerController playerInput;
     private InputAction pauseAction;
+    public AudioSource dialogueAudioSource; // Reference to the DialogueManager's AudioSource
 
 
     private void Awake()
@@ -35,7 +36,7 @@ public class PauseMenu : MonoBehaviour
         pauseAction.performed -= OnPausePressed;
     }
 
-    private void OnPausePressed(InputAction.CallbackContext context)
+    public void OnPausePressed(InputAction.CallbackContext context)
     {
         if (IsPaused)
         {
@@ -55,6 +56,12 @@ public class PauseMenu : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // Resume audio
+        if (dialogueAudioSource != null)
+        {
+            dialogueAudioSource.UnPause();
+        }
     }
 
     public void LastCheckpoint()
@@ -64,9 +71,16 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
+        Debug.Log("Pausing..."); // Debug message
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         IsPaused = true;
+
+        // Pause audio
+        if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
+        {
+            dialogueAudioSource.Pause();
+        }
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -89,5 +103,13 @@ public class PauseMenu : MonoBehaviour
     {
         Debug.Log("Quit selected");
         Application.Quit();
+    }
+
+    private void Update()
+    {
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            Debug.Log("ESC Key Detected!");
+        }
     }
 }

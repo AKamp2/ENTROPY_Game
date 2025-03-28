@@ -96,22 +96,40 @@ public class DialogueManager : MonoBehaviour
 
             nameTextUI.text = currentDialogue.characterName;
 
-            // Play audio if available
+            // Play audio if available (one audio clip for multiple lines)
             if (currentDialogue.audioClip != null)
             {
                 audioSource.clip = currentDialogue.audioClip;
                 audioSource.Play();
             }
 
-            // Show text with typewriter effect
-            yield return StartCoroutine(TypewriterEffect(currentDialogue.dialogueText, currentDialogue.audioClip));
+            //calculating dialogue speed
+            int totalLength = 0;
+            foreach (string line in currentDialogue.dialogueLines)
+            {
+                totalLength += line.Length;
+            }
 
-            // Wait for player input to continue
+            // Adjust speed if an audio clip is present
+            if (currentDialogue.audioClip != null)
+            {
+                typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.01f;
+            }
+
+            // Show each line with typewriter effect, one by one
+            foreach (string line in currentDialogue.dialogueLines)
+            {
+                yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
+                yield return new WaitForSeconds(0.5f);
+
+            }
+
+            // Wait until the audio clip finishes before moving to the next dialogue
+            yield return new WaitUntil(() => !audioSource.isPlaying);
             yield return new WaitForSeconds(0.5f);
-            yield return new WaitUntil(() => playerController.Dialogue.ContinueDialogue.triggered);
 
-            if (audioSource.isPlaying) audioSource.Stop();
             currentDialogueIndex++;
+
         }
 
         // End dialogue
@@ -123,16 +141,12 @@ public class DialogueManager : MonoBehaviour
     /// <summary>
     /// Displays text with a typewriter effect.
     /// </summary>
-    private IEnumerator TypewriterEffect(string dialogueText, AudioClip audioClip)
+    private IEnumerator TypewriterEffect(string dialogueText, AudioClip audioClip, float typewriterSpeed)
     {
         dialogueTextUI.text = "";
         isSkipping = false;
 
-        // Adjust speed if an audio clip is present
-        if (audioClip != null)
-        {
-            typewriterSpeed = audioClip.length / dialogueText.Length - 0.02f;
-        }
+        
 
         foreach (char letter in dialogueText)
         {

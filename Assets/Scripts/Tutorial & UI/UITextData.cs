@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class Dialogue
 {
     public string characterName;
-    public string dialogueText;
+    public string[] dialogueLines; // Array of dialogue lines
     public AudioClip audioClip;
     public bool skipWithTutorial;
 }
