@@ -38,6 +38,12 @@ public class ZeroGravity : MonoBehaviour
     private int maxHealth = 4;
     private bool isDead = false;
 
+    //handle taking damage
+    private bool justHit = false;
+    private bool prevJustHit = false;
+    private float coolDown = 3.0f;
+    private float timeStamp = 0f;
+
     [Header("== UI Canvas ==")]
     //canvas elements
     [SerializeField]
@@ -303,6 +309,26 @@ public class ZeroGravity : MonoBehaviour
             DetectClosingDoorTakeDamageAndBounce();
             //track the player health and update the ui based on what health the player is on
             HandleHealthUI();
+
+            //manage the cooldowns
+
+            //if the player was just hit
+            if (justHit && !prevJustHit)
+            {
+                //create a timestamp representing the end of the cooldown
+                timeStamp = Time.time + coolDown;
+
+                Debug.Log("timestamp for cooldown: " + timeStamp);
+                prevJustHit = justHit;
+            }
+
+            //if the timestamp is less than or equal to the current time
+            if (Time.time >= timeStamp)
+            {
+                //set justHit to false, allowing player to take damage again
+                justHit = false;
+                prevJustHit = justHit;
+            }
         }
     }
     #endregion 
@@ -392,11 +418,13 @@ public class ZeroGravity : MonoBehaviour
             rb.velocity = avgBounceDirection * bounceSpeed;
         }
 
-        //check if the bounce is a hard bounce
-        if (ogSpeed >= dangerSpeed)
+        //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds
+        if (ogSpeed >= dangerSpeed && !justHit)
         {
             //decrease the player's health by 1
             DecreaseHealth(1);
+            prevJustHit = justHit;
+            justHit = true;
         }
     }
 
@@ -435,8 +463,8 @@ public class ZeroGravity : MonoBehaviour
                 }
             }
         }
-
-        if (bounceCount > 0)
+        //if we have a bounce to calculate, and we haven't been hit in 1.5 seconds
+        if (bounceCount > 0 && !justHit)
         {
             //set velocity to zero
             rb.velocity = Vector3.zero;
@@ -449,6 +477,10 @@ public class ZeroGravity : MonoBehaviour
 
             //decrease the player health after they have collided with the closing door
             DecreaseHealth(2);
+
+            //set just hit to true, commencing cooldown
+            prevJustHit = justHit;
+            justHit = true;
         }
     }
 
