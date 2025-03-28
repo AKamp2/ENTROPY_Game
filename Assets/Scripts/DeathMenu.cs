@@ -67,6 +67,9 @@ public class DeathMenu : MonoBehaviour
         player.CanPropel = false;
         player.CanPushOff = false;
         player.CanRoll = false;
+
+        //set the rigid body rotations to unconstrained, cool uncontrolled dead body rotations
+        player.GetComponentInParent<Rigidbody>().constraints = RigidbodyConstraints.None;
     }
 
     public void OptionsButton()

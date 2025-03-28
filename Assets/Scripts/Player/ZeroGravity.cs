@@ -419,7 +419,7 @@ public class ZeroGravity : MonoBehaviour
         }
 
         //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds
-        if (ogSpeed >= dangerSpeed && !justHit)
+        if (ogSpeed >= dangerSpeed && !justHit && !isDead)
         {
             //decrease the player's health by 1
             DecreaseHealth(1);
@@ -455,6 +455,11 @@ public class ZeroGravity : MonoBehaviour
                 {
                     bounceCount++;
 
+                    //calculate bounce direction away from the door
+                    Vector3 bounceDirection = (transform.position - door.bounds.center).normalized;
+
+                    avgBounceDirection += bounceDirection;
+
                     //early exit if multiple bounces aren't needed
                     if (bounceCount >= 1)
                     {
@@ -468,19 +473,30 @@ public class ZeroGravity : MonoBehaviour
         {
             //set velocity to zero
             rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
 
-            //calculate the backward direction
-            Vector3 propelDirection = -cam.transform.forward * propelThrust;
+            //average the bounce direction if multiple doors
+            avgBounceDirection.Normalize();
+
+            Debug.Log("Avg Bounce Direction: " + avgBounceDirection);
+
+            //calculate the direction of the bounce
+            Vector3 propelDirection = avgBounceDirection * propelThrust;
+
+            Debug.Log("propel direction: " + propelDirection);
 
             //apply the force
             rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
 
-            //decrease the player health after they have collided with the closing door
-            DecreaseHealth(2);
+            if (!isDead)
+            {
+                //decrease the player health after they have collided with the closing door
+                DecreaseHealth(2);
 
-            //set just hit to true, commencing cooldown
-            prevJustHit = justHit;
-            justHit = true;
+                //set just hit to true, commencing cooldown
+                prevJustHit = justHit;
+                justHit = true;
+            }
         }
     }
 
