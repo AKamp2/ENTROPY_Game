@@ -29,9 +29,12 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
-
-        dialogueManager.OnDialogueEnd += OnDialogueComplete;
-        StartTutorial();
+        if(playerController.TutorialMode == true)
+        {
+            dialogueManager.OnDialogueEnd += OnDialogueComplete;
+            StartCoroutine(StartTutorial());
+        }
+        
     }
 
     void Update()
@@ -40,6 +43,7 @@ public class TutorialManager : MonoBehaviour
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
             tutorialSkipped = true;
+            dialogueManager.TutorialSkipped = true;
             EndTutorial();
         }
 
@@ -58,10 +62,12 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    void StartTutorial()
+    private IEnumerator StartTutorial()
     {
         SetPlayerAbilities(false, false, false, false);
-        dialogueManager.StartDialogueSequence(0, tutorialSkipped); // Ensure correct tutorial sequence index
+        audioSource.PlayOneShot(jingle);
+        yield return new WaitForSeconds(1f);
+        dialogueManager.StartDialogueSequence(0); // Ensure correct tutorial sequence index
     }
 
     public void ProgressTutorial()
@@ -76,35 +82,41 @@ public class TutorialManager : MonoBehaviour
         switch (currentStep)
         {
             case 1:
+                Debug.Log("Tutorial 1");
                 SetPlayerAbilities(true, false, false, false);
-                dialogueManager.StartDialogueSequence(1, tutorialSkipped);
+                dialogueManager.StartDialogueSequence(1);
                 isWaitingForAction = true;
                 break;
 
             case 2:
+                Debug.Log("Tutorial 2");
                 SetPlayerAbilities(true, true, false, false);
-                dialogueManager.StartDialogueSequence(2, tutorialSkipped);
+                dialogueManager.StartDialogueSequence(2);
                 isWaitingForAction = true;
                 break;
 
             case 3:
+                Debug.Log("Tutorial 3");
                 SetPlayerAbilities(true, true, true, true);
                 isWaitingForAction = true;
                 break;
 
             case 4:
+                Debug.Log("Tutorial 4");
                 if (failureTimer != null) StopCoroutine(failureTimer);
                 tutorialDoor.UnlockDoor();
-                dialogueManager.StartDialogueSequence(3, tutorialSkipped);
+                dialogueManager.StartDialogueSequence(3);
                 isWaitingForAction = true;
                 break;
 
             case 5:
-                dialogueManager.StartDialogueSequence(4, tutorialSkipped);
+                Debug.Log("Tutorial 5");
+                dialogueManager.StartDialogueSequence(4);
                 isWaitingForAction = true;
                 break;
 
             case 6:
+                Debug.Log("Tutorial 6");
                 EndTutorial();
                 break;
         }
@@ -141,7 +153,7 @@ public class TutorialManager : MonoBehaviour
 
     void EndTutorial()
     {
-        dialogueManager.StartDialogueSequence(5, tutorialSkipped);
+        dialogueManager.StartDialogueSequence(5);
         SetPlayerAbilities(true, true, true, true);
         isWaitingForAction = false;
         currentStep = 6;
@@ -151,6 +163,11 @@ public class TutorialManager : MonoBehaviour
     {
         if (!isWaitingForAction) return;
         CompleteStep();
+    }
+
+    private IEnumerator DelayTime(float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime); // Wait for the specified time
     }
 }
 

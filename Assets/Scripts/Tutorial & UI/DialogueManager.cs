@@ -28,7 +28,15 @@ public class DialogueManager : MonoBehaviour
     private bool isDialogueActive = false;
     private bool tutorialSkipped = false;
 
+    public TutorialManager tutorialManager;
+
     public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
+
+    public bool TutorialSkipped
+    {
+        get { return tutorialSkipped; }
+        set { tutorialSkipped = value; }
+    }
 
     private void Awake()
     {
@@ -63,16 +71,11 @@ public class DialogueManager : MonoBehaviour
     /// <summary>
     /// Starts a dialogue sequence based on the given index.
     /// </summary>
-    public void StartDialogueSequence(int sequenceIndex, bool tutorialSkipped = false)
+    public void StartDialogueSequence(int sequenceIndex)
     {
         if (sequenceIndex < dialogueSequences.Length)
         {
-            this.tutorialSkipped = tutorialSkipped;
-            currentSequenceIndex = sequenceIndex;
-            currentDialogueIndex = 0;
-            dialogueCanvas.enabled = true;
-            isDialogueActive = true;
-            StartCoroutine(DisplayDialogue());
+            StartCoroutine(DelayTime(1f, sequenceIndex));
         }
     }
 
@@ -81,6 +84,8 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private IEnumerator DisplayDialogue()
     {
+
+        isSkipping = false;
         DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
 
         while (currentDialogueIndex < currentSequence.dialogues.Length)
@@ -124,10 +129,22 @@ public class DialogueManager : MonoBehaviour
 
             }
 
-            // Wait until the audio clip finishes before moving to the next dialogue
+            //allow user to skip a whole line of dialogue if at end of the dialogueSequence
+            //if (isSkipping)
+            //{
+            //    currentDialogueIndex++;
+            //   continue;
+            //}
+
+            // Wait until the audio clip finishes before moving to the next dialogue unless skipping
             yield return new WaitUntil(() => !audioSource.isPlaying);
             yield return new WaitForSeconds(0.5f);
 
+            //advance tutorial if the dialogue is intended to.
+            if(currentDialogue.advancesTutorial)
+            {
+                tutorialManager.ProgressTutorial();
+            }
             currentDialogueIndex++;
 
         }
@@ -158,8 +175,22 @@ public class DialogueManager : MonoBehaviour
                 isSkipping = false;
                 yield break;
             }
+            if(tutorialSkipped)
+            {
+                yield break;
+            }
 
             yield return new WaitForSeconds(typewriterSpeed);
         }
+    }
+
+    private IEnumerator DelayTime(float delayTime, int sequenceIndex)
+    {
+        yield return new WaitForSeconds(delayTime); // Wait for the specified time
+        currentSequenceIndex = sequenceIndex;
+        currentDialogueIndex = 0;
+        dialogueCanvas.enabled = true;
+        isDialogueActive = true;
+        StartCoroutine(DisplayDialogue());
     }
 }
