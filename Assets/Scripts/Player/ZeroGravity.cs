@@ -266,6 +266,7 @@ public class ZeroGravity : MonoBehaviour
         {
             if (tutorialMode)
             {
+                
                 RotateCam();
                 if (canGrab)
                 {
@@ -290,6 +291,8 @@ public class ZeroGravity : MonoBehaviour
             }
             else
             {
+                //Debug.Log("Tutorial Mode off");
+                
                 RotateCam();
                 HandleGrabMovement();
                 HandleRaycast();
@@ -819,11 +822,12 @@ public class ZeroGravity : MonoBehaviour
 
     public void RayCastHandlePushOffWall(RaycastHit hit)
     {
+        //Debug.Log("Push off raycast happening");
         if(hit.transform.CompareTag("Barrier"))
         {
             potentialWall = hit.transform;
             //if in tutorial mode
-            if (tutorialMode && grabUIText.text == null && canPushOff)
+            if (grabUIText.text == null && canPushOff)
             {
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator

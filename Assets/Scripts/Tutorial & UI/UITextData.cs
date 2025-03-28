@@ -7,6 +7,7 @@ public class Dialogue
     public string characterName;
     public string[] dialogueLines; // Array of dialogue lines
     public AudioClip audioClip;
+    public bool advancesTutorial;
     public bool skipWithTutorial;
 }
 
