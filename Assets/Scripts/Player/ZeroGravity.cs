@@ -32,8 +32,9 @@ public class ZeroGravity : MonoBehaviour
     public GameObject respawnLoc;
 
     //player health trackers
+    private int playerHealth = 4;
     [SerializeField]
-    private int playerHealth = 3;
+    private int maxHealth = 4;
 
     [Header("== UI Canvas ==")]
     //canvas elements
@@ -81,8 +82,10 @@ public class ZeroGravity : MonoBehaviour
     //Fields for the tutorial
     [SerializeField]
     private bool tutorialMode = false;
-    private bool canGrab = true;
-    private bool canPropel = true;
+    private bool canGrab = false;
+    private bool canPropel = false;
+    private bool canPushOff = false;
+    private bool canRoll = false;
 
 
     [Header("== Player Movement Settings ==")]
@@ -105,6 +108,8 @@ public class ZeroGravity : MonoBehaviour
     private LayerMask barLayer; // Set a specific layer containing bars to grab onto
     [SerializeField]
     private LayerMask barrierLayer; //set layer for barriers
+    [SerializeField]
+    private LayerMask doorLayer;
     [SerializeField]
     private float grabRange = 3f; // Range within which the player can grab bars
     [SerializeField]
@@ -179,6 +184,17 @@ public class ZeroGravity : MonoBehaviour
         set { canPropel = value; }
     }
 
+    public bool CanPushOff
+    {
+        get { return canPushOff; }
+        set { canPushOff = value; }
+    }
+
+    public bool CanRoll
+    {
+        get { return canRoll; }
+        set { canRoll = value; }
+    }
 
     // getter for isGrabbing
     public bool IsGrabbing => isGrabbing;
@@ -186,6 +202,13 @@ public class ZeroGravity : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //initial player booleans set
+        canGrab = true;
+        canPushOff = true;
+        canPropel = true;
+        canRoll = true;
+
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         rb.useGravity = false;
@@ -208,7 +231,7 @@ public class ZeroGravity : MonoBehaviour
         tutorialManager = FindObjectOfType<TutorialManager>();
 
         //set the player health
-        playerHealth = 3;
+        playerHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -224,7 +247,6 @@ public class ZeroGravity : MonoBehaviour
                 {
                     HandleGrabMovement();
                 }
-                DetectBarrierAndBounce();
                 HandleRaycast();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null)
@@ -246,7 +268,6 @@ public class ZeroGravity : MonoBehaviour
             {
                 RotateCam();
                 HandleGrabMovement();
-                DetectBarrierAndBounce();
                 HandleRaycast();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null)
@@ -260,6 +281,8 @@ public class ZeroGravity : MonoBehaviour
                     UpdateClosestBarInView();
                 }
             }
+            DetectBarrierAndBounce();
+            DetectClosingDoorTakeDamageAndBounce();
             //track the player health and update the ui based on what health the player is on
             HandleHealthUI();
         }
@@ -274,27 +297,30 @@ public class ZeroGravity : MonoBehaviour
         cam.transform.Rotate(Vector3.right, -rotationVert * sensitivityY * Time.deltaTime);
 
         // Apply roll rotation (Z-axis)
-        if (Mathf.Abs(rotationZ) > 0.1f) // Only apply roll if rotationZ input is significant
+        if (canRoll)
         {
-            // Calculate target roll direction and speed based on input
-            float targetRollSpeed = -Mathf.Sign(rotationZ) * rollTorque;
+            if (Mathf.Abs(rotationZ) > 0.1f) //only apply roll if rotationZ input is significant
+            {
+                //calculate target roll direction and speed based on input
+                float targetRollSpeed = -Mathf.Sign(rotationZ) * rollTorque;
 
-            // Gradually increase currentRollSpeed towards targetRollSpeed
-            currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, targetRollSpeed, rollAcceleration * Time.deltaTime);
-        }
-        else if (Mathf.Abs(currentRollSpeed) > 0.1f) // Apply friction when no input
-        {
-            // Gradually decrease currentRollSpeed towards zero
-            currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * Time.deltaTime);
-        }
+                //gradually increase currentRollSpeed towards targetRollSpeed
+                currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, targetRollSpeed, rollAcceleration * Time.deltaTime);
+            }
+            else if (Mathf.Abs(currentRollSpeed) > 0.1f) // Apply friction when no input
+            {
+                //gradually decrease currentRollSpeed towards zero
+                currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * Time.deltaTime);
+            }
 
-        // Apply the roll rotation to the camera
-        cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
+            //apply the roll rotation to the camera
+            cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
+        }
     }
 
     private void PropelOffWall()
     {
-        if(rb.velocity.magnitude < magnitudeMinimum)
+        if(rb.velocity.magnitude < magnitudeMinimum && canPushOff)
         {
             //zero the initial velocities ensuring a direct push back
             //rb.velocity = Vector3.zero;
@@ -312,7 +338,7 @@ public class ZeroGravity : MonoBehaviour
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, barrierLayer);
 
-        Debug.Log(hitColliders.Length);
+        //Debug.Log(hitColliders.Length);
 
         if (hitColliders.Length == 0)
         {
@@ -323,7 +349,7 @@ public class ZeroGravity : MonoBehaviour
         int bounceCount = 0;
         float ogSpeed = rb.velocity.magnitude; //store initial velocity magnitude
 
-        Debug.Log(ogSpeed);
+        //Debug.Log(ogSpeed);
 
         foreach (Collider barrier in hitColliders)
         {
@@ -331,10 +357,10 @@ public class ZeroGravity : MonoBehaviour
             Vector3 wallNormal = (transform.position - closestPoint).normalized;
             Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
 
-            // get bounce directions
+            //get bounce directions
             avgBounceDirection += reflectDirection;
             bounceCount++;
-            // Early exit if multiple bounces aren't needed
+            //early exit if multiple bounces aren't needed
             if (bounceCount >= 1)
             {
                 break;
@@ -353,6 +379,54 @@ public class ZeroGravity : MonoBehaviour
         {
             //decrease the player's health by 1
             DecreaseHealth(1);
+        }
+    }
+
+    private void DetectClosingDoorTakeDamageAndBounce()
+    {
+        float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
+        Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, doorLayer);
+
+        if (hitDoors.Length == 0)
+        {
+            return; //no collision, no bounce 
+        }
+
+        Vector3 avgBounceDirection = Vector3.zero;
+        int bounceCount = 0;
+        float ogSpeed = rb.velocity.magnitude; //store initial velocity magnitude
+
+        foreach (Collider door in hitDoors)
+        {
+            //get the doorscript of the parent object of the door collider
+            DoorScript doorScript = door.GetComponentInParent<DoorScript>();
+
+
+            if (doorScript != null && doorScript.IsClosing)
+            {
+                bounceCount++;
+
+                //early exit if multiple bounces aren't needed
+                if (bounceCount >= 1)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (bounceCount > 0)
+        {
+            //set velocity to zero
+            rb.velocity = Vector3.zero;
+
+            //calculate the backward direction
+            Vector3 propelDirection = -cam.transform.forward * propelThrust;
+
+            //apply the force
+            rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+
+            //decrease the player health after they have collided with the closing door
+            DecreaseHealth(2);
         }
     }
 
@@ -517,13 +591,18 @@ public class ZeroGravity : MonoBehaviour
     }
 
     //Health Methods
+    //controls the UI for the Player Health
     private void HandleHealthUI()
     {
         switch (playerHealth)
         {
-            case 3:
+            case 4:
                 healthIndicator.sprite = null;
                 healthIndicator.color = new Color(0, 0, 0, 0);
+                break;
+            case 3:
+                healthIndicator.sprite = highDangerIndicator;
+                healthIndicator.color = new Color(0, 0, 0, 0.5f);
                 break;
             case 2:
                 healthIndicator.sprite = dangerIndicator;
@@ -538,33 +617,7 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
-    private void InjuredByDoor(Transform brokenDoor)
-    {
-        //instantiate the door
-        GameObject doorObj = Instantiate(brokenDoor.parent.gameObject);
-        DoorScript door = doorObj.GetComponent<DoorScript>();
-
-        if (door.IsClosing && doorObj != null)
-        {
-            //decrease the player's health
-            DecreaseHealth(2);
-            PropelBackFromDoor();
-        }
-    }
-
-    //helper method for propelling away from the door when hit
-    private void PropelBackFromDoor()
-    {
-        //set velocity to zero
-        rb.velocity = Vector3.zero;
-
-        //calculate the backward direction
-        Vector3 propelDirection = -cam.transform.forward * propelThrust;
-
-        //apply the force
-        rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-    }
-
+    //decreases the health of the player
     private void DecreaseHealth(int i)
     {
         //decrease the player health by however many is inputted
@@ -632,13 +685,11 @@ public class ZeroGravity : MonoBehaviour
 
         Debug.DrawRay(ray.origin, ray.direction * grabRange, Color.red, 0.1f); // Debug visualization
 
-        if (Physics.Raycast(ray, out hit, grabRange, barLayer | barrierLayer))
+        if (Physics.Raycast(ray, out hit, grabRange, barLayer | barrierLayer | doorLayer))
         {
             //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
-
             RayCastHandleGrab(hit);
             RayCastHandleDoorButton(hit);
-            RayCastHandleClosingDoor(hit);
 
             //if the current velocity is less than the parameter we set
             if(rb.velocity.magnitude < magnitudeMinimum)
@@ -671,17 +722,6 @@ public class ZeroGravity : MonoBehaviour
         {
             //show door UI
             HandleDoorInteraction(hit.transform);
-        }
-    }
-
-    private void RayCastHandleClosingDoor(RaycastHit hit)
-    {
-        //check if the raycast hits a door
-        if (hit.transform.CompareTag("Door"))
-        {
-            Debug.Log("detecting door");
-            //get injured by the door
-            InjuredByDoor(hit.transform);
         }
     }
 

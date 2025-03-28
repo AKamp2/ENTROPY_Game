@@ -36,6 +36,7 @@ public class DoorScript : MonoBehaviour
     private Vector3 closedPos;
 
     //bool to track when doors are closing. Used for collision detection 
+    [SerializeField]
     private bool isClosing = false;
 
     [SerializeField]
