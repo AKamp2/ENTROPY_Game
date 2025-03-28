@@ -36,9 +36,12 @@ public class ZeroGravity : MonoBehaviour
     private int playerHealth = 4;
     [SerializeField]
     private int maxHealth = 4;
+    private bool isDead = false;
 
     [Header("== UI Canvas ==")]
     //canvas elements
+    [SerializeField]
+    private GameObject UICanvas;
     [SerializeField]
     private GameObject characterPivot;
     [SerializeField]
@@ -197,6 +200,11 @@ public class ZeroGravity : MonoBehaviour
         set { canRoll = value; }
     }
 
+    public bool IsDead
+    {
+        get { return isDead; }
+    }
+
     // getter for isGrabbing
     public bool IsGrabbing => isGrabbing;
 
@@ -208,8 +216,12 @@ public class ZeroGravity : MonoBehaviour
         canPushOff = true;
         canPropel = true;
         canRoll = true;
+        isDead = false;
 
+        //set up the ui canvas
+        UICanvas.SetActive(true);
 
+        //let the mouse move
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         rb.useGravity = false;
@@ -405,12 +417,16 @@ public class ZeroGravity : MonoBehaviour
 
             if (doorScript != null && doorScript.IsClosing)
             {
-                bounceCount++;
-
-                //early exit if multiple bounces aren't needed
-                if (bounceCount >= 1)
+                //check that the state is a broken door
+                if (doorScript.DoorState == DoorScript.States.Broken)
                 {
-                    break;
+                    bounceCount++;
+
+                    //early exit if multiple bounces aren't needed
+                    if (bounceCount >= 1)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -575,6 +591,9 @@ public class ZeroGravity : MonoBehaviour
         isGrabbing = false;
         grabbedBar = null;
 
+        //lock grabbed bar and change icon
+        grabber.sprite = openHand;
+
         //resume dynamic bar detection
         UpdateClosestBarInView();
     }
@@ -623,6 +642,15 @@ public class ZeroGravity : MonoBehaviour
     {
         //decrease the player health by however many is inputted
         playerHealth -= i;
+
+        //check for if the player is dead or not
+        if (playerHealth <= 0)
+        {
+            //set isDead as true
+            isDead = true;
+            //turn off the ui canvas
+            UICanvas.SetActive(false);
+        }
     }
 
     //Player uses WASD to propel themselves faster, only while currently grabbing a bar

@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PauseMenu : Menu
+public class PauseMenu : MonoBehaviour
 {
     public static bool IsPaused = false;
     public GameObject pauseMenuUI;
 
     private PlayerController playerInput;
     private InputAction pauseAction;
+
 
     private void Awake()
     {
@@ -80,6 +81,7 @@ public class PauseMenu : Menu
     {
         Debug.Log("Menu selected");
         IsPaused = false;
+        pauseMenuUI.SetActive(false);
         SceneManager.LoadScene("MainMenu");
     }
 
