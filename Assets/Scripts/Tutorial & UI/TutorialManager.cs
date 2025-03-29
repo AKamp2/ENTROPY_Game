@@ -9,9 +9,9 @@ public class TutorialManager : MonoBehaviour
     public ZeroGravity playerController;
     public DialogueManager dialogueManager;
     public DoorScript tutorialDoor;
+    public DoorScript endingDoor;
     public PickupScript pickupObject;
 
-    public Canvas tutorialCanvas;
 
     private int currentStep = 0;
     private bool isWaitingForAction = false;
@@ -20,9 +20,10 @@ public class TutorialManager : MonoBehaviour
     private bool stepComplete = false;
 
     //tutorial canvas groups
-    public CanvasGroup tutorialCanvasGroup;
     public CanvasGroup grabCanvasGroup;
     public CanvasGroup propelCanvasGroup;
+    public CanvasGroup pushOffCanvasGroup;
+    public CanvasGroup throwItemCanvasGroup;
     public float fadeDuration = 1f;
 
     public AudioSource audioSource;
@@ -65,12 +66,15 @@ public class TutorialManager : MonoBehaviour
             if (currentStep == 1 && playerController.IsGrabbing)
             {
                 stepComplete = true;
+                FadeOut(grabCanvasGroup);
                 CompleteStep();
             }
 
             else if (currentStep == 2 && playerController.HasPropelled)
             {
                 Debug.Log("Detected player propel");
+                playerController.HasPropelled = false; // Reset to prevent multiple detections
+                FadeOut(propelCanvasGroup);
                 SetPlayerAbilities(true, true, true, true);
                 stepComplete = true;
                 CompleteStep();
@@ -79,12 +83,15 @@ public class TutorialManager : MonoBehaviour
             else if (currentStep == 4 && playerController.HasPropelled)
             {
                 Debug.Log("Detected player propel");
+                playerController.HasPropelled = false; // Reset to prevent multiple detections
                 SetPlayerAbilities(true, true, true, true);
                 StartCoroutine(WaitForSecondGrab());
 
             }
             else if(currentStep == 5 && pickupObject.hasThrownObject)
             {
+                FadeOut(throwItemCanvasGroup);
+                stepComplete = true;
                 CompleteStep();
             }
         }
@@ -113,6 +120,7 @@ public class TutorialManager : MonoBehaviour
                 //player needs to grab a bar
                 Debug.Log("Tutorial 1");
                 stepComplete = false;
+                FadeIn(grabCanvasGroup);
                 SetPlayerAbilities(true, false, false, false);
                 isWaitingForAction = true;
                 break;
@@ -121,13 +129,14 @@ public class TutorialManager : MonoBehaviour
                 //player needs to propel from a bar
                 Debug.Log("Tutorial 2");
                 stepComplete = false;
+                FadeIn(propelCanvasGroup);
                 SetPlayerAbilities(true, true, false, false);
                 isWaitingForAction = true;
                 break;
 
             case 3:
                 //player needs to grab another bar
-                Debug.Log("Tutorial 3: Grab a bar and propel to another.");
+                Debug.Log("Tutorial 3: Grab another bar.");
                 stepComplete = false;
                 isWaitingForAction = true;
 
@@ -137,30 +146,21 @@ public class TutorialManager : MonoBehaviour
 
             case 4:
                 //player needs to propel from one bar to the other
-                Debug.Log("Tutorial 3: Grab a bar and propel to another.");
+                Debug.Log("Tutorial 4: Grab a bar and propel to another.");
+                SetPlayerAbilities(true, true, true, true);
                 stepComplete = false;
                 isWaitingForAction = true;
-
-                // Start the first timer for grabbing a bar
-                StartCoroutine(WaitForBarGrab());
                 break;
 
             case 5:
-                //propel to another bar
-                Debug.Log("Tutorial 4");
-                if (failureTimer != null) StopCoroutine(failureTimer);
-                tutorialDoor.UnlockDoor();
-                dialogueManager.StartDialogueSequence(3);
+                //Grab an object
+                Debug.Log("Tutorial 5");
+                stepComplete = false;
+                FadeIn(throwItemCanvasGroup);
                 isWaitingForAction = true;
                 break;
 
             case 6:
-                Debug.Log("Tutorial 5");
-                dialogueManager.StartDialogueSequence(4);
-                isWaitingForAction = true;
-                break;
-
-            case 7:
                 Debug.Log("Tutorial 6");
                 EndTutorial();
                 break;
@@ -188,7 +188,7 @@ public class TutorialManager : MonoBehaviour
         if (barGrabbed)
         {
             Debug.Log("Bar grabbed! Now propel to another bar.");
-
+            FadeOut(pushOffCanvasGroup);
             stepComplete = true;
             SetPlayerAbilities(true, false, false, false);
             CompleteStep();
@@ -197,22 +197,26 @@ public class TutorialManager : MonoBehaviour
         else
         {
             Debug.Log("Failed to grab a bar in time.");
-            if (!firstFailurePlayed)
+            if (firstFailurePlayed == false)
             {
-                dialogueManager.PlayFailureDialogue(0);
+                Debug.Log("Playing Failure Dialogue");
+                FadeIn(pushOffCanvasGroup);
+                StartCoroutine(dialogueManager.PlayFailureDialogue(0));
                 firstFailurePlayed = true;
             }
+            StartCoroutine(WaitForBarGrab());
         }
+
     }
 
     private IEnumerator WaitForSecondGrab()
     {
-        
+        timer = 10f;  // Reset the timer at the start of the coroutine
         bool barGrabbed = false;
 
         while (timer > 0)
         {
-            if (playerController.IsGrabbing) 
+            if (playerController.IsGrabbing)
             {
                 barGrabbed = true;
                 break;
@@ -225,16 +229,23 @@ public class TutorialManager : MonoBehaviour
         {
             Debug.Log("Success! Moving to next tutorial step.");
             stepComplete = true;
+            tutorialDoor.UnlockDoor();
             CompleteStep();
         }
         else
         {
-            if (timer <= 0 && firstFailurePlayed == false)
+            if (!firstFailurePlayed)
             {
-                dialogueManager.PlayFailureDialogue(1);
+                Debug.Log("Play Failure Dialogue");
                 firstFailurePlayed = true;
-
+                yield return StartCoroutine(dialogueManager.PlayFailureDialogue(1));
             }
+
+            //Debug.Log("Failure: Player must propel again.");
+            yield return new WaitUntil(() => playerController.HasPropelled); // Wait for another propel attempt
+
+            //Debug.Log("Player propelled again. Restarting grab check.");
+            StartCoroutine(WaitForSecondGrab()); // Restart grab check AFTER propelling
         }
     }
 
@@ -242,21 +253,6 @@ public class TutorialManager : MonoBehaviour
     {
         firstFailurePlayed = false;
         isWaitingForAction = false;
-    }
-
-    public void FailStep(int retryStep)
-    {
-        currentStep = retryStep;
-        ProgressTutorial();
-    }
-
-    IEnumerator FailureCountdown(float time, int retryStep)
-    {
-        yield return new WaitForSeconds(time);
-        if (isWaitingForAction && currentStep == retryStep)
-        {
-            FailStep(retryStep);
-        }
     }
 
     void SetPlayerAbilities(bool canGrab, bool canPropel, bool canPushOff, bool canRoll)
@@ -269,9 +265,10 @@ public class TutorialManager : MonoBehaviour
 
     void EndTutorial()
     {
-        dialogueManager.StartDialogueSequence(5);
         SetPlayerAbilities(true, true, true, true);
         isWaitingForAction = false;
+        playerController.TutorialMode = false;
+        endingDoor.UnlockDoor();
         currentStep = 6;
     }
 

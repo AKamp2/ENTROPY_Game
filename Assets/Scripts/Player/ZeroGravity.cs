@@ -222,6 +222,7 @@ public class ZeroGravity : MonoBehaviour
     public bool HasPropelled
     {
         get { return hasPropelled;  }
+        set { hasPropelled = value;  }
     }
 
     public bool IsDead
@@ -298,8 +299,12 @@ public class ZeroGravity : MonoBehaviour
                     UpdateGrabberPosition(grabbedBar);
                     //grabUIText.text = "'W A S D'";
                     //set the sprite for input indicator to the wasd indicator
-                    inputIndicator.sprite = wasdIndicator;
-                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                    if (canPropel)
+                    {
+                        inputIndicator.sprite = wasdIndicator;
+                        inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                    }
+                    
                 }
                 else
                 {
