@@ -478,17 +478,6 @@ public class @PlayerController : IInputActionCollection, IDisposable
                     ""action"": ""ContinueDialogue"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9119be31-6649-4ff7-a8d6-eb728be1ffc5"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ContinueDialogue"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         },

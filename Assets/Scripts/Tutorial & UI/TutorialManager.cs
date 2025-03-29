@@ -31,6 +31,7 @@ public class TutorialManager : MonoBehaviour
     {
         if(playerController.TutorialMode == true)
         {
+            tutorialDoor.LockDoor();
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
         }
@@ -65,8 +66,8 @@ public class TutorialManager : MonoBehaviour
     private IEnumerator StartTutorial()
     {
         SetPlayerAbilities(false, false, false, false);
-        audioSource.PlayOneShot(jingle);
         yield return new WaitForSeconds(1f);
+        audioSource.PlayOneShot(jingle);
         dialogueManager.StartDialogueSequence(0); // Ensure correct tutorial sequence index
     }
 

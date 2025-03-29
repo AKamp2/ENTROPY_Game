@@ -9,6 +9,7 @@ public class Dialogue
     public AudioClip audioClip;
     public bool advancesTutorial;
     public bool skipWithTutorial;
+    public float delayBetweenDialogues = 0.5f;
 }
 
 [System.Serializable]

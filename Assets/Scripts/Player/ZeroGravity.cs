@@ -274,7 +274,7 @@ public class ZeroGravity : MonoBehaviour
                 }
                 HandleRaycast();
                 //handle grabber icon logic
-                if (isGrabbing && grabbedBar != null)
+                if (isGrabbing && grabbedBar != null && canGrab)
                 {
                     //keep grabber locked to grabbed bar
                     UpdateGrabberPosition(grabbedBar);
