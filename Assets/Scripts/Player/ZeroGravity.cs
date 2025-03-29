@@ -103,6 +103,7 @@ public class ZeroGravity : MonoBehaviour
     private bool canPropel = false;
     private bool canPushOff = false;
     private bool canRoll = false;
+    private bool hasPropelled = false;
 
 
     [Header("== Player Movement Settings ==")]
@@ -217,7 +218,7 @@ public class ZeroGravity : MonoBehaviour
 
     public bool HasPropelled
     {
-        get { return movementKeysReleased;  }
+        get { return hasPropelled;  }
     }
 
     public bool IsDead
@@ -671,6 +672,7 @@ public class ZeroGravity : MonoBehaviour
     {
         isGrabbing = false;
         grabbedBar = null;
+        hasPropelled = false;
 
         //lock grabbed bar and change icon
         grabber.sprite = openHand;
@@ -825,6 +827,7 @@ public class ZeroGravity : MonoBehaviour
             if (movementKeysReleased && (isThrusting || isStrafing))
             {
                 //initialize a vector 3 for the propel direction
+                hasPropelled = true;
                 Vector3 propelDirection = Vector3.zero;
 
                 //if W or S are pressed

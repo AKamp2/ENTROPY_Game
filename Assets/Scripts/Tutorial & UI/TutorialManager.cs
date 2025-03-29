@@ -11,13 +11,25 @@ public class TutorialManager : MonoBehaviour
     public DoorScript tutorialDoor;
     public PickupScript pickupObject;
 
+    public Canvas tutorialCanvas;
+
     private int currentStep = 0;
     private bool isWaitingForAction = false;
     private Coroutine failureTimer;
     private bool tutorialSkipped = false;
+    private bool stepComplete = false;
+
+    //tutorial canvas groups
+    public CanvasGroup tutorialCanvasGroup;
+    public CanvasGroup grabCanvasGroup;
+    public CanvasGroup propelCanvasGroup;
+    public float fadeDuration = 1f;
 
     public AudioSource audioSource;
     public AudioClip jingle;
+
+    float timer = 10f;
+    bool firstFailurePlayed = false;
 
     private void Awake()
     {
@@ -29,13 +41,13 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
-        if(playerController.TutorialMode == true)
+        if (playerController.TutorialMode == true)
         {
             tutorialDoor.LockDoor();
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
         }
-        
+
     }
 
     void Update()
@@ -52,13 +64,26 @@ public class TutorialManager : MonoBehaviour
         {
             if (currentStep == 1 && playerController.IsGrabbing)
             {
+                stepComplete = true;
                 CompleteStep();
             }
-                
+
             else if (currentStep == 2 && playerController.HasPropelled)
             {
+                Debug.Log("Detected player propel");
+                SetPlayerAbilities(true, true, true, true);
+                stepComplete = true;
                 CompleteStep();
-                failureTimer = StartCoroutine(FailureCountdown(20f, 2)); // Retry step 2 on failure
+                
+            }
+            else if (currentStep == 3 && playerController.HasPropelled)
+            {
+                failureTimer = StartCoroutine(FailureCountdown(10f, 2)); // Retry step 2 on failure
+
+            }
+            else if(currentStep == 4 && pickupObject.hasThrownObject)
+            {
+                CompleteStep();
             }
         }
     }
@@ -83,23 +108,27 @@ public class TutorialManager : MonoBehaviour
         switch (currentStep)
         {
             case 1:
+                //player needs to grab a bar
                 Debug.Log("Tutorial 1");
+                stepComplete = false;
                 SetPlayerAbilities(true, false, false, false);
-                dialogueManager.StartDialogueSequence(1);
                 isWaitingForAction = true;
                 break;
 
             case 2:
+                //player needs to propel from a bar
                 Debug.Log("Tutorial 2");
                 SetPlayerAbilities(true, true, false, false);
-                dialogueManager.StartDialogueSequence(2);
                 isWaitingForAction = true;
                 break;
 
             case 3:
-                Debug.Log("Tutorial 3");
-                SetPlayerAbilities(true, true, true, true);
+                Debug.Log("Tutorial 3: Grab a bar and propel to another.");
+                stepComplete = false;
                 isWaitingForAction = true;
+
+                // Start the first timer for grabbing a bar
+                StartCoroutine(WaitForBarGrab());
                 break;
 
             case 4:
@@ -123,10 +152,80 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+    private IEnumerator WaitForBarGrab()
+    {
+        timer = 10f;  // Ensure timer is reset at the start
+
+        bool barGrabbed = false;
+
+        while (timer > 0)
+        {
+            if (playerController.IsGrabbing)
+            {
+                barGrabbed = true;
+                break;
+            }
+
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        if (barGrabbed)
+        {
+            Debug.Log("Bar grabbed! Now propel to another bar.");
+
+            yield return new WaitUntil(() => playerController.HasPropelled); // Wait until the player propels
+
+            StartCoroutine(WaitForSecondGrab());
+            timer = 10f;  // Reset timer before the next step
+        }
+        else
+        {
+            Debug.Log("Failed to grab a bar in time.");
+            if (!firstFailurePlayed)
+            {
+                dialogueManager.PlayFailureDialogue(1);
+                firstFailurePlayed = true;
+            }
+        }
+    }
+
+    private IEnumerator WaitForSecondGrab()
+    {
+        
+        bool barGrabbed = false;
+
+        while (timer > 0)
+        {
+            if (playerController.IsGrabbing) 
+            {
+                barGrabbed = true;
+                break;
+            }
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        if (barGrabbed)
+        {
+            Debug.Log("Success! Moving to next tutorial step.");
+            stepComplete = true;
+            CompleteStep();
+        }
+        else
+        {
+            if (timer <= 0 && firstFailurePlayed == false)
+            {
+                dialogueManager.PlayFailureDialogue(1);
+                firstFailurePlayed = true;
+
+            }
+        }
+    }
+
     public void CompleteStep()
     {
         isWaitingForAction = false;
-        ProgressTutorial();
     }
 
     public void FailStep(int retryStep)
@@ -160,6 +259,11 @@ public class TutorialManager : MonoBehaviour
         currentStep = 6;
     }
 
+    public bool TutorialStepCompleted()
+    {
+        return stepComplete;
+    }
+
     private void OnDialogueComplete(int sequenceIndex)
     {
         if (!isWaitingForAction) return;
@@ -170,6 +274,36 @@ public class TutorialManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayTime); // Wait for the specified time
     }
+
+    // Fade in the UI element (make it visible)
+    public void FadeIn(CanvasGroup groupToFade)
+    {
+        StartCoroutine(FadeCanvasGroup(groupToFade, groupToFade.alpha, 1f));
+    }
+
+    // Fade out the UI element (make it invisible)
+    public void FadeOut(CanvasGroup groupToFade)
+    {
+        StartCoroutine(FadeCanvasGroup(groupToFade, groupToFade.alpha, 0f));
+    }
+
+    // Coroutine to fade the CanvasGroup over time
+    private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
+    {
+        float timeElapsed = 0f;
+
+        while (timeElapsed < fadeDuration)
+        {
+            // Lerp alpha from start to end
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timeElapsed / fadeDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null; // Wait until the next frame
+        }
+
+        canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    
 }
 
 

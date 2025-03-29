@@ -9,7 +9,9 @@ public class DialogueManager : MonoBehaviour
 
     // UI elements for dialogue display
     public DialogueSequence[] dialogueSequences;
+    public DialogueSequence failureDialogues;
     public Canvas dialogueCanvas;
+    public CanvasGroup dialogueCanvasGroup;
     public TextMeshProUGUI nameTextUI;
     public TextMeshProUGUI dialogueTextUI;
     public AudioSource audioSource;
@@ -29,6 +31,8 @@ public class DialogueManager : MonoBehaviour
     private bool tutorialSkipped = false;
 
     public TutorialManager tutorialManager;
+
+    private float fadeDuration = 0.5f;
 
     public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
 
@@ -57,6 +61,8 @@ public class DialogueManager : MonoBehaviour
     {
         playerManager = player.GetComponent<ZeroGravity>(); // Get reference to player movement manager
         dialogueCanvas.enabled = false; // Hide dialogue UI initially
+        dialogueCanvasGroup = dialogueCanvas.GetComponent<CanvasGroup>();
+        dialogueCanvasGroup.alpha = 0;
     }
 
     private void Update()
@@ -84,7 +90,7 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private IEnumerator DisplayDialogue()
     {
-
+        FadeIn();
         isSkipping = false;
         DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
 
@@ -144,15 +150,65 @@ public class DialogueManager : MonoBehaviour
             if(currentDialogue.advancesTutorial)
             {
                 tutorialManager.ProgressTutorial();
+                yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted()); // Ensure the tutorial step is completed before continuing
+
+
             }
             currentDialogueIndex++;
 
         }
 
         // End dialogue
+        FadeOut();
         isDialogueActive = false;
         dialogueCanvas.enabled = false;
         OnDialogueEnd?.Invoke(currentSequenceIndex);
+    }
+
+    public IEnumerator PlayFailureDialogue(int index)
+    {
+        Dialogue currentDialogue = failureDialogues.dialogues[index];
+
+        nameTextUI.text = currentDialogue.characterName;
+
+        // Play audio if available (one audio clip for multiple lines)
+        if (currentDialogue.audioClip != null)
+        {
+            audioSource.clip = currentDialogue.audioClip;
+            audioSource.Play();
+        }
+
+        //calculating dialogue speed
+        int totalLength = 0;
+        foreach (string line in currentDialogue.dialogueLines)
+        {
+            totalLength += line.Length;
+        }
+
+        // Adjust speed if an audio clip is present
+        if (currentDialogue.audioClip != null)
+        {
+            typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.01f;
+        }
+
+        // Show each line with typewriter effect, one by one
+        foreach (string line in currentDialogue.dialogueLines)
+        {
+            yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
+            yield return new WaitForSeconds(0.5f);
+
+        }
+
+        // Wait until the audio clip finishes before moving to the next dialogue unless skipping
+        yield return new WaitUntil(() => !audioSource.isPlaying);
+        yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
+
+        //advance tutorial if the dialogue is intended to.
+        if (currentDialogue.advancesTutorial)
+        {
+            tutorialManager.ProgressTutorial();
+        }
+
     }
 
     /// <summary>
@@ -184,9 +240,37 @@ public class DialogueManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayTime); // Wait for the specified time
         currentSequenceIndex = sequenceIndex;
-        currentDialogueIndex = 0;
+        currentDialogueIndex = 3;
         dialogueCanvas.enabled = true;
         isDialogueActive = true;
         StartCoroutine(DisplayDialogue());
+    }
+
+    // Fade in the UI element (make it visible)
+    public void FadeIn()
+    {
+        StartCoroutine(FadeCanvasGroup(dialogueCanvasGroup, dialogueCanvasGroup.alpha, 1f));
+    }
+
+    // Fade out the UI element (make it invisible)
+    public void FadeOut()
+    {
+        StartCoroutine(FadeCanvasGroup(dialogueCanvasGroup, dialogueCanvasGroup.alpha, 0f));
+    }
+
+    // Coroutine to fade the CanvasGroup over time
+    private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
+    {
+        float timeElapsed = 0f;
+
+        while (timeElapsed < fadeDuration)
+        {
+            // Lerp alpha from start to end
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timeElapsed / fadeDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null; // Wait until the next frame
+        }
+
+        canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
     }
 }
