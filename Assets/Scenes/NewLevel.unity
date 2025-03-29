@@ -4554,6 +4554,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1785565517}
     m_Modifications:
     - target: {fileID: 992391631712352709, guid: a93677c14f9313d438408f87facd56f5, type: 3}
+      propertyPath: speed
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 992391631712352709, guid: a93677c14f9313d438408f87facd56f5, type: 3}
       propertyPath: states
       value: 3
       objectReference: {fileID: 0}
@@ -4604,6 +4608,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 992391632138861328, guid: a93677c14f9313d438408f87facd56f5, type: 3}
   m_PrefabInstance: {fileID: 423851645}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &423851647 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992391631712352709, guid: a93677c14f9313d438408f87facd56f5, type: 3}
+  m_PrefabInstance: {fileID: 423851645}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 079a258bccb901344ade2698a14ec3fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &424143825
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5996,6 +6011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcb53cc5f0ec6554d947b9521eaed129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  winDoor: {fileID: 423851647}
 --- !u!4 &558604935
 Transform:
   m_ObjectHideFlags: 0
