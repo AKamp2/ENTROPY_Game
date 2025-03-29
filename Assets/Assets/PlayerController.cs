@@ -20,7 +20,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Thrust"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""288b4cfb-fe3c-4d7e-9807-d97ddecd251a"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
@@ -322,7 +322,7 @@ public class @PlayerController : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f214837e-cd75-4b5f-b348-0f5ebacd461b"",
+                    ""id"": ""8cc5e67f-4ffa-4f57-98cb-ae57e3b81755"",
                     ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
