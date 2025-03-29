@@ -8,6 +8,8 @@ public class ThanksMenu : MonoBehaviour
     public static bool playerWin = false;
     [SerializeField]
     private GameObject canvas;
+
+
     public AudioSource dialogueAudioSource;
     [SerializeField]
     private PauseMenu pauseMenu;
@@ -17,6 +19,9 @@ public class ThanksMenu : MonoBehaviour
 
     [SerializeField]
     private GameObject playerCanvas;
+
+    [SerializeField]
+    private Win winScript;
 
     private void Awake()
     {
@@ -78,6 +83,8 @@ public class ThanksMenu : MonoBehaviour
 
         playerCanvas.SetActive(false);
 
+        
+
         //set the rigid body rotations to unconstrained, cool uncontrolled dead body rotations
         Rigidbody rb = player.GetComponentInParent<Rigidbody>();
         if (rb != null)
@@ -88,7 +95,7 @@ public class ThanksMenu : MonoBehaviour
     private void Update()
     {
         //the player is dead, therefore each true signifys death
-        if (player != null && player.IsDead && !playerWin)
+        if (player != null && winScript.WinCondition && !playerWin)
         {
             Win();
             playerWin = true;

@@ -18,14 +18,8 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("sample");
-        SceneManager.LoadScene("Level_1");
+        SceneManager.LoadScene("NewLevel");
       
-    }
-    public void StartTestScene()
-    {
-        Debug.Log("Demo");
-        SceneManager.LoadScene("DemoScene");
-        
     }
 
     public void QuitGame()
