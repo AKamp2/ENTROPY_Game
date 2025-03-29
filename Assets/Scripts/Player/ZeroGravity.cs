@@ -144,6 +144,8 @@ public class ZeroGravity : MonoBehaviour
 
     [SerializeField]
     private float dangerSpeed = 10f;
+    [SerializeField]
+    private float minimumSpeed = 1f;
 
 
     [Header("== UI Settings ==")]
@@ -404,7 +406,7 @@ public class ZeroGravity : MonoBehaviour
             avgBounceDirection += reflectDirection;
             bounceCount++;
             //early exit if multiple bounces aren't needed
-            if (bounceCount >= 1)
+            if (bounceCount > 1)
             {
                 break;
             }
@@ -414,7 +416,19 @@ public class ZeroGravity : MonoBehaviour
         {
             avgBounceDirection.Normalize(); // average direction
             float bounceSpeed = ogSpeed * .75f; // keep 75% of initial speed so it doesn't gain 
-            rb.velocity = avgBounceDirection * bounceSpeed;
+
+            Debug.Log("BoounceSpeed: " + bounceSpeed);
+            //verify the bounce is faster than minimum speed
+            //if(bounceSpeed <= minimumSpeed)
+            //{
+            //    //reset the bounce speed to be the minimum, ensuring constant bounces
+            //    bounceSpeed = minimumSpeed;
+            //}
+
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+
+            rb.AddForce(avgBounceDirection * bounceSpeed, ForceMode.VelocityChange);
         }
 
         //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds
