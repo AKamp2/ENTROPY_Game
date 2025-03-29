@@ -231,6 +231,7 @@ public class ZeroGravity : MonoBehaviour
     public bool IsDead
     {
         get { return isDead; }
+        set {  isDead = value; }
     }
 
     // getter for isGrabbing

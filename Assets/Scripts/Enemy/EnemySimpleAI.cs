@@ -8,6 +8,7 @@ public class EnemySimpleAI : MonoBehaviour
     public float escapeDistance = 10f;
     public GameObject player;
     public Waypoint startingWaypoint; // Starting waypoint for teleportation
+    public Transform waypointGroup;
     public DoorScript door;
     public bool useRandomRoaming; // Toggle to switch between roaming and tracking modes
 
@@ -114,15 +115,7 @@ public class EnemySimpleAI : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Teleport player to respawn location
-            player.transform.position = player.GetComponent<ZeroGravity>().respawnLoc.transform.position;
-
-            // Teleport enemy to the starting waypoint
-            transform.position = startingWaypoint.transform.position;
-
-            // Reset path and current waypoint
-            currentWaypoint = startingWaypoint;
-            FindPlayerPath();
+            player.GetComponent<ZeroGravity>().IsDead = true;
         }
     }
 
@@ -170,7 +163,7 @@ public class EnemySimpleAI : MonoBehaviour
 
     Waypoint FindClosestWaypoint(Vector3 position)
     {
-        Waypoint[] waypoints = FindObjectsOfType<Waypoint>();
+        Waypoint[] waypoints = waypointGroup.GetComponentsInChildren<Waypoint>();
         Waypoint closest = null;
         float minDist = Mathf.Infinity;
 
