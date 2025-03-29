@@ -41,7 +41,7 @@ public class ZeroGravity : MonoBehaviour
     //handle taking damage
     private bool justHit = false;
     private bool prevJustHit = false;
-    private float justHitCoolDown = 1.5f;
+    private float justHitCoolDown = .8f;
     private float justHitTimeStamp = 0f;
 
     //health indicator cooldown
@@ -140,11 +140,14 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float propelOffWallThrust = 50000f;
     private Transform potentialWall = null;
-    [SerializeField]
-    private float magnitudeMinimum = 0.75f;
+
 
     [SerializeField]
+    private float pushSpeed = 1.5f;
+    [SerializeField]
     private float dangerSpeed = 10f;
+    [SerializeField]
+    private float mediumSpeed = 5f;
     [SerializeField]
     private float minimumSpeed = 1f;
 
@@ -366,7 +369,7 @@ public class ZeroGravity : MonoBehaviour
 
     private void PropelOffWall()
     {
-        if(rb.velocity.magnitude < magnitudeMinimum && canPushOff)
+        if(rb.velocity.magnitude <= pushSpeed && canPushOff)
         {
             //zero the initial velocities ensuring a direct push back
             //rb.velocity = Vector3.zero;
@@ -403,6 +406,10 @@ public class ZeroGravity : MonoBehaviour
             Vector3 wallNormal = (transform.position - closestPoint).normalized;
             Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
 
+            //pudh the player away slighly so they won't be stuck colliding with the wall.
+            Vector3 pushAway = wallNormal * 0.05f; // small offset to prevent overlap
+            transform.position += pushAway;
+
             //get bounce directions
             avgBounceDirection += reflectDirection;
             bounceCount++;
@@ -420,20 +427,29 @@ public class ZeroGravity : MonoBehaviour
 
             Debug.Log("BoounceSpeed: " + bounceSpeed);
             //verify the bounce is faster than minimum speed
-            //if(bounceSpeed <= minimumSpeed)
-            //{
-            //    //reset the bounce speed to be the minimum, ensuring constant bounces
-            //    bounceSpeed = minimumSpeed;
-            //}
+            if (bounceSpeed <= minimumSpeed)
+            {
+                //reset the bounce speed to be the minimum, ensuring constant bounces
+                bounceSpeed = minimumSpeed;
+            }
 
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
 
-            rb.AddForce(avgBounceDirection * bounceSpeed, ForceMode.VelocityChange);
+            rb.velocity = avgBounceDirection * bounceSpeed;
         }
 
         //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds
         if (ogSpeed >= dangerSpeed && !justHit && !isDead)
+        {
+            //decrease the player's health by 1
+            DecreaseHealth(3);
+            prevJustHit = justHit;
+            justHit = true;
+            prevHurt = hurt;
+            hurt = true;
+        }
+        else if (ogSpeed >= mediumSpeed && !justHit && !isDead)
         {
             //decrease the player's health by 1
             DecreaseHealth(1);
@@ -509,7 +525,7 @@ public class ZeroGravity : MonoBehaviour
             if (!isDead && !justHit)
             {
                 //decrease the player health after they have collided with the closing door
-                DecreaseHealth(2);
+                DecreaseHealth(3);
 
                 //set just hit to true, commencing cooldown
                 prevJustHit = justHit;
@@ -724,7 +740,14 @@ public class ZeroGravity : MonoBehaviour
     private void DecreaseHealth(int i)
     {
         //decrease the player health by however many is inputted
-        playerHealth -= i;
+        if(playerHealth - i < 0)
+        {
+            playerHealth = 0;
+        }
+        else
+        {
+            playerHealth -= i;
+        }
 
         //check for if the player is dead or not
         if (playerHealth <= 0)
@@ -880,7 +903,7 @@ public class ZeroGravity : MonoBehaviour
             RayCastHandleDoorButton(hit);
 
             //if the current velocity is less than the parameter we set
-            if(rb.velocity.magnitude < magnitudeMinimum)
+            if(rb.velocity.magnitude <= pushSpeed)
             {
                 //we handle interaction with pushing off the wall
                 RayCastHandlePushOffWall(hit);
