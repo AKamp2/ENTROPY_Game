@@ -135,6 +135,8 @@ public class DialogueManager : MonoBehaviour
 
             }
 
+
+
             //allow user to skip a whole line of dialogue if at end of the dialogueSequence
             //if (isSkipping)
             //{

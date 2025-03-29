@@ -10,12 +10,14 @@ public class DeathMenu : MonoBehaviour
     public static bool playerDead = false;
     [SerializeField]
     private GameObject canvas;
-    public AudioSource dialogueAudioSource;
     [SerializeField]
     private PauseMenu pauseMenu;
 
     [SerializeField]
     private ZeroGravity player;
+
+    [SerializeField]
+    private GameObject respawnLoc;
 
     [SerializeField]
     private GameObject playerCanvas;
@@ -43,9 +45,18 @@ public class DeathMenu : MonoBehaviour
     public void LastCheckpoint()
     {
         Debug.Log("Load Last Checkpoint selected");
-        Time.timeScale = 1f; //reset bto 1
+        Time.timeScale = 1f; // Ensure normal game speed
         playerDead = false;
+        player.Respawn(respawnLoc.transform.position);
+
+        
+        playerCanvas.SetActive(true);  // Re-enable player UI
+
         pauseMenu.CanPause = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        canvas.SetActive(false);  // Hide death menu
     }
 
     public void OptionsButton()

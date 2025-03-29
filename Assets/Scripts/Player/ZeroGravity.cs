@@ -57,6 +57,9 @@ public class ZeroGravity : MonoBehaviour
     private float hurtTimeStamp = 0f;
 
     [Header("== UI Canvas ==")]
+    [SerializeField]
+    private CameraFade cameraFade;
+
     //canvas elements
     [SerializeField]
     private GameObject characterPivot;
@@ -241,11 +244,23 @@ public class ZeroGravity : MonoBehaviour
     void Start()
     {
         //initial player booleans set
-        canGrab = true;
-        canPushOff = true;
-        canPropel = true;
-        canRoll = true;
+        if (tutorialMode)
+        {
+            canGrab = false;
+            canPushOff = false;
+            canPropel = false;
+            canRoll = false;
+        }
+        else
+        {
+            canGrab = true;
+            canPushOff = true;
+            canPropel = true;
+            canRoll = true;
+        }
+        
         isDead = false;
+
 
         justHit = false;
         prevJustHit = false;
@@ -887,6 +902,29 @@ public class ZeroGravity : MonoBehaviour
             {
                 movementKeysReleased = true;
             }
+        }
+    }
+
+    public void Respawn(Vector3 respawnPosition)
+    {
+        cameraFade.alpha = 1;
+        StartCoroutine(cameraFade.FadeIn());
+        transform.position = respawnPosition;
+        isDead = false;
+        playerHealth = maxHealth;
+
+        //reset all actions
+        canGrab = true;
+        canMove = true;
+        canPropel = true;
+        canRoll = true;
+        canPushOff = true;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero; // Reset velocity to prevent unwanted movement
+            rb.angularVelocity = Vector3.zero;
         }
     }
 

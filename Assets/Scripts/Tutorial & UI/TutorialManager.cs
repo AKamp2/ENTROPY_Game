@@ -24,6 +24,7 @@ public class TutorialManager : MonoBehaviour
     public CanvasGroup propelCanvasGroup;
     public CanvasGroup pushOffCanvasGroup;
     public CanvasGroup throwItemCanvasGroup;
+    public CanvasGroup enterCanvasGroup;
     public float fadeDuration = 1f;
 
     public AudioSource audioSource;
@@ -48,7 +49,7 @@ public class TutorialManager : MonoBehaviour
             {
                 tutorialDoor.LockDoor();
             }
-            
+
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
         }
@@ -62,6 +63,7 @@ public class TutorialManager : MonoBehaviour
         {
             tutorialSkipped = true;
             dialogueManager.TutorialSkipped = true;
+            FadeOut(enterCanvasGroup);
             EndTutorial();
         }
 
@@ -106,7 +108,9 @@ public class TutorialManager : MonoBehaviour
         SetPlayerAbilities(false, false, false, false);
         yield return new WaitForSeconds(1f);
         audioSource.PlayOneShot(jingle);
+        FadeIn(enterCanvasGroup);
         dialogueManager.StartDialogueSequence(0); // Ensure correct tutorial sequence index
+        StartCoroutine(DelayFadeOut(7));
     }
 
     public void ProgressTutorial()
@@ -276,11 +280,18 @@ public class TutorialManager : MonoBehaviour
         SetPlayerAbilities(true, true, true, true);
         isWaitingForAction = false;
         playerController.TutorialMode = false;
-        if(endingDoor != null)
+        if (endingDoor != null)
         {
             endingDoor.UnlockDoor();
         }
-        
+        if(tutorialDoor!=null)
+        {
+            if(tutorialDoor.DoorState != DoorScript.States.Open)
+            {
+                tutorialDoor.UnlockDoor();
+            }
+        }
+
         currentStep = 6;
     }
 
@@ -295,9 +306,10 @@ public class TutorialManager : MonoBehaviour
         CompleteStep();
     }
 
-    private IEnumerator DelayTime(float delayTime)
+    private IEnumerator DelayFadeOut(float delayTime)
     {
         yield return new WaitForSeconds(delayTime); // Wait for the specified time
+        FadeOut(enterCanvasGroup);
     }
 
     // Fade in the UI element (make it visible)
