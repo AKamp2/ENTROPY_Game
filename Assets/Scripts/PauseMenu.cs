@@ -1,4 +1,6 @@
-using System.Collections;
+
+
+        // Pause audiousing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,7 +12,7 @@ public class PauseMenu : MonoBehaviour
     public GameObject pauseMenuUI;
 
     private PlayerController playerInput;
-    private InputAction pauseAction;
+    public InputAction pauseAction;
     public AudioSource dialogueAudioSource; // Reference to the DialogueManager's AudioSource
 
 
@@ -22,6 +24,7 @@ public class PauseMenu : MonoBehaviour
 
     private void OnEnable()
     {
+        playerInput.UI.Enable();
         // Access Pause action from the UI action map
         pauseAction = playerInput.UI.Pause;
         pauseAction.Enable();
@@ -32,6 +35,7 @@ public class PauseMenu : MonoBehaviour
 
     private void OnDisable()
     {
+        playerInput.UI.Disable();
         pauseAction.Disable();
         pauseAction.performed -= OnPausePressed;
     }
@@ -74,8 +78,6 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         IsPaused = true;
-
-        // Pause audio
         if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
         {
             dialogueAudioSource.Pause();
@@ -106,7 +108,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current.gKey.wasPressedThisFrame)
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             Debug.Log("ESC Key Detected!");
         }

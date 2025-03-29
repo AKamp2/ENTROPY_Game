@@ -9,7 +9,9 @@ public class DeathMenu : MonoBehaviour
     public static bool playerDead = false;
     public GameObject playerMenuUI;
 
+    [SerializeField]
     private PlayerController playerInput;
+    [SerializeField]
     private InputAction playerAction;
 
     [SerializeField]
@@ -23,13 +25,16 @@ public class DeathMenu : MonoBehaviour
 
     private void OnEnable()
     {
+        playerInput.UI.Enable();
         // Access Pause action from the UI action map
         playerAction = playerInput.UI.Pause;
         playerAction.Enable();
+        playerInput.UI.Enable();
     }
 
     private void OnDisable()
     {
+        playerInput.UI.Disable();
         playerAction.Disable();
     }
 
@@ -53,25 +58,6 @@ public class DeathMenu : MonoBehaviour
         Debug.Log("Load Last Checkpoint selected");
     }
 
-    public void Die()
-    {
-        playerMenuUI.SetActive(true);
-        Time.timeScale = 0.5f;
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        //set all the player parameters as false to prevent moving, but looking around is fine
-        player.CanMove = true;
-        player.CanGrab = false;
-        player.CanPropel = false;
-        player.CanPushOff = false;
-        player.CanRoll = false;
-
-        //set the rigid body rotations to unconstrained, cool uncontrolled dead body rotations
-        player.GetComponentInParent<Rigidbody>().constraints = RigidbodyConstraints.None;
-    }
-
     public void OptionsButton()
     {
         Debug.Log("Options selected");
@@ -89,6 +75,25 @@ public class DeathMenu : MonoBehaviour
     {
         Debug.Log("Quit selected");
         Application.Quit();
+    }
+
+    public void Die()
+    {
+        playerMenuUI.SetActive(true);
+        Time.timeScale = 0.5f;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        //set all the player parameters as false to prevent moving, but looking around is fine
+        player.CanMove = true;
+        player.CanGrab = false;
+        player.CanPropel = false;
+        player.CanPushOff = false;
+        player.CanRoll = false;
+
+        //set the rigid body rotations to unconstrained, cool uncontrolled dead body rotations
+        player.GetComponentInParent<Rigidbody>().constraints = RigidbodyConstraints.None;
     }
 }
 
