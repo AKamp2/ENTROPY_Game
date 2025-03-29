@@ -75,7 +75,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (sequenceIndex < dialogueSequences.Length)
         {
-            StartCoroutine(DelayTime(1f, sequenceIndex));
+            StartCoroutine(DelayTime(2f, sequenceIndex));
         }
     }
 
@@ -138,7 +138,7 @@ public class DialogueManager : MonoBehaviour
 
             // Wait until the audio clip finishes before moving to the next dialogue unless skipping
             yield return new WaitUntil(() => !audioSource.isPlaying);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
 
             //advance tutorial if the dialogue is intended to.
             if(currentDialogue.advancesTutorial)
@@ -173,10 +173,6 @@ public class DialogueManager : MonoBehaviour
             {
                 dialogueTextUI.text = dialogueText;
                 isSkipping = false;
-                yield break;
-            }
-            if(tutorialSkipped)
-            {
                 yield break;
             }
 

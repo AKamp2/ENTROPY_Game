@@ -227,10 +227,15 @@ public class DoorScript : MonoBehaviour
 
     public void PuzzleComplete()
     {
-        if(states == States.Locked)
+        if (states == States.Locked)
         {
             states = States.Opening;
         }
+    }
+
+    public void LockDoor()
+    {
+        states = States.Locked;
     }
 
     public void UnlockDoor()

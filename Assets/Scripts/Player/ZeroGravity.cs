@@ -274,7 +274,7 @@ public class ZeroGravity : MonoBehaviour
                 }
                 HandleRaycast();
                 //handle grabber icon logic
-                if (isGrabbing && grabbedBar != null)
+                if (isGrabbing && grabbedBar != null && canGrab)
                 {
                     //keep grabber locked to grabbed bar
                     UpdateGrabberPosition(grabbedBar);
@@ -471,27 +471,29 @@ public class ZeroGravity : MonoBehaviour
                 }
             }
         }
-        //if we have a bounce to calculate, and we haven't been hit in 1.5 seconds
-        if (bounceCount > 0 && !justHit)
+        //if we have a bounce to calculate, and we haven't been hit
+        if (bounceCount > 0)
         {
             //set velocity to zero
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
 
-            //average the bounce direction if multiple doors
-            avgBounceDirection.Normalize();
+            //only normalize if avgBounceDirection is valid
+            if (avgBounceDirection != Vector3.zero)
+            {
+                avgBounceDirection.Normalize();
+            }
 
             Debug.Log("Avg Bounce Direction: " + avgBounceDirection);
 
+            float bounceSpeed = ogSpeed * .2f; // keep 75% of initial speed so it doesn't gain 
+
             //calculate the direction of the bounce
-            Vector3 propelDirection = avgBounceDirection * propelThrust;
-
+            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .40f) * Time.deltaTime;
             Debug.Log("propel direction: " + propelDirection);
+            rb.AddForce(propelDirection, ForceMode.VelocityChange);
 
-            //apply the force
-            rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-
-            if (!isDead)
+            if (!isDead && !justHit)
             {
                 //decrease the player health after they have collided with the closing door
                 DecreaseHealth(2);
