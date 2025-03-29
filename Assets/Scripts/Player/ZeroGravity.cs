@@ -46,7 +46,7 @@ public class ZeroGravity : MonoBehaviour
     //handle taking damage
     private bool justHit = false;
     private bool prevJustHit = false;
-    private float justHitCoolDown = .8f;
+    private float justHitCoolDown = .6f;
     private float justHitTimeStamp = 0f;
 
     //health indicator cooldown
