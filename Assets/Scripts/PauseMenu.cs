@@ -1,30 +1,38 @@
 
-
-        // Pause audiousing System.Collections;
+// Pause audiousing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-
-public class PauseMenu : MonoBehaviour
+public class PauseMenu : MonoBehaviour 
 {
+
     public static bool IsPaused = false;
+    [SerializeField]
     public GameObject pauseMenuUI;
 
     private PlayerController playerInput;
-    public InputAction pauseAction;
+    private InputAction pauseAction;
     public AudioSource dialogueAudioSource; // Reference to the DialogueManager's AudioSource
+
+    private bool canPause = false;
+
+    public bool CanPause
+    {
+        get { return canPause; }
+        set { canPause = value; }
+    }
 
 
     private void Awake()
     {
         // Initialize the PlayerControls input actions
         playerInput = new PlayerController(); // Ensure this matches the generated class name
+        canPause = true;
     }
 
     private void OnEnable()
     {
-        playerInput.UI.Enable();
         // Access Pause action from the UI action map
         pauseAction = playerInput.UI.Pause;
         pauseAction.Enable();
@@ -35,20 +43,22 @@ public class PauseMenu : MonoBehaviour
 
     private void OnDisable()
     {
-        playerInput.UI.Disable();
         pauseAction.Disable();
         pauseAction.performed -= OnPausePressed;
     }
 
     public void OnPausePressed(InputAction.CallbackContext context)
     {
-        if (IsPaused)
+        if (canPause)
         {
-            Resume();
-        }
-        else
-        {
-            Pause();
+            if (IsPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
         }
     }
 
@@ -78,13 +88,14 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         IsPaused = true;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
         {
             dialogueAudioSource.Pause();
         }
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
 
     public void OptionsButton()
@@ -96,7 +107,6 @@ public class PauseMenu : MonoBehaviour
     {
         Debug.Log("Menu selected");
         IsPaused = false;
-        pauseMenuUI.SetActive(false);
         SceneManager.LoadScene("MainMenu");
     }
 

@@ -1,61 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class DeathMenu : MonoBehaviour
 {
     public static bool playerDead = false;
-    public GameObject playerMenuUI;
+    [SerializeField]
+    private GameObject canvas;
+    public AudioSource dialogueAudioSource;
+    [SerializeField]
+    private PauseMenu pauseMenu;
 
     [SerializeField]
-    private PlayerController playerInput;
-    [SerializeField]
-    private InputAction playerAction;
-
-    [SerializeField]
-    private ZeroGravity player = new ZeroGravity();
+    private ZeroGravity player;
 
     private void Awake()
     {
-        // Initialize the PlayerControls input actions
-        playerInput = new PlayerController(); // Ensure this matches the generated class name
+        playerDead = false;
+        canvas.SetActive(false);
+        pauseMenu.CanPause = true;
     }
 
     private void OnEnable()
     {
-        playerInput.UI.Enable();
+        pauseMenu.CanPause = true;
         // Access Pause action from the UI action map
-        playerAction = playerInput.UI.Pause;
-        playerAction.Enable();
-        playerInput.UI.Enable();
     }
 
     private void OnDisable()
     {
-        playerInput.UI.Disable();
-        playerAction.Disable();
-    }
 
-    private void Start()
-    {
-        //setting to wait for the player isDead to match it
-        playerDead = true;
-    }
-
-    private void Update()
-    {
-        //the player is dead, therefore each true signifys death
-        if (playerDead == player.IsDead)
-        {
-            Die();
-        }
+        pauseMenu.CanPause = true;
     }
 
     public void LastCheckpoint()
     {
         Debug.Log("Load Last Checkpoint selected");
+        Time.timeScale = 1f; //reset bto 1
+        playerDead = false;
+        pauseMenu.CanPause = true;
     }
 
     public void OptionsButton()
@@ -66,8 +52,10 @@ public class DeathMenu : MonoBehaviour
     public void LoadMenu()
     {
         Debug.Log("Menu selected");
-        playerMenuUI.SetActive(false);
+        canvas.SetActive(false);
         playerDead = false;
+        pauseMenu.CanPause = true;
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -79,8 +67,12 @@ public class DeathMenu : MonoBehaviour
 
     public void Die()
     {
-        playerMenuUI.SetActive(true);
-        Time.timeScale = 0.5f;
+        if (canvas != null)
+        {
+            canvas.SetActive(true); // Show death menu
+        }
+
+        Time.timeScale = 0.75f;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -92,8 +84,24 @@ public class DeathMenu : MonoBehaviour
         player.CanPushOff = false;
         player.CanRoll = false;
 
+        pauseMenu.CanPause = false;
+
         //set the rigid body rotations to unconstrained, cool uncontrolled dead body rotations
-        player.GetComponentInParent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        Rigidbody rb = player.GetComponentInParent<Rigidbody>();
+        if(rb != null )
+        {
+            rb.constraints = RigidbodyConstraints.None;
+        }
+    }
+    private void Update()
+    {
+        //the player is dead, therefore each true signifys death
+        if (player != null && player.IsDead && !playerDead)
+        {
+            Die();
+            playerDead = true;
+        }
+
     }
 }
 

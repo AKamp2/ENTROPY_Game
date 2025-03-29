@@ -364,9 +364,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-          m_MethodName: Resume
+        - m_Target: {fileID: 8039719404616737210}
+          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
+          m_MethodName: LastCheckpoint
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -434,7 +434,6 @@ GameObject:
   - component: {fileID: 930545619941646205}
   - component: {fileID: 967429999931543060}
   - component: {fileID: 7804008609701554284}
-  - component: {fileID: 7066823248196641581}
   m_Layer: 5
   m_Name: ResumeButton
   m_TagString: Untagged
@@ -458,9 +457,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -251.17, y: 44.67}
-  m_SizeDelta: {x: -523.68, y: -415.689}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 146.33, y: 280.16998}
+  m_SizeDelta: {x: 271.32, y: 55.311005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &930545619941646205
 CanvasRenderer:
@@ -513,21 +512,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
-    m_NormalColor: {r: 0, g: 0.8313726, b: 0.019607844, a: 1}
-    m_HighlightedColor: {r: 0.7364602, g: 1, b: 0, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 5
-    m_FadeDuration: 0.1
+    m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+    m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+    m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+    m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+    m_ColorMultiplier: 0
+    m_FadeDuration: 0
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -544,67 +543,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &7066823248196641581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1216957030002096896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 4
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7618276259385255662}
-          m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-          m_MethodName: Pause
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerEnter
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerExit
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!1 &1367825262258517643
 GameObject:
   m_ObjectHideFlags: 0
@@ -639,7 +577,7 @@ RectTransform:
   - {fileID: 1652928514173146632}
   - {fileID: 1652928514500195170}
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 7
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -839,8 +777,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        - m_Target: {fileID: 8039719404616737210}
+          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
           m_MethodName: Quit
           m_Mode: 1
           m_Arguments:
@@ -897,9 +835,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 8948745114101759879}
-  - {fileID: 1695053597068338581}
   m_Father: {fileID: 1652928513121764411}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -923,7 +860,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 7
   m_SortingLayerID: 0
   m_SortingOrder: 1
   m_TargetDisplay: 0
@@ -980,22 +917,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenuUI: {fileID: 5598138559789243046}
-  pauseAction:
-    m_Name: Pause
-    m_Type: 2
-    m_ExpectedControlType: Button
-    m_Id: c3332742-97e0-488e-84c7-251c0ffae13e
-    m_Processors: 
-    m_Interactions: Press
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 210f3701-d7f2-4991-827e-7a684d9183cd
-      m_Path: <Keyboard>/escape
-      m_Interactions: Press
-      m_Processors: 
-      m_Groups: 
-      m_Action: Pause
-      m_Flags: 0
   dialogueAudioSource: {fileID: 0}
 --- !u!1 &1636217226428217619
 GameObject:
@@ -1385,8 +1306,9 @@ Transform:
   m_LocalPosition: {x: 783.16095, y: 331.56506, z: -239.31729}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 3264046530618028319}
   - {fileID: 6078814783785564138}
+  - {fileID: 3264046530618028319}
+  - {fileID: 1695053597068338581}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1650,7 +1572,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 110.51, y: 11.234009}
-  m_SizeDelta: {x: 199.66, y: -30.171}
+  m_SizeDelta: {x: 199.66, y: -30.17099}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &538580800326680613
 CanvasRenderer:
@@ -1761,7 +1683,6 @@ GameObject:
   - component: {fileID: 5578393830343792154}
   - component: {fileID: 1175515596235774056}
   - component: {fileID: 2626321876080335950}
-  - component: {fileID: 2958012380880773469}
   m_Layer: 5
   m_Name: QuitButton
   m_TagString: Untagged
@@ -1782,7 +1703,7 @@ RectTransform:
   m_Children:
   - {fileID: 1108083397264594876}
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1870,80 +1791,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1175515596235774056}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8039719404616737210}
-        m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
-        m_MethodName: Quit
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &2958012380880773469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2958012380880773468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 4
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 8039719404616737210}
-          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
-          m_MethodName: Quit
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerEnter
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerExit
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+      m_Calls: []
 --- !u!1 &3080085099215788304
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,7 +1822,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2432,6 +2280,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 369335390449383794}
+  - component: {fileID: 6456495556053559023}
   m_Layer: 5
   m_Name: DeathMenu
   m_TagString: Untagged
@@ -2447,9 +2296,10 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3792283276821699667}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -26.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1183721982347878988}
   - {fileID: 3398081379947199664}
   - {fileID: 3114330154217321798}
   - {fileID: 2194369213418962878}
@@ -2457,15 +2307,35 @@ RectTransform:
   - {fileID: 5751744834113603887}
   - {fileID: 480346356997405688}
   - {fileID: 1223637901023877414}
-  - {fileID: 1183721982347878988}
   m_Father: {fileID: 3264046530618028319}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.09020996, y: -0.9100342}
-  m_SizeDelta: {x: -4.880005, y: -11.916992}
+  m_AnchoredPosition: {x: -1.2651367, y: 2.5242004}
+  m_SizeDelta: {x: -2.5302, y: -5.0484}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!223 &6456495556053559023
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792283276821699667}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 1
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 1
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &4185095817427402429
 GameObject:
   m_ObjectHideFlags: 0
@@ -2501,9 +2371,9 @@ RectTransform:
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -251.17, y: -126.81}
-  m_SizeDelta: {x: -523.68, y: -415.689}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 146.33, y: 108.69}
+  m_SizeDelta: {x: 271.32, y: 55.311005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &40387284817731371
 CanvasRenderer:
@@ -2562,7 +2432,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0, g: 0.8313726, b: 0.019607844, a: 1}
     m_HighlightedColor: {r: 0.7364602, g: 1, b: 0, a: 1}
@@ -2586,19 +2456,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5510051428696243203}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7618276259385255662}
-        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: LoadMenu
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &4585834630708745589
 GameObject:
   m_ObjectHideFlags: 0
@@ -2634,9 +2492,9 @@ RectTransform:
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -251.17, y: -69.65}
-  m_SizeDelta: {x: -523.68, y: -415.689}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 146.33, y: 165.85}
+  m_SizeDelta: {x: 271.32, y: 55.311005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2093102237908982680
 CanvasRenderer:
@@ -2695,7 +2553,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0, g: 0.8313726, b: 0.019607844, a: 1}
     m_HighlightedColor: {r: 0.7364602, g: 1, b: 0, a: 1}
@@ -2719,19 +2577,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1092273365599883533}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7618276259385255662}
-        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: OptionsButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &4828987623399798856
 GameObject:
   m_ObjectHideFlags: 0
@@ -2744,7 +2590,6 @@ GameObject:
   - component: {fileID: 8763737512682969566}
   - component: {fileID: 3848275599678880502}
   - component: {fileID: 737043058223951353}
-  - component: {fileID: 4828987623399798857}
   m_Layer: 5
   m_Name: MenuButton
   m_TagString: Untagged
@@ -2765,7 +2610,7 @@ RectTransform:
   m_Children:
   - {fileID: 8939239886652236101}
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2853,80 +2698,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3848275599678880502}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8039719404616737210}
-        m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
-        m_MethodName: LoadMenu
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &4828987623399798857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4828987623399798856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 4
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 8039719404616737210}
-          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
-          m_MethodName: LoadMenu
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerEnter
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerExit
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+      m_Calls: []
 --- !u!1 &4837347356957833314
 GameObject:
   m_ObjectHideFlags: 0
@@ -2962,9 +2734,9 @@ RectTransform:
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -251.17, y: -12.49}
-  m_SizeDelta: {x: -523.6832, y: -415.689}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 146.33, y: 223.01}
+  m_SizeDelta: {x: 271.31677, y: 55.311005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8991599639871946602
 CanvasRenderer:
@@ -3023,7 +2795,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0, g: 0.8313726, b: 0.019607844, a: 1}
     m_HighlightedColor: {r: 0.7364602, g: 1, b: 0, a: 1}
@@ -3047,19 +2819,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2928186119820351996}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7618276259385255662}
-        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: LastCheckpoint
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &5094794508238803840
 GameObject:
   m_ObjectHideFlags: 0
@@ -3072,7 +2832,6 @@ GameObject:
   - component: {fileID: 7213712949458296173}
   - component: {fileID: 8518831402560034808}
   - component: {fileID: 8859713060676775704}
-  - component: {fileID: 5094794508238803841}
   m_Layer: 5
   m_Name: OptionsButton
   m_TagString: Untagged
@@ -3093,7 +2852,7 @@ RectTransform:
   m_Children:
   - {fileID: 1760594257590583380}
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3181,80 +2940,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8518831402560034808}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8039719404616737210}
-        m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
-        m_MethodName: OptionsButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &5094794508238803841
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5094794508238803840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 4
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 8039719404616737210}
-          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
-          m_MethodName: OptionsButton
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerEnter
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerExit
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+      m_Calls: []
 --- !u!1 &5598138559789243046
 GameObject:
   m_ObjectHideFlags: 0
@@ -3264,6 +2950,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8948745114101759879}
+  - component: {fileID: 4067476418758209555}
   m_Layer: 5
   m_Name: PauseMenuContainer
   m_TagString: Untagged
@@ -3299,6 +2986,27 @@ RectTransform:
   m_AnchoredPosition: {x: -0.09020996, y: -0.9100342}
   m_SizeDelta: {x: -4.880005, y: -11.916992}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!223 &4067476418758209555
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5598138559789243046}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 1
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 1
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &5772638660681803689
 GameObject:
   m_ObjectHideFlags: 0
@@ -3334,9 +3042,9 @@ RectTransform:
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -315.38, y: -183.97}
-  m_SizeDelta: {x: -652.11, y: -415.689}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 82.119995, y: 51.53}
+  m_SizeDelta: {x: 142.89001, y: 55.311005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3781369413562028271
 CanvasRenderer:
@@ -3395,7 +3103,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0, g: 0.8313726, b: 0.019607844, a: 1}
     m_HighlightedColor: {r: 0.7364602, g: 1, b: 0, a: 1}
@@ -3419,19 +3127,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7584121028086570653}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7618276259385255662}
-        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: Quit
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &5910330687044601516
 GameObject:
   m_ObjectHideFlags: 0
@@ -3462,7 +3158,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -3598,10 +3294,10 @@ RectTransform:
   m_Father: {fileID: 8948745114101759879}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -140.83, y: 187.18}
-  m_SizeDelta: {x: -281.6539, y: -374.358}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 256.67, y: -48.321}
+  m_SizeDelta: {x: 513.34607, y: 96.642}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1751287403572310674
 CanvasRenderer:
@@ -3730,7 +3426,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3846,7 +3542,6 @@ GameObject:
   - component: {fileID: 8500973792364976520}
   - component: {fileID: 8393989138550016225}
   - component: {fileID: 1539413773778087577}
-  - component: {fileID: 7634462461974511090}
   m_Layer: 5
   m_Name: LastCheckpointButton
   m_TagString: Untagged
@@ -3867,7 +3562,7 @@ RectTransform:
   m_Children:
   - {fileID: 6804574735965220689}
   m_Father: {fileID: 369335390449383794}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3931,7 +3626,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0, g: 0.8313726, b: 0.019607844, a: 1}
     m_HighlightedColor: {r: 0.7364602, g: 1, b: 0, a: 1}
@@ -3956,67 +3651,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &7634462461974511090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7634462461974511093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 4
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 8039719404616737210}
-          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
-          m_MethodName: LastCheckpoint
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerEnter
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1657879171182722928}
-          m_TargetAssemblyTypeName: TextHoverEffect, Assembly-CSharp
-          m_MethodName: OnPointerExit
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!1 &7776323493867712638
 GameObject:
   m_ObjectHideFlags: 0
@@ -4051,8 +3685,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.09020996, y: 0.9100342}
-  m_SizeDelta: {x: 4.880005, y: 11.916992}
+  m_AnchoredPosition: {x: 4.857727, y: 0.043395996}
+  m_SizeDelta: {x: 42.2863, y: 40.9891}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7029387377361113224
 CanvasRenderer:
@@ -4336,7 +3970,7 @@ RectTransform:
   m_Children:
   - {fileID: 369335390449383794}
   m_Father: {fileID: 1652928513121764411}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4352,7 +3986,7 @@ Canvas:
   m_GameObject: {fileID: 8039719404616737213}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 1
@@ -4360,7 +3994,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 7
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -4416,15 +4050,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfe8716286c88284ab6a9777f4c7c266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMenuUI: {fileID: 3792283276821699667}
-  playerAction:
-    m_Name: Player
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 326c698a-9515-4c5e-9eb1-a4de261145b6
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
+  canvas: {fileID: 3792283276821699667}
+  dialogueAudioSource: {fileID: 0}
+  pauseMenu: {fileID: 7618276259385255662}
   player: {fileID: 0}
 --- !u!1 &8044961883970338790
 GameObject:
@@ -4611,8 +4239,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        - m_Target: {fileID: 8039719404616737210}
+          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
           m_MethodName: OptionsButton
           m_Mode: 1
           m_Arguments:
@@ -4822,8 +4450,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        - m_Target: {fileID: 8039719404616737210}
+          m_TargetAssemblyTypeName: DeathMenu, Assembly-CSharp
           m_MethodName: LoadMenu
           m_Mode: 1
           m_Arguments:
@@ -4874,11 +4502,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8346895318853254300}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -400.00003, y: -224.89082, z: 0}
-  m_LocalScale: {x: 0.8733624, y: 0.8733624, z: 0.8733624}
+  m_LocalPosition: {x: -0.000061035156, y: 32.29532, z: -0.000030517578}
+  m_LocalScale: {x: 1.6124456, y: 1.6124456, z: 1.6124456}
   m_Children: []
-  m_Father: {fileID: 6078814783785564138}
-  m_RootOrder: 1
+  m_Father: {fileID: 1652928513121764411}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8588842554316943870
 MonoBehaviour:
