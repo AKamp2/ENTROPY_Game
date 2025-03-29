@@ -688,10 +688,11 @@ public class ZeroGravity : MonoBehaviour
     {
         isGrabbing = false;
         grabbedBar = null;
-        hasPropelled = false;
 
         //lock grabbed bar and change icon
         grabber.sprite = openHand;
+        inputIndicator.sprite = null;
+        inputIndicator.color = new Color(0, 0, 0, 0);
 
         //resume dynamic bar detection
         UpdateClosestBarInView();
@@ -836,6 +837,7 @@ public class ZeroGravity : MonoBehaviour
     //Player uses WASD to propel themselves faster, only while currently grabbing a bar
     private void PropelOffBar()
     {
+        hasPropelled = false;
         //if the player is grabbing and no movement buttons are currently being pressed
         if (isGrabbing)
         {
