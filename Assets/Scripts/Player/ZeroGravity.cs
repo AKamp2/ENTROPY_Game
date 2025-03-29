@@ -528,7 +528,7 @@ public class ZeroGravity : MonoBehaviour
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
 
-            if (!isDead && !justHit)
+            if (!isDead && propelDirection.magnitude >= 10)
             {
                 //decrease the player health after they have collided with the closing door
                 DecreaseHealth(4);
