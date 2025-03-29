@@ -38,6 +38,11 @@ public class ZeroGravity : MonoBehaviour
     private int maxHealth = 4;
     private bool isDead = false;
 
+    //win tracker
+    private bool didWin = false;
+    [SerializeField]
+    private Collider end;
+
     //handle taking damage
     private bool justHit = false;
     private bool prevJustHit = false;
