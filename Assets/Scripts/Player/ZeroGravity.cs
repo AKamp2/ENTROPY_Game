@@ -39,10 +39,21 @@ public class ZeroGravity : MonoBehaviour
     private bool isDead = false;
 
     //handle taking damage
+    [SerializeField]
     private bool justHit = false;
+    [SerializeField]
     private bool prevJustHit = false;
-    private float coolDown = 3.0f;
-    private float timeStamp = 0f;
+    private float justHitCoolDown = 1.5f;
+    private float justHitTimeStamp = 0f;
+
+    //health indicator cooldown
+    [SerializeField]
+    private bool hurt = false;
+    [SerializeField]
+    private bool prevHurt = false;
+    private float hurtCoolDown = 3.5f;
+    private float highDangerCoolDown = 5.0f;
+    private float hurtTimeStamp = 0f;
 
     [Header("== UI Canvas ==")]
     //canvas elements
@@ -229,6 +240,11 @@ public class ZeroGravity : MonoBehaviour
         canRoll = true;
         isDead = false;
 
+        justHit = false;
+        prevJustHit = false;
+        hurt = false;
+        prevHurt = false;
+
         //set up the ui canvas
         UICanvas.SetActive(true);
 
@@ -314,24 +330,8 @@ public class ZeroGravity : MonoBehaviour
             HandleHealthUI();
 
             //manage the cooldowns
-
-            //if the player was just hit
-            if (justHit && !prevJustHit)
-            {
-                //create a timestamp representing the end of the cooldown
-                timeStamp = Time.time + coolDown;
-
-                Debug.Log("timestamp for cooldown: " + timeStamp);
-                prevJustHit = justHit;
-            }
-
-            //if the timestamp is less than or equal to the current time
-            if (Time.time >= timeStamp)
-            {
-                //set justHit to false, allowing player to take damage again
-                justHit = false;
-                prevJustHit = justHit;
-            }
+            HurtCoolDown();
+            JustHitCoolDown();
         }
     }
     #endregion 
@@ -428,6 +428,8 @@ public class ZeroGravity : MonoBehaviour
             DecreaseHealth(1);
             prevJustHit = justHit;
             justHit = true;
+            prevHurt = hurt;
+            hurt = true;
         }
     }
 
@@ -484,13 +486,13 @@ public class ZeroGravity : MonoBehaviour
                 avgBounceDirection.Normalize();
             }
 
-            Debug.Log("Avg Bounce Direction: " + avgBounceDirection);
+            //Debug.Log("Avg Bounce Direction: " + avgBounceDirection);
 
             float bounceSpeed = ogSpeed * .2f; // keep 75% of initial speed so it doesn't gain 
 
             //calculate the direction of the bounce
             Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .40f) * Time.deltaTime;
-            Debug.Log("propel direction: " + propelDirection);
+            //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
 
             if (!isDead && !justHit)
@@ -501,6 +503,8 @@ public class ZeroGravity : MonoBehaviour
                 //set just hit to true, commencing cooldown
                 prevJustHit = justHit;
                 justHit = true;
+                prevHurt = hurt;
+                hurt = true;
             }
         }
     }
@@ -717,6 +721,80 @@ public class ZeroGravity : MonoBehaviour
             isDead = true;
             //turn off the ui canvas
             UICanvas.SetActive(false);
+        }
+    }
+
+    private void IncreaseHealth(int i)
+    {
+        if (playerHealth > 4)
+        {
+            playerHealth = i;
+            return;
+        }
+
+        playerHealth += i;
+    }
+
+    private void JustHitCoolDown()
+    {
+        if (justHit && !prevJustHit)
+        {
+            //create a timestamp representing the end of the cooldown
+            justHitTimeStamp = Time.time + justHitCoolDown;
+
+            Debug.Log("timestamp for cooldown: " + justHitTimeStamp);
+            prevJustHit = justHit;
+        }
+
+        //if the timestamp is less than or equal to the current time
+        if (Time.time >= justHitTimeStamp)
+        {
+            //set justHit to false, allowing player to take damage again
+            justHit = false;
+            prevJustHit = justHit;
+        }
+    }
+
+    private void HurtCoolDown()
+    {
+        if (hurt && playerHealth < 4 && !prevHurt)
+        {
+            if (playerHealth <= 1)
+            {
+                //create a timestamp representing the end of the cooldown
+                //this is the closest to death so it will have a longer cooldown
+                hurtTimeStamp = Time.time + highDangerCoolDown;
+            }
+            else
+            {
+                //create a timestamp representing the end of the cooldown
+                hurtTimeStamp = Time.time + hurtCoolDown;
+
+            }
+
+            Debug.Log("timestamp for cooldown: " + justHitTimeStamp);
+            prevHurt = hurt;
+        }
+
+        if (Time.time >= hurtTimeStamp && hurt)
+        {
+            IncreaseHealth(1);
+
+            if(playerHealth >= 4) 
+            {
+                hurt = false;
+                prevHurt = false;
+            }
+            else
+            {
+                //reset the timer
+                hurtTimeStamp = Time.time + hurtCoolDown;
+            }
+        }
+
+        if (!hurt)
+        {
+            prevHurt = false;
         }
     }
 
