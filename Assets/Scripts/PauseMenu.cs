@@ -15,6 +15,9 @@ public class PauseMenu : MonoBehaviour
     private InputAction pauseAction;
     public AudioSource dialogueAudioSource; // Reference to the DialogueManager's AudioSource
 
+    [SerializeField]
+    private GameObject player;
+
     private bool canPause = false;
 
     public bool CanPause
@@ -67,9 +70,12 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         IsPaused = false;
+        
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        player.SetActive(true);
 
         // Resume audio
         if (dialogueAudioSource != null)
@@ -91,6 +97,8 @@ public class PauseMenu : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        player.SetActive(false);
 
         if (dialogueAudioSource != null && dialogueAudioSource.isPlaying)
         {

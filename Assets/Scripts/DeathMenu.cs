@@ -17,10 +17,14 @@ public class DeathMenu : MonoBehaviour
     [SerializeField]
     private ZeroGravity player;
 
+    [SerializeField]
+    private GameObject playerCanvas;
+
     private void Awake()
     {
         playerDead = false;
         canvas.SetActive(false);
+        playerCanvas.SetActive(true);
         pauseMenu.CanPause = true;
     }
 
@@ -85,6 +89,8 @@ public class DeathMenu : MonoBehaviour
         player.CanRoll = false;
 
         pauseMenu.CanPause = false;
+
+        playerCanvas.SetActive(false);
 
         //set the rigid body rotations to unconstrained, cool uncontrolled dead body rotations
         Rigidbody rb = player.GetComponentInParent<Rigidbody>();

@@ -54,8 +54,6 @@ public class ZeroGravity : MonoBehaviour
     [Header("== UI Canvas ==")]
     //canvas elements
     [SerializeField]
-    private GameObject UICanvas;
-    [SerializeField]
     private GameObject characterPivot;
     [SerializeField]
     private UnityEngine.UI.Image crosshair;
@@ -248,8 +246,6 @@ public class ZeroGravity : MonoBehaviour
         hurt = false;
         prevHurt = false;
 
-        //set up the ui canvas
-        UICanvas.SetActive(true);
 
         //let the mouse move
         Cursor.lockState = CursorLockMode.Locked;
@@ -760,8 +756,6 @@ public class ZeroGravity : MonoBehaviour
         {
             //set isDead as true
             isDead = true;
-            //turn off the ui canvas
-            UICanvas.SetActive(false);
         }
     }
 
