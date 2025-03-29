@@ -44,7 +44,11 @@ public class TutorialManager : MonoBehaviour
     {
         if (playerController.TutorialMode == true)
         {
-            tutorialDoor.LockDoor();
+            if(tutorialDoor != null)
+            {
+                tutorialDoor.LockDoor();
+            }
+            
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
         }
@@ -229,7 +233,11 @@ public class TutorialManager : MonoBehaviour
         {
             Debug.Log("Success! Moving to next tutorial step.");
             stepComplete = true;
-            tutorialDoor.UnlockDoor();
+            if(tutorialDoor != null)
+            {
+                tutorialDoor.UnlockDoor();
+            }
+            
             CompleteStep();
         }
         else
@@ -268,7 +276,11 @@ public class TutorialManager : MonoBehaviour
         SetPlayerAbilities(true, true, true, true);
         isWaitingForAction = false;
         playerController.TutorialMode = false;
-        endingDoor.UnlockDoor();
+        if(endingDoor != null)
+        {
+            endingDoor.UnlockDoor();
+        }
+        
         currentStep = 6;
     }
 

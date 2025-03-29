@@ -240,7 +240,7 @@ public class DialogueManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayTime); // Wait for the specified time
         currentSequenceIndex = sequenceIndex;
-        currentDialogueIndex = 3;
+        currentDialogueIndex = 0;
         dialogueCanvas.enabled = true;
         isDialogueActive = true;
         StartCoroutine(DisplayDialogue());
