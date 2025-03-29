@@ -5,6 +5,8 @@ using UnityEngine;
 public class Win : MonoBehaviour
 {
     private bool winCondition = false;
+    [SerializeField]
+    private DoorScript winDoor;
 
     public bool WinCondition
     {
@@ -18,8 +20,17 @@ public class Win : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
+            winDoor.DoorState = DoorScript.States.Closing;
+        }
+    }
+
+    private void Update()
+    {
+        if (winDoor.DoorState == DoorScript.States.Closed && winCondition != true)
+        {
             winCondition = true;
         }
+
     }
 
 }
