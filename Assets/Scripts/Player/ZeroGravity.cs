@@ -521,17 +521,17 @@ public class ZeroGravity : MonoBehaviour
 
             //Debug.Log("Avg Bounce Direction: " + avgBounceDirection);
 
-            float bounceSpeed = ogSpeed * .2f; // keep 75% of initial speed so it doesn't gain 
+            float bounceSpeed = ogSpeed * .3f; // keep 30% of initial speed so it doesn't gain 
 
             //calculate the direction of the bounce
-            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .40f) * Time.deltaTime;
+            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * Time.deltaTime;
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
 
             if (!isDead && !justHit)
             {
                 //decrease the player health after they have collided with the closing door
-                DecreaseHealth(3);
+                DecreaseHealth(4);
 
                 //set just hit to true, commencing cooldown
                 prevJustHit = justHit;
