@@ -39,17 +39,13 @@ public class ZeroGravity : MonoBehaviour
     private bool isDead = false;
 
     //handle taking damage
-    [SerializeField]
     private bool justHit = false;
-    [SerializeField]
     private bool prevJustHit = false;
     private float justHitCoolDown = 1.5f;
     private float justHitTimeStamp = 0f;
 
     //health indicator cooldown
-    [SerializeField]
     private bool hurt = false;
-    [SerializeField]
     private bool prevHurt = false;
     private float hurtCoolDown = 3.5f;
     private float highDangerCoolDown = 5.0f;
