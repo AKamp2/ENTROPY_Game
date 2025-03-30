@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using System.Collections;
+
 public class PauseMenu : MonoBehaviour 
 {
 
@@ -17,6 +19,15 @@ public class PauseMenu : MonoBehaviour
 
     [SerializeField]
     private GameObject player;
+    [SerializeField]
+    private ZeroGravity playerController;
+    [SerializeField]
+    private GameObject respawnLoc;
+    [SerializeField]
+    private CameraFade cameraFade;
+
+
+
 
     private bool canPause = false;
 
@@ -87,6 +98,25 @@ public class PauseMenu : MonoBehaviour
     public void LastCheckpoint()
     {
         Debug.Log("Load Last Checkpoint selected");
+
+        // Start fading out while the game is still paused
+        StartCoroutine(FadeOutAndRespawn());
+    }
+
+    // This coroutine handles fading out, resuming the game, and then respawning.
+    private IEnumerator FadeOutAndRespawn()
+    {
+        // Fade the screen to black
+        yield return StartCoroutine(cameraFade.FadeOut(1f));  // 1f is the duration for fade-out
+
+        // Resume the game (unpausing)
+        Resume();
+
+        // Call the Respawn method on the playerController to respawn the player
+        playerController.Respawn(respawnLoc);
+
+        // Fade the screen back in after the player has respawned
+        yield return StartCoroutine(cameraFade.FadeIn(1f));  // 1f is the duration for fade-in
     }
 
     public void Pause()

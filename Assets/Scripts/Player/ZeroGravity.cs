@@ -243,6 +243,8 @@ public class ZeroGravity : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 60;  // Match this with your build target frame rate.
+
         //initial player booleans set
         if (tutorialMode)
         {
@@ -303,7 +305,7 @@ public class ZeroGravity : MonoBehaviour
             if (tutorialMode)
             {
                 
-                RotateCam();
+                
                 if (canGrab)
                 {
                     HandleGrabMovement();
@@ -333,7 +335,7 @@ public class ZeroGravity : MonoBehaviour
             {
                 //Debug.Log("Tutorial Mode off");
                 
-                RotateCam();
+                
                 HandleGrabMovement();
                 HandleRaycast();
                 //handle grabber icon logic
@@ -357,6 +359,21 @@ public class ZeroGravity : MonoBehaviour
             HurtCoolDown();
             JustHitCoolDown();
         }
+    }
+
+    void Update()
+    {
+        if (canMove)
+        {
+            RotateCam();
+        }
+
+        //Death debugging shortcut
+        /*
+        if (Keyboard.current.kKey.wasPressedThisFrame) {
+            DecreaseHealth(4);
+        }
+        */
     }
     #endregion 
 
@@ -905,11 +922,10 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
-    public void Respawn(Vector3 respawnPosition)
+    public void Respawn(GameObject respawn)
     {
-        cameraFade.alpha = 1;
-        StartCoroutine(cameraFade.FadeIn());
-        transform.position = respawnPosition;
+        transform.position = respawn.transform.position;
+        //transform.rotation = respawn.transform.rotation;
         isDead = false;
         playerHealth = maxHealth;
 

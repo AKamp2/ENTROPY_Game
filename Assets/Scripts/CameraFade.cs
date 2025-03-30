@@ -1,72 +1,53 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFade : MonoBehaviour
 {
-    public float speedScale = 1f;
-    public Color fadeColor = Color.black;
-    public AnimationCurve Curve = new AnimationCurve(new Keyframe(0, 1),
-        new Keyframe(0.5f, 0.5f, -1.5f, -1.5f), new Keyframe(1, 0));
-    public bool startFadedOut = false;
-
-    public float alpha = 0f;
-    private Texture2D texture;
-    private int direction = 0;
-    private float time = 0f;
+    public CanvasGroup fadeCanvasGroup; // Reference to the UI panel with CanvasGroup
+    public float defaultFadeDuration = 1.5f; // Default fade time (modifiable)
 
     private void Start()
     {
-        if (startFadedOut)
+        if (fadeCanvasGroup == null)
         {
-            alpha = 1f;
-            StartCoroutine(FadeIn()); // Automatically start fading in if scene starts faded out
-        }
-        else
-        {
-            alpha = 0f;
+            Debug.LogError("CameraFade: No CanvasGroup assigned for fading!");
+            return;
         }
 
-        texture = new Texture2D(1, 1);
-        texture.SetPixel(0, 0, new Color(fadeColor.r, fadeColor.g, fadeColor.b, alpha));
-        texture.Apply();
+        fadeCanvasGroup.alpha = 1; // Start fully faded out
+        StartCoroutine(FadeIn(defaultFadeDuration)); // Automatically fade in
     }
 
-    private void Update()
+    public IEnumerator FadeIn(float duration)
     {
-        // Removed key input logic
-    }
-
-    public void OnGUI()
-    {
-        if (alpha > 0f)
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texture);
-
-        if (direction != 0)
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
         {
-            time += direction * Time.deltaTime * speedScale;
-            alpha = Curve.Evaluate(time);
-            texture.SetPixel(0, 0, new Color(fadeColor.r, fadeColor.g, fadeColor.b, alpha));
-            texture.Apply();
-
-            if (alpha <= 0f || alpha >= 1f) direction = 0; // Stop the fading once it reaches the limit
+            fadeCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
+            elapsedTime += Time.unscaledDeltaTime; // Use unscaled time to work during pause
+            yield return null;
         }
+        fadeCanvasGroup.alpha = 0f;
     }
 
-    // Method to trigger Fade In
-    public IEnumerator FadeIn()
+    public IEnumerator FadeOut(float duration)
     {
-        time = 1f;
-        direction = -1; // Start fading in
-        yield return null;
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            fadeCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);
+            elapsedTime += Time.unscaledDeltaTime;
+            yield return null;
+        }
+        fadeCanvasGroup.alpha = 1f;
     }
 
-    // Method to trigger Fade Out
-    public IEnumerator FadeOut()
+    public void SetAlpha(float alpha)
     {
-        time = 0f;
-        direction = 1; // Start fading out
-        yield return null;
+        if (fadeCanvasGroup != null)
+        {
+            fadeCanvasGroup.alpha = Mathf.Clamp01(alpha); // Ensure value is between 0-1
+        }
     }
 }
 

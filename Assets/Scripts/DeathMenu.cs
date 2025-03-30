@@ -22,6 +22,9 @@ public class DeathMenu : MonoBehaviour
     [SerializeField]
     private GameObject playerCanvas;
 
+    [SerializeField]
+    private CameraFade cameraFade;
+
     private void Awake()
     {
         playerDead = false;
@@ -45,9 +48,14 @@ public class DeathMenu : MonoBehaviour
     public void LastCheckpoint()
     {
         Debug.Log("Load Last Checkpoint selected");
+        
         Time.timeScale = 1f; // Ensure normal game speed
         playerDead = false;
-        player.Respawn(respawnLoc.transform.position);
+
+        StartCoroutine(cameraFade.FadeIn(1.5f));
+
+
+        player.Respawn(respawnLoc);
 
         
         playerCanvas.SetActive(true);  // Re-enable player UI
@@ -57,6 +65,7 @@ public class DeathMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         canvas.SetActive(false);  // Hide death menu
+        
     }
 
     public void OptionsButton()
