@@ -30,18 +30,18 @@ public class EnemyBounceAI : MonoBehaviour
         Vector3 directionToTracker = (trackerObject.transform.position - transform.position).normalized;
 
         // Apply consistent velocity
-        bouncingRb.velocity = directionToTracker * bounceSpeed;
+        bouncingRb.linearVelocity = directionToTracker * bounceSpeed;
 
         // Apply collision response for bouncing
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, bouncingRb.velocity, out hit, followDistance, barrierLayer))
+        if (Physics.Raycast(transform.position, bouncingRb.linearVelocity, out hit, followDistance, barrierLayer))
         {
             // Calculate bounce direction
-            Vector3 bounceDirection = Vector3.Reflect(bouncingRb.velocity.normalized, hit.normal);
+            Vector3 bounceDirection = Vector3.Reflect(bouncingRb.linearVelocity.normalized, hit.normal);
 
-            // Adjust to ensure the object follows the tracker’s direction partially
+            // Adjust to ensure the object follows the trackerï¿½s direction partially
             Vector3 weightedDirection = Vector3.Lerp(bounceDirection, directionToTracker, 0.3f).normalized;
-            bouncingRb.velocity = weightedDirection * bounceSpeed;
+            bouncingRb.linearVelocity = weightedDirection * bounceSpeed;
         }
     }
 

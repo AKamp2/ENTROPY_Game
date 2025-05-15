@@ -408,7 +408,7 @@ public class ZeroGravity : MonoBehaviour
 
     private void PropelOffWall()
     {
-        if(rb.velocity.magnitude <= pushSpeed && canPushOff)
+        if(rb.linearVelocity.magnitude <= pushSpeed && canPushOff)
         {
             //zero the initial velocities ensuring a direct push back
             //rb.velocity = Vector3.zero;
@@ -435,7 +435,7 @@ public class ZeroGravity : MonoBehaviour
 
         Vector3 avgBounceDirection = Vector3.zero;
         int bounceCount = 0;
-        float ogSpeed = rb.velocity.magnitude; //store initial velocity magnitude
+        float ogSpeed = rb.linearVelocity.magnitude; //store initial velocity magnitude
 
         //Debug.Log(ogSpeed);
 
@@ -443,7 +443,7 @@ public class ZeroGravity : MonoBehaviour
         {
             Vector3 closestPoint = barrier.ClosestPoint(transform.position);
             Vector3 wallNormal = (transform.position - closestPoint).normalized;
-            Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
+            Vector3 reflectDirection = Vector3.Reflect(rb.linearVelocity.normalized, wallNormal);
 
             //pudh the player away slighly so they won't be stuck colliding with the wall.
             Vector3 pushAway = wallNormal * 0.05f; // small offset to prevent overlap
@@ -472,10 +472,10 @@ public class ZeroGravity : MonoBehaviour
                 bounceSpeed = minimumSpeed;
             }
 
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
 
-            rb.velocity = avgBounceDirection * bounceSpeed;
+            rb.linearVelocity = avgBounceDirection * bounceSpeed;
         }
 
         //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds
@@ -511,7 +511,7 @@ public class ZeroGravity : MonoBehaviour
 
         Vector3 avgBounceDirection = Vector3.zero;
         int bounceCount = 0;
-        float ogSpeed = rb.velocity.magnitude; //store initial velocity magnitude
+        float ogSpeed = rb.linearVelocity.magnitude; //store initial velocity magnitude
 
         foreach (Collider door in hitDoors)
         {
@@ -543,7 +543,7 @@ public class ZeroGravity : MonoBehaviour
         if (bounceCount > 0)
         {
             //set velocity to zero
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
 
             //only normalize if avgBounceDirection is valid
@@ -718,7 +718,7 @@ public class ZeroGravity : MonoBehaviour
         grabber.sprite = closedHand;
 
         //set the velocities to zero so that the player stops when they grab the bar
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
 
@@ -939,7 +939,7 @@ public class ZeroGravity : MonoBehaviour
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = Vector3.zero; // Reset velocity to prevent unwanted movement
+            rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
             rb.angularVelocity = Vector3.zero;
         }
     }
@@ -964,7 +964,7 @@ public class ZeroGravity : MonoBehaviour
             RayCastHandleDoorButton(hit);
 
             //if the current velocity is less than the parameter we set
-            if(rb.velocity.magnitude <= pushSpeed)
+            if(rb.linearVelocity.magnitude <= pushSpeed)
             {
                 //we handle interaction with pushing off the wall
                 RayCastHandlePushOffWall(hit);

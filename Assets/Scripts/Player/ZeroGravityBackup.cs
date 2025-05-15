@@ -227,13 +227,13 @@ public class ZeroGravityBackup : MonoBehaviour
         {
             Vector3 totalBounceDirection = Vector3.zero;
             Vector3 strongestBounce = Vector3.zero;
-            float originalSpeed = rb.velocity.magnitude; // Store initial velocity magnitude
+            float originalSpeed = rb.linearVelocity.magnitude; // Store initial velocity magnitude
 
             foreach (Collider barrier in hitColliders)
             {
                 Vector3 closestPoint = barrier.ClosestPoint(transform.position);
                 Vector3 wallNormal = (transform.position - closestPoint).normalized;
-                Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, wallNormal);
+                Vector3 reflectDirection = Vector3.Reflect(rb.linearVelocity.normalized, wallNormal);
 
                 totalBounceDirection += reflectDirection;
 
@@ -256,10 +256,10 @@ public class ZeroGravityBackup : MonoBehaviour
             float bounceSpeed = originalSpeed * 0.7f; // 70% of initial speed to prevent gaining energy
 
             // Apply new velocity
-            rb.velocity = totalBounceDirection * bounceSpeed;
+            rb.linearVelocity = totalBounceDirection * bounceSpeed;
             //rb.angularVelocity = Vector3.zero;
 
-            Debug.Log($"Bounce Direction: {totalBounceDirection}, Speed After Bounce: {rb.velocity.magnitude}");
+            Debug.Log($"Bounce Direction: {totalBounceDirection}, Speed After Bounce: {rb.linearVelocity.magnitude}");
         }
     }
 
@@ -379,7 +379,7 @@ public class ZeroGravityBackup : MonoBehaviour
         grabber.sprite = closedHand;
 
         //set the velocities to zero so that the player stops when they grab the bar
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
 
