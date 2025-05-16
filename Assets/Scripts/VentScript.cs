@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class VentScript : MonoBehaviour
 {
-    [SerializeField]
-    private Rigidbody rb;
+	[SerializeField]
+	private Rigidbody rb;
     [SerializeField]
     private float thrust = 10.0f;
 
@@ -14,7 +14,7 @@ public class VentScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = GameObject.Find("Player").GetComponentInChildren<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -31,12 +31,21 @@ public class VentScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        inRegion = true;
+        if (other.CompareTag("Player"))
+        {
+            if (rb != null)
+			    inRegion = true;
+		}
+       
     }
 
 
     void OnTriggerExit(Collider other)
     {
-        inRegion = false;
-    }
+		if (other.CompareTag("Player"))
+		{
+			if (rb != null)
+				inRegion = false;
+		}
+	}
 }
