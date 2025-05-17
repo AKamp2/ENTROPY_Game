@@ -34,6 +34,11 @@ public class DialogueManager : MonoBehaviour
 
     private float fadeDuration = 0.5f;
 
+    [Header("Skip Settings")]
+    public AudioSource sfxSource;         // assign in inspector
+    public AudioClip skipSfxClip;        
+    public float skipPauseDuration = 0.3f;
+
     public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
 
     public bool TutorialSkipped
@@ -124,29 +129,55 @@ public class DialogueManager : MonoBehaviour
             // Adjust speed if an audio clip is present
             if (currentDialogue.audioClip != null)
             {
-                typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.01f;
+                typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.015f;
             }
 
-            // Show each line with typewriter effect, one by one
+            // Show lines
             foreach (string line in currentDialogue.dialogueLines)
             {
                 yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
-                yield return new WaitForSeconds(0.5f);
 
+                // Skip: break out of current dialogue block
+                if (isSkipping)
+                {
+                    break;
+                }
+
+                yield return new WaitForSeconds(0.3f);
             }
 
+            // Skip: clear audio, advance dialogue index, continue outer loop
+            if (isSkipping)
+            {
+                isSkipping = false;
 
+                if (audioSource.isPlaying)
+                    audioSource.Stop();
 
-            //allow user to skip a whole line of dialogue if at end of the dialogueSequence
-            //if (isSkipping)
-            //{
-            //    currentDialogueIndex++;
-            //   continue;
-            //}
+                if (currentDialogue.advancesTutorial == false)
+                {
+                    dialogueTextUI.text = "";
+                }
+                
+
+                // Still advance tutorial if this dialogue was supposed to
+                if (currentDialogue.advancesTutorial)
+                {
+                    //set the text to the last line in the set instead of wiping it
+                    dialogueTextUI.text = currentDialogue.dialogueLines[currentDialogue.dialogueLines.Length - 1];
+                    tutorialManager.ProgressTutorial();
+                    yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
+                }
+
+                yield return new WaitForSeconds(0.3f);
+                currentDialogueIndex++;
+                continue;
+            }
 
             // Wait until the audio clip finishes before moving to the next dialogue unless skipping
             yield return new WaitUntil(() => !audioSource.isPlaying);
             yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
+
 
             //advance tutorial if the dialogue is intended to.
             if(currentDialogue.advancesTutorial)
@@ -197,7 +228,7 @@ public class DialogueManager : MonoBehaviour
         foreach (string line in currentDialogue.dialogueLines)
         {
             yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
 
         }
 
@@ -219,9 +250,7 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator TypewriterEffect(string dialogueText, AudioClip audioClip, float typewriterSpeed)
     {
         dialogueTextUI.text = "";
-        isSkipping = false;
-
-        
+        isSkipping = false;  // reset skip flag for this line
 
         foreach (char letter in dialogueText)
         {
@@ -229,8 +258,13 @@ public class DialogueManager : MonoBehaviour
 
             if (isSkipping)
             {
-                dialogueTextUI.text = dialogueText;
-                isSkipping = false;
+                if (sfxSource && skipSfxClip)
+                    sfxSource.PlayOneShot(skipSfxClip);
+
+                if (audioSource.isPlaying)
+                    audioSource.Stop();
+
+                
                 yield break;
             }
 
