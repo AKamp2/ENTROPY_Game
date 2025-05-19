@@ -16,11 +16,18 @@ public class EnemyAI : MonoBehaviour
     private Queue<Waypoint> path = new Queue<Waypoint>();
     private bool isChasingPlayer = false;
 
+    public AudioSource audioSource;
+    public AudioClip alienSfx;
+
     void Start()
     {
         // Set the current waypoint to the starting one
         currentWaypoint = startingWaypoint;
         FindPlayerPath();
+
+        audioSource.clip = alienSfx;
+        audioSource.loop = true;
+        audioSource.Stop();
     }
 
     void Update()
@@ -28,12 +35,17 @@ public class EnemyAI : MonoBehaviour
         // Only start AI behavior if the door is open
         if (door.DoorState != DoorScript.States.Open) return;
 
-
+        
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-        float distanceToFollower = Vector3.Distance(transform.position, enemyFollower.transform.position);
+        //float distanceToFollower = Vector3.Distance(transform.position, enemyFollower.transform.position);
 
         if (isChasingPlayer)
         {
+            if (audioSource.isPlaying == false)
+            {
+                audioSource.Play();
+            }
+
             if(distanceToPlayer >= escapeDistance)
             {
                 isChasingPlayer = false;
@@ -62,6 +74,11 @@ public class EnemyAI : MonoBehaviour
             {
                 isChasingPlayer = false;
                 TrackPlayer();
+
+                if (audioSource.isPlaying == true)
+                {
+                    audioSource.Stop();
+                }
             }
         }
         
