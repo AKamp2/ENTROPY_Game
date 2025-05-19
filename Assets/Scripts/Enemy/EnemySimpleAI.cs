@@ -17,11 +17,18 @@ public class EnemySimpleAI : MonoBehaviour
     private bool isChasingPlayer = false;
     private bool isMoving = true;
 
+    public AudioSource audioSource;
+    public AudioClip alienSfx;
+
     void Start()
     {
         // Set the current waypoint to the starting one
         currentWaypoint = startingWaypoint;
         FindPlayerPath();
+
+        audioSource.clip = alienSfx;
+        audioSource.loop = true;
+        audioSource.Stop();
     }
 
     void Update()
@@ -36,6 +43,11 @@ public class EnemySimpleAI : MonoBehaviour
         {
             if (isChasingPlayer)
             {
+                if (audioSource.isPlaying == false)
+                {
+                    audioSource.Play();
+                }
+
                 if (distanceToPlayer >= escapeDistance)
                 {
                     isChasingPlayer = false;
@@ -64,6 +76,11 @@ public class EnemySimpleAI : MonoBehaviour
                 {
                     isChasingPlayer = false;
                     TrackPlayer();
+
+                    if (audioSource.isPlaying == true)
+                    {
+                        audioSource.Stop();
+                    }
                 }
             }
         }
