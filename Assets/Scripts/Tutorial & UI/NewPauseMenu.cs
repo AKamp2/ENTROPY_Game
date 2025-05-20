@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NewPauseMenu : MonoBehaviour
 {
@@ -7,23 +8,9 @@ public class NewPauseMenu : MonoBehaviour
     void Start()
     {
         // Pause Game
-        //Time.timeScale = 0;
+        
     }
 
-    public void Resume()
-    {
-        Time.timeScale = 1;
-        this.gameObject.SetActive(false);
-    }
-
-    public void OpenSettings(GameObject settingsMenu)
-    {
-        settingsMenu.SetActive(true);
-        Debug.Log("Settings Pressed");
-    }
-
-    public void Quit()
-    {
-       Application.Quit();
-    }
+    
+    
 }
