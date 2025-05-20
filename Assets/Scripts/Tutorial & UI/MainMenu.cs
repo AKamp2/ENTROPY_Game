@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField] private GameObject optionsMenu;
+
     private void Start()
     {
         // Ensure cursor is visible and locked
@@ -21,7 +23,14 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("NewLevel");
       
     }
-
+    public void Options()
+    {
+        optionsMenu.SetActive(true);
+    }
+    public void CloseOptions()
+    {
+        optionsMenu.SetActive(false);
+    }
     public void QuitGame()
     {
         Application.Quit();
