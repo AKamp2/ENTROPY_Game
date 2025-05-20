@@ -42,11 +42,13 @@ public class MenuManager : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            playerCanvas.SetActive(false);
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            playerCanvas.SetActive(true);
         }
     }
     public void Pause()
