@@ -20,6 +20,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private CameraFade cameraFade;
     public static bool playerDead = false;
 
+    // Audio Manager
+    [SerializeField] private AudioSource dialogue;
+
+
     public void Start()
     {
         activeMenus = new List<GameObject>();
@@ -55,12 +59,14 @@ public class MenuManager : MonoBehaviour
     {
         pauseMenu.SetActive(true);
         Time.timeScale = 0;
+        dialogue.Pause();
     }
 
     public void Resume()
     {
         Time.timeScale = 1;
         CloseMenus();
+        dialogue.Play();
     }
 
     public void OptionsButton()
