@@ -10,6 +10,7 @@ public class MenuManager : MonoBehaviour
     // Serialize Menus for managing
     [SerializeField] private GameObject deathMenu;
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject thanksMenu;
     [SerializeField] private GameObject optionsMenu;
     public List<GameObject> activeMenus;
 
@@ -23,6 +24,9 @@ public class MenuManager : MonoBehaviour
     // Audio Manager
     [SerializeField] private AudioSource dialogue;
 
+    // Win Condition
+    [SerializeField]
+    private Win winScript;
 
     public void Start()
     {
@@ -41,6 +45,12 @@ public class MenuManager : MonoBehaviour
         if (player.IsDead)
         {
             deathMenu.SetActive(true);
+            dialogue.Pause();
+        }
+        if (winScript.WinCondition && activeMenus.Count== 0)
+        {
+            activeMenus.Add(thanksMenu);
+            thanksMenu.SetActive(true);
         }
         if (activeMenus.Count > 0)
         {
@@ -78,7 +88,7 @@ public class MenuManager : MonoBehaviour
     {
         // Need state machine for player to be reset
         Debug.Log("Load Last Checkpoint selected");
-        CloseMenus();
+        Resume();
         
         Time.timeScale = 1f; // Ensure normal game speed
         playerDead = false;
