@@ -238,6 +238,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53151f6348db3464ab800fd324d297d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1332581120 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2322475786763742782, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+  m_PrefabInstance: {fileID: 2059124556}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1955653393 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2948075964260565286, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+  m_PrefabInstance: {fileID: 2059124556}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2059124556
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -342,6 +352,10 @@ PrefabInstance:
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 2322475786763742782, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2948075963403139158, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_Name
       value: Player
@@ -407,6 +421,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 985599911}
+    - target: {fileID: 6288678752181235048, guid: a1262d7acddfeca45945f918e250b6d5, type: 3}
+      propertyPath: respawnLoc
+      value: 
+      objectReference: {fileID: 1955653393}
+    - target: {fileID: 6288678752181235048, guid: a1262d7acddfeca45945f918e250b6d5, type: 3}
+      propertyPath: playerCanvas
+      value: 
+      objectReference: {fileID: 1332581120}
     - target: {fileID: 8112053955784287193, guid: a1262d7acddfeca45945f918e250b6d5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1800.9146
