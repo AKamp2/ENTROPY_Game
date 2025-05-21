@@ -342,10 +342,10 @@ public class ZeroGravity : MonoBehaviour
                     }
                     
                 }
-                else if (!isGrabbing)
-                {
-                    //StopSwing();
-                }
+                //else if (!isGrabbing)
+                //{
+                //    //StopSwing();
+                //}
                 else
                 {
                     //update to closest bar in view 
@@ -365,10 +365,10 @@ public class ZeroGravity : MonoBehaviour
                     //keep grabber locked to grabbed bar
                     UpdateGrabberPosition(grabbedBar);
                 }
-                else if (!isGrabbing)
-                {
-                    //StopSwing();
-                }
+                //else if (!isGrabbing)
+                //{
+                //    //StopSwing();
+                //}
                 else
                 {
                     //update to closest bar in view 
@@ -708,7 +708,7 @@ public class ZeroGravity : MonoBehaviour
                 else
                 {
                     //hide the grabber when the bar is behind the camera
-                    //HideGrabber();
+                    HideGrabber();
                 }
 
             }
@@ -744,8 +744,8 @@ public class ZeroGravity : MonoBehaviour
         grabber.sprite = closedHand;
 
         //set the velocities to zero so that the player stops when they grab the bar
-        //rb.linearVelocity = Vector3.zero;
-        //rb.angularVelocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     // Release the bar and enable movement again
