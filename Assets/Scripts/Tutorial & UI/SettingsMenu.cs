@@ -8,11 +8,16 @@ using UnityEngine.Audio;
 
 public class SettingsMenu : MonoBehaviour 
 {
+    // Array of submenus to be toggled
     public GameObject[] optionsMenus;
     
     // Audio setting initialization
     [SerializeField] private Slider dialogueSlider;
     [SerializeField] private Slider soundFXSlider;
+
+    // General setting initialization
+    [SerializeField] private Toggle subtitleCheckbox;
+    [SerializeField] private Slider sensitivitySlider;
 
 
     private void Awake()
@@ -24,15 +29,36 @@ public class SettingsMenu : MonoBehaviour
 
     public void SetDialogueVolume(AudioSource audioSource)
     {
+        // Sets the dialogue volume to the slide value
         audioSource.volume = dialogueSlider.value;
         Debug.Log(audioSource.volume);
     }
 
     public void SetSoundFXVolume(AudioSource audioSource)
     {
+        // Sets the sound effects volume to the slide value
         audioSource.volume = soundFXSlider.value;
         Debug.Log(audioSource.volume);
 
+    }
+
+    public void SetSensitivity(ZeroGravity player)
+    {
+        // Sets the sound effects volume to the slide value
+        player.SensitivityX = sensitivitySlider.value;
+        player.SensitivityY = sensitivitySlider.value;
+    }
+
+    public void ToggleSubtitles(GameObject dialogueText)
+    {
+        if (subtitleCheckbox.isOn)
+        {
+            dialogueText.SetActive(true);
+        }
+        else 
+        { 
+            dialogueText.SetActive(false);
+        }
     }
 
     // Click handlers

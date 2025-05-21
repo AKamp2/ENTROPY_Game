@@ -244,6 +244,18 @@ public class ZeroGravity : MonoBehaviour
         set {  isDead = value; }
     }
 
+    public float SensitivityX
+    {
+        get { return sensitivityX; }
+        set { sensitivityX = value; }
+    }
+
+    public float SensitivityY
+    {
+        get { return sensitivityY; }
+        set { sensitivityY = value; }
+    }
+
     // getter for isGrabbing
     public bool IsGrabbing => isGrabbing;
 
