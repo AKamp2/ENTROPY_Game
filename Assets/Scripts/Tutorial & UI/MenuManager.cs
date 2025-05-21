@@ -76,7 +76,7 @@ public class MenuManager : MonoBehaviour
     {
         Time.timeScale = 1;
         CloseMenus();
-        dialogue.Play();
+        dialogue.UnPause();
     }
 
     public void OptionsButton()
@@ -94,7 +94,7 @@ public class MenuManager : MonoBehaviour
         playerDead = false;
 
         StartCoroutine(cameraFade.FadeIn(1.5f));
-        player.Respawn(respawnLoc);
+        player.Respawn();
         playerCanvas.SetActive(true);  // Re-enable player UI
     }
 
