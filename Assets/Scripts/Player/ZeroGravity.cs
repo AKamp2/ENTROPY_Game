@@ -344,7 +344,7 @@ public class ZeroGravity : MonoBehaviour
                 }
                 else if (!isGrabbing)
                 {
-                    StopSwing();
+                    //StopSwing();
                 }
                 else
                 {
@@ -367,7 +367,7 @@ public class ZeroGravity : MonoBehaviour
                 }
                 else if (!isGrabbing)
                 {
-                    StopSwing();
+                    //StopSwing();
                 }
                 else
                 {
@@ -612,7 +612,7 @@ public class ZeroGravity : MonoBehaviour
         {
             currentRollSpeed = 0.0f;
             PropelOffBar();
-            Swing(grabbedBar);
+            //Swing(grabbedBar);
         }
     }
 
