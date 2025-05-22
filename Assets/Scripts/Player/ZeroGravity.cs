@@ -113,8 +113,6 @@ public class ZeroGravity : MonoBehaviour
 
     [Header("== Player Movement Settings ==")]
     [SerializeField]
-    public float speed = 50.0f;
-    [SerializeField]
     private float rollTorque = 250.0f;
     private float currentRollSpeed = 0f;
     [SerializeField]
@@ -962,6 +960,9 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This method conrols the logic handling all of the raycasts from the player to diffeent objects in the scene allowing for multiple movement/ interaction options
+    /// </summary>
     private void HandleRaycast()
     {
         if (isGrabbing)
@@ -1050,13 +1051,12 @@ public class ZeroGravity : MonoBehaviour
                 joint = this.gameObject.AddComponent<SpringJoint>();
                 joint.autoConfigureConnectedAnchor = false;
                 joint.connectedAnchor = swingPoint;
+                float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+
+                //ensure the max and min distances are set properly
+                joint.maxDistance = grabRange;
+                joint.minDistance = minGrabRange;
             }
-
-            float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
-
-            //ensure the max and min distances are set properly
-            joint.maxDistance = grabRange;
-            joint.minDistance = minGrabRange;
 
             //tweak these values for the spring for better pendulum values
             joint.spring = 4.5f; //higher pull and push of the spring

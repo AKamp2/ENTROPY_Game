@@ -1039,7 +1039,7 @@ public class ZeroGravityTest : MonoBehaviour
     /// <param name="bar"></param>
     private void Swing(Transform bar)
     {
-        if(isGrabbing && bar != null)
+        if (isGrabbing && bar != null)
         {
             //Debug.Log("swingaling");
             swingPoint = bar.position;
@@ -1050,13 +1050,12 @@ public class ZeroGravityTest : MonoBehaviour
                 joint = this.gameObject.AddComponent<SpringJoint>();
                 joint.autoConfigureConnectedAnchor = false;
                 joint.connectedAnchor = swingPoint;
+                float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+
+                //ensure the max and min distances are set properly
+                joint.maxDistance = grabRange;
+                joint.minDistance = minGrabRange;
             }
-
-            float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
-
-            //ensure the max and min distances are set properly
-            joint.maxDistance = grabRange;
-            joint.minDistance = minGrabRange;
 
             //tweak these values for the spring for better pendulum values
             joint.spring = 4.5f; //higher pull and push of the spring
