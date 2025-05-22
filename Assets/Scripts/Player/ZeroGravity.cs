@@ -602,14 +602,30 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
-    private void HandleDoorInteraction(Transform button)
+    private void HandleDoorInteraction(RaycastHit hit)
     {
-        //store the gameobject of the detected item and store it
-        GameObject door = button.parent.gameObject;
-        //set the selected door in the door manager as this door
-        doorManager.CurrentSelectedDoor = door;
-        //show the door UI
-        doorManager.DoorUI.SetActive(true);
+
+        if (hit.transform.CompareTag("DoorButton"))
+        {
+            Debug.Log("omg you are looking at a door button");
+
+            //store the gameobject of the detected item and store it
+            GameObject door = hit.transform.parent.gameObject;
+            //set the selected door in the door manager as this door
+            doorManager.CurrentSelectedDoor = door;
+
+            if (grabUIText.text == null && canPushOff)
+            {
+                //grabUIText.text = "'SPACEBAR'";
+                //set the sprite for the space bar indicator
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            }
+        }
+
+
+       
+
     }
 
     private void UpdateClosestBarInView()
@@ -1008,12 +1024,7 @@ public class ZeroGravity : MonoBehaviour
 
     public void RayCastHandleDoorButton(RaycastHit hit)
     {
-        //need this to send to UI manager
-        if (hit.transform.CompareTag("DoorButton"))
-        {
-            //show door UI
-            HandleDoorInteraction(hit.transform);
-        }
+        HandleDoorInteraction(hit);
     }
 
     public void RayCastHandlePushOffWall(RaycastHit hit)
