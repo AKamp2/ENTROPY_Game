@@ -6,22 +6,28 @@ using UnityEngine.InputSystem.HID;
 
 public class PickupScript : MonoBehaviour
 {
-
-    public GameObject player;
-    public Transform holdPos;
-    public Camera cam;
+    [SerializeField]
+    private GameObject player;
+    [SerializeField]
+    private Transform holdPos;
+    [SerializeField]
+    private Camera cam;
 
     private bool buttonPressed = false;
     private bool canPickUp = false;
 
-    public float throwForce = 500f; //force at which the object is thrown at
-    public float pickUpRange = 4f; //how far the player can pickup the object from
+    [SerializeField]
+    private float throwForce = 500f; //force at which the object is thrown at
+    [SerializeField]
+    private float pickUpRange = 4f; //how far the player can pickup the object from
     private GameObject heldObj; //object which we pick up
     private Rigidbody heldObjRb; //rigidbody of object we pick up
 
-    public Collider playerCollider;
+    [SerializeField]
+    private Collider playerCollider;
 
     private GameObject current;
+
 
     public bool hasThrownObject = false; //for tutorial section for detecting throwing
 
@@ -101,9 +107,11 @@ public class PickupScript : MonoBehaviour
             heldObjRb = pickUpObj.GetComponent<Rigidbody>(); //assign Rigidbody
             heldObjRb.isKinematic = true;
             heldObjRb.transform.parent = holdPos.transform; //parent object to holdposition
-            //heldObj.layer = LayerNumber; //change the object layer to the holdLayer
+            heldObj.layer = 8; //change the object layer to the holdLayer
             //make sure object doesnt collide with player, it can cause weird bugs
             Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, true);
+
+            MoveObject();
         }
     }
     void DropObject()
