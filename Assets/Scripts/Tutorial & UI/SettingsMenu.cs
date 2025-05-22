@@ -16,41 +16,47 @@ public class SettingsMenu : MonoBehaviour
     // Audio setting initialization
     [SerializeField] private Slider dialogueSlider;
     [SerializeField] private Slider soundFXSlider;
+    [SerializeField] private AudioSource soundFXAudioSource;
+    [SerializeField] private AudioSource dialogueAudioSource;
 
     // General setting initialization
     [SerializeField] private Toggle subtitleCheckbox;
     [SerializeField] private Slider sensitivitySlider;
-    [SerializeField] private GameObject subtitles;
+    [SerializeField] private ZeroGravity player;
+    [SerializeField] private GameObject dialogueText;
 
 
     private void Awake()
     {
-       // Makes sure menus are not open when starting 
-       CloseMenus();
-       dialogueSlider.value = GetPrefs("dialogueSlider",1);
-       soundFXSlider.value = GetPrefs("soundFXSlider",1);
-       sensitivitySlider.value = GetPrefs("sensitivitySlider",4);
-       subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
-        ToggleSubtitles(subtitles);
+        // Makes sure menus are not open when starting 
+        CloseMenus();
+        dialogueSlider.value = GetPrefs("dialogueSlider", 1);
+        soundFXSlider.value = GetPrefs("soundFXSlider", 1);
+        sensitivitySlider.value = GetPrefs("sensitivitySlider", 4);
+        subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
+        ToggleSubtitles();
+        SetDialogueVolume();
+        SetSoundFXVolume();
+        SetSensitivity();
     }
-
-    public void SetDialogueVolume(AudioSource audioSource)
+   
+    public void SetDialogueVolume()
     {
         // Sets the dialogue volume to the slide value
-        audioSource.volume = dialogueSlider.value;
+        dialogueAudioSource.volume = dialogueSlider.value;
         //Debug.Log(audioSource.volume);
         SetPrefs("dialogueSlider", dialogueSlider.value);
     }
 
-    public void SetSoundFXVolume(AudioSource audioSource)
+    public void SetSoundFXVolume()
     {
         // Sets the sound effects volume to the slide value
-        audioSource.volume = soundFXSlider.value;
+        soundFXAudioSource.volume = soundFXSlider.value;
         //Debug.Log(audioSource.volume);
         SetPrefs("soundFXSlider", soundFXSlider.value);
     }
 
-    public void SetSensitivity(ZeroGravity player)
+    public void SetSensitivity()
     {
         // Sets the sound effects volume to the slide value
         player.SensitivityX = sensitivitySlider.value;
@@ -58,7 +64,7 @@ public class SettingsMenu : MonoBehaviour
         SetPrefs("sensitivitySlider", sensitivitySlider.value);
     }
 
-    public void ToggleSubtitles(GameObject dialogueText)
+    public void ToggleSubtitles()
     {
         if (subtitleCheckbox.isOn)
         {
