@@ -5,6 +5,8 @@ public class FloatingObject : MonoBehaviour
 
     Rigidbody rb;
 
+   
+
     [SerializeField]
     bool useDirectionInput = false;
     [SerializeField]
@@ -14,6 +16,11 @@ public class FloatingObject : MonoBehaviour
     bool useSpeedInput = false;
     [SerializeField]
     float initSpeed = 100f;
+
+    [SerializeField]
+    float randomSpeedLower = 25f;
+    [SerializeField]
+    float randomSpeedUpper = 100f;
 
 
  
@@ -27,11 +34,11 @@ public class FloatingObject : MonoBehaviour
 
         if (!useSpeedInput)
         {
-            initSpeed = Random.Range(25f, 100f);
+            initSpeed = Random.Range(randomSpeedLower, randomSpeedUpper);
         }
         
         // very basic scaling: more mass = less speed
-        initSpeed = initSpeed / (rb.mass * 0.1f);
+        initSpeed = initSpeed / rb.mass;
 
         // if no manual input direction, randomly create direction
         if (!useDirectionInput)
@@ -46,6 +53,7 @@ public class FloatingObject : MonoBehaviour
 
         }
 
+        // add initial forces
         rb.AddTorque( initDirection * (initSpeed * 0.1f));
         rb.AddForce(initDirection * initSpeed);
 
@@ -53,8 +61,16 @@ public class FloatingObject : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        if (rb.linearVelocity.magnitude <= 0.3)
+        {
+            rb.linearVelocity = rb.linearVelocity.normalized * 0.3f;
+
+        }
+                
+
+            
+        Debug.Log(rb.linearVelocity.magnitude);
     }
 }
