@@ -4,7 +4,7 @@ public class FloatingObject : MonoBehaviour
 {
 
     Rigidbody rb;
-
+    Collider collider;
    
 
     [SerializeField]
@@ -22,15 +22,29 @@ public class FloatingObject : MonoBehaviour
     [SerializeField]
     float randomSpeedUpper = 100f;
 
+    [SerializeField]
+    bool useFriction = false;
+    [SerializeField]
+    float minimumSpeed = 0.3f;
 
- 
+    [SerializeField]
+    PhysicsMaterial frictionMaterial;
+    [SerializeField]
+    PhysicsMaterial noFrictionMaterial;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
         rb = this.gameObject.GetComponent<Rigidbody>();
+        collider = this.gameObject.GetComponent<Collider>();
 
+
+        if (useFriction)
+        {
+            collider.sharedMaterial = noFrictionMaterial;
+        }
 
         if (!useSpeedInput)
         {
@@ -63,14 +77,12 @@ public class FloatingObject : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (rb.linearVelocity.magnitude <= 0.3)
+        if (!useFriction == !rb.isKinematic && rb.linearVelocity.magnitude <= minimumSpeed)
         {
-            rb.linearVelocity = rb.linearVelocity.normalized * 0.3f;
+            rb.linearVelocity = rb.linearVelocity.normalized * minimumSpeed;
 
         }
                 
 
-            
-        Debug.Log(rb.linearVelocity.magnitude);
     }
 }
