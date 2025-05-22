@@ -130,11 +130,11 @@ public class PickupScript : MonoBehaviour
         heldObj.layer = 0;
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = null;
-        heldObjRb.AddForce(cam.transform.forward * throwForce);
+        heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
         heldObj = null;
         hasThrownObject = true;
 
-        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward * (throwForce * (heldObjRb.mass * 0.1f)));
+        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)));
 
     }
 
