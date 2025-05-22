@@ -13,7 +13,9 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private Camera cam;
 
-    private bool buttonPressed = false;
+    [SerializeField]
+    private GameObject ObjectContainer;
+
     private bool canPickUp = false;
 
     [SerializeField]
@@ -121,7 +123,7 @@ public class PickupScript : MonoBehaviour
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
         heldObj.layer = 0; //object assigned back to default layer
         heldObjRb.isKinematic = false;
-        heldObj.transform.parent = null; //unparent object
+        heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
         //current = null;
     }
@@ -137,7 +139,7 @@ public class PickupScript : MonoBehaviour
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
         heldObj.layer = 0;
         heldObjRb.isKinematic = false;
-        heldObj.transform.parent = null;
+        heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
         heldObj = null;
         hasThrownObject = true;
