@@ -136,7 +136,7 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float grabRange = 3f; // Range within which the player can grab bars
     [SerializeField]
-    private float mingGrabRange = 1f;
+    private float minGrabRange = 1f;
     [SerializeField]
     private float grabPadding = 50f;
     //Propel off bar 
@@ -308,9 +308,6 @@ public class ZeroGravity : MonoBehaviour
         healthIndicator.sprite = null;
         healthIndicator.color = new Color(0, 0, 0, 0); //transparent
 
-        doorManager = FindObjectOfType<DoorManager>();
-        tutorialManager = FindObjectOfType<TutorialManager>();
-
         //set the player health
         playerHealth = maxHealth;
     }
@@ -322,15 +319,15 @@ public class ZeroGravity : MonoBehaviour
         if (canMove)
         {
             if (tutorialMode)
-            {  
-                if (canGrab)
-                {
-                    HandleGrabMovement();
-                }
+            {
                 HandleRaycast();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null && canGrab)
                 {
+                    if (canGrab)
+                    {
+                        HandleGrabMovement(grabbedBar);
+                    }
                     //keep grabber locked to grabbed bar
                     UpdateGrabberPosition(grabbedBar);
                     //grabUIText.text = "'W A S D'";
@@ -340,12 +337,8 @@ public class ZeroGravity : MonoBehaviour
                         inputIndicator.sprite = wasdIndicator;
                         inputIndicator.color = new Color(256, 256, 256, 0.5f);
                     }
-                    
+
                 }
-                //else if (!isGrabbing)
-                //{
-                //    //StopSwing();
-                //}
                 else
                 {
                     //update to closest bar in view 
@@ -355,20 +348,15 @@ public class ZeroGravity : MonoBehaviour
             else
             {
                 //Debug.Log("Tutorial Mode off");
-                
-                
-                HandleGrabMovement();
                 HandleRaycast();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null)
                 {
+                    //handle the grab movement
+                    HandleGrabMovement(grabbedBar);
                     //keep grabber locked to grabbed bar
                     UpdateGrabberPosition(grabbedBar);
                 }
-                //else if (!isGrabbing)
-                //{
-                //    //StopSwing();
-                //}
                 else
                 {
                     //update to closest bar in view 
@@ -489,7 +477,7 @@ public class ZeroGravity : MonoBehaviour
             avgBounceDirection.Normalize(); // average direction
             float bounceSpeed = ogSpeed * .75f; // keep 75% of initial speed so it doesn't gain 
 
-            Debug.Log("BoounceSpeed: " + bounceSpeed);
+            //Debug.Log("BounceSpeed: " + bounceSpeed);
             //verify the bounce is faster than minimum speed
             if (bounceSpeed <= minimumSpeed)
             {
@@ -605,14 +593,14 @@ public class ZeroGravity : MonoBehaviour
     /// </summary>
     /// <param name="horizontalAxisPos"></param>
     /// <param name="verticalAxisPos"></param>
-    private void HandleGrabMovement()
+    private void HandleGrabMovement(Transform bar)
     {
         //Propel off bar logic
-        if (isGrabbing)
+        if (isGrabbing && bar != null)
         {
             currentRollSpeed = 0.0f;
             PropelOffBar();
-            //Swing(grabbedBar);
+            Swing(bar);
         }
     }
 
@@ -744,13 +732,16 @@ public class ZeroGravity : MonoBehaviour
         grabber.sprite = closedHand;
 
         //set the velocities to zero so that the player stops when they grab the bar
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        //rb.linearVelocity = Vector3.zero;
+        //rb.angularVelocity = Vector3.zero;
     }
 
     // Release the bar and enable movement again
     private void ReleaseBar()
     {
+        //stop swinging off the bar
+        StopSwing();
+
         isGrabbing = false;
         grabbedBar = null;
 
@@ -1041,31 +1032,47 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This method is created to allow player to swing on the bars, similar to a grappling hook feature found in other games
+    /// It creates a sringjoint between the player and the bar the length of the players arm
+    /// </summary>
+    /// <param name="bar"></param>
     private void Swing(Transform bar)
     {
-        Debug.Log("swingaling");
-        swingPoint = bar.position;
-        joint = this.gameObject.AddComponent<SpringJoint>();
-        joint.autoConfigureConnectedAnchor = false;
-        joint.connectedAnchor = swingPoint;
+        if (isGrabbing && bar != null)
+        {
+            //Debug.Log("swingaling");
+            swingPoint = bar.position;
 
-        float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+            //ensure that the player isn't alr swinging on another bar
+            if (this.gameObject.GetComponent<SpringJoint>() == null)
+            {
+                joint = this.gameObject.AddComponent<SpringJoint>();
+                joint.autoConfigureConnectedAnchor = false;
+                joint.connectedAnchor = swingPoint;
+            }
 
-        //ensure the max and min distances are set properly
-        joint.maxDistance = grabRange;
-        joint.minDistance = mingGrabRange;
+            float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
 
-        //tweak these values for the spring for better pendulum values
-        joint.spring = 4.5f;
-        joint.damper = 7f;
-        joint.massScale = 4.5f;
+            //ensure the max and min distances are set properly
+            joint.maxDistance = grabRange;
+            joint.minDistance = minGrabRange;
+
+            //tweak these values for the spring for better pendulum values
+            joint.spring = 4.5f; //higher pull and push of the spring
+            joint.damper = 7f;
+            joint.massScale = 4.5f;
+        }
     }
 
+    /// <summary>
+    /// This method stops the swinging by destroying the pringjoint and setting the swingpoint back to zero
+    /// </summary>
     private void StopSwing()
     {
-        Debug.Log("no swingaling");
+        //Debug.Log("no swingaling");
         swingPoint = Vector3.zero;
-        joint = null;
+        Destroy(joint);
     }
 
 
