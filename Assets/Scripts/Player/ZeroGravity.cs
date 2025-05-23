@@ -516,6 +516,8 @@ public class ZeroGravity : MonoBehaviour
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
         Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, doorLayer);
 
+
+
         if (hitDoors.Length == 0)
         {
             return; //no collision, no bounce 
