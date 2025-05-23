@@ -964,20 +964,20 @@ public class ZeroGravityTest : MonoBehaviour
 
     private void HandleRaycast()
     {
+        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        RaycastHit hit;
+
         if (isGrabbing)
         {
             //skip raycast if already holding a bar
             return;
         }
 
-        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-        RaycastHit hit;
-
-        Debug.DrawRay(ray.origin, ray.direction * grabRange, Color.red, 0.1f); // Debug visualization
+        //Debug.DrawRay(ray.origin, ray.direction * grabRange, Color.red, 0.1f); // Debug visualization
 
         if (Physics.Raycast(ray, out hit, grabRange, barLayer | barrierLayer | doorLayer))
         {
-            //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
+            //ebug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
             RayCastHandleGrab(hit);
             RayCastHandleDoorButton(hit);
 
@@ -1002,6 +1002,12 @@ public class ZeroGravityTest : MonoBehaviour
         if (hit.transform.CompareTag("Grabbable"))
         {
             potentialGrabbedBar = hit.transform;
+
+            //will slowly decrease the distance between player and the bar as they look at the bar
+            //if (isGrabbing && joint.maxDistance >= joint.minDistance)
+            //{
+            //    joint.maxDistance -= 0.1f;
+            //}
         }
     }
 
@@ -1061,6 +1067,11 @@ public class ZeroGravityTest : MonoBehaviour
             joint.spring = 4.5f; //higher pull and push of the spring
             joint.damper = 7f;
             joint.massScale = 4.5f;
+
+            if(joint.maxDistance >= joint.minDistance)
+            {
+                joint.maxDistance -= 0.1f; ;
+            }
         }
     }
 

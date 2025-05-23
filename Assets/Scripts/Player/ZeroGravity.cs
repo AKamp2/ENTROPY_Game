@@ -1085,6 +1085,11 @@ public class ZeroGravity : MonoBehaviour
             joint.spring = 4.5f; //higher pull and push of the spring
             joint.damper = 7f;
             joint.massScale = 4.5f;
+
+            if (joint.maxDistance >= joint.minDistance)
+            {
+                joint.maxDistance -= 0.1f; ;
+            }
         }
     }
 
