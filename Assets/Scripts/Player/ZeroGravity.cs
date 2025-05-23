@@ -955,9 +955,9 @@ public class ZeroGravity : MonoBehaviour
 
     public void Respawn(GameObject? respawnOverride = null)
     {
-        Vector3 targetLoc = (respawnOverride ?? respawnLoc).transform.position;
-        transform.position = targetLoc;
-        //transform.rotation = respawn.transform.rotation;
+        GameObject targetLoc = respawnOverride ?? respawnLoc;
+        transform.position = targetLoc.transform.position;
+        cam.transform.rotation = targetLoc.transform.rotation;
         isDead = false;
         playerHealth = maxHealth;
 
