@@ -535,10 +535,15 @@ public class ZeroGravity : MonoBehaviour
 
             if (doorScript != null && doorScript.IsClosing)
             {
+
+
                 //check that the state is a broken door
                 if (doorScript.DoorState == DoorScript.States.Broken)
                 {
+                    
                     bounceCount++;
+                    Debug.Log("bounce count" + bounceCount);
+
 
                     //calculate bounce direction away from the door
                     Vector3 bounceDirection = (transform.position - door.bounds.center).normalized;
@@ -571,7 +576,7 @@ public class ZeroGravity : MonoBehaviour
             float bounceSpeed = ogSpeed * .3f; // keep 30% of initial speed so it doesn't gain 
 
             //calculate the direction of the bounce
-            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * Time.deltaTime;
+            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f);
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
 
