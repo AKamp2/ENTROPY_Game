@@ -605,9 +605,9 @@ public class ZeroGravity : MonoBehaviour
     private void HandleDoorInteraction(RaycastHit hit)
     {
 
-        if (hit.transform.CompareTag("DoorButton"))
+        if (hit.transform.gameObject.CompareTag("DoorButton"))
         {
-            Debug.Log("omg you are looking at a door button");
+            
 
             //store the gameobject of the detected item and store it
             GameObject door = hit.transform.parent.gameObject;
@@ -983,6 +983,16 @@ public class ZeroGravity : MonoBehaviour
     {
         if (isGrabbing)
         {
+            // remove space and f gui if player is grabbing
+            if (inputIndicator.sprite != null)
+            {
+                potentialWall = null;
+
+                //erase the input indicator
+                inputIndicator.sprite = null;
+                inputIndicator.color = new Color(0, 0, 0, 0);
+            }
+            
             //skip raycast if already holding a bar
             return;
         }
@@ -996,6 +1006,8 @@ public class ZeroGravity : MonoBehaviour
         {
             //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
             RayCastHandleGrab(hit);
+
+
             RayCastHandleDoorButton(hit);
 
             //if the current velocity is less than the parameter we set
