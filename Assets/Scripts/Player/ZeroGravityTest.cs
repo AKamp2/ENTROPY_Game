@@ -977,14 +977,24 @@ public class ZeroGravityTest : MonoBehaviour
 
     private void HandleRaycast()
     {
-        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-        RaycastHit hit;
-
         if (isGrabbing)
         {
+            // remove space and f gui if player is grabbing
+            if (inputIndicator.sprite != null)
+            {
+                potentialWall = null;
+
+                //erase the input indicator
+                inputIndicator.sprite = null;
+                inputIndicator.color = new Color(0, 0, 0, 0);
+            }
+
             //skip raycast if already holding a bar
             return;
         }
+
+        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        RaycastHit hit;
 
         //Debug.DrawRay(ray.origin, ray.direction * grabRange, Color.red, 0.1f); // Debug visualization
 
@@ -1001,16 +1011,17 @@ public class ZeroGravityTest : MonoBehaviour
                 RayCastHandlePushOffWall(hit);
             }
         }
-        //else if (isGrabbing)
-        //{
-        //    ResetUI();
-        //    return;
-        //}
         else
         {
+            //reset ui elements
             ResetUI();
+            //set the potential grabbed bar to null
             potentialGrabbedBar = null;
+            //set the potential wall to null
             potentialWall = null;
+
+
+            doorManager.CurrentSelectedDoor = null;
         }
     }
 
