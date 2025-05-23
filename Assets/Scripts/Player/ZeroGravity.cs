@@ -608,14 +608,14 @@ public class ZeroGravity : MonoBehaviour
         if (hit.transform.gameObject.CompareTag("DoorButton"))
         {
             
-
-            //store the gameobject of the detected item and store it
-            GameObject door = hit.transform.parent.gameObject;
-            //set the selected door in the door manager as this door
-            doorManager.CurrentSelectedDoor = door;
-
-            if (grabUIText.text == null && canPushOff)
+            if (grabUIText.text == null)
             {
+                //store the gameobject of the detected item and store it
+                GameObject door = hit.transform.parent.gameObject;
+                //set the selected door in the door manager as this door
+                doorManager.CurrentSelectedDoor = door;
+
+
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator
                 inputIndicator.sprite = keyFIndicator;
@@ -1022,6 +1022,9 @@ public class ZeroGravity : MonoBehaviour
             ResetUI();
             potentialGrabbedBar = null;
             potentialWall = null;
+
+
+            doorManager.CurrentSelectedDoor = null;
         }
     }
 

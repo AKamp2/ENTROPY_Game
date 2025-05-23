@@ -93,7 +93,7 @@ public class DoorScript : MonoBehaviour
             SetButtonColor(redBase, redEmis);
         }
 
-        doorManager = FindObjectOfType<DoorManager>();
+        doorManager = FindFirstObjectByType<DoorManager>();
 
         //dialogueManager.StartDialogueSequence(0);
     }
@@ -201,18 +201,32 @@ public class DoorScript : MonoBehaviour
     public void OnInteract(InputAction.CallbackContext context)
     {
         // if UI is active you can press button
-        if(doorManager.DoorUI.activeInHierarchy && doorManager.CurrentSelectedDoor == transform.gameObject)
+        if(doorManager.CurrentSelectedDoor == transform.gameObject)
         {
-            if (states == States.Open)
-            {
-                states = States.Closing;
-            }
-            else if (states == States.Closed)
-            {
-                states = States.Opening;
-            }
+            
             
 
+        }
+
+        if (states == States.Open)
+        {
+            states = States.Closing;
+        }
+        else if (states == States.Closed)
+        {
+            states = States.Opening;
+        }
+    }
+
+    public void UseDoor()
+    {
+        if (states == States.Open)
+        {
+            states = States.Closing;
+        }
+        else if (states == States.Closed)
+        {
+            states = States.Opening;
         }
     }
 
