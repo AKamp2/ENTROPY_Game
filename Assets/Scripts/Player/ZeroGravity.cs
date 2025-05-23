@@ -324,10 +324,11 @@ public class ZeroGravity : MonoBehaviour
                 {
                     if (canGrab)
                     {
+                        //handle the grab movement
                         HandleGrabMovement(grabbedBar);
+                        //keep grabber locked to grabbed bar
+                        UpdateGrabberPosition(grabbedBar);
                     }
-                    //keep grabber locked to grabbed bar
-                    UpdateGrabberPosition(grabbedBar);
                     //grabUIText.text = "'W A S D'";
                     //set the sprite for input indicator to the wasd indicator
                     if (canPropel)
@@ -352,8 +353,6 @@ public class ZeroGravity : MonoBehaviour
                 {
                     //handle the grab movement
                     HandleGrabMovement(grabbedBar);
-                    //keep grabber locked to grabbed bar
-                    UpdateGrabberPosition(grabbedBar);
                 }
                 else
                 {
@@ -361,7 +360,9 @@ public class ZeroGravity : MonoBehaviour
                     UpdateClosestBarInView();
                 }
             }
+            //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
+            //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
             //track the player health and update the ui based on what health the player is on
             HandleHealthUI();
@@ -599,6 +600,7 @@ public class ZeroGravity : MonoBehaviour
             currentRollSpeed = 0.0f;
             PropelOffBar();
             Swing(bar);
+            UpdateGrabberPosition(bar);
         }
     }
 
@@ -623,10 +625,6 @@ public class ZeroGravity : MonoBehaviour
                 inputIndicator.color = new Color(256, 256, 256, 0.5f);
             }
         }
-
-
-       
-
     }
 
     private void UpdateClosestBarInView()
@@ -661,7 +659,6 @@ public class ZeroGravity : MonoBehaviour
             if (potentialGrabbedBar != closestBar)
             {
                 potentialGrabbedBar = closestBar;
-                UpdateGrabberPosition(potentialGrabbedBar);
                 //if in tutorial mode
                 if (tutorialMode && canGrab)
                 {
@@ -670,6 +667,8 @@ public class ZeroGravity : MonoBehaviour
                     inputIndicator.sprite = rightClickIndicator;
                     inputIndicator.color = new Color(256, 256, 256, 0.5f);
                 }
+                //update the sprite for the grabber and its position
+                UpdateGrabberPosition(potentialGrabbedBar);
             }
         }
         else
@@ -1007,7 +1006,6 @@ public class ZeroGravity : MonoBehaviour
         {
             //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
             RayCastHandleGrab(hit);
-
             RayCastHandleDoorButton(hit);
 
             //if the current velocity is less than the parameter we set
@@ -1019,8 +1017,11 @@ public class ZeroGravity : MonoBehaviour
         }
         else
         {
+            //reset ui elements
             ResetUI();
+            //set the potential grabbed bar to null
             potentialGrabbedBar = null;
+            //set the potential wall to null
             potentialWall = null;
 
 
@@ -1091,7 +1092,8 @@ public class ZeroGravity : MonoBehaviour
 
             if (joint.maxDistance >= joint.minDistance)
             {
-                joint.maxDistance -= 0.1f; ;
+                joint.maxDistance -= 0.1f;
+                joint.spring -= 0.1f;
             }
         }
     }

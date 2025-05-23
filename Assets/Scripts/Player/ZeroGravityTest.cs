@@ -326,11 +326,9 @@ public class ZeroGravityTest : MonoBehaviour
                 {
                     if (canGrab)
                     {
+                        //handle the grab movement
                         HandleGrabMovement(grabbedBar);
                     }
-                    //keep grabber locked to grabbed bar
-                    UpdateGrabberPosition(grabbedBar);
-                    //grabUIText.text = "'W A S D'";
                     //set the sprite for input indicator to the wasd indicator
                     if (canPropel)
                     {
@@ -354,16 +352,17 @@ public class ZeroGravityTest : MonoBehaviour
                 {
                     //handle the grab movement
                     HandleGrabMovement(grabbedBar);
-                    //keep grabber locked to grabbed bar
-                    UpdateGrabberPosition(grabbedBar);
                 }
+                //if the player is not grabbing onto a bar
                 else
                 {
                     //update to closest bar in view 
                     UpdateClosestBarInView();
                 }
             }
+            //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
+            //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
             //track the player health and update the ui based on what health the player is on
             HandleHealthUI();
@@ -421,7 +420,7 @@ public class ZeroGravityTest : MonoBehaviour
 
     private void PropelOffWall()
     {
-        if (rb.linearVelocity.magnitude <= pushSpeed && canPushOff)
+        if (rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !isGrabbing)
         {
             //zero the initial velocities ensuring a direct push back
             //rb.velocity = Vector3.zero;
@@ -601,17 +600,30 @@ public class ZeroGravityTest : MonoBehaviour
             currentRollSpeed = 0.0f;
             PropelOffBar();
             Swing(bar);
+            UpdateGrabberPosition(bar);
         }
     }
 
-    private void HandleDoorInteraction(Transform button)
+    private void HandleDoorInteraction(RaycastHit hit)
     {
-        //store the gameobject of the detected item and store it
-        GameObject door = button.parent.gameObject;
-        //set the selected door in the door manager as this door
-        doorManager.CurrentSelectedDoor = door;
-        //show the door UI
-        doorManager.DoorUI.SetActive(true);
+        if (hit.transform.gameObject.CompareTag("DoorButton"))
+        {
+            //store the gameobject of the detected item and store it
+            GameObject door = hit.transform.parent.gameObject;
+            DoorScript ds = door.GetComponent<DoorScript>();
+
+
+            if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed) && grabUIText.text == null)
+            {
+                //set the selected door in the door manager as this door
+                doorManager.CurrentSelectedDoor = door;
+
+                //grabUIText.text = "'SPACEBAR'";
+                //set the sprite for the space bar indicator
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            }
+        }
     }
 
     private void UpdateClosestBarInView()
@@ -646,7 +658,6 @@ public class ZeroGravityTest : MonoBehaviour
             if (potentialGrabbedBar != closestBar)
             {
                 potentialGrabbedBar = closestBar;
-                UpdateGrabberPosition(potentialGrabbedBar);
                 //if in tutorial mode
                 if (tutorialMode && canGrab)
                 {
@@ -656,6 +667,8 @@ public class ZeroGravityTest : MonoBehaviour
                     inputIndicator.color = new Color(256, 256, 256, 0.5f);
                 }
             }
+            //update the sprite for the grabber and its position
+            UpdateGrabberPosition(potentialGrabbedBar);
         }
         else
         {
@@ -982,12 +995,17 @@ public class ZeroGravityTest : MonoBehaviour
             RayCastHandleDoorButton(hit);
 
             //if the current velocity is less than the parameter we set
-            if (rb.linearVelocity.magnitude <= pushSpeed)
+            if (rb.linearVelocity.magnitude <= pushSpeed && !hit.transform.CompareTag("Grabbable") && !isGrabbing)
             {
                 //we handle interaction with pushing off the wall
                 RayCastHandlePushOffWall(hit);
             }
         }
+        //else if (isGrabbing)
+        //{
+        //    ResetUI();
+        //    return;
+        //}
         else
         {
             ResetUI();
@@ -1002,12 +1020,8 @@ public class ZeroGravityTest : MonoBehaviour
         if (hit.transform.CompareTag("Grabbable"))
         {
             potentialGrabbedBar = hit.transform;
-
-            //will slowly decrease the distance between player and the bar as they look at the bar
-            //if (isGrabbing && joint.maxDistance >= joint.minDistance)
-            //{
-            //    joint.maxDistance -= 0.1f;
-            //}
+            //update the grabber
+            UpdateGrabberPosition(potentialGrabbedBar);
         }
     }
 
@@ -1017,18 +1031,18 @@ public class ZeroGravityTest : MonoBehaviour
         if (hit.transform.CompareTag("DoorButton"))
         {
             //show door UI
-            HandleDoorInteraction(hit.transform);
+            HandleDoorInteraction(hit);
         }
     }
 
     public void RayCastHandlePushOffWall(RaycastHit hit)
     {
         //Debug.Log("Push off raycast happening");
-        if (hit.transform.CompareTag("Barrier"))
+        if (hit.transform.CompareTag("Barrier") && !hit.transform.CompareTag("Grabbable"))
         {
             potentialWall = hit.transform;
             //if in tutorial mode
-            if (grabUIText.text == null && canPushOff)
+            if (grabUIText.text == null && canPushOff && !isGrabbing)
             {
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator
@@ -1071,6 +1085,7 @@ public class ZeroGravityTest : MonoBehaviour
             if(joint.maxDistance >= joint.minDistance)
             {
                 joint.maxDistance -= 0.1f; ;
+                joint.spring -= 0.1f;
             }
         }
     }
