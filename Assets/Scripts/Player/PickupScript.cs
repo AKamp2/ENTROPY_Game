@@ -76,18 +76,19 @@ public class PickupScript : MonoBehaviour
         //    buttonPressed = true;
         //}
 
+        if (!context.performed) return;
+
         if (canPickUp && heldObj == null)
         {
-            //pass in object hit into the PickUpObject function
             PickUpObject(current);
-            Debug.Log("im here atleast");
+            Debug.Log("Picked up object");
         }
         else if (heldObj != null)
         {
-            Debug.Log("here");
+            Debug.Log("Dropped object");
             DropObject();
         }
-        
+
     }
 
     public void OnThrow(InputAction.CallbackContext context)
