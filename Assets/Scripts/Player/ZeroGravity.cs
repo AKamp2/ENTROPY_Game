@@ -607,15 +607,16 @@ public class ZeroGravity : MonoBehaviour
 
         if (hit.transform.gameObject.CompareTag("DoorButton"))
         {
-            
-
             //store the gameobject of the detected item and store it
             GameObject door = hit.transform.parent.gameObject;
-            //set the selected door in the door manager as this door
-            doorManager.CurrentSelectedDoor = door;
+            DoorScript ds = door.GetComponent<DoorScript>();
 
-            if (grabUIText.text == null && canPushOff)
+
+            if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed) && grabUIText.text == null)
             {
+                //set the selected door in the door manager as this door
+                doorManager.CurrentSelectedDoor = door;
+
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator
                 inputIndicator.sprite = keyFIndicator;
@@ -1007,7 +1008,6 @@ public class ZeroGravity : MonoBehaviour
             //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
             RayCastHandleGrab(hit);
 
-
             RayCastHandleDoorButton(hit);
 
             //if the current velocity is less than the parameter we set
@@ -1022,6 +1022,9 @@ public class ZeroGravity : MonoBehaviour
             ResetUI();
             potentialGrabbedBar = null;
             potentialWall = null;
+
+
+            doorManager.CurrentSelectedDoor = null;
         }
     }
 

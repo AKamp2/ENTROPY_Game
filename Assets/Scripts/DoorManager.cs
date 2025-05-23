@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DoorManager : MonoBehaviour
 {
@@ -34,5 +36,13 @@ public class DoorManager : MonoBehaviour
         
     }
 
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (currentSelectedDoor)
+        {
+            currentSelectedDoor.GetComponent<DoorScript>().UseDoor();
+        }
+        
+    }
 
 }
