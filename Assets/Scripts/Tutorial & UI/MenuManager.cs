@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 //using static UnityEditor.SceneView;
 
@@ -42,6 +43,7 @@ public class MenuManager : MonoBehaviour
         if (activeMenus.Count == 0 && pauseMenu.activeInHierarchy)
         {
             activeMenus.Add(pauseMenu);
+            
         }
         if (player.IsDead)
         {
@@ -68,9 +70,12 @@ public class MenuManager : MonoBehaviour
     }
     public void Pause()
     {
-        pauseMenu.SetActive(true);
-        Time.timeScale = 0;
-        dialogue.Pause();
+        if(activeMenus.Count == 0)
+        {
+            pauseMenu.SetActive(true);
+            Time.timeScale = 0;
+            dialogue.Pause();
+        }
     }
 
     public void Resume()
