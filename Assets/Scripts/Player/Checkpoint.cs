@@ -45,6 +45,18 @@ public class Checkpoint : MonoBehaviour
             // Draw line from checkpoint to respawn
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(transform.position, respawnPoint.transform.position);
+
+            // Draw arrow showing respawn forward direction
+            Gizmos.color = Color.green;
+            Vector3 arrowStart = respawnPoint.transform.position;
+            Vector3 arrowDir = respawnPoint.transform.forward * 1.5f;
+            Gizmos.DrawRay(arrowStart, arrowDir);
+
+            // Draw arrowhead
+            Vector3 right = Quaternion.LookRotation(arrowDir) * Quaternion.Euler(0, 150, 0) * Vector3.forward;
+            Vector3 left = Quaternion.LookRotation(arrowDir) * Quaternion.Euler(0, -150, 0) * Vector3.forward;
+            Gizmos.DrawRay(arrowStart + arrowDir, right * 0.3f);
+            Gizmos.DrawRay(arrowStart + arrowDir, left * 0.3f);
         }
 
         // Draw the checkpoint trigger area (if it has a collider)
