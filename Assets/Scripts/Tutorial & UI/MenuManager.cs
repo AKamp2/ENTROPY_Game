@@ -12,6 +12,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject thanksMenu;
     [SerializeField] private GameObject optionsMenu;
+    [SerializeField] private GameObject optionsCanvas;
     public List<GameObject> activeMenus;
 
     // Serialize Player info for checkpoints
@@ -82,6 +83,7 @@ public class MenuManager : MonoBehaviour
     public void OptionsButton()
     {
         optionsMenu.SetActive(true);
+        optionsCanvas.SetActive(true);
     }
 
     public void LastCheckpoint()

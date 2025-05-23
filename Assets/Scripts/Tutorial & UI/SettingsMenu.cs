@@ -12,7 +12,7 @@ public class SettingsMenu : MonoBehaviour
 {
     // Array of submenus to be toggled
     public GameObject[] optionsMenus;
-    
+
     // Audio setting initialization
     [SerializeField] private Slider dialogueSlider;
     [SerializeField] private Slider soundFXSlider;
@@ -25,8 +25,7 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private ZeroGravity player;
     [SerializeField] private GameObject dialogueText;
 
-
-    private void Awake()
+    private void OnEnable()
     {
         // Makes sure menus are not open when starting 
         CloseMenus();
@@ -34,10 +33,7 @@ public class SettingsMenu : MonoBehaviour
         soundFXSlider.value = GetPrefs("soundFXSlider", 1);
         sensitivitySlider.value = GetPrefs("sensitivitySlider", 4);
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
-        ToggleSubtitles();
-        SetDialogueVolume();
-        SetSoundFXVolume();
-        SetSensitivity();
+        ApplySettings();
     }
    
     public void SetDialogueVolume()
@@ -94,6 +90,16 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
+    public void OpenPopUp(GameObject popUp)
+    {
+        popUp.SetActive(true);
+    }
+
+    public void ClosePopUp(GameObject popUp)
+    {
+        popUp.SetActive(false);
+    }
+
     void SetPrefs(string keyName, float value)
     {
         int intValue = Mathf.RoundToInt(value);
@@ -103,5 +109,13 @@ public class SettingsMenu : MonoBehaviour
     int GetPrefs(string keyName, int defaultValue)
     {
         return PlayerPrefs.GetInt(keyName, defaultValue);
+    }
+
+    public void ApplySettings()
+    {
+        ToggleSubtitles();
+        SetDialogueVolume();
+        SetSoundFXVolume();
+        SetSensitivity();
     }
 }
