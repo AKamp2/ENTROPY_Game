@@ -7,6 +7,7 @@ using System.Collections;
 using UnityEngine.Audio;
 using System;
 using System.IO;
+using TMPro;
 
 public class SettingsMenu : MonoBehaviour 
 {
@@ -15,6 +16,7 @@ public class SettingsMenu : MonoBehaviour
 
     // Audio setting initialization
     [SerializeField] private Slider dialogueSlider;
+    [SerializeField] private TextMeshProUGUI dialogueSliderText;
     [SerializeField] private Slider soundFXSlider;
     [SerializeField] private AudioSource soundFXAudioSource;
     [SerializeField] private AudioSource dialogueAudioSource;
@@ -22,6 +24,7 @@ public class SettingsMenu : MonoBehaviour
     // General setting initialization
     [SerializeField] private Toggle subtitleCheckbox;
     [SerializeField] private Slider sensitivitySlider;
+    [SerializeField] private TextMeshProUGUI sensitivitySliderText;
     [SerializeField] private ZeroGravity player;
     [SerializeField] private GameObject dialogueText;
 
@@ -35,7 +38,19 @@ public class SettingsMenu : MonoBehaviour
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
         ApplySettings();
     }
-   
+
+    public void SetSoundFXSliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = ((int)(soundFXSlider.value * 100)).ToString();
+    }
+    public void SetDialogueSliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = ((int)(dialogueSlider.value * 100)).ToString();
+    }
+    public void SetSensitivitySliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = ((int)(sensitivitySlider.value * 20)).ToString();
+    }
     public void SetDialogueVolume()
     {
         // Sets the dialogue volume to the slide value
