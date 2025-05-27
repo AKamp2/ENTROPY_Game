@@ -55,62 +55,6 @@ public class ZeroGravity : MonoBehaviour
     private float highDangerCoolDown = 5.0f;
     private float hurtTimeStamp = 0f;
 
-    [Header("== UI Canvas ==")]
-    [SerializeField]
-    private CameraFade cameraFade;
-
-    //canvas elements
-    [SerializeField]
-    private GameObject characterPivot;
-    [SerializeField]
-    private UnityEngine.UI.Image crosshair;
-    [SerializeField]
-    private UnityEngine.UI.Image grabber;
-    [SerializeField]
-    private UnityEngine.UI.Image inputIndicator;
-    [SerializeField]
-    private UnityEngine.UI.Image healthIndicator;
-
-    //sprite assets
-    //grabber
-    [SerializeField]
-    private Sprite openHand;
-    [SerializeField]
-    private Sprite closedHand;
-    [SerializeField]
-    private Sprite crosshairIcon;
-
-    //input indicators
-    [SerializeField]
-    private Sprite wasdIndicator;
-    [SerializeField]
-    private Sprite spaceIndicator;
-    [SerializeField]
-    private Sprite rightClickIndicator;
-    [SerializeField]
-    private Sprite leftClickIndicator;
-    [SerializeField]
-    private Sprite keyFIndicator;
-
-    //health indicators
-    [SerializeField]
-    private Sprite dangerIndicator;
-    [SerializeField]
-    private Sprite highDangerIndicator; 
-
-    //used for freezing the camera movement while completing the puzzle.
-    private bool canMove = true;
-
-    //Fields for the tutorial
-    [SerializeField]
-    private bool tutorialMode = false;
-    private bool canGrab = false;
-    private bool canPropel = false;
-    private bool canPushOff = false;
-    private bool canRoll = false;
-    private bool hasPropelled = false;
-
-
     [Header("== Player Movement Settings ==")]
     [SerializeField]
     private float rollTorque = 250.0f;
@@ -165,6 +109,8 @@ public class ZeroGravity : MonoBehaviour
 
     [Header("== UI Settings ==")]
     [SerializeField]
+    PlayerUIManager uiManager;
+    [SerializeField]
     private TextMeshProUGUI grabUIText;
     private bool showTutorialMessages = true;
 
@@ -183,15 +129,41 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private TutorialManager tutorialManager;
 
+
+    //used for freezing the camera movement while completing the puzzle.
+    private bool canMove = true;
+
+    //Fields for the tutorial
+    [SerializeField]
+    private bool tutorialMode = false;
+    private bool canGrab = false;
+    private bool canPropel = false;
+    private bool canPushOff = false;
+    private bool canRoll = false;
+    private bool hasPropelled = false;
+
     // Track if the movement keys were released
     private bool movementKeysReleased;
 
+    #region properties
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
+
+    public float GrabPadding
+    {
+        get { return grabPadding; }
+    }
+
     public bool ShowTutorialMessages
     {
         get { return showTutorialMessages; }
         set { showTutorialMessages = value; }
+    }
+
+    public Transform PotentialGrabbedBar
+    {
+        get { return potentialGrabbedBar; }
+        set { potentialGrabbedBar = value; }
     }
 
     public bool TutorialMode
@@ -212,29 +184,31 @@ public class ZeroGravity : MonoBehaviour
         set { canGrab = value; }
     }
 
-    public bool CanPropel
-    {
-        get { return canPropel; }
+    public bool CanPropel 
+    { 
+        get { return canPropel; } 
         set { canPropel = value; }
     }
 
-    public bool CanPushOff
-    {
+    public bool CanPushOff 
+    { 
         get { return canPushOff; }
         set { canPushOff = value; }
     }
 
-    public bool CanRoll
-    {
+    public bool CanRoll 
+    { 
         get { return canRoll; }
         set { canRoll = value; }
     }
 
-    public bool HasPropelled
-    {
-        get { return hasPropelled;  }
-        set { hasPropelled = value;  }
+    public bool HasPropelled 
+    { 
+        get { return hasPropelled; }
+        set { hasPropelled = value; }
     }
+
+    public int PlayerHealth { get { return PlayerHealth; } }
 
     public bool IsDead
     {
@@ -254,15 +228,28 @@ public class ZeroGravity : MonoBehaviour
         set { sensitivityY = value; }
     }
 
+    public float GrabRange
+    {
+        get { return grabRange; }
+        set { grabRange = value; }
+    }
+
+    public LayerMask BarLayer
+    {
+        get { return barLayer; }
+    } 
+
     // getter for isGrabbing
     public bool IsGrabbing => isGrabbing;
+
+    #endregion
 
     // Start is called before the first frame update
     void Start()
     {
         Application.targetFrameRate = 60;  // Match this with your build target frame rate.
 
-        //initial player booleans set
+        //initial player booleans set if in tutorial mode
         if (tutorialMode)
         {
             canGrab = false;
@@ -270,6 +257,7 @@ public class ZeroGravity : MonoBehaviour
             canPropel = false;
             canRoll = false;
         }
+        //not in tutorial mode
         else
         {
             canGrab = true;
@@ -277,7 +265,7 @@ public class ZeroGravity : MonoBehaviour
             canPropel = true;
             canRoll = true;
         }
-        
+
         isDead = false;
 
 
@@ -292,19 +280,6 @@ public class ZeroGravity : MonoBehaviour
         Cursor.visible = false;
         rb.useGravity = false;
         cam = Camera.main;
-
-        //set the crosshair and grabber sprites accordingly;
-        crosshair.sprite = crosshairIcon;
-
-        //erase the grabber
-        grabber.sprite = null;
-        grabber.color = new Color(0, 0, 0, 0); //transparent
-        //erase the input indicator
-        inputIndicator.sprite = null;
-        inputIndicator.color = new Color(0, 0, 0, 0); // transparent
-        //hide the health indicator
-        healthIndicator.sprite = null;
-        healthIndicator.color = new Color(0, 0, 0, 0); //transparent
 
         //set the player health
         playerHealth = maxHealth;
@@ -327,21 +302,21 @@ public class ZeroGravity : MonoBehaviour
                         //handle the grab movement
                         HandleGrabMovement(grabbedBar);
                         //keep grabber locked to grabbed bar
-                        UpdateGrabberPosition(grabbedBar);
+                        uiManager.UpdateGrabberPosition(grabbedBar);
                     }
                     //grabUIText.text = "'W A S D'";
                     //set the sprite for input indicator to the wasd indicator
-                    if (canPropel)
+                    if (canPropel) // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                     {
-                        inputIndicator.sprite = wasdIndicator;
-                        inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                        //inputIndicator.sprite = wasdIndicator;
+                        //inputIndicator.color = new Color(256, 256, 256, 0.5f);
                     }
 
                 }
                 else
                 {
                     //update to closest bar in view 
-                    UpdateClosestBarInView();
+                    //UpdateClosestBarInView(); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 }
             }
             else
@@ -357,7 +332,7 @@ public class ZeroGravity : MonoBehaviour
                 else
                 {
                     //update to closest bar in view 
-                    UpdateClosestBarInView();
+                    uiManager.UpdateClosestBarInView(); 
                 }
             }
             //allow the player to bounce off the barriers
@@ -365,7 +340,7 @@ public class ZeroGravity : MonoBehaviour
             //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
             //track the player health and update the ui based on what health the player is on
-            HandleHealthUI();
+            //HandleHealthUI(); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
             //manage the cooldowns
             HurtCoolDown();
@@ -607,7 +582,7 @@ public class ZeroGravity : MonoBehaviour
             currentRollSpeed = 0.0f;
             PropelOffBar();
             Swing(bar);
-            UpdateGrabberPosition(bar);
+            uiManager.UpdateGrabberPosition(bar);
         }
     }
 
@@ -625,122 +600,9 @@ public class ZeroGravity : MonoBehaviour
             {
                 //set the selected door in the door manager as this door
                 doorManager.CurrentSelectedDoor = door;
-
-                //grabUIText.text = "'SPACEBAR'";
-                //set the sprite for the space bar indicator
-                inputIndicator.sprite = keyFIndicator;
-                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                uiManager.DoorUI();
             }
         }
-    }
-
-    private void UpdateClosestBarInView()
-    {
-        //check for all nearby bars to the player
-        Collider[] nearbyBars = Physics.OverlapSphere(transform.position, grabRange, barLayer);
-        //initialize a transform for the closest bar and distance to that bar
-        Transform closestBar = null;
-        float closestDistance = Mathf.Infinity;
-
-        //check through each bar in our array
-        foreach (Collider bar in nearbyBars)
-        {
-            //set specifications for the viewport
-            Vector3 viewportPoint = cam.WorldToViewportPoint(bar.transform.position);
-
-            //check if the bar is in the viewport and in front of the player
-            if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
-            {
-                float distanceToBar = Vector3.Distance(transform.position, bar.transform.position);
-                if (distanceToBar < closestDistance)
-                {
-                    closestDistance = distanceToBar;
-                    closestBar = bar.transform;
-                }
-            }
-        }
-
-        if (closestBar != null)
-        {
-            //update the grabber if a new bar is detected
-            if (potentialGrabbedBar != closestBar)
-            {
-                potentialGrabbedBar = closestBar;
-                //if in tutorial mode
-                if (tutorialMode && canGrab)
-                {
-                    //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
-                    //set the sprite for the right click
-                    inputIndicator.sprite = rightClickIndicator;
-                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
-                }
-                //update the sprite for the grabber and its position
-                UpdateGrabberPosition(potentialGrabbedBar);
-            }
-        }
-        else
-        {
-            //hide grabber if no bar is in range
-            HideGrabber();
-        }
-    }
-
-    // this method will update the grabber icon's position based on the nearest grabbable object
-    private void UpdateGrabberPosition(Transform bar)
-    {
-        if (canGrab)
-        {
-            //check if their is a bar in the viewport
-            if (bar != null)
-            {
-                //set the position of the bar as a screen point
-                Vector3 screenPoint = cam.WorldToScreenPoint(bar.position);
-
-                if (screenPoint.z > 0)
-                {
-                    //update grabber position
-                    grabber.rectTransform.position = screenPoint;
-
-                    //set hand icon open is not grabbing
-                    if (!isGrabbing)
-                    {
-                        grabber.sprite = openHand;
-                        grabber.color = Color.white;
-                    }
-                    //set closed hand icon if grabbing
-                    else if (isGrabbing)
-                    {
-                        grabber.sprite = closedHand;
-                        grabber.color = Color.white;
-                    }
-                }
-                else
-                {
-                    //hide the grabber when the bar is behind the camera
-                    HideGrabber();
-                }
-
-            }
-            //if there is no bar
-            else
-            {
-                //remove the grabber
-                HideGrabber();
-            }
-        }
-        else
-        {
-            //remove the grabber
-            HideGrabber();
-        }
-
-    }
-
-    // this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
-    public void HideGrabber()
-    {
-        grabber.sprite = null;
-        grabber.color = new Color(0, 0, 0, 0); //transparent
     }
 
     public void GrabBar()
@@ -749,8 +611,7 @@ public class ZeroGravity : MonoBehaviour
         grabbedBar = potentialGrabbedBar;
 
         //lock grabbed bar and change icon
-        UpdateGrabberPosition(grabbedBar);
-        grabber.sprite = closedHand;
+        uiManager.ShowGrabber(grabbedBar);
 
         //set the velocities to zero so that the player stops when they grab the bar
         //rb.linearVelocity = Vector3.zero;
@@ -767,51 +628,10 @@ public class ZeroGravity : MonoBehaviour
         grabbedBar = null;
 
         //lock grabbed bar and change icon
-        grabber.sprite = openHand;
-        inputIndicator.sprite = null;
-        inputIndicator.color = new Color(0, 0, 0, 0);
+        uiManager.ReleaseGrabber();
 
-        //resume dynamic bar detection
-        UpdateClosestBarInView();
-    }
-
-    private void ResetUI()
-    {
-        grabUIText.text = null;
-        //erase the grabber
-        grabber.sprite = null;
-        grabber.color = new Color(0, 0, 0, 0);
-        //erase the input indicator
-        inputIndicator.sprite = null;
-        inputIndicator.color = new Color(0, 0, 0, 0);
-        /*doorManager.DoorUI.SetActive(false);*/
-    }
-
-    //Health Methods
-    //controls the UI for the Player Health
-    private void HandleHealthUI()
-    {
-        switch (playerHealth)
-        {
-            case 4:
-                healthIndicator.sprite = null;
-                healthIndicator.color = new Color(0, 0, 0, 0);
-                break;
-            case 3:
-                healthIndicator.sprite = highDangerIndicator;
-                healthIndicator.color = new Color(0, 0, 0, 0.5f);
-                break;
-            case 2:
-                healthIndicator.sprite = dangerIndicator;
-                healthIndicator.color = Color.white;
-                break;
-            case 1:
-                healthIndicator.sprite = highDangerIndicator;
-                healthIndicator.color = Color.white;
-                break;
-            default:
-                break;
-        }
+        ////resume dynamic bar detection
+        uiManager.UpdateClosestBarInView();
     }
 
     //decreases the health of the player
@@ -991,13 +811,13 @@ public class ZeroGravity : MonoBehaviour
         if (isGrabbing)
         {
             // remove space and f gui if player is grabbing
-            if (inputIndicator.sprite != null)
+            if (uiManager.InputIndicator.sprite != null)
             {
                 potentialWall = null;
 
                 //erase the input indicator
-                inputIndicator.sprite = null;
-                inputIndicator.color = new Color(0, 0, 0, 0);
+                uiManager.InputIndicator.sprite = null;
+               uiManager.InputIndicator.color = new Color(0, 0, 0, 0);
             }
             
             //skip raycast if already holding a bar
@@ -1025,14 +845,14 @@ public class ZeroGravity : MonoBehaviour
         else
         {
             //reset ui elements
-            ResetUI();
+            uiManager.ResetUI();
             //set the potential grabbed bar to null
             potentialGrabbedBar = null;
             //set the potential wall to null
             potentialWall = null;
 
 
-            doorManager.CurrentSelectedDoor = null;
+            //doorManager.CurrentSelectedDoor = null;
         }
     }
 
@@ -1061,8 +881,8 @@ public class ZeroGravity : MonoBehaviour
             {
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator
-                inputIndicator.sprite = spaceIndicator;
-                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                uiManager.InputIndicator.sprite = uiManager.SpaceIndicator;
+                uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
             }
         }
     }
@@ -1117,32 +937,6 @@ public class ZeroGravity : MonoBehaviour
 
 
     #endregion
-
-    void OnDrawGizmos()
-    {
-        // Visualize the crosshair padding as a box in front of the camera
-        if (cam != null)
-        {
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
-
-            // Define padded bounds
-            float screenWidth = Screen.width;
-            float screenHeight = Screen.height;
-            Vector2 paddedMin = new Vector2(screenPoint.x - grabPadding, screenPoint.y - grabPadding);
-            Vector2 paddedMax = new Vector2(screenPoint.x + grabPadding, screenPoint.y + grabPadding);
-
-            // Draw a box at the grab range with padding
-            Gizmos.color = Color.green;
-            for (float x = paddedMin.x; x <= paddedMax.x; x += grabPadding / 2)
-            {
-                for (float y = paddedMin.y; y <= paddedMax.y; y += grabPadding / 2)
-                {
-                    Ray ray = cam.ScreenPointToRay(new Vector3(x, y, 0));
-                    Gizmos.DrawRay(ray.origin, ray.direction * grabRange);
-                }
-            }
-        }
-    }
 
     #region Input Methods
     //when we press the buttons on the keyboard or controller these methods pass the buttons through to read the values

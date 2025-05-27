@@ -379,13 +379,6 @@ public class ZeroGravityTest : MonoBehaviour
         {
             RotateCam();
         }
-
-        //Death debugging shortcut
-        /*
-        if (Keyboard.current.kKey.wasPressedThisFrame) {
-            DecreaseHealth(4);
-        }
-        */
     }
     #endregion 
 
