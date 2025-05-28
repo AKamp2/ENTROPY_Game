@@ -12832,20 +12832,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: speed
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: cameraFade
-      value: 
-      objectReference: {fileID: 1328749827}
-    - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: doorManager
       value: 
       objectReference: {fileID: 537551602}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: propelThrust
-      value: 100
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: tutorialMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: tutorialManager
@@ -12853,79 +12849,7 @@ PrefabInstance:
       objectReference: {fileID: 1644036295}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: propelOffWallThrust
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[6].m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1761361685}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 537551602}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: OnInteract
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: DoorManager, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.000056028366
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.00004580617
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0000011920929
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9233016
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.05913776
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.024737
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.3786887
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 5.191
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -5.212
-      objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600785, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: -44.838
+      value: 125
       objectReference: {fileID: 0}
     - target: {fileID: 2948075963403139158, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_Name
@@ -12970,10 +12894,6 @@ PrefabInstance:
     - target: {fileID: 2948075963403139159, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 45
-      objectReference: {fileID: 0}
-    - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: pickUpRange
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: ObjectContainer
@@ -18258,7 +18178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1307485336}
   m_Layer: 0
-  m_Name: FloatingObjects
+  m_Name: FloatingObjectsContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27561,6 +27481,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 919063943}
+  - {fileID: 1307485336}
   - {fileID: 945592030}
   - {fileID: 537551603}
   - {fileID: 319262371}
@@ -27572,7 +27493,6 @@ SceneRoots:
   - {fileID: 419942752}
   - {fileID: 774602583}
   - {fileID: 1328749828}
-  - {fileID: 1307485336}
   - {fileID: 740304899}
   - {fileID: 1021374064}
   - {fileID: 2087091633}
