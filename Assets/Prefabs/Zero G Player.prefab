@@ -380,6 +380,7 @@ GameObject:
   - component: {fileID: 8234961305471522327}
   - component: {fileID: 8234961305471522324}
   - component: {fileID: 1315194308885493417}
+  - component: {fileID: 2463627945084931592}
   m_Layer: 0
   m_Name: Zero G Player
   m_TagString: Player
@@ -661,24 +662,6 @@ MonoBehaviour:
   playerHealth: 4
   maxHealth: 4
   end: {fileID: 0}
-  cameraFade: {fileID: 0}
-  characterPivot: {fileID: 8234961306098123234}
-  crosshair: {fileID: 8234961306332532425}
-  grabber: {fileID: 7716525470233202160}
-  inputIndicator: {fileID: 8834595416931030288}
-  healthIndicator: {fileID: 8834595416716833641}
-  openHand: {fileID: 21300000, guid: 251f3cc6568a7c84fb817f58b9c4bfd4, type: 3}
-  closedHand: {fileID: 21300000, guid: cc728fc8e36e23946891b57c9ecc206b, type: 3}
-  crosshairIcon: {fileID: 21300000, guid: 6dc2d05d0b6fd204186719e888fcdf95, type: 3}
-  wasdIndicator: {fileID: 21300000, guid: a674e7cd806f3ca46baff3e0c90a1284, type: 3}
-  spaceIndicator: {fileID: 21300000, guid: 63f8a5fffbdfa6548b4f70da06cc7804, type: 3}
-  rightClickIndicator: {fileID: 21300000, guid: 38a55885d3ed02140881ba78194da6d8, type: 3}
-  leftClickIndicator: {fileID: 21300000, guid: 7ff48a3a41f8f764da9dd7a7dde9bcee, type: 3}
-  keyFIndicator: {fileID: 21300000, guid: a55869ad25581e542b318d90e13870e7, type: 3}
-  dangerIndicator: {fileID: 21300000, guid: f83452b52d9a22944ae3a14d5022674a, type: 3}
-  highDangerIndicator: {fileID: 21300000, guid: cf2557a8769f302409badd1eb96e6400, type: 3}
-  tutorialMode: 1
-  speed: 45
   rollTorque: 50
   rollAcceleration: 40
   rollFriction: 5
@@ -700,11 +683,13 @@ MonoBehaviour:
   dangerSpeed: 10
   mediumSpeed: 3.3
   minimumSpeed: 1
+  uiManager: {fileID: 2463627945084931592}
   grabUIText: {fileID: 8234961305934034428}
   grab: {fileID: 1289024538108758660, guid: 62bee993b4da21145a34bb9e2304d3d3, type: 3}
   pushOffWall: {fileID: -757749469659553165, guid: 62bee993b4da21145a34bb9e2304d3d3, type: 3}
   doorManager: {fileID: 0}
   tutorialManager: {fileID: 0}
+  tutorialMode: 0
 --- !u!114 &1315194308885493417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -720,10 +705,40 @@ MonoBehaviour:
   player: {fileID: 8234961305471522323}
   holdPos: {fileID: 1315194308415042359}
   cam: {fileID: 8234961306013145810}
+  ObjectContainer: {fileID: 0}
   throwForce: 350
   pickUpRange: 5
   playerCollider: {fileID: 8234961306098123236}
   hasThrownObject: 0
+--- !u!114 &2463627945084931592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8234961305471522323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c259bd1c2d5e3f4185b336f23fb1a93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 8234961305471522324}
+  cameraFade: {fileID: 0}
+  characterPivot: {fileID: 8234961305471522323}
+  crosshair: {fileID: 8234961306332532425}
+  grabber: {fileID: 7716525470233202160}
+  inputIndicator: {fileID: 8834595416931030288}
+  healthIndicator: {fileID: 8834595416716833641}
+  openHand: {fileID: 21300000, guid: 251f3cc6568a7c84fb817f58b9c4bfd4, type: 3}
+  closedHand: {fileID: 21300000, guid: cc728fc8e36e23946891b57c9ecc206b, type: 3}
+  crosshairIcon: {fileID: 21300000, guid: 6dc2d05d0b6fd204186719e888fcdf95, type: 3}
+  wasdIndicator: {fileID: 21300000, guid: a674e7cd806f3ca46baff3e0c90a1284, type: 3}
+  spaceIndicator: {fileID: 21300000, guid: 63f8a5fffbdfa6548b4f70da06cc7804, type: 3}
+  rightClickIndicator: {fileID: 21300000, guid: 38a55885d3ed02140881ba78194da6d8, type: 3}
+  leftClickIndicator: {fileID: 21300000, guid: 7ff48a3a41f8f764da9dd7a7dde9bcee, type: 3}
+  keyFIndicator: {fileID: 21300000, guid: a55869ad25581e542b318d90e13870e7, type: 3}
+  dangerIndicator: {fileID: 21300000, guid: f83452b52d9a22944ae3a14d5022674a, type: 3}
+  highDangerIndicator: {fileID: 21300000, guid: cf2557a8769f302409badd1eb96e6400, type: 3}
 --- !u!1 &8234961305934034426
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,7 +888,7 @@ GameObject:
   - component: {fileID: 8234961305958628543}
   - component: {fileID: 8234961305958628540}
   m_Layer: 5
-  m_Name: PlayerCanvasUI
+  m_Name: Canvas (UI)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
