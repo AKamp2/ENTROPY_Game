@@ -30,6 +30,13 @@ public class DialogueManager : MonoBehaviour
     private bool isDialogueActive = false;
     private bool tutorialSkipped = false;
 
+    private bool isDialogueSpeaking = false;
+    private bool isFailureSpeaking = false;
+    private bool pauseMainDialogue = false;
+
+
+
+
     public TutorialManager tutorialManager;
 
     private float fadeDuration = 0.5f;
@@ -40,6 +47,9 @@ public class DialogueManager : MonoBehaviour
     public float skipPauseDuration = 0.3f;
 
     public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
+    public bool IsDialogueSpeaking => isDialogueSpeaking; // Optional public getter if needed elsewhere
+
+    public bool IsFailureSpeaking => isFailureSpeaking;
 
     public bool TutorialSkipped
     {
@@ -95,12 +105,14 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private IEnumerator DisplayDialogue()
     {
+        isDialogueActive = true;
         FadeIn();
         isSkipping = false;
         DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
 
         while (currentDialogueIndex < currentSequence.dialogues.Length)
         {
+
             Dialogue currentDialogue = currentSequence.dialogues[currentDialogueIndex];
 
             // Skip this dialogue if tutorial is skipped and this dialogue is marked to be skipped with the tutorial
@@ -117,6 +129,7 @@ public class DialogueManager : MonoBehaviour
             {
                 audioSource.clip = currentDialogue.audioClip;
                 audioSource.Play();
+                isDialogueSpeaking = true; // <--- Dialogue is about to speak
             }
 
             //calculating dialogue speed
@@ -135,6 +148,9 @@ public class DialogueManager : MonoBehaviour
             // Show lines
             foreach (string line in currentDialogue.dialogueLines)
             {
+                // before each line begins
+                yield return new WaitUntil(() => !pauseMainDialogue);
+
                 yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
 
                 // Skip: break out of current dialogue block
@@ -146,13 +162,20 @@ public class DialogueManager : MonoBehaviour
                 yield return new WaitForSeconds(0.3f);
             }
 
+            // after the block, also wait if paused:
+            yield return new WaitUntil(() => !pauseMainDialogue);
+
             // Skip: clear audio, advance dialogue index, continue outer loop
             if (isSkipping)
             {
                 isSkipping = false;
+                isDialogueSpeaking = false;
 
                 if (audioSource.isPlaying)
+                {
                     audioSource.Stop();
+                }
+                    
 
                 if (currentDialogue.advancesTutorial == false)
                 {
@@ -188,6 +211,7 @@ public class DialogueManager : MonoBehaviour
 
             }
             currentDialogueIndex++;
+            isDialogueSpeaking = false; // <--- Dialogue finished
 
         }
 
@@ -200,47 +224,62 @@ public class DialogueManager : MonoBehaviour
 
     public IEnumerator PlayFailureDialogue(int index)
     {
+        // Wait until no dialogue is active
+        yield return new WaitUntil(() => !isDialogueSpeaking);
+
+        if (isDialogueActive == false)
+        {
+            isDialogueActive = true;
+            dialogueCanvas.enabled = true;
+            FadeIn();
+        }
+
+        Debug.Log("Playing Roll dialogue NOW!");
+
+        // signal “failure” mode on
+        pauseMainDialogue = true;
+        isFailureSpeaking = true;
+
         Dialogue currentDialogue = failureDialogues.dialogues[index];
 
         nameTextUI.text = currentDialogue.characterName;
 
-        // Play audio if available (one audio clip for multiple lines)
         if (currentDialogue.audioClip != null)
         {
             audioSource.clip = currentDialogue.audioClip;
             audioSource.Play();
         }
 
-        //calculating dialogue speed
         int totalLength = 0;
         foreach (string line in currentDialogue.dialogueLines)
         {
             totalLength += line.Length;
         }
 
-        // Adjust speed if an audio clip is present
         if (currentDialogue.audioClip != null)
         {
             typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.01f;
         }
 
-        // Show each line with typewriter effect, one by one
         foreach (string line in currentDialogue.dialogueLines)
         {
             yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
             yield return new WaitForSeconds(0.3f);
-
         }
 
-        // Wait until the audio clip finishes before moving to the next dialogue unless skipping
         yield return new WaitUntil(() => !audioSource.isPlaying);
         yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
 
-        //advance tutorial if the dialogue is intended to.
         if (currentDialogue.advancesTutorial)
         {
             tutorialManager.ProgressTutorial();
         }
+
+        FadeOut();
+        dialogueCanvas.enabled = false;
+        isDialogueActive = false;
+        isFailureSpeaking = false;
+        pauseMainDialogue = false;
 
     }
 
