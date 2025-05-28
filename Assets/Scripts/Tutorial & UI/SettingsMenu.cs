@@ -7,23 +7,32 @@ using System.Collections;
 using UnityEngine.Audio;
 using System;
 using System.IO;
+using TMPro;
 
 public class SettingsMenu : MonoBehaviour 
 {
     // Array of submenus to be toggled
     public GameObject[] optionsMenus;
 
-    // Audio setting initialization
+    // Audio option initialization
     [SerializeField] private Slider dialogueSlider;
+    [SerializeField] private TextMeshProUGUI dialogueSliderText;
     [SerializeField] private Slider soundFXSlider;
+    [SerializeField] private TextMeshProUGUI soundFXSliderText;
     [SerializeField] private AudioSource soundFXAudioSource;
     [SerializeField] private AudioSource dialogueAudioSource;
 
-    // General setting initialization
+    // General option initialization
     [SerializeField] private Toggle subtitleCheckbox;
     [SerializeField] private Slider sensitivitySlider;
+    [SerializeField] private TextMeshProUGUI sensitivitySliderText;
     [SerializeField] private ZeroGravity player;
     [SerializeField] private GameObject dialogueText;
+
+    // Menu manager variables
+    [SerializeField] private MenuManager menuManager;
+    [SerializeField] private GameObject confirmationPopUp;
+    public bool isChanged;
 
     private void OnEnable()
     {
@@ -33,23 +42,40 @@ public class SettingsMenu : MonoBehaviour
         soundFXSlider.value = GetPrefs("soundFXSlider", 1);
         sensitivitySlider.value = GetPrefs("sensitivitySlider", 4);
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
-        ApplySettings();
+        ApplyOptions();
     }
-   
+
+    public void SetSoundFXSliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = soundFXSlider.value.ToString();
+        isChanged = true;
+    }
+    public void SetDialogueSliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = dialogueSlider.value.ToString();
+        isChanged = true;
+
+    }
+    public void SetSensitivitySliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = sensitivitySlider.value.ToString();
+        isChanged = true;
+
+    }
     public void SetDialogueVolume()
     {
         // Sets the dialogue volume to the slide value
-        dialogueAudioSource.volume = dialogueSlider.value;
+        dialogueAudioSource.volume = dialogueSlider.value/100;
         //Debug.Log(audioSource.volume);
-        SetPrefs("dialogueSlider", dialogueSlider.value);
+        SetPrefs("dialogueSlider", (int)dialogueSlider.value);
     }
 
     public void SetSoundFXVolume()
     {
         // Sets the sound effects volume to the slide value
-        soundFXAudioSource.volume = soundFXSlider.value;
+        soundFXAudioSource.volume = soundFXSlider.value/100;
         //Debug.Log(audioSource.volume);
-        SetPrefs("soundFXSlider", soundFXSlider.value);
+        SetPrefs("soundFXSlider", (int)soundFXSlider.value);
     }
 
     public void SetSensitivity()
@@ -57,7 +83,7 @@ public class SettingsMenu : MonoBehaviour
         // Sets the sound effects volume to the slide value
         player.SensitivityX = sensitivitySlider.value;
         player.SensitivityY = sensitivitySlider.value;
-        SetPrefs("sensitivitySlider", sensitivitySlider.value);
+        SetPrefs("sensitivitySlider", (int)sensitivitySlider.value);
     }
 
     public void ToggleSubtitles()
@@ -72,6 +98,7 @@ public class SettingsMenu : MonoBehaviour
             dialogueText.SetActive(false);
             SetPrefs("subtitleCheckbox", 0);
         }
+        isChanged = true;
     }
 
     // Click handlers
@@ -100,10 +127,9 @@ public class SettingsMenu : MonoBehaviour
         popUp.SetActive(false);
     }
 
-    void SetPrefs(string keyName, float value)
+    void SetPrefs(string keyName, int value)
     {
-        int intValue = Mathf.RoundToInt(value);
-        PlayerPrefs.SetInt(keyName, intValue);
+        PlayerPrefs.SetInt(keyName, value);
     }
 
     int GetPrefs(string keyName, int defaultValue)
@@ -111,11 +137,26 @@ public class SettingsMenu : MonoBehaviour
         return PlayerPrefs.GetInt(keyName, defaultValue);
     }
 
-    public void ApplySettings()
+    public void ApplyOptions()
     {
         ToggleSubtitles();
         SetDialogueVolume();
         SetSoundFXVolume();
         SetSensitivity();
+        SetDialogueSliderText(dialogueSliderText);
+        SetSensitivitySliderText(sensitivitySliderText);
+        SetSoundFXSliderText(soundFXSliderText);
+        isChanged = false;
+    }
+
+    public void ExitOptions()
+    {
+        if (isChanged) {
+            OpenPopUp(confirmationPopUp);
+        }
+        else
+        {
+            menuManager.LastMenu();
+        }
     }
 }
