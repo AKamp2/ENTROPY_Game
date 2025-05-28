@@ -141,6 +141,7 @@ public class ZeroGravity : MonoBehaviour
     private bool canPushOff = false;
     private bool canRoll = false;
     private bool hasPropelled = false;
+    private bool hasRolled = false;
 
     // Track if the movement keys were released
     private bool movementKeysReleased;
@@ -206,6 +207,12 @@ public class ZeroGravity : MonoBehaviour
     { 
         get { return hasPropelled; }
         set { hasPropelled = value; }
+    }
+
+    public bool HasRolled
+    {
+        get { return hasRolled; }
+        set { hasRolled = value; }
     }
 
     public int PlayerHealth { get { return PlayerHealth; } }
@@ -390,6 +397,7 @@ public class ZeroGravity : MonoBehaviour
 
             //apply the roll rotation to the camera
             cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
+            
         }
     }
 
@@ -977,6 +985,7 @@ public class ZeroGravity : MonoBehaviour
     public void OnRoll(InputAction.CallbackContext context)
     {
         rotationZ = context.ReadValue<float>();
+        hasRolled = true;
     }
     public void OnGrab(InputAction.CallbackContext context)
     {
