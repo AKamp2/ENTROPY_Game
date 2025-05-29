@@ -144,9 +144,16 @@ public class PickupScript : MonoBehaviour
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
         heldObj = null;
         hasThrownObject = true;
+        StartCoroutine(ResetThrowFlag());
 
         transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)));
 
+    }
+
+    IEnumerator ResetThrowFlag()
+    {
+        yield return null; // Wait one frame
+        hasThrownObject = false;
     }
 
 }
