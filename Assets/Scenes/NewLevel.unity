@@ -3295,6 +3295,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1268042970}
   - {fileID: 23608399}
   - {fileID: 1758749090}
   - {fileID: 1862464805}
@@ -3303,7 +3304,6 @@ RectTransform:
   - {fileID: 350544950}
   - {fileID: 1212941034}
   - {fileID: 339732053}
-  - {fileID: 1268042970}
   m_Father: {fileID: 1762049066}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -4671,10 +4671,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 607110406}
-  - {fileID: 1210265211}
+  - {fileID: 1644036294}
   - {fileID: 414290419}
   - {fileID: 1762049066}
-  - {fileID: 1644036294}
+  - {fileID: 1210265211}
   - {fileID: 1264736907}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9508,14 +9508,14 @@ MonoBehaviour:
       audioClip: {fileID: 8300000, guid: 48c92bc0a32a45f4c8a76a0064f0bdb5, type: 3}
       advancesTutorial: 0
       skipWithTutorial: 1
-      delayBetweenDialogues: 0
+      delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
       - Please grab onto another bar in the chamber.
       audioClip: {fileID: 8300000, guid: 5a2b651bcaae6c445adba37360733036, type: 3}
       advancesTutorial: 1
       skipWithTutorial: 1
-      delayBetweenDialogues: 0
+      delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
       - Now orient your head to aim at another bar in the chamber. Then propel yourself
@@ -9523,7 +9523,7 @@ MonoBehaviour:
       audioClip: {fileID: 8300000, guid: a4a3c03b37e91ca43bd0553f617d819a, type: 3}
       advancesTutorial: 1
       skipWithTutorial: 1
-      delayBetweenDialogues: 0
+      delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
       - It seems like you are getting your bearings. I have been able to re route
@@ -9563,7 +9563,7 @@ MonoBehaviour:
       audioClip: {fileID: 8300000, guid: 2ea53cacfade94e479b06872c29b6674, type: 3}
       advancesTutorial: 1
       skipWithTutorial: 0
-      delayBetweenDialogues: 0
+      delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
       - You may need to work on your accuracy if you want to survive. Please attempt
@@ -9571,7 +9571,7 @@ MonoBehaviour:
       audioClip: {fileID: 8300000, guid: 1c0b3dc57d1ffa948991bba895678cb2, type: 3}
       advancesTutorial: 0
       skipWithTutorial: 0
-      delayBetweenDialogues: 0
+      delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
       - I understand that moving around in this environment can be disorienting.
@@ -9579,14 +9579,15 @@ MonoBehaviour:
       audioClip: {fileID: 8300000, guid: 4f30c318ca11e3d40a06a9f8c0cb1a18, type: 3}
       advancesTutorial: 0
       skipWithTutorial: 0
-      delayBetweenDialogues: 0
+      delayBetweenDialogues: 0.5
   dialogueCanvas: {fileID: 414290418}
   dialogueCanvasGroup: {fileID: 414290415}
   nameTextUI: {fileID: 1002989319}
   dialogueTextUI: {fileID: 1125754934}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1210265210}
   typewriterSpeed: 0.04
   player: {fileID: 515369110}
+  isFailureTriggered: 0
   tutorialManager: {fileID: 1644036295}
   sfxSource: {fileID: 1264736906}
   skipSfxClip: {fileID: 8300000, guid: 46da25644e12c82429d79846cec77d46, type: 3}
@@ -22371,7 +22372,7 @@ MonoBehaviour:
   propelCanvasGroup: {fileID: 139001403}
   pushOffCanvasGroup: {fileID: 1708958530}
   throwItemCanvasGroup: {fileID: 193953106}
-  rollTutorialCanvasGroup: {fileID: 1861284967}
+  rollCanvasGroup: {fileID: 1861284967}
   enterCanvasGroup: {fileID: 1731495891}
   fadeDuration: 1
   audioSource: {fileID: 1264736906}
