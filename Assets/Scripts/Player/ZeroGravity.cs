@@ -325,19 +325,18 @@ public class ZeroGravity : MonoBehaviour
                         //keep grabber locked to grabbed bar
                         uiManager.UpdateGrabberPosition(grabbedBar);
                     }
-                    //grabUIText.text = "'W A S D'";
                     //set the sprite for input indicator to the wasd indicator
-                    if (canPropel) // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                    if (canPropel)
                     {
-                        //inputIndicator.sprite = wasdIndicator;
-                        //inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                        uiManager.InputIndicator.sprite = uiManager.WASDIndicator;
+                        uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
                     }
 
                 }
                 else
                 {
                     //update to closest bar in view 
-                    //UpdateClosestBarInView(); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                    uiManager.UpdateClosestBarInView();
                 }
             }
             else
@@ -360,8 +359,6 @@ public class ZeroGravity : MonoBehaviour
             DetectBarrierAndBounce();
             //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
-            //track the player health and update the ui based on what health the player is on
-            //uiManager.HandleHealthUI();
 
             //manage the cooldowns
             HurtCoolDown();
@@ -594,7 +591,6 @@ public class ZeroGravity : MonoBehaviour
         //Propel off bar logic
         if (isGrabbing && bar != null)
         {
-            currentRollSpeed = 0.0f;
             PropelOffBar();
             Swing(bar);
             SwingCoolDown();
