@@ -447,8 +447,8 @@ public class ZeroGravity : MonoBehaviour
             Vector3 wallNormal = (transform.position - closestPoint).normalized;
             Vector3 reflectDirection = Vector3.Reflect(rb.linearVelocity.normalized, wallNormal);
 
-            //pudh the player away slighly so they won't be stuck colliding with the wall.
-            Vector3 pushAway = wallNormal * 0.05f; // small offset to prevent overlap
+            //push the player away slighly so they won't be stuck colliding with the wall.
+            Vector3 pushAway = wallNormal * 0.005f; // small offset to prevent overlap
             transform.position += pushAway;
 
             //get bounce directions
@@ -463,15 +463,21 @@ public class ZeroGravity : MonoBehaviour
 
         if (bounceCount > 0)
         {
-            avgBounceDirection.Normalize(); // average direction
-            float bounceSpeed = ogSpeed * .75f; // keep 75% of initial speed so it doesn't gain 
+            avgBounceDirection.Normalize(); // average direction of the bounce
+            float bounceSpeed = ogSpeed * .75f; // keep 75% of initial speed so it doesn't gain velocity on bounces
 
             //Debug.Log("BounceSpeed: " + bounceSpeed);
-            //verify the bounce is faster than minimum speed
-            if (bounceSpeed <= minimumSpeed)
+
+            //we want to make sure that all bounces off the wall while traversing are set to  minimum speed
+            //however, if the player is grabbing we dont want these reset bounces as they jolt the player while grabbing
+            if (!isGrabbing)
             {
-                //reset the bounce speed to be the minimum, ensuring constant bounces
-                bounceSpeed = minimumSpeed;
+                //verify the bounce is faster than minimum speed
+                if (bounceSpeed <= minimumSpeed)
+                {
+                    //reset the bounce speed to be the minimum, ensuring constant bounces
+                    bounceSpeed = minimumSpeed;
+                }
             }
 
             rb.linearVelocity = Vector3.zero;
@@ -480,7 +486,7 @@ public class ZeroGravity : MonoBehaviour
             rb.linearVelocity = avgBounceDirection * bounceSpeed;
         }
 
-        //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds
+        //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds  
         if (ogSpeed >= dangerSpeed && !justHit && !isDead)
         {
             //decrease the player's health by 1
