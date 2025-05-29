@@ -67,6 +67,9 @@ public class ZeroGravity : MonoBehaviour
     [Header("== Grabbing Settings ==")]
     // Grabbing mechanic variables
     private bool isGrabbing = false;
+    private bool justGrabbed = false;
+    private bool prevJustGrabbed = false;
+
     private Transform potentialGrabbedBar = null; //tracks a potential grabbable bar that the player looks at
     private Transform grabbedBar; //stores the bar the player is currently grabbing
     [SerializeField]
@@ -98,6 +101,8 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float mediumSpeed = 5f;
     [SerializeField]
+    private float zeroGWalkSpeed = 3f;
+    [SerializeField]
     private float minimumSpeed = 1f;
 
     [Header("== Swinging Settings==")]
@@ -105,6 +110,15 @@ public class ZeroGravity : MonoBehaviour
     private float minSwingDistance = 0f; //minimum distance while swinging
     private Vector3 swingPoint; //stores the bar transform when calculating swings
     private SpringJoint joint;
+    [SerializeField]
+    private float grabDrag = .99f;
+
+    //time stamps for swing cooldowns
+    private float grabSwingTimeStamp;
+    [SerializeField]
+    private float swingCoolDownFastest = 4f;
+    [SerializeField]
+    private float swingCoolDownSlowest = 2f;
 
 
     [Header("== UI Settings ==")]
@@ -215,7 +229,7 @@ public class ZeroGravity : MonoBehaviour
         set { hasRolled = value; }
     }
 
-    public int PlayerHealth { get { return PlayerHealth; } }
+    public int PlayerHealth { get { return playerHealth; } }
 
     public bool IsDead
     {
@@ -347,7 +361,7 @@ public class ZeroGravity : MonoBehaviour
             //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
             //track the player health and update the ui based on what health the player is on
-            //HandleHealthUI(); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            //uiManager.HandleHealthUI();
 
             //manage the cooldowns
             HurtCoolDown();
@@ -361,13 +375,6 @@ public class ZeroGravity : MonoBehaviour
         {
             RotateCam();
         }
-
-        //Death debugging shortcut
-        /*
-        if (Keyboard.current.kKey.wasPressedThisFrame) {
-            DecreaseHealth(4);
-        }
-        */
     }
     #endregion 
 
@@ -559,20 +566,14 @@ public class ZeroGravity : MonoBehaviour
             float bounceSpeed = ogSpeed * .3f; // keep 30% of initial speed so it doesn't gain 
 
             //calculate the direction of the bounce
-            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f);
+            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * 0.05f;
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
 
             if (!isDead)
             {
                 //decrease the player health after they have collided with the closing door
-                DecreaseHealth(4);
-
-                //set just hit to true, commencing cooldown
-                prevJustHit = justHit;
-                justHit = true;
-                prevHurt = hurt;
-                hurt = true;
+                isDead = true;
             }
         }
     }
@@ -590,6 +591,7 @@ public class ZeroGravity : MonoBehaviour
             currentRollSpeed = 0.0f;
             PropelOffBar();
             Swing(bar);
+            SwingCoolDown();
             uiManager.UpdateGrabberPosition(bar);
         }
     }
@@ -616,15 +618,122 @@ public class ZeroGravity : MonoBehaviour
     public void GrabBar()
     {
         isGrabbing = true;
+        //set just grabbed to true to send to swing cool down
+        justGrabbed = true;
         grabbedBar = potentialGrabbedBar;
 
         //lock grabbed bar and change icon
         uiManager.ShowGrabber(grabbedBar);
-
-        //set the velocities to zero so that the player stops when they grab the bar
-        //rb.linearVelocity = Vector3.zero;
-        //rb.angularVelocity = Vector3.zero;
     }
+
+
+    /// <summary>
+    /// This method is created to allow player to swing on the bars, similar to a grappling hook feature found in other games
+    /// It creates a sringjoint between the player and the bar the length of the players arm
+    /// </summary>
+    /// <param name="bar"></param>
+    private void Swing(Transform bar)
+    {
+        if (isGrabbing && bar != null)
+        {
+            //Debug.Log("swingaling");
+            swingPoint = bar.position;
+
+            //ensure that the player isn't alr swinging on another bar
+            if (this.gameObject.GetComponent<SpringJoint>() == null)
+            {
+                joint = this.gameObject.AddComponent<SpringJoint>();
+                joint.autoConfigureConnectedAnchor = false;
+                joint.connectedAnchor = swingPoint;
+                float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+
+                //ensure the max and min distances are set properly
+                joint.maxDistance = grabRange;
+                joint.minDistance = minGrabRange;
+            }
+
+            //tweak these values for the spring for better pendulum values
+            joint.spring = 4.5f; //higher pull and push of the spring
+            joint.damper = 7f;
+            joint.massScale = 4.5f;
+        }
+    }
+
+    /// <summary>
+    /// This method will take the joint created by the Swing method and will incrimentally 
+    /// shrink it as the player continues to hold onto one bar. This will eventually get short enough to 
+    /// where the player is able to stop themself, and then propel with no swing affecting their trajectory
+    /// </summary>
+    private void PullToBar()
+    {
+        //if the joint is a long distance between the player and the bar
+        if (joint.maxDistance >= joint.minDistance)
+        {
+            //decrease the length of the joint
+            joint.maxDistance -= 0.1f;
+            //lessen the spring force of the joint 
+            joint.spring -= 0.1f;
+        }
+        //increment down the linear and angular velocities so the player slows down
+        if (rb != null && rb.linearVelocity.magnitude > 0.1f)
+        {
+            //decrease the velocity
+            rb.linearVelocity *= grabDrag;
+        }
+
+        //Debug.Log("linear velocity: " + rb.linearVelocity.magnitude);
+    }
+    /// <summary>
+    /// This method will control the logic for the cooldown of swinging before the player 
+    /// automatically starts gtting pulled into the bar to stop their movement while still holding the bar
+    /// </summary>
+    private void SwingCoolDown()
+    {
+        //confirm I have just grabbed a bar
+        if (isGrabbing && justGrabbed && !prevJustGrabbed)
+        {
+            //Debug.Log("Linear velocity: " + rb.linearVelocity.magnitude);
+            //create time stamps based on how fast the player is moving
+            //if the player is moving at the dangerous speed
+            if(rb.linearVelocity.magnitude >= mediumSpeed)
+            {
+                //Debug.Log("Danger Speed Reached");
+                //the cooldown for swinging will be higher
+                grabSwingTimeStamp = Time.time + swingCoolDownFastest;
+                Debug.Log("medium Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
+            }
+            //if the player is moving at a slower speed
+            else if(rb.linearVelocity.magnitude >= zeroGWalkSpeed)
+            {
+                //Debug.Log("Normal Speed Reached");
+                //the cooldown will be slower
+                grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
+                Debug.Log("walk Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
+            }
+            //set the prev just grabbed bool to confirm we do this once 
+            prevJustGrabbed = justGrabbed;
+        }
+        //if the time has now gone past the cooldown timestamp we created
+        if(Time.time > grabSwingTimeStamp)
+        {
+            //Debug.Log("pulling to bar");
+            PullToBar();
+            justGrabbed = false;
+            prevJustGrabbed = justGrabbed;
+            grabSwingTimeStamp = 0f;
+        }
+    }
+
+    /// <summary>
+    /// This method stops the swinging by destroying the pringjoint and setting the swingpoint back to zero
+    /// </summary>
+    private void StopSwing()
+    {
+        //Debug.Log("no swingaling");
+        swingPoint = Vector3.zero;
+        Destroy(joint);
+    }
+
 
     // Release the bar and enable movement again
     private void ReleaseBar()
@@ -632,7 +741,10 @@ public class ZeroGravity : MonoBehaviour
         //stop swinging off the bar
         StopSwing();
 
+        //set isGrabbing to false
         isGrabbing = false;
+        //set justgrabbed to false to send for the cool down to nullify
+        justGrabbed = false;
         grabbedBar = null;
 
         //lock grabbed bar and change icon
@@ -667,7 +779,7 @@ public class ZeroGravity : MonoBehaviour
     {
         if (playerHealth > 4)
         {
-            playerHealth = i;
+            playerHealth = 4;
             return;
         }
 
@@ -681,7 +793,7 @@ public class ZeroGravity : MonoBehaviour
             //create a timestamp representing the end of the cooldown
             justHitTimeStamp = Time.time + justHitCoolDown;
 
-            Debug.Log("timestamp for cooldown: " + justHitTimeStamp);
+            //Debug.Log("timestamp for cooldown: " + justHitTimeStamp);
             prevJustHit = justHit;
         }
 
@@ -698,20 +810,19 @@ public class ZeroGravity : MonoBehaviour
     {
         if (hurt && playerHealth < 4 && !prevHurt)
         {
-            if (playerHealth <= 1)
+            if (playerHealth == 1)
             {
                 //create a timestamp representing the end of the cooldown
                 //this is the closest to death so it will have a longer cooldown
                 hurtTimeStamp = Time.time + highDangerCoolDown;
             }
-            else
+            else if(playerHealth > 1)
             {
                 //create a timestamp representing the end of the cooldown
+                //this is the higher healths so the cool down will be shorter
                 hurtTimeStamp = Time.time + hurtCoolDown;
-
             }
-
-            Debug.Log("timestamp for cooldown: " + justHitTimeStamp);
+            //Debug.Log("timestamp for cooldown: " + justHitTimeStamp);
             prevHurt = hurt;
         }
 
@@ -721,6 +832,7 @@ public class ZeroGravity : MonoBehaviour
 
             if(playerHealth >= 4) 
             {
+                playerHealth = maxHealth;
                 hurt = false;
                 prevHurt = false;
             }
@@ -894,55 +1006,6 @@ public class ZeroGravity : MonoBehaviour
             }
         }
     }
-
-    /// <summary>
-    /// This method is created to allow player to swing on the bars, similar to a grappling hook feature found in other games
-    /// It creates a sringjoint between the player and the bar the length of the players arm
-    /// </summary>
-    /// <param name="bar"></param>
-    private void Swing(Transform bar)
-    {
-        if (isGrabbing && bar != null)
-        {
-            //Debug.Log("swingaling");
-            swingPoint = bar.position;
-
-            //ensure that the player isn't alr swinging on another bar
-            if (this.gameObject.GetComponent<SpringJoint>() == null)
-            {
-                joint = this.gameObject.AddComponent<SpringJoint>();
-                joint.autoConfigureConnectedAnchor = false;
-                joint.connectedAnchor = swingPoint;
-                float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
-
-                //ensure the max and min distances are set properly
-                joint.maxDistance = grabRange;
-                joint.minDistance = minGrabRange;
-            }
-
-            //tweak these values for the spring for better pendulum values
-            joint.spring = 4.5f; //higher pull and push of the spring
-            joint.damper = 7f;
-            joint.massScale = 4.5f;
-
-            if (joint.maxDistance >= joint.minDistance)
-            {
-                joint.maxDistance -= 0.1f;
-                joint.spring -= 0.1f;
-            }
-        }
-    }
-
-    /// <summary>
-    /// This method stops the swinging by destroying the pringjoint and setting the swingpoint back to zero
-    /// </summary>
-    private void StopSwing()
-    {
-        //Debug.Log("no swingaling");
-        swingPoint = Vector3.zero;
-        Destroy(joint);
-    }
-
 
     #endregion
 
