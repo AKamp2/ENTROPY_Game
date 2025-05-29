@@ -35,6 +35,8 @@ public class DialogueManager : MonoBehaviour
     private bool isFailureTriggered = false;
     private bool pauseMainDialogue = false;
 
+    private int currentFailureIndex = -1;
+
 
 
 
@@ -51,6 +53,8 @@ public class DialogueManager : MonoBehaviour
     public bool IsDialogueSpeaking => isDialogueSpeaking; // Optional public getter if needed elsewhere
 
     public bool IsFailureSpeaking => isFailureSpeaking;
+
+    public int CurrentFailureIndex => currentFailureIndex;
 
     public bool IsFailureTriggered
     {
@@ -273,6 +277,7 @@ public class DialogueManager : MonoBehaviour
         // signal “failure” mode on
         pauseMainDialogue = true;
         isFailureSpeaking = true;
+        currentFailureIndex = index;
 
         //Debug.Log("Pause Main Dialog: " + pauseMainDialogue);
         //Debug.Log("is Dialog Speaking: " + isDialogueSpeaking);
@@ -321,6 +326,7 @@ public class DialogueManager : MonoBehaviour
         isFailureSpeaking = false;
         isFailureTriggered = false;
         pauseMainDialogue = false;
+        currentFailureIndex = -1;
 
         //fade out and disable canvas again if this occured while no other dialogue is queued
         if (!isDialogueActive)
