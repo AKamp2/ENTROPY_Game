@@ -985,7 +985,11 @@ public class ZeroGravity : MonoBehaviour
     public void OnRoll(InputAction.CallbackContext context)
     {
         rotationZ = context.ReadValue<float>();
-        hasRolled = true;
+        if(canRoll)
+        {
+            hasRolled = true;
+        }
+        
     }
     public void OnGrab(InputAction.CallbackContext context)
     {
