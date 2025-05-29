@@ -32,7 +32,7 @@ public class DialogueManager : MonoBehaviour
 
     private bool isDialogueSpeaking = false;
     private bool isFailureSpeaking = false;
-    private bool isFailureTriggered = false;
+    public bool isFailureTriggered = false;
     private bool pauseMainDialogue = false;
 
     private int currentFailureIndex = -1;
@@ -272,7 +272,7 @@ public class DialogueManager : MonoBehaviour
             FadeIn();
         }
 
-        Debug.Log("Playing Roll dialogue NOW!");
+        Debug.Log("Playing Failure Dialogue at index: " + index);
 
         // signal “failure” mode on
         pauseMainDialogue = true;
@@ -313,8 +313,14 @@ public class DialogueManager : MonoBehaviour
         yield return new WaitUntil(() => !audioSource.isPlaying);
         yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
 
+        isFailureSpeaking = false;
+        isFailureTriggered = false;
+        pauseMainDialogue = false;
+        currentFailureIndex = -1;
+
         if (currentDialogue.advancesTutorial)
         {
+            Debug.Log("Current Dialogue Advances Tutorial");
             // Only progress if tutorial hasn't already been progressed
             if (!tutorialManager.TutorialStepCompleted())
             {
@@ -323,10 +329,7 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
-        isFailureSpeaking = false;
-        isFailureTriggered = false;
-        pauseMainDialogue = false;
-        currentFailureIndex = -1;
+        
 
         //fade out and disable canvas again if this occured while no other dialogue is queued
         if (!isDialogueActive)

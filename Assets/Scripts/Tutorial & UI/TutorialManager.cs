@@ -89,7 +89,7 @@ public class TutorialManager : MonoBehaviour
 
         if (isWaitingForAction)
         {
-            Debug.Log("Waiting for step " + currentStep);
+            //Debug.Log("Waiting for step " + currentStep);
 
             if (currentStep == 1 && playerController.IsGrabbing)
             {
@@ -136,12 +136,12 @@ public class TutorialManager : MonoBehaviour
             // Increment timer if upside down, else reset it
             if (isUpsideDown && !playerController.HasRolled)
             {
+                Debug.Log("Upside down!");
                 upsideDownTimer += Time.deltaTime;
 
                 if (upsideDownTimer >= upsideDownDuration)
                 {
                     StartCoroutine(PlayRollDialogue());
-                    hasPlayedRollFailure = true; // mark as shown
                 }
             }
             else
@@ -352,6 +352,9 @@ public class TutorialManager : MonoBehaviour
                 yield return new WaitUntil(() => rollCanvasGroup.alpha == 0);
                 FadeIn(pushOffCanvasGroup);
 
+                yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
+                StartCoroutine(dialogueManager.PlayFailureDialogue(1));
+
             }
 
             yield return new WaitUntil(() => playerController.HasPropelled);
@@ -382,6 +385,7 @@ public class TutorialManager : MonoBehaviour
 
     private IEnumerator PlayRollDialogue()
     {
+        Debug.Log("Roll dialogue coroutine started");
         hasPlayedRollFailure = true;
         //wait for another failure dialogue to finish
         if (dialogueManager.IsFailureTriggered)
