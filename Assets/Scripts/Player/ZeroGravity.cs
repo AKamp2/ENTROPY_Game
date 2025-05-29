@@ -61,8 +61,12 @@ public class ZeroGravity : MonoBehaviour
     private float currentRollSpeed = 0f;
     [SerializeField]
     private float rollAcceleration = 10f; // How quickly it accelerates to rollTorque
-    [SerializeField]
     private float rollFriction = 5f; // How quickly it decelerates when input stops
+    //values for the roll friction depending on grabbing onto bars vs not
+    [SerializeField]
+    private float rollFrictionGrab = 50f;
+    [SerializeField]
+    private float rollFrictionNoGrab = 10f;
 
     [Header("== Grabbing Settings ==")]
     // Grabbing mechanic variables
@@ -385,6 +389,20 @@ public class ZeroGravity : MonoBehaviour
         // Apply roll rotation (Z-axis)
         if (canRoll)
         {
+            //determine the friction of teh roll depending on if the player is grabbing a bar or not
+            //if the player is grabbing a bar
+            if (isGrabbing)
+            {
+                //the roll friction is higher
+                rollFriction = rollFrictionGrab;
+            }
+            //if the player is not grabbing a bar
+            else
+            {
+                //the roll friction is less
+                rollFriction = rollFrictionNoGrab;
+            }
+
             if (Mathf.Abs(rotationZ) > 0.1f) //only apply roll if rotationZ input is significant
             {
                 //calculate target roll direction and speed based on input
@@ -445,7 +463,7 @@ public class ZeroGravity : MonoBehaviour
             Vector3 reflectDirection = Vector3.Reflect(rb.linearVelocity.normalized, wallNormal);
 
             //push the player away slighly so they won't be stuck colliding with the wall.
-            Vector3 pushAway = wallNormal * 0.005f; // small offset to prevent overlap
+            Vector3 pushAway = wallNormal * 0.05f; // small offset to prevent overlap
             transform.position += pushAway;
 
             //get bounce directions
