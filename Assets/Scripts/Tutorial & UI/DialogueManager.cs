@@ -407,4 +407,15 @@ public class DialogueManager : MonoBehaviour
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
     }
+
+    public void SkipTutorial()
+    {
+        tutorialSkipped = true;
+        isSkipping = true;
+        pauseMainDialogue = true;
+        dialogueTextUI.text = "";
+        FadeOut();
+
+
+    }
 }

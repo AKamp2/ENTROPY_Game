@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class EnemySimpleAI : MonoBehaviour
 {
@@ -17,8 +18,15 @@ public class EnemySimpleAI : MonoBehaviour
     private bool isChasingPlayer = false;
     private bool isMoving = true;
 
+    [Header("Stun Settings")]
+    public float stunSeconds = 2f;            // how long to be stunned
+    public float stunVelocityThreshold = 5f;  // min velocity to stun
+    private bool isStunned = false;
+
     public AudioSource audioSource;
+    public AudioSource audioSource2;
     public AudioClip alienSfx;
+    public AudioClip takeDamage;
 
     void Start()
     {
@@ -34,7 +42,7 @@ public class EnemySimpleAI : MonoBehaviour
     void Update()
     {
         // Only start AI behavior if the door is open
-        if (door.DoorState != DoorScript.States.Open) return;
+        //if (door.DoorState != DoorScript.States.Open) return;
 
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
@@ -88,6 +96,46 @@ public class EnemySimpleAI : MonoBehaviour
 
     }
 
+    // Called by Unity when this collider hits another collider
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject other = collision.gameObject;
+
+        // 1) If its a thrown pickup object, stun
+        if (other.CompareTag("PickupObject"))
+        {
+            Rigidbody objRb = collision.rigidbody;
+            if (objRb != null && objRb.linearVelocity.magnitude >= stunVelocityThreshold)
+            {
+                StartCoroutine(StunCoroutine());
+            }
+        }
+        // 2) If its the player, kill them
+        else if (other.CompareTag("Player"))
+        {
+            player.GetComponent<ZeroGravity>().IsDead = true;
+        }
+    }
+
+    private IEnumerator StunCoroutine()
+    {
+        // already stunned?
+        if (isStunned) yield break;
+
+        isStunned = true;
+        isMoving = false;
+        audioSource.Stop(); // optional: silence chase SFX
+
+        audioSource2.PlayOneShot(takeDamage);
+
+        yield return new WaitForSeconds(stunSeconds);
+
+        // restore AI
+        isStunned = false;
+        isMoving = true;
+        FindPlayerPath(); // optionally re-path to player
+    }
+
     void ChasePlayer()
     {
         // Move directly towards the player
@@ -125,14 +173,6 @@ public class EnemySimpleAI : MonoBehaviour
         if (Vector3.Distance(transform.position, player.transform.position) <= chaseDistance)
         {
             isChasingPlayer = true;
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            player.GetComponent<ZeroGravity>().IsDead = true;
         }
     }
 
