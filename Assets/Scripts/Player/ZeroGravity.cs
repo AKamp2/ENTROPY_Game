@@ -628,6 +628,8 @@ public class ZeroGravity : MonoBehaviour
 
             if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed) && grabUIText.text == null)
             {
+
+                Debug.Log("heeeey");
                 //set the selected door in the door manager as this door
                 doorManager.CurrentSelectedDoor = door;
                 uiManager.DoorUI();
