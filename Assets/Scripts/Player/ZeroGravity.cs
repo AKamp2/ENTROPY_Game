@@ -366,12 +366,9 @@ public class ZeroGravity : MonoBehaviour
             //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
 
-<<<<<<< Updated upstream
+
             //manage the cooldowns  
             HurtCoolDown();
-=======
-            //manage the cooldowns
->>>>>>> Stashed changes
             JustHitCoolDown();
         }
     }
