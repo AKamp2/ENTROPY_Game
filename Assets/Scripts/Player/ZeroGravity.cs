@@ -625,11 +625,8 @@ public class ZeroGravity : MonoBehaviour
             GameObject door = hit.transform.parent.gameObject;
             DoorScript ds = door.GetComponent<DoorScript>();
 
-
-            if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed) && grabUIText.text == null)
+            if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed) && grabUIText.text == "")
             {
-
-                Debug.Log("heeeey");
                 //set the selected door in the door manager as this door
                 doorManager.CurrentSelectedDoor = door;
                 uiManager.DoorUI();
@@ -1019,7 +1016,7 @@ public class ZeroGravity : MonoBehaviour
         {
             potentialWall = hit.transform;
             //if in tutorial mode
-            if (grabUIText.text == null && canPushOff)
+            if (grabUIText.text == "" && canPushOff)
             {
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator

@@ -206,11 +206,13 @@ public class PlayerUIManager : MonoBehaviour
                     }
                     //update the sprite for the grabber and its position
                     UpdateGrabberPosition(closestObject);
+                    grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                 }
             }
             else
             {
                 UpdateGrabberPosition(closestObject);
+                grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(-1, 1, 1);
             }
             
         }
