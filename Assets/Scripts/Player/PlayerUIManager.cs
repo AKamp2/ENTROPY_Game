@@ -108,50 +108,113 @@ public class PlayerUIManager : MonoBehaviour
         /*doorManager.DoorUI.SetActive(false);*/
     }
 
+    //public void UpdateClosestBarInView()
+    //{
+    //    //check for all nearby bars to the player
+    //    Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
+    //    //initialize a transform for the closest bar and distance to that bar
+    //    Transform closestBar = null;
+    //    float closestDistance = Mathf.Infinity;
+
+    //    //check through each bar in our array
+    //    foreach (Collider bar in nearbyBars)
+    //    {
+    //        //set specifications for the viewport
+    //        Vector3 viewportPoint = player.cam.WorldToViewportPoint(bar.transform.position);
+
+    //        //check if the bar is in the viewport and in front of the player
+    //        if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
+    //        {
+    //            float distanceToBar = Vector3.Distance(transform.position, bar.transform.position);
+    //            if (distanceToBar < closestDistance)
+    //            {
+    //                closestDistance = distanceToBar;
+    //                closestBar = bar.transform;
+    //            }
+    //        }
+    //    }
+
+    //    if (closestBar != null)
+    //    {
+    //        //update the grabber if a new bar is detected
+    //        if (player.PotentialGrabbedBar != closestBar)
+    //        {
+    //            //player.PotentialGrabbedBar = closestBar;
+    //            //if in tutorial mode
+    //            if (player.TutorialMode && player.CanGrab)
+    //            {
+    //                //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
+    //                //set the sprite for the right click
+    //                //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //                inputIndicator.sprite = rightClickIndicator;
+    //                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+    //            }
+    //            //update the sprite for the grabber and its position
+    //            UpdateGrabberPosition(closestBar);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        //hide grabber if no bar is in range
+    //        HideGrabber();
+    //    }
+    //}
+
     public void UpdateClosestBarInView()
     {
         //check for all nearby bars to the player
-        Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
+        Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
         //initialize a transform for the closest bar and distance to that bar
-        Transform closestBar = null;
+        Transform closestObject = null;
         float closestDistance = Mathf.Infinity;
 
         //check through each bar in our array
-        foreach (Collider bar in nearbyBars)
+        foreach (Collider obj in nearbyObjects)
         {
             //set specifications for the viewport
-            Vector3 viewportPoint = player.cam.WorldToViewportPoint(bar.transform.position);
+            Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
 
             //check if the bar is in the viewport and in front of the player
             if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
             {
-                float distanceToBar = Vector3.Distance(transform.position, bar.transform.position);
+                float distanceToBar = Vector3.Distance(transform.position, obj.transform.position);
                 if (distanceToBar < closestDistance)
                 {
                     closestDistance = distanceToBar;
-                    closestBar = bar.transform;
+                    closestObject = obj.transform;
                 }
             }
         }
 
-        if (closestBar != null)
+        if (closestObject != null)
         {
-            //update the grabber if a new bar is detected
-            if (player.PotentialGrabbedBar != closestBar)
+            // ensure closest object is a bar
+            if (closestObject.gameObject.CompareTag("Grabbable"))
             {
-                player.PotentialGrabbedBar = closestBar;
-                //if in tutorial mode
-                if (player.TutorialMode && player.CanGrab)
+                //update the grabber if a new bar is detected
+                if (player.PotentialGrabbedBar != closestObject)
                 {
-                    //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
-                    //set the sprite for the right click
-                    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                    inputIndicator.sprite = rightClickIndicator;
-                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                    player.PotentialGrabbedBar = closestObject;
+                    //if in tutorial mode
+                    if (player.TutorialMode && player.CanGrab)
+                    {
+                        //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
+                        //set the sprite for the right click
+                        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                        inputIndicator.sprite = rightClickIndicator;
+                        inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                    }
+                    //update the sprite for the grabber and its position
+                    UpdateGrabberPosition(closestObject);
+                    grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                 }
-                //update the sprite for the grabber and its position
-                UpdateGrabberPosition(player.PotentialGrabbedBar);
             }
+            else
+            {
+                UpdateGrabberPosition(closestObject);
+                grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(-1, 1, 1);
+            }
+            
         }
         else
         {
