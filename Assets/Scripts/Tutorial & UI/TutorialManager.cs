@@ -82,7 +82,7 @@ public class TutorialManager : MonoBehaviour
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
             tutorialSkipped = true;
-            dialogueManager.TutorialSkipped = true;
+            dialogueManager.SkipTutorial();
             FadeOut(enterCanvasGroup);
             EndTutorial();
         }
@@ -117,7 +117,7 @@ public class TutorialManager : MonoBehaviour
                 StartCoroutine(WaitForSecondGrab());
 
             }
-            else if(currentStep == 5 && pickupObject.hasThrownObject)
+            else if(currentStep == 5 && pickupObject.HasThrownObject)
             {
                 FadeOut(throwItemCanvasGroup);
                 stepComplete = true;
