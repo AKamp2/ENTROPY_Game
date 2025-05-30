@@ -31,7 +31,13 @@ public class PickupScript : MonoBehaviour
     private GameObject current;
 
 
-    public bool hasThrownObject = false; //for tutorial section for detecting throwing
+    private bool hasThrownObject = false; //for tutorial section for detecting throwing
+
+    public bool HasThrownObject
+    {
+        get { return hasThrownObject; }
+        set { hasThrownObject = value;  }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -144,9 +150,16 @@ public class PickupScript : MonoBehaviour
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
         heldObj = null;
         hasThrownObject = true;
+        StartCoroutine(ResetThrowFlag());
 
         transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)));
+        Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
+    }
 
+    IEnumerator ResetThrowFlag()
+    {
+        yield return null; // Wait one frame
+        hasThrownObject = false;
     }
 
 }

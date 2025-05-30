@@ -94,7 +94,7 @@ public class PlayerUIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        HandleHealthUI();
     }
 
     public void ResetUI()

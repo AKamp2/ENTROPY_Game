@@ -30,6 +30,16 @@ public class DialogueManager : MonoBehaviour
     private bool isDialogueActive = false;
     private bool tutorialSkipped = false;
 
+    private bool isDialogueSpeaking = false;
+    private bool isFailureSpeaking = false;
+    public bool isFailureTriggered = false;
+    private bool pauseMainDialogue = false;
+
+    private int currentFailureIndex = -1;
+
+
+
+
     public TutorialManager tutorialManager;
 
     private float fadeDuration = 0.5f;
@@ -40,6 +50,18 @@ public class DialogueManager : MonoBehaviour
     public float skipPauseDuration = 0.3f;
 
     public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
+    public bool IsDialogueSpeaking => isDialogueSpeaking; // Optional public getter if needed elsewhere
+
+    public bool IsFailureSpeaking => isFailureSpeaking;
+
+    public int CurrentFailureIndex => currentFailureIndex;
+
+    public bool IsFailureTriggered
+    {
+        get { return isFailureTriggered; }
+        set { isFailureTriggered = value; }
+    }
+
 
     public bool TutorialSkipped
     {
@@ -77,6 +99,7 @@ public class DialogueManager : MonoBehaviour
         {
             isSkipping = true;
         }
+        
     }
 
     /// <summary>
@@ -95,13 +118,20 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private IEnumerator DisplayDialogue()
     {
+        
         FadeIn();
         isSkipping = false;
         DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
 
         while (currentDialogueIndex < currentSequence.dialogues.Length)
         {
+            isDialogueActive = true;
+            // after the block, also wait if paused:
+            yield return new WaitUntil(() => !pauseMainDialogue);
+
             Dialogue currentDialogue = currentSequence.dialogues[currentDialogueIndex];
+
+            Debug.Log("Advances Tutorial? " + currentDialogue.advancesTutorial);
 
             // Skip this dialogue if tutorial is skipped and this dialogue is marked to be skipped with the tutorial
             if (tutorialSkipped && currentDialogue.skipWithTutorial)
@@ -117,6 +147,7 @@ public class DialogueManager : MonoBehaviour
             {
                 audioSource.clip = currentDialogue.audioClip;
                 audioSource.Play();
+                isDialogueSpeaking = true; // <--- Dialogue is about to speak
             }
 
             //calculating dialogue speed
@@ -135,6 +166,9 @@ public class DialogueManager : MonoBehaviour
             // Show lines
             foreach (string line in currentDialogue.dialogueLines)
             {
+                // before each line begins
+                yield return new WaitUntil(() => !pauseMainDialogue);
+
                 yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
 
                 // Skip: break out of current dialogue block
@@ -146,22 +180,35 @@ public class DialogueManager : MonoBehaviour
                 yield return new WaitForSeconds(0.3f);
             }
 
+
             // Skip: clear audio, advance dialogue index, continue outer loop
             if (isSkipping)
             {
                 isSkipping = false;
+                isDialogueSpeaking = false;
 
                 if (audioSource.isPlaying)
+                {
                     audioSource.Stop();
+                }
+                    
 
                 if (currentDialogue.advancesTutorial == false)
                 {
                     dialogueTextUI.text = "";
                 }
+
                 
 
+                if (isFailureTriggered)
+                {
+                    isDialogueSpeaking = false;
+                    isFailureSpeaking = true;
+                    yield return new WaitUntil(() => !isFailureSpeaking);
+                }
+
                 // Still advance tutorial if this dialogue was supposed to
-                if (currentDialogue.advancesTutorial)
+                if (currentDialogue.advancesTutorial )
                 {
                     //set the text to the last line in the set instead of wiping it
                     dialogueTextUI.text = currentDialogue.dialogueLines[currentDialogue.dialogueLines.Length - 1];
@@ -174,20 +221,35 @@ public class DialogueManager : MonoBehaviour
                 continue;
             }
 
+
+
+            //Add delay between dialogues
             // Wait until the audio clip finishes before moving to the next dialogue unless skipping
             yield return new WaitUntil(() => !audioSource.isPlaying);
             yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
 
+            isDialogueSpeaking = false;
+
+            if (isFailureTriggered)
+            {
+                isFailureSpeaking = true;
+                yield return new WaitUntil(() => !isFailureSpeaking);
+            }
+
 
             //advance tutorial if the dialogue is intended to.
-            if(currentDialogue.advancesTutorial)
+
+            if (currentDialogue.advancesTutorial)
             {
+                Debug.Log("I am progressing the tutorial now");
                 tutorialManager.ProgressTutorial();
                 yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted()); // Ensure the tutorial step is completed before continuing
 
-
             }
+            
+
             currentDialogueIndex++;
+            isDialogueSpeaking = false; // <--- Dialogue finished
 
         }
 
@@ -200,47 +262,83 @@ public class DialogueManager : MonoBehaviour
 
     public IEnumerator PlayFailureDialogue(int index)
     {
+        // Wait until no dialogue is active
+        yield return new WaitUntil(() => !isDialogueSpeaking);
+
+        if (isDialogueActive == false)
+        {
+            isDialogueActive = true;
+            dialogueCanvas.enabled = true;
+            FadeIn();
+        }
+
+        Debug.Log("Playing Failure Dialogue at index: " + index);
+
+        // signal “failure” mode on
+        pauseMainDialogue = true;
+        isFailureSpeaking = true;
+        currentFailureIndex = index;
+
+        //Debug.Log("Pause Main Dialog: " + pauseMainDialogue);
+        //Debug.Log("is Dialog Speaking: " + isDialogueSpeaking);
+        //Debug.Log("is Failure Speaking: " + isFailureSpeaking);
+
         Dialogue currentDialogue = failureDialogues.dialogues[index];
 
         nameTextUI.text = currentDialogue.characterName;
 
-        // Play audio if available (one audio clip for multiple lines)
         if (currentDialogue.audioClip != null)
         {
             audioSource.clip = currentDialogue.audioClip;
             audioSource.Play();
         }
 
-        //calculating dialogue speed
         int totalLength = 0;
         foreach (string line in currentDialogue.dialogueLines)
         {
             totalLength += line.Length;
         }
 
-        // Adjust speed if an audio clip is present
         if (currentDialogue.audioClip != null)
         {
             typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.01f;
         }
 
-        // Show each line with typewriter effect, one by one
         foreach (string line in currentDialogue.dialogueLines)
         {
             yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
             yield return new WaitForSeconds(0.3f);
-
         }
 
-        // Wait until the audio clip finishes before moving to the next dialogue unless skipping
         yield return new WaitUntil(() => !audioSource.isPlaying);
         yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
 
-        //advance tutorial if the dialogue is intended to.
+        isFailureSpeaking = false;
+        isFailureTriggered = false;
+        pauseMainDialogue = false;
+        currentFailureIndex = -1;
+
         if (currentDialogue.advancesTutorial)
         {
-            tutorialManager.ProgressTutorial();
+            Debug.Log("Current Dialogue Advances Tutorial");
+            // Only progress if tutorial hasn't already been progressed
+            if (!tutorialManager.TutorialStepCompleted())
+            {
+                tutorialManager.ProgressTutorial();
+                yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
+            }
         }
+
+        
+
+        //fade out and disable canvas again if this occured while no other dialogue is queued
+        if (!isDialogueActive)
+        {
+            FadeOut();
+            dialogueCanvas.enabled = false;
+        }
+       
+        
 
     }
 
@@ -308,5 +406,16 @@ public class DialogueManager : MonoBehaviour
         }
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    public void SkipTutorial()
+    {
+        tutorialSkipped = true;
+        isSkipping = true;
+        pauseMainDialogue = true;
+        dialogueTextUI.text = "";
+        FadeOut();
+
+
     }
 }
