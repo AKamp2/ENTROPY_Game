@@ -168,9 +168,21 @@ public class PlayerUIManager : MonoBehaviour
     {
         //check for all nearby bars to the player
         Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
-        Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, pickupScript.PickUpRange, pickupScript.ObjectLayer);
+        Collider[] nearbyObjects;
 
+        // Only track floating objects if able to pick up object
+        if (pickupScript.CanPickUp)
+        {
+             nearbyObjects = Physics.OverlapSphere(transform.position, pickupScript.PickUpRange, pickupScript.ObjectLayer);
+        }
+        else
+        {
+            nearbyObjects = new Collider[0];
+        }
+
+        // merge bar and object arrays
         Collider[] totalNearby = nearbyBars.Concat(nearbyObjects).ToArray();
+
         //initialize a transform for the closest bar and distance to that bar
         Transform closestObject = null;
         float closestDistance = Mathf.Infinity;

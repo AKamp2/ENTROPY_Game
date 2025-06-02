@@ -15,14 +15,16 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private Camera cam;
 
-    
-
-
-
     [SerializeField]
     private GameObject ObjectContainer;
 
+    [SerializeField]
     private bool canPickUp = false;
+    [SerializeField]
+    private float coolDownMax = 3;
+    [SerializeField]
+    private float coolDown;
+
 
     [SerializeField]
     private LayerMask objectLayer;
@@ -55,10 +57,15 @@ public class PickupScript : MonoBehaviour
         set { hasThrownObject = value;  }
     }
 
+    public bool CanPickUp
+    {
+        get { return canPickUp; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-            
+         coolDown = 0;
     }
 
     // Update is called once per frame
@@ -71,7 +78,7 @@ public class PickupScript : MonoBehaviour
             if (Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hit, pickUpRange))
             {
                 //make sure pickup tag is attached
-                if (hit.transform.gameObject.tag == "PickupObject")
+                if (coolDown <= 0 && hit.transform.gameObject.tag == "PickupObject")
                 {
                     current = hit.transform.gameObject;
                     canPickUp = true;
@@ -85,8 +92,13 @@ public class PickupScript : MonoBehaviour
             else
             {
                 current = null;
-                canPickUp=false;
+                canPickUp = false;
             }
+        }
+
+        if (coolDown > 0)
+        {
+            coolDown -= Time.deltaTime;
         }
 
 
@@ -108,11 +120,11 @@ public class PickupScript : MonoBehaviour
         if (canPickUp && heldObj == null)
         {
             PickUpObject(current);
-            Debug.Log("Picked up object");
+            //Debug.Log("Picked up object");
         }
         else if (heldObj != null)
         {
-            Debug.Log("Dropped object");
+            //Debug.Log("Dropped object");
             DropObject();
         }
 
@@ -146,7 +158,6 @@ public class PickupScript : MonoBehaviour
     }
     void DropObject()
     {
-        Debug.Log(heldObj);
         //re-enable collision with player
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
         Debug.Log(objectLayer.value);
@@ -154,6 +165,11 @@ public class PickupScript : MonoBehaviour
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
+
+        // initiate pick up cd
+        canPickUp = false;
+        coolDown = coolDownMax;
+        uiManager.UpdateClosestBarInView();
         //current = null;
     }
     void MoveObject()
@@ -161,7 +177,7 @@ public class PickupScript : MonoBehaviour
         //keep object position the same as the holdPosition position
         heldObj.transform.position = holdPos.transform.position;
     }
-  
+
     void ThrowObject()
     {
         //same as drop function, but add force to object before undefining it
@@ -176,6 +192,11 @@ public class PickupScript : MonoBehaviour
 
         transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)));
         Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
+
+        // initiate pick up cd
+        canPickUp = false;
+        coolDown = coolDownMax;
+        uiManager.UpdateClosestBarInView();
     }
 
     IEnumerator ResetThrowFlag()
