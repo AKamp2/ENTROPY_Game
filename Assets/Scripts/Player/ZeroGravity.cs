@@ -51,7 +51,9 @@ public class ZeroGravity : MonoBehaviour
     //health indicator cooldown
     private bool hurt = false;
     private bool prevHurt = false;
+    [SerializeField]
     private float hurtCoolDown = 3.5f;
+    [SerializeField]
     private float highDangerCoolDown = 5.0f;
     private float hurtTimeStamp = 0f;
 
@@ -364,7 +366,8 @@ public class ZeroGravity : MonoBehaviour
             //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
 
-            //manage the cooldowns
+
+            //manage the cooldowns  
             HurtCoolDown();
             JustHitCoolDown();
         }
@@ -506,18 +509,14 @@ public class ZeroGravity : MonoBehaviour
         {
             //decrease the player's health by 1
             DecreaseHealth(3);
-            prevJustHit = justHit;
             justHit = true;
-            prevHurt = hurt;
             hurt = true;
         }
         else if (ogSpeed >= mediumSpeed && !justHit && !isDead)
         {
             //decrease the player's health by 1
             DecreaseHealth(1);
-            prevJustHit = justHit;
-            justHit = true;
-            prevHurt = hurt;
+            justHit = true;;
             hurt = true;
         }
     }
@@ -553,7 +552,7 @@ public class ZeroGravity : MonoBehaviour
                 {
                     
                     bounceCount++;
-                    Debug.Log("bounce count" + bounceCount);
+                    //Debug.Log("bounce count" + bounceCount);
 
 
                     //calculate bounce direction away from the door
@@ -587,7 +586,7 @@ public class ZeroGravity : MonoBehaviour
             float bounceSpeed = ogSpeed * .3f; // keep 30% of initial speed so it doesn't gain 
 
             //calculate the direction of the bounce
-            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * 0.05f;
+            Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * 0.07f;
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
 
@@ -719,7 +718,7 @@ public class ZeroGravity : MonoBehaviour
                 //Debug.Log("Danger Speed Reached");
                 //the cooldown for swinging will be higher
                 grabSwingTimeStamp = Time.time + swingCoolDownFastest;
-                Debug.Log("medium Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
+                //Debug.Log("medium Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
             }
             //if the player is moving at a slower speed
             else if(rb.linearVelocity.magnitude >= zeroGWalkSpeed)
@@ -727,7 +726,7 @@ public class ZeroGravity : MonoBehaviour
                 //Debug.Log("Normal Speed Reached");
                 //the cooldown will be slower
                 grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
-                Debug.Log("walk Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
+                //Debug.Log("space walk Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
             }
             //set the prev just grabbed bool to confirm we do this once 
             prevJustGrabbed = justGrabbed;
@@ -784,6 +783,8 @@ public class ZeroGravity : MonoBehaviour
         else
         {
             playerHealth -= i;
+            //make a call to update the cooldown
+            HurtCoolDown();
         }
 
         //check for if the player is dead or not
@@ -803,6 +804,7 @@ public class ZeroGravity : MonoBehaviour
         }
 
         playerHealth += i;
+        prevHurt = false;
     }
 
     private void JustHitCoolDown()
@@ -827,26 +829,33 @@ public class ZeroGravity : MonoBehaviour
 
     private void HurtCoolDown()
     {
+
+        //Debug.Log("hurt cooldown called :Hurt: " + hurt + " :prevHurt:" + prevHurt);
+        //if the player is currently hurt, with confirmation this happened once, and their health is less than 4
         if (hurt && playerHealth < 4 && !prevHurt)
         {
+            //if the player health is 1
             if (playerHealth == 1)
             {
                 //create a timestamp representing the end of the cooldown
                 //this is the closest to death so it will have a longer cooldown
                 hurtTimeStamp = Time.time + highDangerCoolDown;
             }
+            //if the player health is greater than 1
             else if(playerHealth > 1)
             {
                 //create a timestamp representing the end of the cooldown
                 //this is the higher healths so the cool down will be shorter
                 hurtTimeStamp = Time.time + hurtCoolDown;
             }
-            //Debug.Log("timestamp for cooldown: " + justHitTimeStamp);
+            Debug.Log("timestamp for cooldown: " + hurtTimeStamp);
             prevHurt = hurt;
+            //Debug.Log(":Hurt:" + hurt + ":prevHurt:" + prevHurt);
         }
 
-        if (Time.time >= hurtTimeStamp && hurt)
+        if (Time.time >= hurtTimeStamp && hurt && prevHurt)
         {
+            Debug.Log("Cooldown done");
             IncreaseHealth(1);
 
             if(playerHealth >= 4) 
@@ -854,11 +863,6 @@ public class ZeroGravity : MonoBehaviour
                 playerHealth = maxHealth;
                 hurt = false;
                 prevHurt = false;
-            }
-            else
-            {
-                //reset the timer
-                hurtTimeStamp = Time.time + hurtCoolDown;
             }
         }
 
@@ -1056,7 +1060,7 @@ public class ZeroGravity : MonoBehaviour
     {
         if(context.performed && potentialWall != null)
         {
-            Debug.Log("space pressed");
+            //Debug.Log("space pressed");
             PropelOffWall();
         }
         else if (context.canceled)
