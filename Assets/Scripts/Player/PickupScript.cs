@@ -186,7 +186,7 @@ public class PickupScript : MonoBehaviour
         heldObj.layer = 9;
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;
-        heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
+        heldObjRb.AddForce(cam.transform.forward.normalized * throwForce, ForceMode.VelocityChange);
         heldObj = null;
         hasThrownObject = true;
         StartCoroutine(ResetThrowFlag());
