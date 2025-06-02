@@ -4,29 +4,49 @@ using System.Collections;
 
 public class EnemySimpleAI : MonoBehaviour
 {
-    public float speed = 2.0f;
-    public float chaseDistance = 5.0f;
-    public float escapeDistance = 10f;
-    public GameObject player;
-    public Waypoint startingWaypoint; // Starting waypoint for teleportation
-    public Transform waypointGroup;
-    public DoorScript door;
-    public bool useRandomRoaming; // Toggle to switch between roaming and tracking modes
+    [Header("Movement")]
+    public float speed = 3.0f;
+    public float chaseDistance = 10.0f;
+    public float escapeDistance = 15f;
+    public bool useRandomRoaming;
 
-    private Waypoint currentWaypoint;
-    private Queue<Waypoint> path = new Queue<Waypoint>();
-    private bool isChasingPlayer = false;
-    private bool isMoving = true;
+    [Header("Lunge Settings")]
+    public float lungeDistance = 5f;
+    public float chargeUpTime = 1.5f;
+    public float lungeSpeed = 3.5f;
+    public float lungeDuration = 3f;
+    public string wallTag = "Barrier";
 
     [Header("Stun Settings")]
-    public float stunSeconds = 2f;            // how long to be stunned
-    public float stunVelocityThreshold = 5f;  // min velocity to stun
-    private bool isStunned = false;
+    public float stunSeconds = 3f;
+    public float stunVelocityThreshold = 3f;
 
+    [Header("References")]
+    public GameObject player;
+    public Waypoint startingWaypoint;
+    public Transform waypointGroup;
+    public DoorScript door;
+
+    [Header("Audio")]
     public AudioSource audioSource;
     public AudioSource audioSource2;
     public AudioClip alienSfx;
+    public AudioClip chargingSound;
+    public AudioClip lungeSound;
     public AudioClip takeDamage;
+
+    // Internal state
+    private Waypoint currentWaypoint;
+    private Queue<Waypoint> path = new Queue<Waypoint>();
+
+    private float distanceToPlayer;
+    private bool isChasingPlayer = false;
+    private bool isStunned = false;
+
+    private bool isCharging = false;
+    private bool isLunging = false;
+    private float lungeTimer = 0f;
+    
 
     void Start()
     {
@@ -37,6 +57,13 @@ public class EnemySimpleAI : MonoBehaviour
         audioSource.clip = alienSfx;
         audioSource.loop = true;
         audioSource.Stop();
+
+        // Rigidbody must exist and start in kinematic mode
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
+        rb.isKinematic = true;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
     void Update()
@@ -44,56 +71,67 @@ public class EnemySimpleAI : MonoBehaviour
         // Only start AI behavior if the door is open
         //if (door.DoorState != DoorScript.States.Open) return;
 
+        // 2) If stunned, do nothing else (charging/lunging will abort)
+        if (isStunned) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-
-        if (isMoving)
+        // 3) If mid-lunge, track timeout
+        if (isLunging)
         {
-            if (isChasingPlayer)
+            lungeTimer += Time.deltaTime;
+            if (lungeTimer >= lungeDuration)
+                EndLunge();
+            return;
+        }
+
+        // 4) If mid-charge, skip normal AI
+        if (isCharging) return;
+
+        // 5) Check if player is within lungeDistance → start charging
+        distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        if (distanceToPlayer <= lungeDistance)
+        {
+            StartCoroutine(ChargeAndLunge());
+            return;
+        }
+
+        // 6) Otherwise, run normal AI (chase/roam/track)
+        RunNormalAIBehavior();        
+
+    }
+
+    private void RunNormalAIBehavior()
+    {
+        
+
+        if (isChasingPlayer)
+        {
+            if (!audioSource.isPlaying) audioSource.Play();
+
+            if (distanceToPlayer >= escapeDistance)
+                isChasingPlayer = false;
+            else
+                ChasePlayer();
+        }
+        else
+        {
+            if (distanceToPlayer <= chaseDistance)
             {
-                if (audioSource.isPlaying == false)
-                {
-                    audioSource.Play();
-                }
-
-                if (distanceToPlayer >= escapeDistance)
-                {
-                    isChasingPlayer = false;
-                }
-                else
-                {
-                    ChasePlayer();
-                }
-
+                isChasingPlayer = true;
+                ChasePlayer();
+            }
+            else if (useRandomRoaming)
+            {
+                isChasingPlayer = false;
+                RoamArea();
             }
             else
             {
+                isChasingPlayer = false;
+                TrackPlayer();
 
-
-                if (distanceToPlayer <= chaseDistance)
-                {
-                    isChasingPlayer = true;
-                    ChasePlayer();
-                }
-                else if (useRandomRoaming)
-                {
-                    isChasingPlayer = false;
-                    RoamArea();
-                }
-                else
-                {
-                    isChasingPlayer = false;
-                    TrackPlayer();
-
-                    if (audioSource.isPlaying == true)
-                    {
-                        audioSource.Stop();
-                    }
-                }
+                if (audioSource.isPlaying) audioSource.Stop();
             }
         }
-        
-
     }
 
     // Called by Unity when this collider hits another collider
@@ -119,21 +157,32 @@ public class EnemySimpleAI : MonoBehaviour
 
     private IEnumerator StunCoroutine()
     {
-        // already stunned?
         if (isStunned) yield break;
 
+        // Cancel any ongoing charge or lunge
         isStunned = true;
-        isMoving = false;
-        audioSource.Stop(); // optional: silence chase SFX
+        if (isCharging)
+        {
+            isCharging = false;
+            // We let the ChargeAndLunge coroutine exit gracefully on its next frame check.
+        }
+        if (isLunging)
+        {
+            EndLunge();
+        }
 
+        //sfx
+        audioSource.Stop();
+        audioSource2.Stop();
         audioSource2.PlayOneShot(takeDamage);
+        
 
+        // Wait for stun duration
         yield return new WaitForSeconds(stunSeconds);
 
-        // restore AI
+        // Un-stun and restore AI
         isStunned = false;
-        isMoving = true;
-        FindPlayerPath(); // optionally re-path to player
+        FindPlayerPath();
     }
 
     void ChasePlayer()
@@ -174,6 +223,55 @@ public class EnemySimpleAI : MonoBehaviour
         {
             isChasingPlayer = true;
         }
+    }
+
+    private IEnumerator ChargeAndLunge()
+    {
+        isCharging = true;
+        isChasingPlayer = false;
+
+        // (Optional: play a charge animation here)
+        audioSource.Stop();
+        audioSource2.clip = chargingSound;
+        audioSource2.Play();
+
+        float timer = 0f;
+        while (timer < chargeUpTime)
+        {
+            if (isStunned)
+            {
+                isCharging = false;
+                yield break;
+            }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        audioSource2.Stop();
+        audioSource2.clip = lungeSound;
+        audioSource2.Play();
+
+        // Finish charging → launch the lunge
+        Vector3 dir = (player.transform.position - transform.position).normalized;
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+        rb.linearVelocity = dir * lungeSpeed;
+
+        isLunging = true;
+        lungeTimer = 0f;
+        isCharging = false;
+    }
+
+    private void EndLunge()
+    {
+        if (!isLunging) return;
+
+        isLunging = false;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.linearVelocity = Vector3.zero;
+        rb.isKinematic = true;
+
+        FindPlayerPath();
     }
 
     void FindPlayerPath()

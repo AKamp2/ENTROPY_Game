@@ -1782,7 +1782,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 564558919831602820, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 151.36
+      value: 154.66
       objectReference: {fileID: 0}
     - target: {fileID: 564558919831602820, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1790,7 +1790,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 564558919831602820, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 7.26
       objectReference: {fileID: 0}
     - target: {fileID: 564558919831602820, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7409,15 +7409,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627ea0bfeda3ec0448b9566e68435f2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 2
   chaseDistance: 10
   escapeDistance: 15
   useRandomRoaming: 0
-  lungeDistance: 5
-  chargeUpTime: 1.5
-  lungeSpeed: 3.5
-  lungeDuration: 3
-  wallTag: Barrier
+  lungeDistance: 3
+  chargeUpTime: 1
+  lungeSpeed: 10
+  lungeDuration: 0.5
+  wallTag: Wall
   stunSeconds: 3
   stunVelocityThreshold: 0.1
   player: {fileID: 515369110}
@@ -7438,7 +7438,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 465635636}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -9574,10 +9574,6 @@ PrefabInstance:
     - target: {fileID: 564558919831602821, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
       propertyPath: m_Name
       value: PickupObject
-      objectReference: {fileID: 0}
-    - target: {fileID: 564558919831602821, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13375,6 +13371,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 537551602}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: tutorialMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: tutorialManager
       value: 
       objectReference: {fileID: 1644036295}
@@ -13410,9 +13410,17 @@ PrefabInstance:
       propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 767
+    - target: {fileID: 2322475786235806870, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -48.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786235806870, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 50.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786235806870, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 79.85
       objectReference: {fileID: 0}
     - target: {fileID: 2948075963403139158, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_Name
@@ -13458,30 +13466,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 45
       objectReference: {fileID: 0}
+    - target: {fileID: 2948075964260565287, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -47.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 2948075964260565287, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 49.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 2948075964260565287, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 80.52
+      objectReference: {fileID: 0}
     - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: uiManager
       value: 
       objectReference: {fileID: 515369116}
     - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: pickUpRange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: ObjectContainer
       value: 
       objectReference: {fileID: 1307485335}
-    - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: objectLayer.m_Bits
-      value: 512
-      objectReference: {fileID: 0}
     - target: {fileID: 4879187379618892134, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 251f3cc6568a7c84fb817f58b9c4bfd4, type: 3}
-    - target: {fileID: 8089575786270219404, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: pickupScript
-      value: 
-      objectReference: {fileID: 515369111}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17445,13 +17453,13 @@ MonoBehaviour:
   chaseDistance: 10
   escapeDistance: 15
   useRandomRoaming: 0
-  lungeDistance: 5
+  lungeDistance: 6
   chargeUpTime: 1.5
   lungeSpeed: 3.5
   lungeDuration: 3
   wallTag: Barrier
   stunSeconds: 3
-  stunVelocityThreshold: 0.1
+  stunVelocityThreshold: 3
   player: {fileID: 515369110}
   startingWaypoint: {fileID: 1973913939}
   waypointGroup: {fileID: 740304899}
@@ -17470,7 +17478,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230927717}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -24877,7 +24885,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1804898619
 RectTransform:
   m_ObjectHideFlags: 0
