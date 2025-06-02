@@ -29,7 +29,7 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private LayerMask objectLayer;
     [SerializeField]
-    private float throwForce = 500f; //force at which the object is thrown at
+    private float throwForce = 5f; //force at which the object is thrown at
     [SerializeField]
     private float pickUpRange = 2f; //how far the player can pickup the object from
     private GameObject heldObj; //object which we pick up
@@ -60,6 +60,11 @@ public class PickupScript : MonoBehaviour
     public bool CanPickUp
     {
         get { return canPickUp; }
+    }
+
+    public GameObject HeldObject
+    {
+        get { return heldObj; }
     }
 
     // Start is called before the first frame update
@@ -166,10 +171,6 @@ public class PickupScript : MonoBehaviour
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
 
-        // initiate pick up cd
-        canPickUp = false;
-        coolDown = coolDownMax;
-        uiManager.UpdateClosestBarInView();
         //current = null;
     }
     void MoveObject()
@@ -190,13 +191,12 @@ public class PickupScript : MonoBehaviour
         hasThrownObject = true;
         StartCoroutine(ResetThrowFlag());
 
-        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)));
+        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)), ForceMode.VelocityChange);
         Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
 
         // initiate pick up cd
         canPickUp = false;
         coolDown = coolDownMax;
-        uiManager.UpdateClosestBarInView();
     }
 
     IEnumerator ResetThrowFlag()
