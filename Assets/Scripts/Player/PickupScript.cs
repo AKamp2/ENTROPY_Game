@@ -9,6 +9,8 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private GameObject player;
     [SerializeField]
+    PlayerUIManager uiManager;
+    [SerializeField]
     private Transform holdPos;
     [SerializeField]
     private Camera cam;
@@ -27,8 +29,8 @@ public class PickupScript : MonoBehaviour
 
     [SerializeField]
     private Collider playerCollider;
-
     private GameObject current;
+
 
 
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
@@ -59,6 +61,11 @@ public class PickupScript : MonoBehaviour
                 {
                     current = hit.transform.gameObject;
                     canPickUp = true;
+
+                    // activate the F key UI
+                    // Removing the UI is handled by ZeroGPlayer
+                    uiManager.InputIndicator.sprite = uiManager.KeyFIndicator;
+                    uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
                 }
             }
             else
@@ -128,7 +135,7 @@ public class PickupScript : MonoBehaviour
         Debug.Log(heldObj);
         //re-enable collision with player
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = 0; //object assigned back to default layer
+        heldObj.layer = 3; //object assigned back to default layer
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
@@ -144,7 +151,7 @@ public class PickupScript : MonoBehaviour
     {
         //same as drop function, but add force to object before undefining it
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = 0;
+        heldObj.layer = 3;
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
