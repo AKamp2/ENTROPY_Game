@@ -149,7 +149,8 @@ public class PickupScript : MonoBehaviour
         Debug.Log(heldObj);
         //re-enable collision with player
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = objectLayer; //object assigned back to default layer
+        Debug.Log(objectLayer.value);
+        heldObj.layer = 9; //object assigned back to default layer
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
@@ -165,7 +166,7 @@ public class PickupScript : MonoBehaviour
     {
         //same as drop function, but add force to object before undefining it
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = objectLayer ;
+        heldObj.layer = 9;
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
