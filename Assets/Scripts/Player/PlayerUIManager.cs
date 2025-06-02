@@ -171,7 +171,7 @@ public class PlayerUIManager : MonoBehaviour
         Collider[] nearbyObjects;
 
         // Only track floating objects if able to pick up object
-        if (pickupScript.CanPickUp)
+        if (pickupScript.CanPickUp && !pickupScript.HeldObject)
         {
              nearbyObjects = Physics.OverlapSphere(transform.position, pickupScript.PickUpRange, pickupScript.ObjectLayer);
         }
