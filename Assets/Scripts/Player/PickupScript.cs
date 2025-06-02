@@ -15,11 +15,17 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private Camera cam;
 
+    
+
+
+
     [SerializeField]
     private GameObject ObjectContainer;
 
     private bool canPickUp = false;
 
+    [SerializeField]
+    private LayerMask objectLayer;
     [SerializeField]
     private float throwForce = 500f; //force at which the object is thrown at
     [SerializeField]
@@ -31,9 +37,17 @@ public class PickupScript : MonoBehaviour
     private Collider playerCollider;
     private GameObject current;
 
-
-
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
+
+    public float PickUpRange
+    {
+        get { return pickUpRange; }
+    }
+
+    public LayerMask ObjectLayer
+    {
+        get { return objectLayer; } 
+    }
 
     public bool HasThrownObject
     {
@@ -135,7 +149,7 @@ public class PickupScript : MonoBehaviour
         Debug.Log(heldObj);
         //re-enable collision with player
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = 3; //object assigned back to default layer
+        heldObj.layer = objectLayer; //object assigned back to default layer
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
@@ -151,7 +165,7 @@ public class PickupScript : MonoBehaviour
     {
         //same as drop function, but add force to object before undefining it
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = 3;
+        heldObj.layer = objectLayer ;
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
