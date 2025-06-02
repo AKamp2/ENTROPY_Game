@@ -1,9 +1,13 @@
+using System;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerUIManager : MonoBehaviour
 {
     [SerializeField]
     ZeroGravity player;
+    [SerializeField]
+    PickupScript pickupScript;
 
     [Header("== UI Canvas ==")]
     [SerializeField]
@@ -163,13 +167,16 @@ public class PlayerUIManager : MonoBehaviour
     public void UpdateClosestBarInView()
     {
         //check for all nearby bars to the player
-        Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
+        Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
+        Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, pickupScript.PickUpRange, pickupScript.ObjectLayer);
+
+        Collider[] totalNearby = nearbyBars.Concat(nearbyObjects).ToArray();
         //initialize a transform for the closest bar and distance to that bar
         Transform closestObject = null;
         float closestDistance = Mathf.Infinity;
 
         //check through each bar in our array
-        foreach (Collider obj in nearbyObjects)
+        foreach (Collider obj in totalNearby)
         {
             //set specifications for the viewport
             Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
