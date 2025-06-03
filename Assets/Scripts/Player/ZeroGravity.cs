@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEngine.Animations.Rigging;
 
 public class ZeroGravity : MonoBehaviour
 {
@@ -148,6 +149,23 @@ public class ZeroGravity : MonoBehaviour
     private DoorManager doorManager;
     [SerializeField]
     private TutorialManager tutorialManager;
+
+    [Header("== IK Logic ==")]
+    [SerializeField]
+    private Quaternion[] initGrabRotation;
+    [SerializeField]
+    private Vector3[] initUpVector;
+    [SerializeField]
+    private Transform grabHolder;
+
+    [SerializeField]
+    private Transform[] defaultHandPosition;
+    [SerializeField]
+    private TwoBoneIKConstraint[] hands;
+    [SerializeField]
+    private RigBuilder rigBuilder;
+    [SerializeField]
+    private Animator animator;
 
 
     //used for freezing the camera movement while completing the puzzle.
@@ -324,6 +342,8 @@ public class ZeroGravity : MonoBehaviour
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null && canGrab)
                 {
+                   
+
                     if (canGrab)
                     {
                         //handle the grab movement
@@ -353,6 +373,7 @@ public class ZeroGravity : MonoBehaviour
                 if (isGrabbing && grabbedBar != null)
                 {
                     //handle the grab movement
+                    AdjustBarGrabbers();
                     HandleGrabMovement(grabbedBar);
                 }
                 else
@@ -640,8 +661,89 @@ public class ZeroGravity : MonoBehaviour
         justGrabbed = true;
         grabbedBar = potentialGrabbedBar;
 
+        // set up grab spots
+        GetBarGrabbers();
+        MoveArmsToBar();
+
         //lock grabbed bar and change icon
         uiManager.ShowGrabber(grabbedBar);
+    }
+
+
+    private void GetBarGrabbers()
+    {
+        grabHolder = grabbedBar.parent.Find("Grab");
+        initGrabRotation = new Quaternion[2];
+        initUpVector = new Vector3[2];
+
+        for(int i = 0; i < grabHolder.childCount; i++)
+        {
+            Transform grab = grabHolder.GetChild(i);
+            initGrabRotation[i] = grab.rotation;
+            initUpVector[i] = grab.up;
+        }    
+    }
+
+    private void MoveArmsToBar()
+    {
+        if (grabHolder != null)
+        {
+            Debug.Log(hands[0].gameObject);
+            hands[0].data.target = grabHolder.GetChild(0).transform;
+            hands[1].data.target = grabHolder.GetChild(1).transform;
+
+            rigBuilder.Build();
+            animator.Rebind();
+ 
+        }
+        
+    }
+
+    private void ResetBarGrabbers()
+    {
+        if (grabHolder != null)
+        {
+            for (int i = 0; i < grabHolder.childCount; i++)
+            {
+                Transform grab = grabHolder.GetChild(i).transform;
+
+
+                grab.rotation = initGrabRotation[i];
+                grab.up = initUpVector[i];
+            }
+
+            hands[0].data.target = defaultHandPosition[0];
+            hands[1].data.target = defaultHandPosition[1];
+
+            rigBuilder.Build();
+            animator.Rebind();
+
+            initGrabRotation = null;
+            initUpVector = null;
+            grabHolder = null;
+        }
+
+
+    }
+
+    private void AdjustBarGrabbers()
+    {
+
+        float roll = cam.transform.localEulerAngles.z;
+        if (roll > 180f) roll -= 360f;
+
+
+
+        for(int i = 0;i < grabHolder.childCount;i++)
+        {
+            Transform grab = grabHolder.GetChild(i).transform;
+
+            Quaternion rollRotation = Quaternion.AngleAxis(roll, initUpVector[i]);
+
+            grab.rotation = rollRotation * initGrabRotation[i];
+        }
+
+
     }
 
 
@@ -764,6 +866,9 @@ public class ZeroGravity : MonoBehaviour
         //set justgrabbed to false to send for the cool down to nullify
         justGrabbed = false;
         grabbedBar = null;
+
+        // no bar grabbed, so no more grab locations
+        ResetBarGrabbers();
 
         //lock grabbed bar and change icon
         uiManager.ReleaseGrabber();
