@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 75399441588197459}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5000045, y: 0.49999562, z: 0.49999556, w: 0.50000435}
+  m_LocalRotation: {x: -0.50000435, y: 0.49999565, z: 0.49999565, w: 0.50000435}
   m_LocalPosition: {x: -14.711, y: 1.887, z: -0.123}
   m_LocalScale: {x: 58.343, y: 58.343, z: 58.343}
   m_ConstrainProportionsScale: 0
@@ -99,6 +99,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6827517171538459082}
   - component: {fileID: 2918709075832372083}
+  - component: {fileID: 4798878966808078196}
   m_Layer: 3
   m_Name: Grabbable
   m_TagString: Grabbable
@@ -114,13 +115,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 91834733371058403}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.0000011026859, y: 0.70710653, z: 0.70710707, w: 0.000001758337}
   m_LocalPosition: {x: 0, y: 0.0028, z: 0}
   m_LocalScale: {x: 0.0017, y: 0.04, z: 0.002}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2902516195158217013}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180}
 --- !u!65 &2918709075832372083
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -142,6 +143,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4798878966808078196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 91834733371058403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d8eebebec337942a2fc27e72e870c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  angle: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &2060581592183583226
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,6 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69d8eebebec337942a2fc27e72e870c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  angle: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &7394829382298713042
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,3 +441,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69d8eebebec337942a2fc27e72e870c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  angle: {x: 0, y: 0, z: 0, w: 0}

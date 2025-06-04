@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
+using System.Xml.Linq;
 using TMPro;
-using System;
+using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.InputSystem;
+using UnityEngine.ProBuilder;
+using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class ZeroGravity : MonoBehaviour
 {
@@ -153,6 +156,8 @@ public class ZeroGravity : MonoBehaviour
     [Header("== IK Logic ==")]
     [SerializeField]
     private Quaternion[] initGrabRotation;
+    [SerializeField]
+    private Vector3[] initGrabPosition;
     [SerializeField]
     private Vector3[] initUpVector;
     [SerializeField]
@@ -674,12 +679,14 @@ public class ZeroGravity : MonoBehaviour
     {
         grabHolder = grabbedBar.parent.Find("Grab");
         initGrabRotation = new Quaternion[2];
+        initGrabPosition = new Vector3[2];
         initUpVector = new Vector3[2];
 
         for(int i = 0; i < grabHolder.childCount; i++)
         {
             Transform grab = grabHolder.GetChild(i);
             initGrabRotation[i] = grab.rotation;
+            initGrabPosition[i] = grab.position;
             initUpVector[i] = grab.up;
         }    
     }
@@ -719,6 +726,7 @@ public class ZeroGravity : MonoBehaviour
             animator.Rebind();
 
             initGrabRotation = null;
+            initGrabPosition = null;
             initUpVector = null;
             grabHolder = null;
         }
@@ -728,19 +736,34 @@ public class ZeroGravity : MonoBehaviour
 
     private void AdjustBarGrabbers()
     {
+        Transform grabCollider = grabbedBar.parent.Find("Grabbable");
+
+
 
         float roll = cam.transform.localEulerAngles.z;
         if (roll > 180f) roll -= 360f;
 
 
+        Vector3 toTarget = cam.transform.position - grabCollider.position;
+        Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
+        float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
 
-        for(int i = 0;i < grabHolder.childCount;i++)
+        Debug.Log(angle);
+
+
+
+        for (int i = 0; i < grabHolder.childCount; i++)
         {
             Transform grab = grabHolder.GetChild(i).transform;
 
             Quaternion rollRotation = Quaternion.AngleAxis(roll, initUpVector[i]);
 
-            grab.rotation = rollRotation * initGrabRotation[i];
+
+            Quaternion lookRotation = Quaternion.AngleAxis(angle, grabCollider.up);
+            grab.rotation = lookRotation * rollRotation * initGrabRotation[i];
+
+
+            //grab.rotation *= rollRotation * initGrabRotation[i];
         }
 
 
