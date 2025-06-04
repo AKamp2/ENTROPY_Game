@@ -155,6 +155,8 @@ public class ZeroGravity : MonoBehaviour
 
     [Header("== IK Logic ==")]
     [SerializeField]
+    bool useIK = false;
+    [SerializeField]
     private Quaternion[] initGrabRotation;
     [SerializeField]
     private Vector3[] initGrabPosition;
@@ -378,7 +380,12 @@ public class ZeroGravity : MonoBehaviour
                 if (isGrabbing && grabbedBar != null)
                 {
                     //handle the grab movement
-                    AdjustBarGrabbers();
+
+                    if (useIK)
+                    {
+                        AdjustBarGrabbers();
+                    }
+                    
                     HandleGrabMovement(grabbedBar);
                 }
                 else
@@ -667,8 +674,12 @@ public class ZeroGravity : MonoBehaviour
         grabbedBar = potentialGrabbedBar;
 
         // set up grab spots
-        GetBarGrabbers();
-        MoveArmsToBar();
+        if (useIK)
+        {
+            GetBarGrabbers();
+            MoveArmsToBar();
+        }
+        
 
         //lock grabbed bar and change icon
         uiManager.ShowGrabber(grabbedBar);
@@ -760,6 +771,7 @@ public class ZeroGravity : MonoBehaviour
 
 
             Quaternion lookRotation = Quaternion.AngleAxis(angle, grabCollider.up);
+           
             grab.rotation = lookRotation * rollRotation * initGrabRotation[i];
 
 
@@ -891,7 +903,11 @@ public class ZeroGravity : MonoBehaviour
         grabbedBar = null;
 
         // no bar grabbed, so no more grab locations
-        ResetBarGrabbers();
+        if (useIK)
+        {
+            ResetBarGrabbers();
+        }
+        
 
         //lock grabbed bar and change icon
         uiManager.ReleaseGrabber();
