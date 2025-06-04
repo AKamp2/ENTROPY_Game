@@ -18,10 +18,18 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private GameObject ObjectContainer;
 
+    [SerializeField]
     private bool canPickUp = false;
+    [SerializeField]
+    private float coolDownMax = 3;
+    [SerializeField]
+    private float coolDown;
+
 
     [SerializeField]
-    private float throwForce = 500f; //force at which the object is thrown at
+    private LayerMask objectLayer;
+    [SerializeField]
+    private float throwForce = 5f; //force at which the object is thrown at
     [SerializeField]
     private float pickUpRange = 2f; //how far the player can pickup the object from
     private GameObject heldObj; //object which we pick up
@@ -31,9 +39,17 @@ public class PickupScript : MonoBehaviour
     private Collider playerCollider;
     private GameObject current;
 
-
-
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
+
+    public float PickUpRange
+    {
+        get { return pickUpRange; }
+    }
+
+    public LayerMask ObjectLayer
+    {
+        get { return objectLayer; } 
+    }
 
     public bool HasThrownObject
     {
@@ -41,10 +57,20 @@ public class PickupScript : MonoBehaviour
         set { hasThrownObject = value;  }
     }
 
+    public bool CanPickUp
+    {
+        get { return canPickUp; }
+    }
+
+    public GameObject HeldObject
+    {
+        get { return heldObj; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-            
+         coolDown = 0;
     }
 
     // Update is called once per frame
@@ -57,7 +83,7 @@ public class PickupScript : MonoBehaviour
             if (Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hit, pickUpRange))
             {
                 //make sure pickup tag is attached
-                if (hit.transform.gameObject.tag == "PickupObject")
+                if (coolDown <= 0 && hit.transform.gameObject.tag == "PickupObject")
                 {
                     current = hit.transform.gameObject;
                     canPickUp = true;
@@ -71,8 +97,13 @@ public class PickupScript : MonoBehaviour
             else
             {
                 current = null;
-                canPickUp=false;
+                canPickUp = false;
             }
+        }
+
+        if (coolDown > 0)
+        {
+            coolDown -= Time.deltaTime;
         }
 
 
@@ -94,11 +125,11 @@ public class PickupScript : MonoBehaviour
         if (canPickUp && heldObj == null)
         {
             PickUpObject(current);
-            Debug.Log("Picked up object");
+            //Debug.Log("Picked up object");
         }
         else if (heldObj != null)
         {
-            Debug.Log("Dropped object");
+            //Debug.Log("Dropped object");
             DropObject();
         }
 
@@ -132,13 +163,14 @@ public class PickupScript : MonoBehaviour
     }
     void DropObject()
     {
-        Debug.Log(heldObj);
         //re-enable collision with player
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = 3; //object assigned back to default layer
+        Debug.Log(objectLayer.value);
+        heldObj.layer = 9; //object assigned back to default layer
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
+
         //current = null;
     }
     void MoveObject()
@@ -146,21 +178,25 @@ public class PickupScript : MonoBehaviour
         //keep object position the same as the holdPosition position
         heldObj.transform.position = holdPos.transform.position;
     }
-  
+
     void ThrowObject()
     {
         //same as drop function, but add force to object before undefining it
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
-        heldObj.layer = 3;
+        heldObj.layer = 9;
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;
-        heldObjRb.AddForce(cam.transform.forward.normalized * throwForce);
+        heldObjRb.AddForce(cam.transform.forward.normalized * throwForce, ForceMode.VelocityChange);
         heldObj = null;
         hasThrownObject = true;
         StartCoroutine(ResetThrowFlag());
 
-        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)));
+        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)), ForceMode.VelocityChange);
         Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
+
+        // initiate pick up cd
+        canPickUp = false;
+        coolDown = coolDownMax;
     }
 
     IEnumerator ResetThrowFlag()
