@@ -2688,7 +2688,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &147083127
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7409,26 +7409,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627ea0bfeda3ec0448b9566e68435f2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 2
   chaseDistance: 10
   escapeDistance: 15
-  useRandomRoaming: 0
-  lungeDistance: 5
-  chargeUpTime: 1.5
-  lungeSpeed: 3.5
-  lungeDuration: 3
-  wallTag: Barrier
-  stunSeconds: 3
-  stunVelocityThreshold: 0.1
   player: {fileID: 515369110}
   startingWaypoint: {fileID: 552533439}
   waypointGroup: {fileID: 1021374064}
   door: {fileID: 1174884399}
+  useRandomRoaming: 0
+  stunSeconds: 3
+  stunVelocityThreshold: 0.1
   audioSource: {fileID: 465635643}
   audioSource2: {fileID: 260910083}
   alienSfx: {fileID: 8300000, guid: fb4ff9a1a3f42e848b8b068e4fd06dfb, type: 3}
-  chargingSound: {fileID: 8300000, guid: 22da1bd44a8e63240a7ef10b79406819, type: 3}
-  lungeSound: {fileID: 8300000, guid: fbd6265ed43b0a44b86a45f641558509, type: 3}
   takeDamage: {fileID: 8300000, guid: 9d499b5f0fea16843be85f22829e6909, type: 3}
 --- !u!54 &465635639
 Rigidbody:
@@ -7757,10 +7750,10 @@ Light:
   serializedVersion: 11
   m_Type: 0
   m_Color: {r: 1, g: 0.5971345, b: 0.3915094, a: 1}
-  m_Intensity: 30
+  m_Intensity: 15
   m_Range: 125
-  m_SpotAngle: 96.604645
-  m_InnerSpotAngle: 75.91835
+  m_SpotAngle: 74.74999
+  m_InnerSpotAngle: 66.55207
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -9695,10 +9688,6 @@ PrefabInstance:
     - target: {fileID: 564558919831602821, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
       propertyPath: m_Name
       value: PickupObject
-      objectReference: {fileID: 0}
-    - target: {fileID: 564558919831602821, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13489,7 +13478,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 347075730915428581, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: doorManager
@@ -13531,14 +13520,94 @@ PrefabInstance:
       propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 2322475786566600788, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_ClearFlags
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: orthographic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: field of view
+      value: 90.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_FocalLength
+      value: 10.203598
+      objectReference: {fileID: 0}
     - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 767
+      value: 255
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_projectionMatrixMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_ClearFlags
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: field of view
+      value: 80.74902
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_FocalLength
+      value: 12.452582
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_TargetDisplay
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_TargetTexture
       value: 
       objectReference: {fileID: 8400000, guid: 1c19625f296e4e845b7ebd998cafafb7, type: 2}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: near clip plane
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_OcclusionCulling
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_BackGroundColor.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814126242748508957, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_projectionMatrixMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2948075963403139158, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_Name
       value: Player
@@ -13592,33 +13661,37 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 515369116}
     - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: throwForce
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: pickUpRange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: ObjectContainer
       value: 
       objectReference: {fileID: 1307485335}
-    - target: {fileID: 4626288084445799469, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: objectLayer.m_Bits
-      value: 512
-      objectReference: {fileID: 0}
     - target: {fileID: 4879187379618892134, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 251f3cc6568a7c84fb817f58b9c4bfd4, type: 3}
     - target: {fileID: 6657299876366599655, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6657299876366599655, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 6657299876366599655, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: e8ca08bf47ba5f542b991aca838ffb59, type: 2}
-    - target: {fileID: 8089575786270219404, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
-      propertyPath: pickupScript
-      value: 
-      objectReference: {fileID: 515369111}
+    - target: {fileID: 7679716343770283878, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7679716343770283878, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358075855357684586, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -17761,26 +17834,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627ea0bfeda3ec0448b9566e68435f2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 2
   chaseDistance: 10
   escapeDistance: 15
-  useRandomRoaming: 0
-  lungeDistance: 5
-  chargeUpTime: 1.5
-  lungeSpeed: 3.5
-  lungeDuration: 3
-  wallTag: Barrier
-  stunSeconds: 3
-  stunVelocityThreshold: 0.1
   player: {fileID: 515369110}
   startingWaypoint: {fileID: 1973913939}
   waypointGroup: {fileID: 740304899}
   door: {fileID: 1174884399}
+  useRandomRoaming: 0
+  stunSeconds: 3
+  stunVelocityThreshold: 0.1
   audioSource: {fileID: 1230927724}
   audioSource2: {fileID: 558598446}
   alienSfx: {fileID: 8300000, guid: fb4ff9a1a3f42e848b8b068e4fd06dfb, type: 3}
-  chargingSound: {fileID: 8300000, guid: 22da1bd44a8e63240a7ef10b79406819, type: 3}
-  lungeSound: {fileID: 8300000, guid: fbd6265ed43b0a44b86a45f641558509, type: 3}
   takeDamage: {fileID: 8300000, guid: 9d499b5f0fea16843be85f22829e6909, type: 3}
 --- !u!54 &1230927720
 Rigidbody:
@@ -21296,7 +21362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1482640074
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25445,10 +25511,6 @@ PrefabInstance:
     - target: {fileID: 564558919831602821, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
       propertyPath: m_Name
       value: PickupObject (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 564558919831602823, guid: c536476c6f9f3ef42a7511d3a6fcd49d, type: 3}
-      propertyPath: m_Mass
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
