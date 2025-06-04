@@ -112,12 +112,16 @@ public class ZeroGravity : MonoBehaviour
     private float minimumSpeed = 1f;
 
     [Header("== Swinging Settings==")]
+    [SerializeField]
+    private bool swinging = false;
     private float maxSwingDistance = 0f; //max distance while swinging
     private float minSwingDistance = 0f; //minimum distance while swinging
     private Vector3 swingPoint; //stores the bar transform when calculating swings
     private SpringJoint joint;
     [SerializeField]
     private float grabDrag = .99f;
+    [SerializeField]
+    private float pullToBarMod = 1f;
 
     //time stamps for swing cooldowns
     private float grabSwingTimeStamp;
@@ -443,6 +447,13 @@ public class ZeroGravity : MonoBehaviour
 
     private void DetectBarrierAndBounce()
     {
+        //if the player is grabbing on a bar and going slower than walking speed
+        if (isGrabbing && rb.linearVelocity.magnitude < zeroGWalkSpeed)
+        {
+            //ignore bouncing
+            return;
+        }
+
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, barrierLayer);
 
@@ -609,8 +620,19 @@ public class ZeroGravity : MonoBehaviour
         if (isGrabbing && bar != null)
         {
             PropelOffBar();
+
+            ////the player will swing if they reach a magnitude greater than 3
+            //if(rb.linearVelocity.magnitude >= 3f)
+            //{
+            //    Swing(bar);
+            //    SwingCoolDown();
+            //}
+            ////if there are below that magnitude they will grab onto the bar and stop much faster
+            //else if(rb.linearVelocity.magnitude < 3f)
+            //{
+            //    rb.linearVelocity = Vector3.zero;
+            //}
             Swing(bar);
-            SwingCoolDown();
             uiManager.UpdateGrabberPosition(bar);
         }
     }
@@ -642,6 +664,22 @@ public class ZeroGravity : MonoBehaviour
 
         //lock grabbed bar and change icon
         uiManager.ShowGrabber(grabbedBar);
+
+        //determine if the player will be able swing 
+        //if the player is moving faster than the walking speed
+        if(rb.linearVelocity.magnitude >= zeroGWalkSpeed)
+        {
+            //swinging bool is true
+            swinging = true;
+        }
+        //if the player is moving slower than walking speed 
+        else if(rb.linearVelocity.magnitude < zeroGWalkSpeed)
+        {
+            //don't swing
+            swinging = false;
+        }
+
+        Debug.Log(rb.linearVelocity.magnitude);
     }
 
 
@@ -674,6 +712,15 @@ public class ZeroGravity : MonoBehaviour
             joint.spring = 4.5f; //higher pull and push of the spring
             joint.damper = 7f;
             joint.massScale = 4.5f;
+            //if the player is not swinging
+            if (!swinging)
+            {
+                //pull to the bar
+                PullToBar(pullToBarMod, bar);
+                return;
+            }
+            //swing cooldown
+            SwingCoolDown(bar);
         }
     }
 
@@ -682,21 +729,55 @@ public class ZeroGravity : MonoBehaviour
     /// shrink it as the player continues to hold onto one bar. This will eventually get short enough to 
     /// where the player is able to stop themself, and then propel with no swing affecting their trajectory
     /// </summary>
-    private void PullToBar()
+    /// 
+
+    ///try to make the target point calculated in front of the player to the bar. therefore won't have issues with collisions too close to the wall 
+    private void PullToBar(float multiplier, Transform bar)
     {
+        //Debug.Log(bar.gameObject.name);
+        //Debug.Log(rb.linearVelocity.magnitude);
+        //Debug.Log(bar.gameObject.name);
+
         //if the joint is a long distance between the player and the bar
         if (joint.maxDistance >= joint.minDistance)
         {
-            //decrease the length of the joint
-            joint.maxDistance -= 0.1f;
-            //lessen the spring force of the joint 
-            joint.spring -= 0.1f;
+            //decrease the length of the joint scaled by a multiplier to determine how fast this happens
+            joint.maxDistance -= 0.1f * multiplier;
+            //lessen the spring force of the joint scaled by a multiplier to determine how fast this happens
+            joint.spring -= 0.1f * multiplier;
         }
+
         //increment down the linear and angular velocities so the player slows down
-        if (rb != null && rb.linearVelocity.magnitude > 0.1f)
+        if (rb.linearVelocity.magnitude >= zeroGWalkSpeed)
         {
             //decrease the velocity
             rb.linearVelocity *= grabDrag;
+        }
+        //if the linear velocity magnitude is below 3  
+        else if (rb.linearVelocity.magnitude < zeroGWalkSpeed)
+        {
+            //create a target Transform to pull to
+            Transform target = null;
+            //iterate through the children 
+            foreach (Transform child in bar)
+            {
+                //find the child that is the GrabTarget
+                if(child.gameObject.name == "GrabTarget")
+                {
+                    //save this child as the target
+                    target = child;
+                }
+            }
+            //begin moving the player to the target point
+            var step = multiplier * Time.deltaTime;
+            rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
+
+            //if the position of the player and the target are about equal
+            if (Vector3.Distance(rb.transform.position, target.position) < 0.001f)
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+            //Debug.Log(target.gameObject.name);
         }
 
         //Debug.Log("linear velocity: " + rb.linearVelocity.magnitude);
@@ -705,7 +786,7 @@ public class ZeroGravity : MonoBehaviour
     /// This method will control the logic for the cooldown of swinging before the player 
     /// automatically starts gtting pulled into the bar to stop their movement while still holding the bar
     /// </summary>
-    private void SwingCoolDown()
+    private void SwingCoolDown(Transform bar)
     {
         //confirm I have just grabbed a bar
         if (isGrabbing && justGrabbed && !prevJustGrabbed)
@@ -724,19 +805,19 @@ public class ZeroGravity : MonoBehaviour
             else if(rb.linearVelocity.magnitude >= zeroGWalkSpeed)
             {
                 //Debug.Log("Normal Speed Reached");
-                //the cooldown will be slower
+                //the cooldown will be lower
                 grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
                 //Debug.Log("space walk Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
             }
+            //if the player is moving slower than the benchmark
             //set the prev just grabbed bool to confirm we do this once 
             prevJustGrabbed = justGrabbed;
         }
         //if the time has now gone past the cooldown timestamp we created
-        if(Time.time > grabSwingTimeStamp)
+        if(Time.time > grabSwingTimeStamp && bar != null)
         {
-            //Debug.Log("pulling to bar");
-            PullToBar();
             justGrabbed = false;
+            swinging = false;
             prevJustGrabbed = justGrabbed;
             grabSwingTimeStamp = 0f;
         }
@@ -750,6 +831,7 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log("no swingaling");
         swingPoint = Vector3.zero;
         Destroy(joint);
+        swinging = false;
     }
 
 
@@ -993,8 +1075,6 @@ public class ZeroGravity : MonoBehaviour
             potentialGrabbedBar = null;
             //set the potential wall to null
             potentialWall = null;
-
-
             //doorManager.CurrentSelectedDoor = null;
         }
     }
