@@ -725,7 +725,7 @@ public class ZeroGravity : MonoBehaviour
             {
                 Transform grab = grabHolder.GetChild(i).transform;
 
-
+                Debug.Log(i + " + " + initGrabRotation[i]);
                 grab.rotation = initGrabRotation[i];
                 grab.position = initGrabPosition[i];
                 grab.up = initUpVector[i];
@@ -760,7 +760,7 @@ public class ZeroGravity : MonoBehaviour
         Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
         float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
 
-        Debug.Log(angle);
+        Debug.Log(roll);
 
 
 
@@ -768,14 +768,8 @@ public class ZeroGravity : MonoBehaviour
         {
             Transform grab = grabHolder.GetChild(i).transform;
 
-            
 
-
-            Quaternion lookRotation = Quaternion.AngleAxis(angle, grabCollider.up);
-
-
-
-            float distance = (initGrabPosition[i] - grabCollider.position).magnitude;
+            // zero out transform for uniform translation
             grab.rotation = initGrabRotation[i];
             grab.position = initGrabPosition[i];
 
@@ -787,8 +781,6 @@ public class ZeroGravity : MonoBehaviour
             Quaternion rollRotation = Quaternion.AngleAxis(roll, grab.up);
             grab.rotation = rollRotation * grab.rotation;
 
-
-            //grab.rotation = rollRotation * lookRotation * initGrabRotation[i];
         }
 
 
