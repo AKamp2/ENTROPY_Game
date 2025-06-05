@@ -9,6 +9,8 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private GameObject player;
     [SerializeField]
+    ZeroGravity zeroGPlayer;
+    [SerializeField]
     PlayerUIManager uiManager;
     [SerializeField]
     private Transform holdPos;
@@ -159,6 +161,7 @@ public class PickupScript : MonoBehaviour
             Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, true);
 
             MoveObject();
+            zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
         }
     }
     void DropObject()
@@ -172,6 +175,8 @@ public class PickupScript : MonoBehaviour
         heldObj = null; //undefine game object
 
         //current = null;
+
+        zeroGPlayer.MoveHandsTo(null, null);
     }
     void MoveObject()
     {
@@ -192,11 +197,13 @@ public class PickupScript : MonoBehaviour
         StartCoroutine(ResetThrowFlag());
 
         transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)), ForceMode.VelocityChange);
-        Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
+        //Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
 
         // initiate pick up cd
         canPickUp = false;
         coolDown = coolDownMax;
+
+        zeroGPlayer.MoveHandsTo(null, null);
     }
 
     IEnumerator ResetThrowFlag()
