@@ -727,6 +727,7 @@ public class ZeroGravity : MonoBehaviour
 
 
                 grab.rotation = initGrabRotation[i];
+                grab.position = initGrabPosition[i];
                 grab.up = initUpVector[i];
             }
 
@@ -754,7 +755,7 @@ public class ZeroGravity : MonoBehaviour
         float roll = cam.transform.localEulerAngles.z;
         if (roll > 180f) roll -= 360f;
 
-
+        // calculate angle around bar to the player
         Vector3 toTarget = cam.transform.position - grabCollider.position;
         Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
         float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
@@ -767,15 +768,27 @@ public class ZeroGravity : MonoBehaviour
         {
             Transform grab = grabHolder.GetChild(i).transform;
 
-            Quaternion rollRotation = Quaternion.AngleAxis(roll, initUpVector[i]);
+            
 
 
             Quaternion lookRotation = Quaternion.AngleAxis(angle, grabCollider.up);
-           
-            grab.rotation = lookRotation * rollRotation * initGrabRotation[i];
 
 
-            //grab.rotation *= rollRotation * initGrabRotation[i];
+
+            float distance = (initGrabPosition[i] - grabCollider.position).magnitude;
+            grab.rotation = initGrabRotation[i];
+            grab.position = initGrabPosition[i];
+
+
+            grab.RotateAround(grabCollider.position, grabCollider.up, angle);
+
+
+            //grab.position = initGrabPosition[i];
+            Quaternion rollRotation = Quaternion.AngleAxis(roll, grab.up);
+            grab.rotation = rollRotation * grab.rotation;
+
+
+            //grab.rotation = rollRotation * lookRotation * initGrabRotation[i];
         }
 
 
