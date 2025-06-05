@@ -160,13 +160,9 @@ public class ZeroGravity : MonoBehaviour
     [Header("== IK Logic ==")]
     [SerializeField]
     bool useIK = false;
-    [SerializeField]
     private Quaternion[] initGrabRotation;
-    [SerializeField]
     private Vector3[] initGrabPosition;
-    [SerializeField]
     private Vector3[] initUpVector;
-    [SerializeField]
     private Transform grabHolder;
 
     [SerializeField]
@@ -750,9 +746,28 @@ public class ZeroGravity : MonoBehaviour
 
             rigBuilder.Build();
             animator.Rebind();
+
+
  
         }
         
+    }
+
+    public void MoveHandsTo(Transform left, Transform right)
+    {
+        if (left == null)
+            hands[0].data.target = defaultHandPosition[0];
+        else
+            hands[0].data.target = left;
+
+        if (right == null)
+            hands[1].data.target = defaultHandPosition[1];
+        else
+            hands[1].data.target = right;
+
+
+        rigBuilder.Build();
+        animator.Rebind();
     }
 
     private void ResetBarGrabbers()
