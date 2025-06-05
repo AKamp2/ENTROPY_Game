@@ -36,6 +36,11 @@ public class SettingsMenu : MonoBehaviour
 
     private void OnEnable()
     {
+        SetUp();
+    }
+
+    public void SetUp()
+    {
         // Makes sure menus are not open when starting 
         CloseMenus();
         dialogueSlider.value = GetPrefs("dialogueSlider", 1);

@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField] private SettingsMenu settingsMenu;
+    [SerializeField] private GameObject confirmationPopUp;
     [SerializeField] private GameObject optionsMenu;
 
     private void Start()
@@ -22,13 +24,25 @@ public class MainMenu : MonoBehaviour
     {
         Debug.Log("sample");
         SceneManager.LoadScene("NewLevel");
-      
+
     }
     public void Options()
     {
         optionsMenu.SetActive(true);
+        settingsMenu.SetUp();
     }
     public void CloseOptions()
+    {
+        if (settingsMenu.isChanged)
+        {
+            settingsMenu.OpenPopUp(confirmationPopUp);
+        }
+        else
+        {
+            optionsMenu.SetActive(false);
+        }
+    }
+    public void ExitOptions()
     {
         optionsMenu.SetActive(false);
     }
