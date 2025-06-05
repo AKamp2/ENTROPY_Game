@@ -1,17 +1,26 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class PlayerUIManager : MonoBehaviour
 {
     [SerializeField]
-    ZeroGravity player;
+    private ZeroGravity player;
     [SerializeField]
-    PickupScript pickupScript;
+    private Rigidbody rb;
+    [SerializeField]
+    private PickupScript pickupScript;
+    [SerializeField]
+    private DoorManager doorManager;
 
     [Header("== UI Canvas ==")]
     [SerializeField]
     private CameraFade cameraFade;
+    [SerializeField]
+    private TextMeshProUGUI grabUIText;
+
 
     //canvas elements
     [SerializeField]
@@ -52,6 +61,16 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private Sprite highDangerIndicator;
 
+    [SerializeField]
+    private LayerMask barLayer; // Set a specific layer containing bars to grab onto
+    [SerializeField]
+    private LayerMask barrierLayer; //set layer for barriers
+    [SerializeField]
+    private LayerMask doorLayer;
+
+
+
+
     public UnityEngine.UI.Image InputIndicator
     {
         get { return inputIndicator; }
@@ -78,6 +97,24 @@ public class PlayerUIManager : MonoBehaviour
 
     public Sprite HighDangerIndicator {  get { return highDangerIndicator; } }
 
+    #region properties
+
+    public LayerMask BarLayer
+    {
+        get { return barLayer; }
+    }
+
+    public LayerMask BarrierLayer
+    {
+        get { return barrierLayer; }
+    }
+
+    public LayerMask DoorLayer
+    {
+        get { return doorLayer; }
+    }
+    #endregion
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -101,6 +138,101 @@ public class PlayerUIManager : MonoBehaviour
         HandleHealthUI();
     }
 
+    /// <summary>
+    /// This method conrols the logic handling all of the raycasts from the player to diffeent objects in the scene allowing for multiple movement/ interaction options
+    /// </summary>
+    public void HandleRaycastUI()
+    {
+        if (player.IsGrabbing)
+        {
+            // remove space and f gui if player is grabbing
+            if (InputIndicator.sprite != null)
+            {
+                player.PotentialWall = null;
+
+                //erase the input indicator
+                inputIndicator.sprite = null;
+                inputIndicator.color = new Color(0, 0, 0, 0);
+            }
+
+            //skip raycast if already holding a bar
+            return;
+        }
+
+        Ray ray = player.cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        RaycastHit hit;
+
+        Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
+
+        if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | barrierLayer | doorLayer))
+        {
+            //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
+            RayCastHandleGrab(hit);
+            RayCastHandleDoorButton(hit);
+
+            //if the current velocity is less than the parameter we set
+            if (rb.linearVelocity.magnitude <= player.PushSpeed)
+            {
+                //we handle interaction with pushing off the wall
+                RayCastHandlePushOffWall(hit);
+            }
+        }
+        else
+        {
+            //reset ui elements
+            ResetUI();
+            //set the potential grabbed bar to null
+            player.PotentialGrabbedBar = null;
+            //set the potential wall to null
+            player.PotentialWall = null;
+            //doorManager.CurrentSelectedDoor = null;
+        }
+    }
+
+    //helper methods for raycast handling
+    public void RayCastHandleGrab(RaycastHit hit)
+    {
+        if (hit.transform.CompareTag("Grabbable"))
+        {
+            player.PotentialGrabbedBar = hit.transform;
+            UpdateGrabberPosition(player.PotentialGrabbedBar);
+        }
+    }
+
+    public void RayCastHandleDoorButton(RaycastHit hit)
+    {
+        if (hit.transform.gameObject.CompareTag("DoorButton"))
+        {
+            //store the gameobject of the detected item and store it
+            GameObject door = hit.transform.parent.gameObject;
+            DoorScript ds = door.GetComponent<DoorScript>();
+
+            if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed))
+            {
+                //set the selected door in the door manager as this door
+                doorManager.CurrentSelectedDoor = door;
+                DoorUI();
+            }
+        }
+    }
+
+    public void RayCastHandlePushOffWall(RaycastHit hit)
+    {
+        //Debug.Log("Push off raycast happening");
+        if (hit.transform.CompareTag("Barrier"))
+        {
+            player.PotentialWall = hit.transform;
+            //if in tutorial mode
+            if (player.CanPushOff)
+            {
+                //grabUIText.text = "'SPACEBAR'";
+                //set the sprite for the space bar indicator
+                inputIndicator.sprite = spaceIndicator;
+                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            }
+        }
+    }
+
     public void ResetUI()
     {
         //erase the grabber
@@ -112,62 +244,10 @@ public class PlayerUIManager : MonoBehaviour
         /*doorManager.DoorUI.SetActive(false);*/
     }
 
-    //public void UpdateClosestBarInView()
-    //{
-    //    //check for all nearby bars to the player
-    //    Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
-    //    //initialize a transform for the closest bar and distance to that bar
-    //    Transform closestBar = null;
-    //    float closestDistance = Mathf.Infinity;
-
-    //    //check through each bar in our array
-    //    foreach (Collider bar in nearbyBars)
-    //    {
-    //        //set specifications for the viewport
-    //        Vector3 viewportPoint = player.cam.WorldToViewportPoint(bar.transform.position);
-
-    //        //check if the bar is in the viewport and in front of the player
-    //        if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
-    //        {
-    //            float distanceToBar = Vector3.Distance(transform.position, bar.transform.position);
-    //            if (distanceToBar < closestDistance)
-    //            {
-    //                closestDistance = distanceToBar;
-    //                closestBar = bar.transform;
-    //            }
-    //        }
-    //    }
-
-    //    if (closestBar != null)
-    //    {
-    //        //update the grabber if a new bar is detected
-    //        if (player.PotentialGrabbedBar != closestBar)
-    //        {
-    //            //player.PotentialGrabbedBar = closestBar;
-    //            //if in tutorial mode
-    //            if (player.TutorialMode && player.CanGrab)
-    //            {
-    //                //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
-    //                //set the sprite for the right click
-    //                //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    //                inputIndicator.sprite = rightClickIndicator;
-    //                inputIndicator.color = new Color(256, 256, 256, 0.5f);
-    //            }
-    //            //update the sprite for the grabber and its position
-    //            UpdateGrabberPosition(closestBar);
-    //        }
-    //    }
-    //    else
-    //    {
-    //        //hide grabber if no bar is in range
-    //        HideGrabber();
-    //    }
-    //}
-
     public void UpdateClosestBarInView()
     {
         //check for all nearby bars to the player
-        Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, player.BarLayer);
+        Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, barLayer);
         Collider[] nearbyObjects;
 
         // Only track floating objects if able to pick up object
@@ -219,14 +299,14 @@ public class PlayerUIManager : MonoBehaviour
                     {
                         //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
                         //set the sprite for the right click
-                        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         inputIndicator.sprite = rightClickIndicator;
                         inputIndicator.color = new Color(256, 256, 256, 0.5f);
                     }
-                    //update the sprite for the grabber and its position
-                    UpdateGrabberPosition(closestObject);
-                    grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                 }
+                //update the sprite for the grabber and its position
+                UpdateGrabberPosition(closestObject);
+                grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             }
             else
             {
@@ -300,7 +380,7 @@ public class PlayerUIManager : MonoBehaviour
         grabber.color = new Color(0, 0, 0, 0); //transparent
     }
 
-    public void ShowGrabber(Transform grabbedBar)
+    public void ShowGrabbedGrabber(Transform grabbedBar)
     {
         UpdateGrabberPosition(grabbedBar);
         grabber.sprite = closedHand;

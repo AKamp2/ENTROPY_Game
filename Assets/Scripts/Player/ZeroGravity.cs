@@ -83,12 +83,6 @@ public class ZeroGravity : MonoBehaviour
     private Transform potentialGrabbedBar = null; //tracks a potential grabbable bar that the player looks at
     private Transform grabbedBar; //stores the bar the player is currently grabbing
     [SerializeField]
-    private LayerMask barLayer; // Set a specific layer containing bars to grab onto
-    [SerializeField]
-    private LayerMask barrierLayer; //set layer for barriers
-    [SerializeField]
-    private LayerMask doorLayer;
-    [SerializeField]
     private float grabRange = 3f; // Range within which the player can grab bars
     [SerializeField]
     private float minGrabRange = 1f;
@@ -138,8 +132,6 @@ public class ZeroGravity : MonoBehaviour
     [Header("== UI Settings ==")]
     [SerializeField]
     PlayerUIManager uiManager;
-    [SerializeField]
-    private TextMeshProUGUI grabUIText;
     private bool showTutorialMessages = true;
 
     //Input Values
@@ -152,8 +144,6 @@ public class ZeroGravity : MonoBehaviour
 
 
     [Header("== World Element Managers ==")]
-    [SerializeField]
-    private DoorManager doorManager;
     [SerializeField]
     private TutorialManager tutorialManager;
 
@@ -212,6 +202,12 @@ public class ZeroGravity : MonoBehaviour
         set { potentialGrabbedBar = value; }
     }
 
+    public Transform PotentialWall
+    {
+        get { return potentialWall; }
+        set { potentialWall = value; }
+    }
+
     public bool TutorialMode
     {
         get { return tutorialMode; }
@@ -240,6 +236,11 @@ public class ZeroGravity : MonoBehaviour
     { 
         get { return canPushOff; }
         set { canPushOff = value; }
+    }
+
+    public float PushSpeed
+    {
+        get { return pushSpeed; }
     }
 
     public bool CanRoll 
@@ -285,11 +286,6 @@ public class ZeroGravity : MonoBehaviour
         get { return grabRange; }
         set { grabRange = value; }
     }
-
-    public LayerMask BarLayer
-    {
-        get { return barLayer; }
-    } 
 
     // getter for isGrabbing
     public bool IsGrabbing => isGrabbing;
@@ -345,7 +341,9 @@ public class ZeroGravity : MonoBehaviour
         {
             if (tutorialMode)
             {
-                HandleRaycast();
+                uiManager.HandleRaycastUI();
+                //update to closest bar in view 
+                uiManager.UpdateClosestBarInView();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null && canGrab)
                 {
@@ -355,8 +353,7 @@ public class ZeroGravity : MonoBehaviour
                     {
                         //handle the grab movement
                         HandleGrabMovement(grabbedBar);
-                        //keep grabber locked to grabbed bar
-                        uiManager.UpdateGrabberPosition(grabbedBar);
+
                     }
                     //set the sprite for input indicator to the wasd indicator
                     if (canPropel)
@@ -366,16 +363,13 @@ public class ZeroGravity : MonoBehaviour
                     }
 
                 }
-                else
-                {
-                    //update to closest bar in view 
-                    uiManager.UpdateClosestBarInView();
-                }
             }
             else
             {
                 //Debug.Log("Tutorial Mode off");
-                HandleRaycast();
+                uiManager.HandleRaycastUI();
+                //update to closest bar in view 
+                uiManager.UpdateClosestBarInView();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null)
                 {
@@ -388,18 +382,11 @@ public class ZeroGravity : MonoBehaviour
                     
                     HandleGrabMovement(grabbedBar);
                 }
-                else
-                {
-                    //update to closest bar in view 
-                    uiManager.UpdateClosestBarInView(); 
-                }
             }
             //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
             //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
-
-
             //manage the cooldowns  
             HurtCoolDown();
             JustHitCoolDown();
@@ -484,7 +471,7 @@ public class ZeroGravity : MonoBehaviour
         }
 
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, barrierLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.BarrierLayer);
 
         //Debug.Log(hitColliders.Length);
 
@@ -564,7 +551,7 @@ public class ZeroGravity : MonoBehaviour
     private void DetectClosingDoorTakeDamageAndBounce()
     {
         float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
-        Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, doorLayer);
+        Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.DoorLayer);
 
 
 
@@ -649,38 +636,8 @@ public class ZeroGravity : MonoBehaviour
         if (isGrabbing && bar != null)
         {
             PropelOffBar();
-
-            ////the player will swing if they reach a magnitude greater than 3
-            //if(rb.linearVelocity.magnitude >= 3f)
-            //{
-            //    Swing(bar);
-            //    SwingCoolDown();
-            //}
-            ////if there are below that magnitude they will grab onto the bar and stop much faster
-            //else if(rb.linearVelocity.magnitude < 3f)
-            //{
-            //    rb.linearVelocity = Vector3.zero;
-            //}
             Swing(bar);
             uiManager.UpdateGrabberPosition(bar);
-        }
-    }
-
-    private void HandleDoorInteraction(RaycastHit hit)
-    {
-
-        if (hit.transform.gameObject.CompareTag("DoorButton"))
-        {
-            //store the gameobject of the detected item and store it
-            GameObject door = hit.transform.parent.gameObject;
-            DoorScript ds = door.GetComponent<DoorScript>();
-
-            if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed) && grabUIText.text == "")
-            {
-                //set the selected door in the door manager as this door
-                doorManager.CurrentSelectedDoor = door;
-                uiManager.DoorUI();
-            }
         }
     }
 
@@ -700,7 +657,7 @@ public class ZeroGravity : MonoBehaviour
         
 
         //lock grabbed bar and change icon
-        uiManager.ShowGrabber(grabbedBar);
+        uiManager.ShowGrabbedGrabber(grabbedBar);
 
         //determine if the player will be able swing 
         //if the player is moving faster than the walking speed
@@ -1189,88 +1146,6 @@ public class ZeroGravity : MonoBehaviour
         {
             rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
             rb.angularVelocity = Vector3.zero;
-        }
-    }
-
-    /// <summary>
-    /// This method conrols the logic handling all of the raycasts from the player to diffeent objects in the scene allowing for multiple movement/ interaction options
-    /// </summary>
-    private void HandleRaycast()
-    {
-        if (isGrabbing)
-        {
-            // remove space and f gui if player is grabbing
-            if (uiManager.InputIndicator.sprite != null)
-            {
-                potentialWall = null;
-
-                //erase the input indicator
-                uiManager.InputIndicator.sprite = null;
-               uiManager.InputIndicator.color = new Color(0, 0, 0, 0);
-            }
-            
-            //skip raycast if already holding a bar
-            return;
-        }
-
-        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-        RaycastHit hit;
-
-        Debug.DrawRay(ray.origin, ray.direction * grabRange, Color.red, 0.1f); // Debug visualization
-
-        if (Physics.Raycast(ray, out hit, grabRange, barLayer | barrierLayer | doorLayer))
-        {
-            //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
-            RayCastHandleGrab(hit);
-            RayCastHandleDoorButton(hit);
-
-            //if the current velocity is less than the parameter we set
-            if(rb.linearVelocity.magnitude <= pushSpeed)
-            {
-                //we handle interaction with pushing off the wall
-                RayCastHandlePushOffWall(hit);
-            }
-        }
-        else
-        {
-            //reset ui elements
-            uiManager.ResetUI();
-            //set the potential grabbed bar to null
-            potentialGrabbedBar = null;
-            //set the potential wall to null
-            potentialWall = null;
-            //doorManager.CurrentSelectedDoor = null;
-        }
-    }
-
-    //helper methods for raycast handling
-    public void RayCastHandleGrab(RaycastHit hit)
-    {
-        if (hit.transform.CompareTag("Grabbable"))
-        {
-            potentialGrabbedBar = hit.transform;
-        }
-    }
-
-    public void RayCastHandleDoorButton(RaycastHit hit)
-    {
-        HandleDoorInteraction(hit);
-    }
-
-    public void RayCastHandlePushOffWall(RaycastHit hit)
-    {
-        //Debug.Log("Push off raycast happening");
-        if(hit.transform.CompareTag("Barrier"))
-        {
-            potentialWall = hit.transform;
-            //if in tutorial mode
-            if (grabUIText.text == "" && canPushOff)
-            {
-                //grabUIText.text = "'SPACEBAR'";
-                //set the sprite for the space bar indicator
-                uiManager.InputIndicator.sprite = uiManager.SpaceIndicator;
-                uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
-            }
         }
     }
 
