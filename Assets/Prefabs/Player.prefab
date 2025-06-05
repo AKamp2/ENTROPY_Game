@@ -1089,6 +1089,10 @@ PrefabInstance:
       value: 1.212
       objectReference: {fileID: 0}
     - target: {fileID: 1315194308885493417, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: pickUpRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1315194308885493417, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
       propertyPath: zeroGPlayer
       value: 
       objectReference: {fileID: 2322475786235806864}
@@ -1096,6 +1100,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: rb
+      value: 
+      objectReference: {fileID: 2322475786235806865}
     - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
       propertyPath: grabber
       value: 
@@ -1105,13 +1113,29 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8618825056416280561}
     - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: grabUIText
+      value: 
+      objectReference: {fileID: 1755444841641391980}
+    - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
       propertyPath: inputIndicator
       value: 
       objectReference: {fileID: 4879187379618892134}
     - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: barLayer.m_Bits
+      value: 520
+      objectReference: {fileID: 0}
+    - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
       propertyPath: healthIndicator
       value: 
       objectReference: {fileID: 2324700690266793527}
+    - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: doorLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 2463627945084931592, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: barrierLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     - target: {fileID: 8234961305471522322, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.43
@@ -1173,8 +1197,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1001156883719805621}
     - target: {fileID: 8234961305471522324, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: dangerSpeed
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8234961305471522324, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: minimumSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8234961305471522324, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+      propertyPath: pullToBarMod
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8234961305471522324, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
       propertyPath: tutorialMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8234961305471522324, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
       propertyPath: hands.Array.size
@@ -1229,6 +1265,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2c010e61a32f7c459d12ddb06d9d37a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!54 &2322475786235806865 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 8234961305471522325, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
+  m_PrefabInstance: {fileID: 5941200914932011652}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2322475786235806870 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8234961305471522322, guid: 597706edca5a56e4c96903bd201dbf26, type: 3}
