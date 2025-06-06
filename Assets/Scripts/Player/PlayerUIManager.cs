@@ -15,6 +15,9 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private DoorManager doorManager;
 
+    [SerializeField]
+    private bool barInView;
+
     [Header("== UI Canvas ==")]
     [SerializeField]
     private CameraFade cameraFade;
@@ -69,7 +72,11 @@ public class PlayerUIManager : MonoBehaviour
     private LayerMask doorLayer;
 
 
-
+    #region properties
+    public bool BarInView
+    {
+        get { return barInView; }
+    }
 
     public UnityEngine.UI.Image InputIndicator
     {
@@ -97,8 +104,6 @@ public class PlayerUIManager : MonoBehaviour
 
     public Sprite HighDangerIndicator {  get { return highDangerIndicator; } }
 
-    #region properties
-
     public LayerMask BarLayer
     {
         get { return barLayer; }
@@ -120,7 +125,8 @@ public class PlayerUIManager : MonoBehaviour
     {
         //set the crosshair and grabber sprites accordingly;
         crosshair.sprite = crosshairIcon;
-
+        //set bar in view intially as false
+        barInView = false;
         //erase the grabber
         grabber.sprite = null;
         grabber.color = new Color(0, 0, 0, 0); //transparent
@@ -219,11 +225,15 @@ public class PlayerUIManager : MonoBehaviour
     public void RayCastHandlePushOffWall(RaycastHit hit)
     {
         //Debug.Log("Push off raycast happening");
-        if (hit.transform.CompareTag("Barrier"))
+        if (hit.transform.CompareTag("Barrier") && !barInView)
         {
             player.PotentialWall = hit.transform;
             //if in tutorial mode
-            if (player.CanPushOff)
+            if (barInView)
+            {
+                return;
+            }
+            if (player.CanPushOff && !barInView)
             {
                 //grabUIText.text = "'SPACEBAR'";
                 //set the sprite for the space bar indicator
@@ -290,10 +300,14 @@ public class PlayerUIManager : MonoBehaviour
             // ensure closest object is a bar
             if (closestObject.gameObject.CompareTag("Grabbable"))
             {
+                //set our bool tracking if a bar is in view as true
+                barInView = true;
                 //update the grabber if a new bar is detected
                 if (player.PotentialGrabbedBar != closestObject)
                 {
+                    //the potential bar is now this bar in view
                     player.PotentialGrabbedBar = closestObject;
+
                     //if in tutorial mode
                     if (player.TutorialMode && player.CanGrab)
                     {
@@ -338,7 +352,7 @@ public class PlayerUIManager : MonoBehaviour
                     //update grabber position
                     grabber.rectTransform.position = screenPoint;
 
-                    //set hand icon open is not grabbing
+                    //set hand icon open if not grabbing
                     if (!player.IsGrabbing)
                     {
                         grabber.sprite = openHand;
@@ -350,6 +364,8 @@ public class PlayerUIManager : MonoBehaviour
                         grabber.sprite = closedHand;
                         grabber.color = Color.white;
                     }
+
+                    HidePushIndicator();
                 }
                 else
                 {
@@ -378,6 +394,17 @@ public class PlayerUIManager : MonoBehaviour
     {
         grabber.sprite = null;
         grabber.color = new Color(0, 0, 0, 0); //transparent
+        //set the bar in view bool as false
+        barInView = false;
+    }
+
+    public void HidePushIndicator()
+    {
+        if (barInView)
+        {
+            inputIndicator.sprite = null;
+            inputIndicator.color = new Color(0,0,0,0);
+        }
     }
 
     public void ShowGrabbedGrabber(Transform grabbedBar)
