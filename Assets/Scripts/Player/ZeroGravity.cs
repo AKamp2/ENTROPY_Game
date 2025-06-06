@@ -334,7 +334,7 @@ public class ZeroGravity : MonoBehaviour
     }
 
     // Update is called once per frame
-    #region Update Method
+    #region Update Methods
     void FixedUpdate()
     {
         if (canMove)
@@ -448,7 +448,7 @@ public class ZeroGravity : MonoBehaviour
 
     private void PropelOffWall()
     {
-        if(rb.linearVelocity.magnitude <= pushSpeed && canPushOff)
+        if(rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInView)
         {
             //zero the initial velocities ensuring a direct push back
             //rb.velocity = Vector3.zero;
