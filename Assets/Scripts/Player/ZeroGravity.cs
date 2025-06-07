@@ -446,6 +446,26 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    public void StopRollingQuickly()
+    {
+        // Immediately stop applying input-based roll
+        rotationZ = 0f;
+
+        // Reduce current roll speed quickly toward 0
+        StartCoroutine(QuickRollBrake());
+    }
+
+    private IEnumerator QuickRollBrake()
+    {
+        while (Mathf.Abs(currentRollSpeed) > 0.1f)
+        {
+            currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * 5f * Time.deltaTime);
+            yield return null;
+        }
+
+        currentRollSpeed = 0f; // Snap to 0 at the end
+    }
+
     private void PropelOffWall()
     {
         if(rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInView)
