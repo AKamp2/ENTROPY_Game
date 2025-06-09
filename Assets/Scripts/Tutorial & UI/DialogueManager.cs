@@ -147,8 +147,9 @@ public class DialogueManager : MonoBehaviour
             {
                 audioSource.clip = currentDialogue.audioClip;
                 audioSource.Play();
-                isDialogueSpeaking = true; // <--- Dialogue is about to speak
             }
+
+            isDialogueSpeaking = true; // <--- Dialogue is about to speak
 
             //calculating dialogue speed
             int totalLength = 0;
@@ -263,6 +264,7 @@ public class DialogueManager : MonoBehaviour
     public IEnumerator PlayFailureDialogue(int index)
     {
         // Wait until no dialogue is active
+        Debug.Log("Is dialogue Speaking?: " + isDialogueSpeaking);
         yield return new WaitUntil(() => !isDialogueSpeaking);
 
         if (isDialogueActive == false)
