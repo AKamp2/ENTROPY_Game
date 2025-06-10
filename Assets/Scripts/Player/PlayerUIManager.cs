@@ -159,6 +159,7 @@ public class PlayerUIManager : MonoBehaviour
                 //erase the input indicator
                 inputIndicator.sprite = null;
                 inputIndicator.color = new Color(0, 0, 0, 0);
+                
             }
 
             //skip raycast if already holding a bar
@@ -170,6 +171,7 @@ public class PlayerUIManager : MonoBehaviour
 
         Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
 
+        // if raycast hits
         if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | barrierLayer | doorLayer))
         {
             //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
@@ -219,6 +221,13 @@ public class PlayerUIManager : MonoBehaviour
                 doorManager.CurrentSelectedDoor = door;
                 DoorUI();
             }
+           
+        }
+        else
+        {
+            inputIndicator.sprite = null;
+            inputIndicator.color = new Color(0, 0, 0, 0);
+
         }
     }
 
@@ -400,7 +409,7 @@ public class PlayerUIManager : MonoBehaviour
 
     public void HidePushIndicator()
     {
-        if (barInView)
+        if (barInView && inputIndicator.sprite == spaceIndicator)
         {
             inputIndicator.sprite = null;
             inputIndicator.color = new Color(0,0,0,0);
