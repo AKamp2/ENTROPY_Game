@@ -22,9 +22,10 @@ public class TutorialManager : MonoBehaviour
     //tutorial canvas groups
     public CanvasGroup grabCanvasGroup;
     public CanvasGroup propelCanvasGroup;
-    public CanvasGroup pushOffCanvasGroup;
-    public CanvasGroup throwItemCanvasGroup;
-    public CanvasGroup rollCanvasGroup;
+    //public CanvasGroup pushOffCanvasGroup;
+    //public CanvasGroup throwItemCanvasGroup;
+    public CanvasGroup rollQCanvasGroup;
+    public CanvasGroup rollECanvasGroup;
     public CanvasGroup enterCanvasGroup;
     
     public float fadeDuration = 1f;
@@ -46,8 +47,6 @@ public class TutorialManager : MonoBehaviour
     // rolling threshold (in degrees) beyond which we consider “upside down”
     [SerializeField] private float rollAngleThreshold = 150f;
 
-    // timer for object-grab step
-    private Coroutine objectGrabTimer;
     
     //timer for checking if player is upside down
     private float upsideDownTimer = 0f;
@@ -91,22 +90,43 @@ public class TutorialManager : MonoBehaviour
         {
             //Debug.Log("Waiting for step " + currentStep);
 
-            if (currentStep == 1 && playerController.IsGrabbing)
+            if (currentStep == 1)
+            {
+                float zAngle = playerController.cam.transform.eulerAngles.z;
+                if (zAngle > 180f) zAngle = 360f - zAngle;
+
+                bool isUpsideDown = zAngle >= 175f && zAngle <= 185f;
+
+                if (isUpsideDown)
+                {
+                    Debug.Log("Player rolled upside down");
+                    playerController.StopRollingQuickly();
+                    stepComplete = true;
+                    FadeOut(rollQCanvasGroup);
+                    CompleteStep();
+                }
+            }
+            else if (currentStep == 2)
+            {
+                float zAngle = playerController.cam.transform.eulerAngles.z;
+                if (zAngle > 180f) zAngle = 360f - zAngle;
+
+                bool isUpright = zAngle <= 5f || zAngle >= 355f;
+
+                if (isUpright)
+                {
+                    Debug.Log("Player rolled upright");
+                    playerController.StopRollingQuickly();
+                    stepComplete = true;
+                    FadeOut(rollECanvasGroup);
+                    CompleteStep();
+                }
+            }
+            else if (currentStep == 3 && playerController.IsGrabbing)
             {
                 stepComplete = true;
                 FadeOut(grabCanvasGroup);
                 CompleteStep();
-            }
-
-            else if (currentStep == 2 && playerController.HasPropelled)
-            {
-                Debug.Log("Detected player propel");
-                playerController.HasPropelled = false; // Reset to prevent multiple detections
-                FadeOut(propelCanvasGroup);
-                SetPlayerAbilities(true, true, true, true);
-                stepComplete = true;
-                CompleteStep();
-                
             }
             else if (currentStep == 4 && playerController.HasPropelled)
             {
@@ -117,63 +137,7 @@ public class TutorialManager : MonoBehaviour
                 StartCoroutine(WaitForSecondGrab());
 
             }
-            else if(currentStep == 5 && pickupObject.HasThrownObject)
-            {
-                FadeOut(throwItemCanvasGroup);
-                stepComplete = true;
-                CompleteStep();
-            }
         }
-
-        // Outside of steps 4 & 5, but only once per tutorial
-        if (!hasPlayedRollFailure && playerController.CanRoll)
-        {
-            float zAngle = playerController.cam.transform.eulerAngles.z;
-            if (zAngle > 180f) zAngle = 360f - zAngle;
-
-            bool isUpsideDown = zAngle > rollAngleThreshold;
-
-            // Increment timer if upside down, else reset it
-            if (isUpsideDown && !playerController.HasRolled)
-            {
-                Debug.Log("Upside down!");
-                upsideDownTimer += Time.deltaTime;
-
-                if (upsideDownTimer >= upsideDownDuration)
-                {
-                    StartCoroutine(PlayRollDialogue());
-                }
-            }
-            else
-            {
-                upsideDownTimer = 0f; // reset timer if not upside down
-            }
-        }
-
-        //showing and hiding the roll tutorial canvas
-
-        //conditions: if we know a failure dialogue is playing and it is the roll failure dialogue (index is the same), and the roll tutorial is not being shown, and if the player doesn't know how to roll yet.
-        if (dialogueManager.IsFailureSpeaking && dialogueManager.CurrentFailureIndex == rollFailureIndex && rollCanvasGroup.alpha == 0 && !playerController.HasRolled)
-        {
-            Debug.Log("Showing QE panel");
-            FadeIn(rollCanvasGroup);
-        }
-
-        //hide the canvas if the player pressed the roll button while the roll panel is visible, and only do this once
-        //or hide the canvas if the roll canvas group is still open and the failure dialogue is done speaking
-        if ((playerController.HasRolled || !dialogueManager.IsFailureSpeaking) && rollCanvasGroup.alpha == 1 && rollPanelHidden == false)
-        {
-            Debug.Log("Hiding QE panel");
-            rollPanelHidden = true;
-            StartCoroutine(DelayFadeOut(2, rollCanvasGroup));
-        }
-
-        //fading out space tutorial canvas
-        if(pushOffCanvasGroup.alpha == 1 && !pushOffPanelHidden)
-        {
-            pushOffPanelHidden = true;
-            StartCoroutine(DelayFadeOut(7, pushOffCanvasGroup));
-        } 
     }
 
     private IEnumerator StartTutorial()
@@ -200,213 +164,92 @@ public class TutorialManager : MonoBehaviour
         switch (currentStep)
         {
             case 1:
-                //player needs to grab a bar
-                Debug.Log("Tutorial 1: Grab bar");
+                // Step 1: Roll 180 degrees upside down
+                Debug.Log("Tutorial 1: Roll upside down");
                 stepComplete = false;
-                FadeIn(grabCanvasGroup);
-                SetPlayerAbilities(true, false, false, false);
                 isWaitingForAction = true;
+                SetPlayerAbilities(false, false, false, true); // Only allow roll
+                FadeIn(rollQCanvasGroup);
                 break;
 
             case 2:
-                //player needs to propel from a bar
-                Debug.Log("Tutorial 2: Propel from bar");
+                // Step 2: Roll back upright
+                Debug.Log("Tutorial 2: Roll upright");
                 stepComplete = false;
-                FadeIn(propelCanvasGroup);
-                SetPlayerAbilities(true, true, false, false);
                 isWaitingForAction = true;
+                SetPlayerAbilities(false, false, false, true); // Still only roll
+                FadeIn(rollECanvasGroup);
                 break;
 
             case 3:
-                //player needs to grab another bar
-                Debug.Log("Tutorial 3: Grab another bar.");
+                // Step 3: Grab a bar
+                Debug.Log("Tutorial 3: Grab bar");
                 stepComplete = false;
                 isWaitingForAction = true;
-
-                // Start the first timer for grabbing a bar
-                StartCoroutine(WaitForBarGrab());
+                SetPlayerAbilities(true, false, true, true); //grab, push off, roll
+                FadeIn(grabCanvasGroup);
                 break;
 
             case 4:
-                //player needs to propel from one bar to the other
-                Debug.Log("Tutorial 4: Grab a bar and propel to another.");
-                SetPlayerAbilities(true, true, true, true);
+                // Step 4: Propel and grab another bar
+                Debug.Log("Tutorial 4: Propel and grab another bar");
                 stepComplete = false;
                 isWaitingForAction = true;
+                SetPlayerAbilities(true, true, true, true); // Enable all
+                FadeIn(propelCanvasGroup);
                 break;
-
             case 5:
-                //Grab an object
-                Debug.Log("Tutorial 5: Throw Item");
-                stepComplete = false;
-                FadeIn(throwItemCanvasGroup);
-                isWaitingForAction = true;
-
-                // also start a 10s timer for NOT grabbing the object
-                objectGrabTimer = StartCoroutine(PushOffFailureCountdown());
+                Debug.Log("Tutorial 5: Wait for exposition");
                 break;
-
             case 6:
-                Debug.Log("Tutorial 6: End");
+                Debug.Log("Tutorial Complete");
                 EndTutorial();
                 break;
-        }
-    }
-
-    //waiting for the player to grab a bar in the level
-    private IEnumerator WaitForBarGrab()
-    {
-        //Debug.Log("Wait for bar grab coroutine");
-        timer = 10f;
-        bool barGrabbed = false;
-        while (timer > 0)
-        {
-            //Debug.Log(timer);
-            if (playerController.IsGrabbing)
-            {
-                barGrabbed = true;
-                break;
-            }
-
-            timer -= Time.deltaTime;
-            yield return null;
-        }
-
-        if (barGrabbed)
-        {
-            Debug.Log("Bar grabbed! Now propel to another bar.");
-            FadeOut(pushOffCanvasGroup);
-            stepComplete = true;
-            SetPlayerAbilities(true, false, false, false);
-            CompleteStep();
-        }
-        else
-        {
-            // if still waiting and we haven't played it yet:
-            if (!hasPlayedPushOffFailure)
-            {
-                Debug.Log("Push off failure message can play");
-
-                //wait till a previous failure dialogue stops playing before you play this one
-                if (dialogueManager.IsFailureTriggered)
-                {
-                    yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-                }
-                dialogueManager.IsFailureTriggered = true;
-                hasPlayedPushOffFailure = true;
-                StartCoroutine(dialogueManager.PlayFailureDialogue(pushOffFailureIndex));
-
-                // show your push-off tutorial panel here (if you have one)
-                FadeIn(pushOffCanvasGroup);
-
-            }
-
-            //reset and wait for another grab
-            StartCoroutine(WaitForBarGrab());
-
         }
     }
 
     //IEnumerator for section 4. After the player has pushed off a bar, they need to grab another bar within 10 seconds to complete this challenge
     private IEnumerator WaitForSecondGrab()
     {
-        Debug.Log("Wait for second grab called");
-        timer = 10f;
+        float timer = 0f;
+        float maxTime = 6f;
         bool barGrabbed = false;
 
-        while (timer > 0)
+        while (timer < maxTime)
         {
             if (playerController.IsGrabbing)
             {
                 barGrabbed = true;
                 break;
             }
-            timer -= Time.deltaTime;
+
+            timer += Time.deltaTime;
             yield return null;
         }
 
-        if (barGrabbed)
+        if (!barGrabbed)
         {
-            Debug.Log("Success! Moving to next tutorial step.");
-            stepComplete = true;
-            tutorialDoor?.UnlockDoor();
-            CompleteStep();
-        }
-        else
-        {
-            // if still waiting and we haven't played it yet:
-            if (!hasPlayedPushOffFailure)
+            Debug.Log("Player failed to grab in time");
+            Debug.Log(dialogueManager.isFailureTriggered);
+            if (dialogueManager.IsFailureTriggered)
             {
-                Debug.Log("Push off failure message can play");
-
-                //wait till a previous failure dialogue stops playing before you play this one
-                if (dialogueManager.IsFailureTriggered)
-                {
-                    yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-                }
-                dialogueManager.IsFailureTriggered = true;
-                hasPlayedPushOffFailure = true;
-                StartCoroutine(dialogueManager.PlayFailureDialogue(pushOffFailureIndex));
-
-                // show your push-off tutorial panel here (if you have one)
-                yield return new WaitUntil(() => rollCanvasGroup.alpha == 0);
-                FadeIn(pushOffCanvasGroup);
-
                 yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-                StartCoroutine(dialogueManager.PlayFailureDialogue(1));
-
             }
-
-            yield return new WaitUntil(() => playerController.HasPropelled);
-
-            StartCoroutine(WaitForSecondGrab());
-        }
-    }
-
-    private IEnumerator PushOffFailureCountdown()
-    {
-        float t = 10f;
-        while (t > 0f && isWaitingForAction)
-        {
-            t -= Time.deltaTime;
-            yield return null;
+            dialogueManager.IsFailureTriggered = true;
+            StartCoroutine(dialogueManager.PlayFailureDialogue(0)); // <-- Use proper failure index here
+            CompleteStep();
+            dialogueManager.IncrementDialogue();
         }
 
-        // if still waiting and we haven't played it yet:
-        if (isWaitingForAction && !hasPlayedPushOffFailure)
-        {
-            hasPlayedPushOffFailure = true;
-            // show your push-off tutorial panel here (if you have one)
-            FadeIn(pushOffCanvasGroup);
-            // play the failure dialogue once
-            StartCoroutine(dialogueManager.PlayFailureDialogue(pushOffFailureIndex));
-        }
-    }
-
-    private IEnumerator PlayRollDialogue()
-    {
-        Debug.Log("Roll dialogue coroutine started");
-        hasPlayedRollFailure = true;
-        //wait for another failure dialogue to finish
-        if (dialogueManager.IsFailureTriggered)
-        {
-            yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-        }
-
-        Debug.Log("Playing roll dialogue");
-        
-
-        // play the roll-failure dialogue
-        dialogueManager.IsFailureTriggered = true;
-        StartCoroutine(dialogueManager.PlayFailureDialogue(rollFailureIndex));
+        FadeOut(propelCanvasGroup);
+        yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
+        stepComplete = true;
+        CompleteStep();
     }
 
     public void CompleteStep()
     {
         isWaitingForAction = false;
-
-        if (objectGrabTimer != null)
-            StopCoroutine(objectGrabTimer);
     }
 
     void SetPlayerAbilities(bool canGrab, bool canPropel, bool canPushOff, bool canRoll)
@@ -434,9 +277,13 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
-        currentStep = 6;
+        //remove all tutorial panels
+        HideAllPanels();
+
+        currentStep = 5;
     }
 
+    //checks to see if the tutorial step is complete
     public bool TutorialStepCompleted()
     {
         //Debug.Log("Step completed? " + stepComplete);
@@ -481,6 +328,30 @@ public class TutorialManager : MonoBehaviour
         }
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    private void HideAllPanels()
+    {
+        if(enterCanvasGroup.alpha == 1)
+        {
+            FadeOut(enterCanvasGroup);
+        }
+        if(rollQCanvasGroup.alpha == 1)
+        {
+            FadeOut(rollQCanvasGroup);
+        }
+        if (rollECanvasGroup.alpha == 1)
+        {
+            FadeOut(rollECanvasGroup);
+        }
+        if (grabCanvasGroup.alpha == 1)
+        {
+            FadeOut(grabCanvasGroup);
+        }
+        if (propelCanvasGroup.alpha == 1)
+        {
+            FadeOut(propelCanvasGroup);
+        }
     }
 
     
