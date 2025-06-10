@@ -47,8 +47,6 @@ public class TutorialManager : MonoBehaviour
     // rolling threshold (in degrees) beyond which we consider “upside down”
     [SerializeField] private float rollAngleThreshold = 150f;
 
-    // timer for object-grab step
-    private Coroutine objectGrabTimer;
     
     //timer for checking if player is upside down
     private float upsideDownTimer = 0f;
@@ -201,6 +199,9 @@ public class TutorialManager : MonoBehaviour
                 FadeIn(propelCanvasGroup);
                 break;
             case 5:
+                Debug.Log("Tutorial 5: Wait for exposition");
+                break;
+            case 6:
                 Debug.Log("Tutorial Complete");
                 EndTutorial();
                 break;
@@ -236,6 +237,8 @@ public class TutorialManager : MonoBehaviour
             }
             dialogueManager.IsFailureTriggered = true;
             StartCoroutine(dialogueManager.PlayFailureDialogue(0)); // <-- Use proper failure index here
+            CompleteStep();
+            dialogueManager.IncrementDialogue();
         }
 
         FadeOut(propelCanvasGroup);
@@ -247,9 +250,6 @@ public class TutorialManager : MonoBehaviour
     public void CompleteStep()
     {
         isWaitingForAction = false;
-
-        if (objectGrabTimer != null)
-            StopCoroutine(objectGrabTimer);
     }
 
     void SetPlayerAbilities(bool canGrab, bool canPropel, bool canPushOff, bool canRoll)
@@ -277,9 +277,13 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
-        currentStep = 6;
+        //remove all tutorial panels
+        HideAllPanels();
+
+        currentStep = 5;
     }
 
+    //checks to see if the tutorial step is complete
     public bool TutorialStepCompleted()
     {
         //Debug.Log("Step completed? " + stepComplete);
@@ -324,6 +328,30 @@ public class TutorialManager : MonoBehaviour
         }
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    private void HideAllPanels()
+    {
+        if(enterCanvasGroup.alpha == 1)
+        {
+            FadeOut(enterCanvasGroup);
+        }
+        if(rollQCanvasGroup.alpha == 1)
+        {
+            FadeOut(rollQCanvasGroup);
+        }
+        if (rollECanvasGroup.alpha == 1)
+        {
+            FadeOut(rollECanvasGroup);
+        }
+        if (grabCanvasGroup.alpha == 1)
+        {
+            FadeOut(grabCanvasGroup);
+        }
+        if (propelCanvasGroup.alpha == 1)
+        {
+            FadeOut(propelCanvasGroup);
+        }
     }
 
     

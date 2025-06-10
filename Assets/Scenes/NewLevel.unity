@@ -7681,6 +7681,27 @@ MonoBehaviour:
   maxOffDuration: 1
   minOffDuration: 0.01
   timer: 0
+--- !u!82 &515369121 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 400364267872142529, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+  m_PrefabInstance: {fileID: 919063943}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &515369122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 515369110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0cd9a6d790b9b045a21749984611888, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 515369121}
+  softBounce: {fileID: 8300000, guid: ce86434780446e949a847be2503ca92f, type: 3}
+  hardBounce: {fileID: 8300000, guid: b52c277a1cbe5ba4f833141329dc37fa, type: 3}
+  fatalBounce: {fileID: 8300000, guid: 8b6191293c778854585b4763f47a74e6, type: 3}
 --- !u!1 &517305743
 GameObject:
   m_ObjectHideFlags: 0
@@ -9136,7 +9157,7 @@ MonoBehaviour:
       - 'Now, on to the concerning news. '
       - I regret to inform you that there is an unlikely crisis regarding the integrity
         of our ship.
-      audioClip: {fileID: 8300000, guid: f48b74f321e3d2f4c93e01db47e54d5c, type: 3}
+      audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
       delayBetweenDialogues: 0.5
@@ -9144,36 +9165,41 @@ MonoBehaviour:
       dialogueLines:
       - My sensors have detected traceable amounts of lethal radiation leaking,
       - with the source being that of the ship's compact fusion reactor.
-      - They are moderately safe now due to the main cabins physical distance from
-        the rear of the ship where the reactor is located.
-      audioClip: {fileID: 8300000, guid: 7b7a73f23fa7de645a5f958188558fe5, type: 3}
+      audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
       delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
-      - However, without maintenance, radiation levels will continue to rise to super-critical
-        levels,
+      - They are moderately safe now. However, without maintenance, radiation levels
+        will continue to rise to super-critical levels,
       - causing the ship to rupture and, with a high probability, explode.
-      - We will not survive this scenario.
-      audioClip: {fileID: 8300000, guid: 3b0319e4448a62447a2f4463a6fb5cca, type: 3}
+      audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
       delayBetweenDialogues: 0
     - characterName: ALAN
       dialogueLines:
-      - Due to damage to the reactor, our ship is running on auxiliary power, keeping
-        the lights on and a few of my primary functions online.
-      - 'Because of this, I can not make any repairs.  '
-      audioClip: {fileID: 8300000, guid: 1ea54197aea314549b695c15563ec6e1, type: 3}
+      - We will not survive this scenerio.
+      audioClip: {fileID: 0}
+      advancesTutorial: 0
+      skipWithTutorial: 0
+      delayBetweenDialogues: 0
+    - characterName: ALAN
+      dialogueLines:
+      - Our ship is now running on auxiliary power, keeping only the lights and a
+        few of my primary systems online.
+      - Fully restricting me from my overhead functions. Without those functions,
+        I am unable to make the repairs.
+      audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
       delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
       - 'I require you to fix the reactor. '
-      audioClip: {fileID: 8300000, guid: 2fb47ff0dbb21754da48bfeda8898223, type: 3}
-      advancesTutorial: 0
+      audioClip: {fileID: 0}
+      advancesTutorial: 1
       skipWithTutorial: 0
       delayBetweenDialogues: 0.5
   failureDialogues:
@@ -9183,12 +9209,12 @@ MonoBehaviour:
       - My sensors detected that you were not successful. Hopefully, you only sustain
         a bruise. You may still be unsteady from your long nap.
       - "I\u2019ll mark the exam as complete given the circumstances. I do advise
-        you to take some more time to practice this maneuver. You\u2019ll get the
-        swing of it soon, I promise. "
+        you to take some more time to practice this maneuver."
+      - " You\u2019ll get the swing of it soon, I promise. "
       audioClip: {fileID: 8300000, guid: 2ea53cacfade94e479b06872c29b6674, type: 3}
-      advancesTutorial: 0
+      advancesTutorial: 1
       skipWithTutorial: 0
-      delayBetweenDialogues: 0.5
+      delayBetweenDialogues: 1
   dialogueCanvas: {fileID: 414290418}
   dialogueCanvasGroup: {fileID: 414290415}
   nameTextUI: {fileID: 1002989319}
@@ -12400,6 +12426,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 400364267872142529, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: m_Pitch
+      value: -2.83
+      objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: end
       value: 
@@ -12424,6 +12454,10 @@ PrefabInstance:
       propertyPath: mediumSpeed
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: playerAudio
+      value: 
+      objectReference: {fileID: 515369122}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: minGrabRange
       value: 2
@@ -12486,15 +12520,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806870, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.43
+      value: 4.16
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806870, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.1
+      value: 0.37
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806870, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.56
+      value: 5.04
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786566600790, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -12599,6 +12633,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2322475786235806871, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 515369117}
+    - targetCorrespondingSourceObject: {fileID: 2322475786235806871, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 515369122}
   m_SourcePrefab: {fileID: 100100000, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
 --- !u!1001 &921245713
 PrefabInstance:
@@ -23419,7 +23456,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1804898619
 RectTransform:
   m_ObjectHideFlags: 0

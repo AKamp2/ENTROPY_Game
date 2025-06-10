@@ -146,6 +146,8 @@ public class ZeroGravity : MonoBehaviour
     [Header("== World Element Managers ==")]
     [SerializeField]
     private TutorialManager tutorialManager;
+    [SerializeField]
+    private PlayerAudio playerAudio;
 
     [Header("== IK Logic ==")]
     [SerializeField]
@@ -554,10 +556,11 @@ public class ZeroGravity : MonoBehaviour
         //check if the bounce is a hard bounce and we haven't been previously hit in the last 1.5 seconds  
         if (ogSpeed >= dangerSpeed && !justHit && !isDead)
         {
-            //decrease the player's health by 1
+            //decrease the player's health by 3
             DecreaseHealth(3);
             justHit = true;
             hurt = true;
+            playerAudio.playFatalBounce();
         }
         else if (ogSpeed >= mediumSpeed && !justHit && !isDead)
         {
@@ -565,6 +568,11 @@ public class ZeroGravity : MonoBehaviour
             DecreaseHealth(1);
             justHit = true;;
             hurt = true;
+            playerAudio.playHardBounce();
+        }
+        else
+        {
+            playerAudio.playSoftBounce();
         }
     }
 
@@ -636,6 +644,7 @@ public class ZeroGravity : MonoBehaviour
             Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * 0.07f;
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
+            playerAudio.playFatalBounce();
 
             if (!isDead)
             {
