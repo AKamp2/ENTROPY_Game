@@ -19,7 +19,7 @@ public class EnemySimpleAI : MonoBehaviour
 
     [Header("Stun Settings")]
     public float stunSeconds = 3f;
-    public float stunVelocityThreshold = 3f;
+    public float stunVelocityThreshold = 2f;
 
     [Header("References")]
     public GameObject player;
@@ -140,7 +140,7 @@ public class EnemySimpleAI : MonoBehaviour
         GameObject other = collision.gameObject;
 
         // 1) If its a thrown pickup object, stun
-        if (other.CompareTag("PickupObject"))
+        if (other.CompareTag("PickupObject")) 
         {
             Rigidbody objRb = collision.rigidbody;
             if (objRb != null && objRb.linearVelocity.magnitude >= stunVelocityThreshold)
