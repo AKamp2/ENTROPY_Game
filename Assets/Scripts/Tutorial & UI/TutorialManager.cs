@@ -41,8 +41,8 @@ public class TutorialManager : MonoBehaviour
     private bool pushOffPanelHidden = false;
 
     // which failure-dialogue index in your failureDialogues array?
-    [SerializeField] private int pushOffFailureIndex = 0;
-    [SerializeField] private int rollFailureIndex = 2;  // adjust to your array
+    //[SerializeField] private int pushOffFailureIndex = 0;
+    //[SerializeField] private int rollFailureIndex = 2;  // adjust to your array
 
     // rolling threshold (in degrees) beyond which we consider “upside down”
     [SerializeField] private float rollAngleThreshold = 150f;
@@ -97,13 +97,24 @@ public class TutorialManager : MonoBehaviour
 
                 bool isUpsideDown = zAngle >= 175f && zAngle <= 185f;
 
-                if (isUpsideDown)
+                if (isUpsideDown && playerController.HasRolled)
                 {
                     Debug.Log("Player rolled upside down");
                     playerController.StopRollingQuickly();
                     stepComplete = true;
                     FadeOut(rollQCanvasGroup);
                     CompleteStep();
+                }
+                //play failure dialogue for trying to cheat the roll
+                //
+                else if(isUpsideDown && !playerController.HasRolled)
+                {
+                    if (!hasPlayedRollFailure)
+                    {
+                        StartCoroutine(dialogueManager.PlayFailureDialogue(1));
+                        hasPlayedRollFailure = true;
+                    }
+                    
                 }
             }
             else if (currentStep == 2)
@@ -237,6 +248,7 @@ public class TutorialManager : MonoBehaviour
             }
             dialogueManager.IsFailureTriggered = true;
             StartCoroutine(dialogueManager.PlayFailureDialogue(0)); // <-- Use proper failure index here
+            stepComplete = true;
             CompleteStep();
             dialogueManager.IncrementDialogue();
         }
