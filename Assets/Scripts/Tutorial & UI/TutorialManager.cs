@@ -89,7 +89,7 @@ public class TutorialManager : MonoBehaviour
         if (isWaitingForAction)
         {
             //Debug.Log("Waiting for step " + currentStep);
-
+            //Debug.Log("Current step complete: " + stepComplete);
             if (currentStep == 1)
             {
                 float zAngle = playerController.cam.transform.eulerAngles.z;
@@ -241,16 +241,16 @@ public class TutorialManager : MonoBehaviour
         if (!barGrabbed)
         {
             Debug.Log("Player failed to grab in time");
-            Debug.Log(dialogueManager.isFailureTriggered);
+
             if (dialogueManager.IsFailureTriggered)
             {
                 yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
             }
+
             dialogueManager.IsFailureTriggered = true;
-            StartCoroutine(dialogueManager.PlayFailureDialogue(0)); // <-- Use proper failure index here
-            stepComplete = true;
-            CompleteStep();
-            dialogueManager.IncrementDialogue();
+
+            dialogueManager.SkipNextDialogue = true; // <- Tell it to skip the success dialogue
+            StartCoroutine(dialogueManager.PlayFailureDialogue(0));
         }
 
         FadeOut(propelCanvasGroup);
