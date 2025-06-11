@@ -78,8 +78,7 @@ public class PickupScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(transform.GetComponent<Rigidbody>().linearVelocity.magnitude);
-
+       
         if (heldObj == null) //if currently not holding anything
         {
             //perform raycast to check if player is looking at object within pickuprange
