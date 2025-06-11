@@ -29,6 +29,12 @@ public class DoorScript : MonoBehaviour
 
     [SerializeField]
     private float speed = 1.0f;
+
+    [SerializeField]
+    private float brokenOpenSpeed = 1.5f;
+    [SerializeField] 
+    private float brokenCloseSpeed = 6.0f;
+
     [SerializeField]
     private float openSize = 8.0f;
     private float sinTime = 0.0f;
@@ -81,8 +87,14 @@ public class DoorScript : MonoBehaviour
         if (states == States.Open)
         {
             doorPart.position = openPos;
-            SetButtonColor(redBase, redEmis);
+            SetButtonColor(greenBase, greenEmis);
         }
+
+        if (states == States.Closed)
+        {
+            SetButtonColor(greenBase, greenEmis);
+        }
+
 
         if (states == States.Broken)
         {
@@ -118,7 +130,7 @@ public class DoorScript : MonoBehaviour
                     else
                     {
                         states = States.Open;
-                        SetButtonColor(redBase, redEmis);
+                        SetButtonColor(greenBase, greenEmis);
                         sinTime = 0.0f;
                     }
 
@@ -156,7 +168,7 @@ public class DoorScript : MonoBehaviour
                 {
                     if (!brokenBool && doorPart.position != openPos)
                     {
-                        sinTime += Time.deltaTime * 1.5f;
+                        sinTime += Time.deltaTime * brokenOpenSpeed;
                         sinTime = Mathf.Clamp(sinTime, 0, Mathf.PI);
                         // sin function
                         float t = 0.5f * Mathf.Sin(sinTime - Mathf.PI / 2f) + 0.5f;
@@ -173,7 +185,7 @@ public class DoorScript : MonoBehaviour
                     }
                     else if (brokenBool && doorPart.position != closedPos)
                     {
-                        sinTime += Time.deltaTime * 6.0f;
+                        sinTime += Time.deltaTime * brokenCloseSpeed;
                         sinTime = Mathf.Clamp(sinTime, 0, Mathf.PI);
                         // sin function
                         float t = 0.5f * Mathf.Sin(sinTime - Mathf.PI / 2f) + 0.5f;
@@ -256,7 +268,7 @@ public class DoorScript : MonoBehaviour
         foreach(GameObject button in buttons)
         {
             Material m = button.GetComponent<Renderer>().material;
-            m.SetColor("_Color", baseColor);
+            m.SetColor("_BaseColor", baseColor);
             m.SetColor("_EmissionColor", emisColor);
         }
     }

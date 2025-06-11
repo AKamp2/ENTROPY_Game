@@ -118,7 +118,10 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private IEnumerator DisplayDialogue()
     {
-        
+        if (tutorialSkipped)
+        {
+            yield break;
+        }
         FadeIn();
         isSkipping = false;
         DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
@@ -326,6 +329,7 @@ public class DialogueManager : MonoBehaviour
             // Only progress if tutorial hasn't already been progressed
             if (!tutorialManager.TutorialStepCompleted())
             {
+                Debug.Log("I am progressing the tutorial now");
                 tutorialManager.ProgressTutorial();
                 yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
             }
@@ -419,5 +423,10 @@ public class DialogueManager : MonoBehaviour
         FadeOut();
 
 
+    }
+
+    public void IncrementDialogue()
+    {
+        currentDialogueIndex++;
     }
 }
