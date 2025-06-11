@@ -78,6 +78,8 @@ public class PickupScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(transform.GetComponent<Rigidbody>().linearVelocity.magnitude);
+
         if (heldObj == null) //if currently not holding anything
         {
             //perform raycast to check if player is looking at object within pickuprange
@@ -121,6 +123,7 @@ public class PickupScript : MonoBehaviour
         //{
         //    buttonPressed = true;
         //}
+     
 
         if (!context.performed) return;
 
@@ -198,6 +201,8 @@ public class PickupScript : MonoBehaviour
 
         transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)), ForceMode.VelocityChange);
         //Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
+
+      
 
         // initiate pick up cd
         canPickUp = false;
