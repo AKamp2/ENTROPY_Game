@@ -1162,6 +1162,10 @@ public class ZeroGravity : MonoBehaviour
         cam.transform.rotation = targetLoc.transform.rotation;
         isDead = false;
         playerHealth = maxHealth;
+        
+        //stop rolling
+        rotationZ = 0;
+        currentRollSpeed = 0;
 
         //reset all actions
         canGrab = true;
