@@ -6,6 +6,8 @@ public class VentScript : MonoBehaviour
 {
 	[SerializeField]
 	private Rigidbody rb;
+    [SerializeField]
+    private ZeroGravity zg;
 
     [SerializeField]
     private BoxCollider bc;
@@ -35,6 +37,7 @@ public class VentScript : MonoBehaviour
     void Start()
     {
         rb = GameObject.Find("Player").GetComponentInChildren<Rigidbody>();
+        zg = rb.GetComponent<ZeroGravity>();
 
         timer = activeTimeDuration - timeOffset;
     }
@@ -42,6 +45,11 @@ public class VentScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (inRegion && zg.IsDead)
+        {
+            inRegion = false;
+        }
+
         if (useTimers)
         {
             timer -= Time.deltaTime;
@@ -62,6 +70,7 @@ public class VentScript : MonoBehaviour
                 {
                     ps.Stop();
                     timer = inactiveTimeDuration;
+                    inRegion = false;
                 }
             }
         }
