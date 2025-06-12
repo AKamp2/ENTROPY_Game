@@ -29,6 +29,7 @@ public class DialogueManager : MonoBehaviour
     private bool isSkipping = false;
     private bool isDialogueActive = false;
     private bool tutorialSkipped = false;
+    public bool SkipNextDialogue { get; set; } = false;
 
     private bool isDialogueSpeaking = false;
     private bool isFailureSpeaking = false;
@@ -284,10 +285,6 @@ public class DialogueManager : MonoBehaviour
         isFailureSpeaking = true;
         currentFailureIndex = index;
 
-        //Debug.Log("Pause Main Dialog: " + pauseMainDialogue);
-        //Debug.Log("is Dialog Speaking: " + isDialogueSpeaking);
-        //Debug.Log("is Failure Speaking: " + isFailureSpeaking);
-
         Dialogue currentDialogue = failureDialogues.dialogues[index];
 
         nameTextUI.text = currentDialogue.characterName;
@@ -325,14 +322,20 @@ public class DialogueManager : MonoBehaviour
 
         if (currentDialogue.advancesTutorial)
         {
-            Debug.Log("Current Dialogue Advances Tutorial");
+            Debug.Log("Current Failure Dialogue Advances Tutorial");
             // Only progress if tutorial hasn't already been progressed
             if (!tutorialManager.TutorialStepCompleted())
             {
                 Debug.Log("I am progressing the tutorial now");
+                tutorialManager.CompleteStep(); // this sets isWaitingForAction = false
                 tutorialManager.ProgressTutorial();
-                yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
+                //yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
             }
+        }
+
+        if(currentDialogue.incrementsDialogue)
+        {
+            currentDialogueIndex++;
         }
 
         
@@ -427,6 +430,14 @@ public class DialogueManager : MonoBehaviour
 
     public void IncrementDialogue()
     {
+        if (SkipNextDialogue)
+        {
+            SkipNextDialogue = false;
+            Debug.Log("Skipped normal dialogue due to failure");
+            return;
+        }
+
         currentDialogueIndex++;
+        //StartDialogueSequence(currentDialogueIndex); // Or however you start next line
     }
 }

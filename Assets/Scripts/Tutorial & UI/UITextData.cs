@@ -9,6 +9,7 @@ public class Dialogue
     public AudioClip audioClip;
     public bool advancesTutorial;
     public bool skipWithTutorial;
+    public bool incrementsDialogue;
     public float delayBetweenDialogues = 0.5f;
 }
 
