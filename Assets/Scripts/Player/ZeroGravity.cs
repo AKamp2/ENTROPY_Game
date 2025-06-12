@@ -349,8 +349,6 @@ public class ZeroGravity : MonoBehaviour
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null && canGrab)
                 {
-                   
-
                     if (canGrab)
                     {
                         //handle the grab movement
@@ -376,12 +374,10 @@ public class ZeroGravity : MonoBehaviour
                 if (isGrabbing && grabbedBar != null)
                 {
                     //handle the grab movement
-
                     if (useIK)
                     {
                         AdjustBarGrabbers();
                     }
-                    
                     HandleGrabMovement(grabbedBar);
                 }
             }
