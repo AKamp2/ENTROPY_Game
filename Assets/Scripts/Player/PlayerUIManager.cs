@@ -398,6 +398,15 @@ public class PlayerUIManager : MonoBehaviour
 
     }
 
+    public void UpdatedGrabbedGrabberPosition(Transform bar)
+    {
+        if (player.CanGrab)
+        { 
+
+
+        }
+    }
+
     // this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
     public void HideGrabber()
     {

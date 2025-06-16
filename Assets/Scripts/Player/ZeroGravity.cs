@@ -349,8 +349,6 @@ public class ZeroGravity : MonoBehaviour
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null && canGrab)
                 {
-                   
-
                     if (canGrab)
                     {
                         //handle the grab movement
@@ -376,12 +374,10 @@ public class ZeroGravity : MonoBehaviour
                 if (isGrabbing && grabbedBar != null)
                 {
                     //handle the grab movement
-
                     if (useIK)
                     {
                         AdjustBarGrabbers();
                     }
-                    
                     HandleGrabMovement(grabbedBar);
                 }
             }
@@ -880,6 +876,8 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log(bar.gameObject.name);
         //Debug.Log(rb.linearVelocity.magnitude);
         //Debug.Log(bar.gameObject.name);
+        //initially set the velocity to 0 so the momentum doesn't carry through from propel
+        rb.linearVelocity = Vector3.zero;
 
         //if the joint is a long distance between the player and the bar
         if (joint.maxDistance >= joint.minDistance)
@@ -912,13 +910,23 @@ public class ZeroGravity : MonoBehaviour
                 }
             }
             //begin moving the player to the target point
-            var step = multiplier * Time.deltaTime;
-            rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
+            //var step = multiplier * Time.deltaTime;
+            //rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
 
             //if the position of the player and the target are about equal
-            if (Vector3.Distance(rb.transform.position, target.position) < 0.001f)
+            if (Vector3.Distance(rb.transform.position, target.position) < .1f)
             {
+                Debug.Log("They are touching :)");
                 rb.linearVelocity = Vector3.zero;
+                return;
+            }
+            else
+            {
+                //create a direction vector to pull the player to the bar
+                Vector3 pullDirection = target.position - rb.transform.position;
+                Vector3 normalizedpulldirection = pullDirection.normalized;
+                rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
+
             }
             //Debug.Log(target.gameObject.name);
         }

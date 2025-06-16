@@ -79,7 +79,7 @@ public class PickupScript : MonoBehaviour
     void Update()
     {
        
-        if (heldObj == null) //if currently not holding anything
+        if (heldObj == null && zeroGPlayer.CanGrab) //if currently not holding anything and is allowed to grab things
         {
             //perform raycast to check if player is looking at object within pickuprange
             RaycastHit hit;
