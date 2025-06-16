@@ -18,9 +18,11 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private Slider dialogueSlider;
     [SerializeField] private TextMeshProUGUI dialogueSliderText;
     [SerializeField] private Slider soundFXSlider;
+    [SerializeField] private Slider musicSlider;
     [SerializeField] private TextMeshProUGUI soundFXSliderText;
     [SerializeField] private AudioSource soundFXAudioSource;
     [SerializeField] private AudioSource dialogueAudioSource;
+    [SerializeField] private AmbientController ambientAudioController;
 
     // General option initialization
     [SerializeField] private Toggle subtitleCheckbox;
@@ -61,6 +63,12 @@ public class SettingsMenu : MonoBehaviour
         isChanged = true;
 
     }
+    public void SetMusicSliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = musicSlider.value.ToString();
+        isChanged = true;
+
+    }
     public void SetSensitivitySliderText(TextMeshProUGUI sliderText)
     {
         sliderText.text = sensitivitySlider.value.ToString();
@@ -81,6 +89,14 @@ public class SettingsMenu : MonoBehaviour
         soundFXAudioSource.volume = soundFXSlider.value/100;
         //Debug.Log(audioSource.volume);
         SetPrefs("soundFXSlider", (int)soundFXSlider.value);
+    }
+    
+    public void SetMusicVolume()
+    {
+        // Sets the sound effects volume to the slide value
+        ambientAudioController.SetVolume(musicSlider.value/100);
+        //Debug.Log(audioSource.volume);
+        SetPrefs("musicSlider", (int)musicSlider.value);
     }
 
     public void SetSensitivity()
@@ -148,6 +164,7 @@ public class SettingsMenu : MonoBehaviour
         SetDialogueVolume();
         SetSoundFXVolume();
         SetSensitivity();
+        SetMusicVolume();
         SetDialogueSliderText(dialogueSliderText);
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);

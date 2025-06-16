@@ -45,6 +45,6 @@ public class PlayerAudio : MonoBehaviour
 
     void randomizePitch()
     {
-        audioSource.pitch = (Random.value / 2) + 0.75f;
+        audioSource.pitch = (Random.value / 5) + 0.85f;
     }
 }
