@@ -8,6 +8,8 @@ using UnityEngine.Audio;
 using System;
 using System.IO;
 using TMPro;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class SettingsMenu : MonoBehaviour 
 {
@@ -34,9 +36,11 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private GameObject confirmationPopUp;
     public bool isChanged;
 
+
     private void OnEnable()
     {
         SetUp();
+        
     }
 
     public void SetUp()
@@ -47,6 +51,7 @@ public class SettingsMenu : MonoBehaviour
         soundFXSlider.value = GetPrefs("soundFXSlider", 1);
         sensitivitySlider.value = GetPrefs("sensitivitySlider", 4);
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
+        
         ApplyOptions();
     }
 
@@ -152,6 +157,7 @@ public class SettingsMenu : MonoBehaviour
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);
         isChanged = false;
+        
     }
 
     public void ExitOptions()
