@@ -67,6 +67,8 @@ public class ZeroGravity : MonoBehaviour
     private float currentRollSpeed = 0f;
     [SerializeField]
     private float rollAcceleration = 10f; // How quickly it accelerates to rollTorque
+    [SerializeField]
+    private float deathRollAcceleration = 3f;
     private float rollFriction = 5f; // How quickly it decelerates when input stops
     //values for the roll friction depending on grabbing onto bars vs not
     [SerializeField]
@@ -364,7 +366,7 @@ public class ZeroGravity : MonoBehaviour
 
                 }
             }
-            else
+            else if (!tutorialMode)
             {
                 //Debug.Log("Tutorial Mode off");
                 uiManager.HandleRaycastUI();
@@ -378,7 +380,10 @@ public class ZeroGravity : MonoBehaviour
                     {
                         AdjustBarGrabbers();
                     }
-                    HandleGrabMovement(grabbedBar);
+                    if (canGrab)
+                    {
+                        HandleGrabMovement(grabbedBar);
+                    }
                 }
             }
             //allow the player to bounce off the barriers
@@ -388,6 +393,12 @@ public class ZeroGravity : MonoBehaviour
             //manage the cooldowns  
             HurtCoolDown();
             JustHitCoolDown();
+            if (isDead)
+            {
+                //apply the roll rotation to the camera
+                cam.transform.Rotate(Vector3.forward * -1f * deathRollAcceleration);
+
+            }
         }
     }
 
@@ -427,7 +438,7 @@ public class ZeroGravity : MonoBehaviour
             if (Mathf.Abs(rotationZ) > 0.1f) //only apply roll if rotationZ input is significant
             {
                 //calculate target roll direction and speed based on input
-                float targetRollSpeed = -Mathf.Sign(rotationZ) * rollTorque;
+                float targetRollSpeed = -Mathf.Sign(rotationZ) * rollTorque * rollFriction;
 
                 //gradually increase currentRollSpeed towards targetRollSpeed
                 currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, targetRollSpeed, rollAcceleration * Time.deltaTime);
@@ -574,7 +585,7 @@ public class ZeroGravity : MonoBehaviour
 
     private void DetectClosingDoorTakeDamageAndBounce()
     {
-        float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
+        float detectionRadius = boundingSphere.radius + 0.3f; // slightly larger for early detection
         Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.DoorLayer);
 
 
@@ -1163,6 +1174,18 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This method is used to set movement of the player to restrcited as the player is now dead
+    /// </summary>
+    public void PlayerDead()
+    {
+        canMove = true;
+        canRoll = false;
+        canPropel = false;
+        canPushOff = false;
+        canGrab = false;
+    }
+
     public void Respawn(GameObject? respawnOverride = null)
     {
         GameObject targetLoc = respawnOverride ?? respawnLoc;
@@ -1176,11 +1199,14 @@ public class ZeroGravity : MonoBehaviour
         currentRollSpeed = 0;
 
         //reset all actions
-        canGrab = true;
-        canMove = true;
-        canPropel = true;
-        canRoll = true;
-        canPushOff = true;
+        if (!tutorialMode)
+        {
+            canGrab = true;
+            canMove = true;
+            canPropel = true;
+            canRoll = true;
+            canPushOff = true;
+        }
 
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
