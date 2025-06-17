@@ -128,7 +128,9 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float swingCoolDownFastest = 4f;
     [SerializeField]
-    private float swingCoolDownSlowest = 2f;
+    private float swingCoolDownMedium = 2f;
+    [SerializeField]
+    private float swingCoolDownSlowest = 1f;
 
 
     [Header("== UI Settings ==")]
@@ -475,21 +477,6 @@ public class ZeroGravity : MonoBehaviour
         currentRollSpeed = 0f; // Snap to 0 at the end
     }
 
-    private void PropelOffWall()
-    {
-        if(rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInView)
-        {
-            //zero the initial velocities ensuring a direct push back
-            //rb.velocity = Vector3.zero;
-            //rb.angularVelocity = Vector3.zero;
-            //create a vector for the new velocity
-            Vector3 propelDirection = Vector3.zero;
-            propelDirection -= cam.transform.forward * propelOffWallThrust;
-
-            rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-        }
-    }
-
     private void DetectBarrierAndBounce()
     {
         //if the player is grabbing on a bar and going slower than walking speed
@@ -690,24 +677,12 @@ public class ZeroGravity : MonoBehaviour
             GetBarGrabbers();
             MoveArmsToBar();
         }
-        
 
         //lock grabbed bar and change icon
         uiManager.ShowGrabbedGrabber(grabbedBar);
 
-        //determine if the player will be able swing 
-        //if the player is moving faster than the walking speed
-        if(rb.linearVelocity.magnitude >= zeroGWalkSpeed)
-        {
-            //swinging bool is true
-            swinging = true;
-        }
-        //if the player is moving slower than walking speed 
-        else if(rb.linearVelocity.magnitude < zeroGWalkSpeed)
-        {
-            //don't swing
-            swinging = false;
-        }
+        //swing set to true and sent to the cooldowns
+        swinging = true;
 
         Debug.Log(rb.linearVelocity.magnitude);
     }
@@ -739,11 +714,7 @@ public class ZeroGravity : MonoBehaviour
 
             rigBuilder.Build();
             animator.Rebind();
-
-
- 
-        }
-        
+        }  
     }
 
     public void MoveHandsTo(Transform left, Transform right)
@@ -888,7 +859,7 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log(rb.linearVelocity.magnitude);
         //Debug.Log(bar.gameObject.name);
         //initially set the velocity to 0 so the momentum doesn't carry through from propel
-        rb.linearVelocity = Vector3.zero;
+        //rb.linearVelocity = Vector3.zero;
 
         //if the joint is a long distance between the player and the bar
         if (joint.maxDistance >= joint.minDistance)
@@ -968,10 +939,14 @@ public class ZeroGravity : MonoBehaviour
             {
                 //Debug.Log("Normal Speed Reached");
                 //the cooldown will be lower
-                grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
+                grabSwingTimeStamp = Time.time + swingCoolDownMedium;
                 //Debug.Log("space walk Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
             }
             //if the player is moving slower than the benchmark
+            else if(rb.linearVelocity.magnitude < zeroGWalkSpeed)
+            {
+                grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
+            }
             //set the prev just grabbed bool to confirm we do this once 
             prevJustGrabbed = justGrabbed;
         }
@@ -1123,6 +1098,24 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// player uses the space bar to push off the wall when they are stuck
+    /// </summary>
+    private void PropelOffWall()
+    {
+        if (rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInView)
+        {
+            //create a vector for the new velocity
+            Vector3 propelDirection = Vector3.zero;
+            propelDirection -= cam.transform.forward * propelOffWallThrust;
+
+            //zero out the player velocity
+            rb.linearVelocity *= .7f;
+            //add the force to the rb
+            rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+        }
+    }
+
     //player uses WASD to propel themselves faster, only while currently grabbing a bar
     private void PropelOffBar()
     {
@@ -1144,6 +1137,7 @@ public class ZeroGravity : MonoBehaviour
                 hasPropelled = true;
                 Vector3 propelDirection = Vector3.zero;
 
+
                 //if W or S are pressed
                 if (isThrusting)
                 {
@@ -1161,7 +1155,8 @@ public class ZeroGravity : MonoBehaviour
                     //Debug.Log("Propelled right or left");
                 }
                 //add the propel force to the rigid body
-                rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+                rb.linearVelocity *= .5f;
+                rb.AddForce(propelDirection, ForceMode.VelocityChange);
                 
                 // Set the flag to false since keys are now pressed
                 movementKeysReleased = false;
@@ -1248,10 +1243,6 @@ public class ZeroGravity : MonoBehaviour
         {
             //Debug.Log("space pressed");
             PropelOffWall();
-        }
-        else if (context.canceled)
-        {
-            DetectBarrierAndBounce();
         }
     }
     public void OnRoll(InputAction.CallbackContext context)
