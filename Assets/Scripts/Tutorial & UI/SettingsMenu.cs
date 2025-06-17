@@ -8,6 +8,8 @@ using UnityEngine.Audio;
 using System;
 using System.IO;
 using TMPro;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class SettingsMenu : MonoBehaviour 
 {
@@ -23,6 +25,7 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private AudioSource soundFXAudioSource;
     [SerializeField] private AudioSource dialogueAudioSource;
     [SerializeField] private AmbientController ambientAudioController;
+    [SerializeField] private TextMeshProUGUI musicSliderText;
 
     // General option initialization
     [SerializeField] private Toggle subtitleCheckbox;
@@ -36,9 +39,11 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private GameObject confirmationPopUp;
     public bool isChanged;
 
+
     private void OnEnable()
     {
         SetUp();
+        
     }
 
     public void SetUp()
@@ -49,6 +54,7 @@ public class SettingsMenu : MonoBehaviour
         soundFXSlider.value = GetPrefs("soundFXSlider", 1);
         sensitivitySlider.value = GetPrefs("sensitivitySlider", 4);
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
+        
         ApplyOptions();
     }
 
@@ -94,6 +100,7 @@ public class SettingsMenu : MonoBehaviour
     public void SetMusicVolume()
     {
         // Sets the sound effects volume to the slide value
+        Debug.Log(musicSlider.value);
         ambientAudioController.SetVolume(musicSlider.value/100);
         //Debug.Log(audioSource.volume);
         SetPrefs("musicSlider", (int)musicSlider.value);
@@ -102,8 +109,8 @@ public class SettingsMenu : MonoBehaviour
     public void SetSensitivity()
     {
         // Sets the sound effects volume to the slide value
-        player.SensitivityX = sensitivitySlider.value;
-        player.SensitivityY = sensitivitySlider.value;
+        player.SensitivityX = sensitivitySlider.value/10;
+        player.SensitivityY = sensitivitySlider.value/10;
         SetPrefs("sensitivitySlider", (int)sensitivitySlider.value);
     }
 
@@ -168,6 +175,7 @@ public class SettingsMenu : MonoBehaviour
         SetDialogueSliderText(dialogueSliderText);
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);
+        SetMusicSliderText(musicSliderText);
         isChanged = false;
     }
 
