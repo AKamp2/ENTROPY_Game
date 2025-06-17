@@ -25,6 +25,7 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private AudioSource soundFXAudioSource;
     [SerializeField] private AudioSource dialogueAudioSource;
     [SerializeField] private AmbientController ambientAudioController;
+    [SerializeField] private TextMeshProUGUI musicSliderText;
 
     // General option initialization
     [SerializeField] private Toggle subtitleCheckbox;
@@ -99,6 +100,7 @@ public class SettingsMenu : MonoBehaviour
     public void SetMusicVolume()
     {
         // Sets the sound effects volume to the slide value
+        Debug.Log(musicSlider.value);
         ambientAudioController.SetVolume(musicSlider.value/100);
         //Debug.Log(audioSource.volume);
         SetPrefs("musicSlider", (int)musicSlider.value);
@@ -107,8 +109,8 @@ public class SettingsMenu : MonoBehaviour
     public void SetSensitivity()
     {
         // Sets the sound effects volume to the slide value
-        player.SensitivityX = sensitivitySlider.value;
-        player.SensitivityY = sensitivitySlider.value;
+        player.SensitivityX = sensitivitySlider.value/10;
+        player.SensitivityY = sensitivitySlider.value/10;
         SetPrefs("sensitivitySlider", (int)sensitivitySlider.value);
     }
 
@@ -173,8 +175,8 @@ public class SettingsMenu : MonoBehaviour
         SetDialogueSliderText(dialogueSliderText);
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);
+        SetMusicSliderText(musicSliderText);
         isChanged = false;
-        
     }
 
     public void ExitOptions()
