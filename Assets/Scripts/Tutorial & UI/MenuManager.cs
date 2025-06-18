@@ -30,9 +30,13 @@ public class MenuManager : MonoBehaviour
     [SerializeField]
     private Win winScript;
 
+    // Set options
+    [SerializeField] SettingsMenu SettingsMenu;
+
     public void Start()
     {
         activeMenus = new List<GameObject>();
+        SettingsMenu.ApplyOptions();
     }
     private void Update()
     {
