@@ -51,8 +51,7 @@ public class MenuManager : MonoBehaviour
         }
         if (player.IsDead)
         {
-            deathMenu.SetActive(true);
-            dialogue.Pause();
+            Dead();
         }
         if (winScript.WinCondition && activeMenus.Count== 0)
         {
@@ -114,6 +113,15 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Menu selected");
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void Dead()
+    {
+        //restrict the player from movement
+        player.PlayerDead();
+        //set the death menu to true.
+        deathMenu.SetActive(true);
+        dialogue.Pause();
     }
 
     public void Quit()

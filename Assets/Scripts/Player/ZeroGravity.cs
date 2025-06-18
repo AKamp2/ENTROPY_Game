@@ -67,6 +67,8 @@ public class ZeroGravity : MonoBehaviour
     private float currentRollSpeed = 0f;
     [SerializeField]
     private float rollAcceleration = 10f; // How quickly it accelerates to rollTorque
+    [SerializeField]
+    private float deathRollAcceleration = 3f;
     private float rollFriction = 5f; // How quickly it decelerates when input stops
     //values for the roll friction depending on grabbing onto bars vs not
     [SerializeField]
@@ -126,7 +128,9 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float swingCoolDownFastest = 4f;
     [SerializeField]
-    private float swingCoolDownSlowest = 2f;
+    private float swingCoolDownMedium = 2f;
+    [SerializeField]
+    private float swingCoolDownSlowest = 1f;
 
 
     [Header("== UI Settings ==")]
@@ -364,7 +368,7 @@ public class ZeroGravity : MonoBehaviour
 
                 }
             }
-            else
+            else if (!tutorialMode)
             {
                 //Debug.Log("Tutorial Mode off");
                 uiManager.HandleRaycastUI();
@@ -378,7 +382,10 @@ public class ZeroGravity : MonoBehaviour
                     {
                         AdjustBarGrabbers();
                     }
-                    HandleGrabMovement(grabbedBar);
+                    if (canGrab)
+                    {
+                        HandleGrabMovement(grabbedBar);
+                    }
                 }
             }
             //allow the player to bounce off the barriers
@@ -388,6 +395,12 @@ public class ZeroGravity : MonoBehaviour
             //manage the cooldowns  
             HurtCoolDown();
             JustHitCoolDown();
+            if (isDead)
+            {
+                //apply the roll rotation to the camera
+                cam.transform.Rotate(Vector3.forward * -1f * deathRollAcceleration);
+
+            }
         }
     }
 
@@ -427,7 +440,7 @@ public class ZeroGravity : MonoBehaviour
             if (Mathf.Abs(rotationZ) > 0.1f) //only apply roll if rotationZ input is significant
             {
                 //calculate target roll direction and speed based on input
-                float targetRollSpeed = -Mathf.Sign(rotationZ) * rollTorque;
+                float targetRollSpeed = -Mathf.Sign(rotationZ) * rollTorque * rollFriction;
 
                 //gradually increase currentRollSpeed towards targetRollSpeed
                 currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, targetRollSpeed, rollAcceleration * Time.deltaTime);
@@ -437,9 +450,21 @@ public class ZeroGravity : MonoBehaviour
                 //gradually decrease currentRollSpeed towards zero
                 currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * Time.deltaTime);
             }
+            //check for a reasonable max roll speed
+            //Debug.Log(currentRollSpeed);
 
-            //apply the roll rotation to the camera
-            cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
+            //ensure the roll is capped at 100 and -100 so the player does gain speed past this in the roll
+            if(currentRollSpeed > 100f)
+            {
+                currentRollSpeed = 100f;
+            }
+            else if(currentRollSpeed < -100f)
+            {
+                currentRollSpeed = -100f;
+            }
+
+                //apply the roll rotation to the camera
+                cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
             
         }
     }
@@ -462,21 +487,6 @@ public class ZeroGravity : MonoBehaviour
         }
 
         currentRollSpeed = 0f; // Snap to 0 at the end
-    }
-
-    private void PropelOffWall()
-    {
-        if(rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInView)
-        {
-            //zero the initial velocities ensuring a direct push back
-            //rb.velocity = Vector3.zero;
-            //rb.angularVelocity = Vector3.zero;
-            //create a vector for the new velocity
-            Vector3 propelDirection = Vector3.zero;
-            propelDirection -= cam.transform.forward * propelOffWallThrust;
-
-            rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
-        }
     }
 
     private void DetectBarrierAndBounce()
@@ -574,7 +584,7 @@ public class ZeroGravity : MonoBehaviour
 
     private void DetectClosingDoorTakeDamageAndBounce()
     {
-        float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
+        float detectionRadius = boundingSphere.radius + 0.3f; // slightly larger for early detection
         Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.DoorLayer);
 
 
@@ -679,26 +689,14 @@ public class ZeroGravity : MonoBehaviour
             GetBarGrabbers();
             MoveArmsToBar();
         }
-        
 
         //lock grabbed bar and change icon
         uiManager.ShowGrabbedGrabber(grabbedBar);
 
-        //determine if the player will be able swing 
-        //if the player is moving faster than the walking speed
-        if(rb.linearVelocity.magnitude >= zeroGWalkSpeed)
-        {
-            //swinging bool is true
-            swinging = true;
-        }
-        //if the player is moving slower than walking speed 
-        else if(rb.linearVelocity.magnitude < zeroGWalkSpeed)
-        {
-            //don't swing
-            swinging = false;
-        }
+        //swing set to true and sent to the cooldowns
+        swinging = true;
 
-        Debug.Log(rb.linearVelocity.magnitude);
+        //Debug.Log(rb.linearVelocity.magnitude);
     }
 
 
@@ -722,17 +720,13 @@ public class ZeroGravity : MonoBehaviour
     {
         if (grabHolder != null)
         {
-            Debug.Log(hands[0].gameObject);
+            //Debug.Log(hands[0].gameObject);
             hands[0].data.target = grabHolder.GetChild(0).transform;
             hands[1].data.target = grabHolder.GetChild(1).transform;
 
             rigBuilder.Build();
             animator.Rebind();
-
-
- 
-        }
-        
+        }  
     }
 
     public void MoveHandsTo(Transform left, Transform right)
@@ -760,7 +754,7 @@ public class ZeroGravity : MonoBehaviour
             {
                 Transform grab = grabHolder.GetChild(i).transform;
 
-                Debug.Log(i + " + " + initGrabRotation[i]);
+                //Debug.Log(i + " + " + initGrabRotation[i]);
                 grab.rotation = initGrabRotation[i];
                 grab.position = initGrabPosition[i];
                 grab.up = initUpVector[i];
@@ -795,7 +789,7 @@ public class ZeroGravity : MonoBehaviour
         Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
         float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
 
-        Debug.Log(roll);
+        //Debug.Log(roll);
 
 
 
@@ -877,7 +871,7 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log(rb.linearVelocity.magnitude);
         //Debug.Log(bar.gameObject.name);
         //initially set the velocity to 0 so the momentum doesn't carry through from propel
-        rb.linearVelocity = Vector3.zero;
+        //rb.linearVelocity = Vector3.zero;
 
         //if the joint is a long distance between the player and the bar
         if (joint.maxDistance >= joint.minDistance)
@@ -916,7 +910,7 @@ public class ZeroGravity : MonoBehaviour
             //if the position of the player and the target are about equal
             if (Vector3.Distance(rb.transform.position, target.position) < .1f)
             {
-                Debug.Log("They are touching :)");
+                //Debug.Log("They are touching :)");
                 rb.linearVelocity = Vector3.zero;
                 return;
             }
@@ -957,10 +951,14 @@ public class ZeroGravity : MonoBehaviour
             {
                 //Debug.Log("Normal Speed Reached");
                 //the cooldown will be lower
-                grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
+                grabSwingTimeStamp = Time.time + swingCoolDownMedium;
                 //Debug.Log("space walk Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
             }
             //if the player is moving slower than the benchmark
+            else if(rb.linearVelocity.magnitude < zeroGWalkSpeed)
+            {
+                grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
+            }
             //set the prev just grabbed bool to confirm we do this once 
             prevJustGrabbed = justGrabbed;
         }
@@ -1088,14 +1086,14 @@ public class ZeroGravity : MonoBehaviour
                 //this is the higher healths so the cool down will be shorter
                 hurtTimeStamp = Time.time + hurtCoolDown;
             }
-            Debug.Log("timestamp for cooldown: " + hurtTimeStamp);
+            //Debug.Log("timestamp for cooldown: " + hurtTimeStamp);
             prevHurt = hurt;
             //Debug.Log(":Hurt:" + hurt + ":prevHurt:" + prevHurt);
         }
 
         if (Time.time >= hurtTimeStamp && hurt && prevHurt)
         {
-            Debug.Log("Cooldown done");
+            //Debug.Log("Cooldown done");
             IncreaseHealth(1);
 
             if(playerHealth >= 4) 
@@ -1112,9 +1110,36 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// player uses the space bar to push off the wall when they are stuck
+    /// </summary>
+    private void PropelOffWall()
+    {
+        if (rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInView)
+        {
+            //create a vector for the new velocity
+            Vector3 propelDirection = Vector3.zero;
+            propelDirection -= cam.transform.forward * propelOffWallThrust;
+
+            //zero out the player velocity
+            rb.linearVelocity *= .7f;
+            //add the force to the rb
+            rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+        }
+    }
+
     //player uses WASD to propel themselves faster, only while currently grabbing a bar
     private void PropelOffBar()
     {
+        //save the initial velocity to help scale the propel
+        float initialVelocityMagnitude = rb.linearVelocity.magnitude * .35f;
+
+        //ensure the velocity is 1 no matter what
+        if(initialVelocityMagnitude < 1)
+        {
+            initialVelocityMagnitude = 1;
+        }
+
         hasPropelled = false;
         //if the player is grabbing and no movement buttons are currently being pressed
         if (isGrabbing)
@@ -1133,6 +1158,9 @@ public class ZeroGravity : MonoBehaviour
                 hasPropelled = true;
                 Vector3 propelDirection = Vector3.zero;
 
+                //set the player velocity to half to ensure the momentum doesn't influence the propel
+                rb.linearVelocity *= 0.5f;
+
                 //if W or S are pressed
                 if (isThrusting)
                 {
@@ -1150,7 +1178,8 @@ public class ZeroGravity : MonoBehaviour
                     //Debug.Log("Propelled right or left");
                 }
                 //add the propel force to the rigid body
-                rb.AddForce(propelDirection * Time.deltaTime, ForceMode.VelocityChange);
+                rb.linearVelocity *= .5f;
+                rb.AddForce(propelDirection * initialVelocityMagnitude, ForceMode.VelocityChange);
                 
                 // Set the flag to false since keys are now pressed
                 movementKeysReleased = false;
@@ -1161,6 +1190,18 @@ public class ZeroGravity : MonoBehaviour
                 movementKeysReleased = true;
             }
         }
+    }
+
+    /// <summary>
+    /// This method is used to set movement of the player to restrcited as the player is now dead
+    /// </summary>
+    public void PlayerDead()
+    {
+        canMove = true;
+        canRoll = false;
+        canPropel = false;
+        canPushOff = false;
+        canGrab = false;
     }
 
     public void Respawn(GameObject? respawnOverride = null)
@@ -1176,11 +1217,14 @@ public class ZeroGravity : MonoBehaviour
         currentRollSpeed = 0;
 
         //reset all actions
-        canGrab = true;
-        canMove = true;
-        canPropel = true;
-        canRoll = true;
-        canPushOff = true;
+        if (!tutorialMode)
+        {
+            canGrab = true;
+            canMove = true;
+            canPropel = true;
+            canRoll = true;
+            canPushOff = true;
+        }
 
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
@@ -1222,10 +1266,6 @@ public class ZeroGravity : MonoBehaviour
         {
             //Debug.Log("space pressed");
             PropelOffWall();
-        }
-        else if (context.canceled)
-        {
-            DetectBarrierAndBounce();
         }
     }
     public void OnRoll(InputAction.CallbackContext context)

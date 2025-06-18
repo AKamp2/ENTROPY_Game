@@ -13245,15 +13245,15 @@ PrefabInstance:
       objectReference: {fileID: 558604932}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: grabDrag
-      value: 0.89
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: swinging
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: grabRange
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: pushSpeed
@@ -13262,6 +13262,10 @@ PrefabInstance:
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: rollTorque
       value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: dangerSpeed
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: doorManager
@@ -13281,11 +13285,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: minimumSpeed
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: pullToBarMod
-      value: 1.7
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: tutorialMode
@@ -13293,7 +13297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: zeroGWalkSpeed
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: tutorialManager
@@ -13301,7 +13305,7 @@ PrefabInstance:
       objectReference: {fileID: 1644036295}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: propelOffWallThrust
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: swingCoolDownFastest
@@ -13309,7 +13313,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: swingCoolDownSlowest
-      value: 2
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2322475786235806864, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
+      propertyPath: deathRollAcceleration
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 2322475786235806867, guid: b547bfb7301b1f145a141a83e5c649e3, type: 3}
       propertyPath: m_ActionEvents.Array.data[7].m_PersistentCalls.m_Calls.Array.size
