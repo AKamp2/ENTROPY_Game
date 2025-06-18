@@ -451,7 +451,7 @@ public class ZeroGravity : MonoBehaviour
                 currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * Time.deltaTime);
             }
             //check for a reasonable max roll speed
-            Debug.Log(currentRollSpeed);
+            //Debug.Log(currentRollSpeed);
 
             //ensure the roll is capped at 100 and -100 so the player does gain speed past this in the roll
             if(currentRollSpeed > 100f)
