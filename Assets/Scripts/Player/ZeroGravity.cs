@@ -450,9 +450,21 @@ public class ZeroGravity : MonoBehaviour
                 //gradually decrease currentRollSpeed towards zero
                 currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * Time.deltaTime);
             }
+            //check for a reasonable max roll speed
+            Debug.Log(currentRollSpeed);
 
-            //apply the roll rotation to the camera
-            cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
+            //ensure the roll is capped at 100 and -100 so the player does gain speed past this in the roll
+            if(currentRollSpeed > 100f)
+            {
+                currentRollSpeed = 100f;
+            }
+            else if(currentRollSpeed < -100f)
+            {
+                currentRollSpeed = -100f;
+            }
+
+                //apply the roll rotation to the camera
+                cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
             
         }
     }
@@ -684,7 +696,7 @@ public class ZeroGravity : MonoBehaviour
         //swing set to true and sent to the cooldowns
         swinging = true;
 
-        Debug.Log(rb.linearVelocity.magnitude);
+        //Debug.Log(rb.linearVelocity.magnitude);
     }
 
 
@@ -708,7 +720,7 @@ public class ZeroGravity : MonoBehaviour
     {
         if (grabHolder != null)
         {
-            Debug.Log(hands[0].gameObject);
+            //Debug.Log(hands[0].gameObject);
             hands[0].data.target = grabHolder.GetChild(0).transform;
             hands[1].data.target = grabHolder.GetChild(1).transform;
 
@@ -742,7 +754,7 @@ public class ZeroGravity : MonoBehaviour
             {
                 Transform grab = grabHolder.GetChild(i).transform;
 
-                Debug.Log(i + " + " + initGrabRotation[i]);
+                //Debug.Log(i + " + " + initGrabRotation[i]);
                 grab.rotation = initGrabRotation[i];
                 grab.position = initGrabPosition[i];
                 grab.up = initUpVector[i];
@@ -777,7 +789,7 @@ public class ZeroGravity : MonoBehaviour
         Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
         float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
 
-        Debug.Log(roll);
+        //Debug.Log(roll);
 
 
 
@@ -898,7 +910,7 @@ public class ZeroGravity : MonoBehaviour
             //if the position of the player and the target are about equal
             if (Vector3.Distance(rb.transform.position, target.position) < .1f)
             {
-                Debug.Log("They are touching :)");
+                //Debug.Log("They are touching :)");
                 rb.linearVelocity = Vector3.zero;
                 return;
             }
@@ -1074,14 +1086,14 @@ public class ZeroGravity : MonoBehaviour
                 //this is the higher healths so the cool down will be shorter
                 hurtTimeStamp = Time.time + hurtCoolDown;
             }
-            Debug.Log("timestamp for cooldown: " + hurtTimeStamp);
+            //Debug.Log("timestamp for cooldown: " + hurtTimeStamp);
             prevHurt = hurt;
             //Debug.Log(":Hurt:" + hurt + ":prevHurt:" + prevHurt);
         }
 
         if (Time.time >= hurtTimeStamp && hurt && prevHurt)
         {
-            Debug.Log("Cooldown done");
+            //Debug.Log("Cooldown done");
             IncreaseHealth(1);
 
             if(playerHealth >= 4) 
@@ -1119,6 +1131,15 @@ public class ZeroGravity : MonoBehaviour
     //player uses WASD to propel themselves faster, only while currently grabbing a bar
     private void PropelOffBar()
     {
+        //save the initial velocity to help scale the propel
+        float initialVelocityMagnitude = rb.linearVelocity.magnitude * .35f;
+
+        //ensure the velocity is 1 no matter what
+        if(initialVelocityMagnitude < 1)
+        {
+            initialVelocityMagnitude = 1;
+        }
+
         hasPropelled = false;
         //if the player is grabbing and no movement buttons are currently being pressed
         if (isGrabbing)
@@ -1137,6 +1158,8 @@ public class ZeroGravity : MonoBehaviour
                 hasPropelled = true;
                 Vector3 propelDirection = Vector3.zero;
 
+                //set the player velocity to half to ensure the momentum doesn't influence the propel
+                rb.linearVelocity *= 0.5f;
 
                 //if W or S are pressed
                 if (isThrusting)
@@ -1156,7 +1179,7 @@ public class ZeroGravity : MonoBehaviour
                 }
                 //add the propel force to the rigid body
                 rb.linearVelocity *= .5f;
-                rb.AddForce(propelDirection, ForceMode.VelocityChange);
+                rb.AddForce(propelDirection * initialVelocityMagnitude, ForceMode.VelocityChange);
                 
                 // Set the flag to false since keys are now pressed
                 movementKeysReleased = false;
