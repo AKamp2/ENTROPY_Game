@@ -1,31 +1,37 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 public class EnemySimpleAI : MonoBehaviour
 {
     [Header("Movement")]
     public float speed = 3.0f;
-    public float chaseDistance = 10.0f;
-    public float escapeDistance = 15f;
+    public float chaseDistance = 15.0f;
+    public float escapeDistance = 20f;
     public bool useRandomRoaming;
+    public float setRotationSpeed = 2.5f;
+    private float rotationSpeed = 2.5f;
 
     [Header("Lunge Settings")]
     public float lungeDistance = 5f;
     public float chargeUpTime = 1.5f;
     public float lungeSpeed = 3.5f;
     public float lungeDuration = 3f;
-    public string wallTag = "Barrier";
+    public int maxRicochets = 2;
+    private int ricochetCount = 0;
+    public float ricochetSpeedMultiplier = 0.8f; // slow down a bit after bounce
 
     [Header("Stun Settings")]
     public float stunSeconds = 3f;
-    public float stunVelocityThreshold = 2f;
+    public float stunVelocityThreshold = 4f;
 
     [Header("References")]
     public GameObject player;
+    private ZeroGravity playerController;
     public Waypoint startingWaypoint;
     public Transform waypointGroup;
-    public DoorScript door;
+    //public DoorScript door;
 
     [Header("Audio")]
     public AudioSource audioSource;
@@ -35,24 +41,62 @@ public class EnemySimpleAI : MonoBehaviour
     public AudioClip lungeSound;
     public AudioClip takeDamage;
 
+    [Header("Tendril Settings")]
+    public GameObject tendrilPrefab;
+    public List<TendrilOrigin> tendrilOrigins;
+    public List<TendrilOrigin> backwardsOrigins = new List<TendrilOrigin>();
+    public float spawnInterval = 4f;
+    private float lastTendrilTime = 0f;
+
+    [Header("Optimization")]
+    public float wakeDistance = 50f;
+
+    //Line of sight
+    public LayerMask visionObstacles; // Set this to "Barrier"
+    public float wakeLossCooldown = 10f;
+    private float timeSinceLastSeenPlayer = 0f;
+    private bool hasLineOfSight = false;
+
     // Internal state
     private Waypoint currentWaypoint;
     private Queue<Waypoint> path = new Queue<Waypoint>();
+    private Waypoint playerWaypoint;
+    private Waypoint targetWaypoint;
 
-    private float distanceToPlayer;
+    //private float distanceToPlayer;
+    private float sqrDist;
     private bool isChasingPlayer = false;
     private bool isStunned = false;
 
     private bool isCharging = false;
     private bool isLunging = false;
     private float lungeTimer = 0f;
-    
+    private bool isAwake = false;
+
+    //direction calculation
+    private float directionUpdateThreshold = 0.05f; // Minimal movement to update direction
+    private Vector3 lastPosition;
+    private Vector3 currentDirection;
+
+    public Vector3 initialPosition;
+    private Quaternion initialRotation;
+
+
+    public List<TendrilOrigin> availableOrigins;
+
 
     void Start()
     {
+        rotationSpeed = setRotationSpeed;
         // Set the current waypoint to the starting one
         currentWaypoint = startingWaypoint;
+
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+
         FindPlayerPath();
+
+        playerController = player.GetComponent<ZeroGravity>();
 
         audioSource.clip = alienSfx;
         audioSource.loop = true;
@@ -64,12 +108,49 @@ public class EnemySimpleAI : MonoBehaviour
         rb.isKinematic = true;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+        lastPosition = transform.position;
+
+        tendrilOrigins = GetComponentsInChildren<TendrilOrigin>().ToList();
+        availableOrigins = new List<TendrilOrigin>(tendrilOrigins);
+
+        StartCoroutine(UpdateLineOfSight());
     }
 
     void Update()
     {
-        // Only start AI behavior if the door is open
-        //if (door.DoorState != DoorScript.States.Open) return;
+        if(playerController.IsDead == true)
+        {
+            RoamArea();
+
+            CalculateDirection();
+            RotateTowardsDirection();
+
+            if (!isStunned && !isLunging && Time.time - lastTendrilTime >= spawnInterval)
+            {
+                SpawnTendril();
+                lastTendrilTime = Time.time;
+            }
+
+            return;
+        }
+
+        sqrDist = (transform.position - player.transform.position).sqrMagnitude;
+
+        if (sqrDist > wakeDistance * wakeDistance)
+        {
+            isAwake = false;
+        }
+        else
+        {
+            isAwake = true;
+        }
+
+        if (!isAwake)
+        {
+            return;
+        }
+
 
         // 2) If stunned, do nothing else (charging/lunging will abort)
         if (isStunned) return;
@@ -84,51 +165,79 @@ public class EnemySimpleAI : MonoBehaviour
         }
 
         // 4) If mid-charge, skip normal AI
-        if (isCharging) return;
-
-        // 5) Check if player is within lungeDistance → start charging
-        distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-        if (distanceToPlayer <= lungeDistance)
+        if (isCharging)
         {
+            ForceLookAtPlayer(); // Always rotate toward player during charge
+            return;
+        }
+        // 5) Check if player is within lungeDistance and not charging or lunging → start charging
+        if (sqrDist < (lungeDistance * lungeDistance) && !isCharging && !isLunging)
+        {
+            isCharging = true; // <-- Set this early to prevent multiple calls
             StartCoroutine(ChargeAndLunge());
             return;
         }
 
         // 6) Otherwise, run normal AI (chase/roam/track)
-        RunNormalAIBehavior();        
+        RunNormalAIBehavior();
+
+        CalculateDirection();
+        RotateTowardsDirection();
+
+        if (!isStunned && !isLunging && Time.time - lastTendrilTime >= spawnInterval)
+        {
+            SpawnTendril();
+            lastTendrilTime = Time.time;
+        }
 
     }
 
-    private void RunNormalAIBehavior()
+    void RunNormalAIBehavior()
     {
-        
-
+        //if chasing player, check for line of sight.
         if (isChasingPlayer)
         {
             if (!audioSource.isPlaying) audioSource.Play();
 
-            if (distanceToPlayer >= escapeDistance)
-                isChasingPlayer = false;
+            if (hasLineOfSight)
+            {
+                ChasePlayer(); // Direct chase
+            }
+            //if line of sight is lost, go back to waypoint tracking
             else
-                ChasePlayer();
+            {
+                // LOS lost, fall back to pathfinding
+                FindPlayerPath();
+                TrackPlayer();
+                isChasingPlayer = false;
+
+            }
+
+            float sqrDist = (transform.position - player.transform.position).sqrMagnitude;
+            if (sqrDist >= escapeDistance * escapeDistance && timeSinceLastSeenPlayer >= wakeLossCooldown)
+            {
+                isChasingPlayer = false;
+            }
         }
+        //if not chasing player
         else
         {
-            if (distanceToPlayer <= chaseDistance)
+            float sqrDist = (transform.position - player.transform.position).sqrMagnitude;
+
+            //if we have line of sight and we are within chase distance, start chasing
+            if (hasLineOfSight && sqrDist <= chaseDistance * chaseDistance)
             {
                 isChasingPlayer = true;
                 ChasePlayer();
             }
-            else if (useRandomRoaming)
+            else if (sqrDist <= chaseDistance * chaseDistance)
             {
-                isChasingPlayer = false;
-                RoamArea();
+                FindPlayerPath();
+                TrackPlayer();
             }
             else
             {
-                isChasingPlayer = false;
-                TrackPlayer();
-
+                RoamArea();
                 if (audioSource.isPlaying) audioSource.Stop();
             }
         }
@@ -145,13 +254,51 @@ public class EnemySimpleAI : MonoBehaviour
             Rigidbody objRb = collision.rigidbody;
             if (objRb != null && objRb.linearVelocity.magnitude >= stunVelocityThreshold)
             {
+                Debug.Log("Object hit at this speed: " + objRb.linearVelocity.magnitude);
                 StartCoroutine(StunCoroutine());
             }
         }
         // 2) If its the player, kill them
         else if (other.CompareTag("Player"))
         {
-            player.GetComponent<ZeroGravity>().IsDead = true;
+            playerController.IsDead = true;
+            Rigidbody playerRb = other.GetComponent<Rigidbody>();
+            if (playerRb != null)
+            {
+                Vector3 forceDirection = (other.transform.position - transform.position).normalized;
+                float knockbackStrength = lungeSpeed * 2f; // adjust multiplier as needed
+
+                playerRb.AddForce(forceDirection * knockbackStrength, ForceMode.Impulse);
+            }
+            EndLunge();
+        }
+        else if(isLunging)
+        {
+            if (other.CompareTag("Barrier"))
+            {
+                Rigidbody rb = GetComponent<Rigidbody>();
+                if (rb == null) return;
+
+                Vector3 incomingVelocity = rb.linearVelocity;
+                Vector3 normal = collision.contacts[0].normal;
+
+                // Reflect the velocity vector around the collision normal
+                Vector3 reflectedVelocity = Vector3.Reflect(incomingVelocity, normal);
+
+                // Optionally reduce speed slightly after bounce
+                reflectedVelocity *= ricochetSpeedMultiplier;
+
+                // Apply the new velocity
+                rb.linearVelocity = reflectedVelocity;
+
+                ricochetCount++;
+
+                // If ricochet count exceeded max, end the lunge early
+                if (ricochetCount >= maxRicochets)
+                {
+                    EndLunge();
+                }
+            }
         }
     }
 
@@ -169,6 +316,15 @@ public class EnemySimpleAI : MonoBehaviour
         if (isLunging)
         {
             EndLunge();
+        }
+
+        // Retract ALL current tendrils
+        foreach (var origin in tendrilOrigins)
+        {
+            if (origin.activeTendril != null)
+            {
+                origin.activeTendril.Retract();
+            }
         }
 
         //sfx
@@ -189,16 +345,19 @@ public class EnemySimpleAI : MonoBehaviour
     {
         // Move directly towards the player
         transform.position = Vector3.MoveTowards(transform.position, player.transform.position, speed * Time.deltaTime);
+
+        UpdateCurrentWaypointToClosest();
     }
 
     void TrackPlayer()
     {
+        //Debug.Log("Tracking player");
         if (path.Count == 0) return;
 
-        Waypoint targetWaypoint = path.Peek();
+        targetWaypoint = path.Peek();
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.transform.position, speed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, targetWaypoint.transform.position) < 0.1f)
+        if ((transform.position - targetWaypoint.transform.position).sqrMagnitude < 0.01f)
         {
             path.Dequeue();
         }
@@ -227,13 +386,60 @@ public class EnemySimpleAI : MonoBehaviour
 
     private IEnumerator ChargeAndLunge()
     {
-        isCharging = true;
+        Debug.Log("Charging Coroutine called");
+        rotationSpeed = 20f;
         isChasingPlayer = false;
+        ricochetCount = 0;
 
-        // (Optional: play a charge animation here)
-        audioSource.Stop();
         audioSource2.clip = chargingSound;
         audioSource2.Play();
+
+        // Retract ALL current tendrils
+        foreach (TendrilOrigin origin in tendrilOrigins)
+        {
+            if (origin.activeTendril != null)
+            {
+                origin.activeTendril.Retract();
+                origin.activeTendril = null; // clear immediately
+            }
+        }
+
+        // Wait until the enemy is facing the player before continuing
+        Vector3 toPlayer = (player.transform.position - transform.position).normalized;
+        float angle = Vector3.Angle(transform.forward, toPlayer);
+
+        while (angle > 20f) // or whatever threshold feels right
+        {
+            toPlayer = (player.transform.position - transform.position).normalized;
+            angle = Vector3.Angle(transform.forward, toPlayer);
+            //Debug.Log(angle);
+            yield return null;
+        }
+
+        // (Optional: play a charge animation here)
+        //audioSource.Stop();
+        
+
+        // Step 2: Spawn 5 tendrils at random from backwardsOrigins
+        List<TendrilOrigin> shuffled = new List<TendrilOrigin>(backwardsOrigins);
+        int spawnCount = Mathf.Min(6, shuffled.Count);
+
+        for (int i = 0; i < spawnCount; i++)
+        {
+            int index = Random.Range(0, shuffled.Count);
+            TendrilOrigin origin = shuffled[index];
+            shuffled.RemoveAt(index);
+
+            // Spawn tendril at the backwards origin
+            GameObject t = Instantiate(tendrilPrefab, origin.transform.position, origin.transform.rotation, origin.transform);
+            TendrilBehavior tb = t.GetComponent<TendrilBehavior>();
+            if (tb != null)
+            {
+                tb.Initialize(origin, this, true); // true = manualRetract
+                origin.activeTendril = tb;
+            }
+        }
+
 
         float timer = 0f;
         while (timer < chargeUpTime)
@@ -243,8 +449,24 @@ public class EnemySimpleAI : MonoBehaviour
                 isCharging = false;
                 yield break;
             }
+
+            // Pull-back motion
+            toPlayer = (player.transform.position - transform.position).normalized;
+            Vector3 pullBackDirection = -toPlayer; // Opposite of direction to player
+            float pullBackSpeed = 1.5f; // tweak as needed
+
+            transform.position += pullBackDirection * pullBackSpeed * Time.deltaTime;
+
             timer += Time.deltaTime;
             yield return null;
+        }
+
+        foreach (TendrilOrigin origin in backwardsOrigins)
+        {
+            if (origin.activeTendril != null)
+            {
+                origin.activeTendril.Retract();
+            }
         }
         audioSource2.Stop();
         audioSource2.clip = lungeSound;
@@ -258,7 +480,9 @@ public class EnemySimpleAI : MonoBehaviour
 
         isLunging = true;
         lungeTimer = 0f;
-        isCharging = false;
+        rotationSpeed = setRotationSpeed;
+        
+
     }
 
     private void EndLunge()
@@ -266,6 +490,7 @@ public class EnemySimpleAI : MonoBehaviour
         if (!isLunging) return;
 
         isLunging = false;
+        isCharging = false;
 
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.linearVelocity = Vector3.zero;
@@ -276,8 +501,25 @@ public class EnemySimpleAI : MonoBehaviour
 
     void FindPlayerPath()
     {
-        Waypoint playerWaypoint = FindClosestWaypoint(player.transform.position);
-        path = BFS(currentWaypoint, playerWaypoint);
+        if(playerWaypoint == null)
+        {
+            playerWaypoint = FindClosestWaypoint(player.transform.position);
+            path = BFS(currentWaypoint, playerWaypoint);
+        }
+        else
+        {
+            Waypoint testWaypoint = FindClosestWaypoint(player.transform.position);
+            //only do a new BFS if the player waypoint is new.
+            if(playerWaypoint != testWaypoint)
+            {
+                playerWaypoint = testWaypoint;
+                path = BFS(currentWaypoint, playerWaypoint);
+            }
+        }
+            
+        
+        
+
     }
 
     Queue<Waypoint> BFS(Waypoint start, Waypoint goal)
@@ -313,6 +555,7 @@ public class EnemySimpleAI : MonoBehaviour
         {
             path.Enqueue(reversePath.Pop());
         }
+
         return path;
     }
 
@@ -320,17 +563,187 @@ public class EnemySimpleAI : MonoBehaviour
     {
         Waypoint[] waypoints = waypointGroup.GetComponentsInChildren<Waypoint>();
         Waypoint closest = null;
-        float minDist = Mathf.Infinity;
+        float minSqrDist = Mathf.Infinity;
 
         foreach (Waypoint waypoint in waypoints)
         {
-            float dist = Vector3.Distance(position, waypoint.transform.position);
-            if (dist < minDist)
+            float sqrDist = (position - waypoint.transform.position).sqrMagnitude;
+            if (sqrDist < minSqrDist)
             {
                 closest = waypoint;
-                minDist = dist;
+                minSqrDist = sqrDist;
             }
         }
+
         return closest;
     }
+
+
+    void UpdateCurrentWaypointToClosest()
+    {
+        if (currentWaypoint == null) return;
+
+        Waypoint closest = currentWaypoint;
+        float minSqrDist = (transform.position - currentWaypoint.transform.position).sqrMagnitude;
+
+        foreach (Waypoint neighbor in currentWaypoint.neighbors)
+        {
+            float sqrDist = (transform.position - neighbor.transform.position).sqrMagnitude;
+            if (sqrDist < minSqrDist)
+            {
+                closest = neighbor;
+                minSqrDist = sqrDist;
+            }
+        }
+
+        if (closest != currentWaypoint)
+        {
+            currentWaypoint = closest;
+        }
+    }
+
+    void SpawnTendril()
+    {
+        if (tendrilOrigins.Count == 0 || tendrilPrefab == null) return;
+        if (availableOrigins.Count == 0) return;
+
+        // Pick random available origin
+        int index = Random.Range(0, availableOrigins.Count);
+        TendrilOrigin origin = availableOrigins[index];
+
+        // Spawn the tendril as a child of the origin
+        GameObject t = Instantiate(tendrilPrefab, origin.transform.position, origin.transform.rotation, origin.transform);
+        TendrilBehavior tb = t.GetComponent<TendrilBehavior>();
+        if (tb != null)
+        {
+            tb.Initialize(origin, this, false);  // Pass the origin and owner
+            origin.activeTendril = tb;
+        }
+
+        // Remove the used origin from available list
+        availableOrigins.RemoveAt(index);
+    }
+
+    void ForceLookAtPlayer()
+    {
+        Vector3 toPlayer = (player.transform.position - transform.position);
+        if (toPlayer.sqrMagnitude < 0.01f) return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(toPlayer.normalized, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    void CalculateDirection()
+    {
+        Vector3 displacement = transform.position - lastPosition;
+
+        // Only update direction if moved more than threshold
+        if (displacement.sqrMagnitude > directionUpdateThreshold * directionUpdateThreshold)
+        {
+            currentDirection = displacement.normalized;
+            lastPosition = transform.position;
+        }
+    }
+
+    void RotateTowardsDirection()
+    {
+        if (currentDirection.sqrMagnitude < 0.001f) return; // No direction to face
+
+        Quaternion targetRotation = Quaternion.LookRotation(currentDirection, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    bool CheckLineOfSight()
+    {
+        if (isAwake)
+        {
+            Vector3 origin = transform.position; // Offset if needed
+            Vector3 dir = (player.transform.position - origin).normalized;
+            float dist = Vector3.Distance(origin, player.transform.position);
+
+            if (Physics.Raycast(origin, dir, out RaycastHit hit, dist, visionObstacles))
+            {
+                // Hit something before the player
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
+    }
+
+    IEnumerator UpdateLineOfSight()
+    {
+        while (true)
+        {
+            hasLineOfSight = CheckLineOfSight();
+            yield return new WaitForSeconds(0.25f);
+        }
+    }
+
+    /// <summary>
+    /// Resets the alien to its original position and state.
+    /// </summary>
+    public void ResetToStart()
+    {
+        // Stop all behaviors
+        StopAllCoroutines();
+        isAwake = false;
+        isStunned = false;
+        isCharging = false;
+        isLunging = false;
+        isChasingPlayer = false;
+
+        // Reset movement
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+        }
+
+        // Reset AI state
+        currentWaypoint = startingWaypoint;
+
+        // Remove all active tendrils
+        foreach (var origin in tendrilOrigins)
+        {
+            if (origin.activeTendril != null)
+            {
+                origin.activeTendril.Retract();
+                origin.activeTendril = null;
+            }
+        }
+
+        availableOrigins.Clear();
+        availableOrigins.AddRange(tendrilOrigins);
+
+        StartCoroutine(UpdateLineOfSight());
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Only draw when selected in the editor
+        Gizmos.color = Color.yellow;
+
+        // Draw a forward-facing line from the transform
+        Vector3 start = transform.position;
+        Vector3 end = start + transform.forward * 2f; // adjust length as needed
+        Gizmos.DrawLine(start, end);
+
+        // Wake distance (yellow)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, wakeDistance);
+
+        // Chase distance (red)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, chaseDistance);
+    }
+
 }

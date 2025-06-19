@@ -151,6 +151,8 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private TutorialManager tutorialManager;
     [SerializeField]
+    private EnemyManager enemyManager;
+    [SerializeField]
     private PlayerAudio playerAudio;
 
     [Header("== IK Logic ==")]
@@ -1207,6 +1209,7 @@ public class ZeroGravity : MonoBehaviour
     public void Respawn(GameObject? respawnOverride = null)
     {
         GameObject targetLoc = respawnOverride ?? respawnLoc;
+        enemyManager.ResetAliens();
         transform.position = targetLoc.transform.position;
         cam.transform.rotation = targetLoc.transform.rotation;
         isDead = false;

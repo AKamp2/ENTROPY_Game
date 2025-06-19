@@ -171,7 +171,7 @@ public class SettingsMenu : MonoBehaviour
         SetDialogueVolume();
         SetSoundFXVolume();
         SetSensitivity();
-        SetMusicVolume();
+        //SetMusicVolume();
         SetDialogueSliderText(dialogueSliderText);
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);
