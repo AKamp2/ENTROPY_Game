@@ -159,8 +159,6 @@ public class ZeroGravityTest : MonoBehaviour
     private float minimumSpeed = 1f;
 
     [Header("== Swinging Settings==")]
-    private float maxSwingDistance = 0f; //max distance while swinging
-    private float minSwingDistance = 0f; //minimum distance while swinging
     private Vector3 swingPoint; //stores the bar transform when calculating swings
     private SpringJoint joint;
 

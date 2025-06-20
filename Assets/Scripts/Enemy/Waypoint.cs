@@ -5,33 +5,71 @@ using System.Collections.Generic;
 
 public class Waypoint : MonoBehaviour
 {
-    public List<Waypoint> neighbors = new List<Waypoint>(); // Adjacent waypoints
+
+    public enum WaypointType
+    {
+        General,
+        Roaming
+    }
+
+    [Header("Waypoint Settings")]
+    public WaypointType type = WaypointType.General;
+
+    [Header("Connections")]
+    public List<Waypoint> neighbors = new List<Waypoint>();
     public DoorScript connectedDoor;
-    public Color highlightColor = Color.red; // Highlight color for selected waypoint's neighbors
-    public Color defaultLineColor = Color.green; // Line color for all neighbors
+
+    [Header("Gizmo Settings")]
+    public Color highlightColor = Color.red;
+    public Color defaultLineColor = Color.green;
+
 
     private void OnDrawGizmos()
     {
-        // Draw a sphere at the waypoint's position for easy identification
-        Gizmos.color = Color.yellow;
-        //Gizmos.DrawSphere(transform.position, 0.2f);
+        // Set sphere color based on waypoint type
+        if (type == WaypointType.Roaming)
+            Gizmos.color = Color.blue;
+        else
+            Gizmos.color = Color.yellow;
 
-        // Draw default green lines to all neighbor waypoints
+        // Draw the waypoint sphere
+        Gizmos.DrawWireSphere(transform.position, 0.15f); // Adjust size as desired
+
+        // Draw default connection lines to neighbors
         Gizmos.color = defaultLineColor;
+        // Draw lines to neighbors with color based on waypoint types
         foreach (Waypoint neighbor in neighbors)
         {
-            if (neighbor != null)
+            if (neighbor == null) continue;
+
+            // Determine line color based on types
+            if (this.type == WaypointType.Roaming && neighbor.type == WaypointType.Roaming)
             {
-                Gizmos.DrawLine(transform.position, neighbor.transform.position);
+                Gizmos.color = Color.blue;  // Both roaming
             }
+            else if ((this.type == WaypointType.Roaming && neighbor.type == WaypointType.General) ||
+                     (this.type == WaypointType.General && neighbor.type == WaypointType.Roaming))
+            {
+                Gizmos.color = new Color(1f, 0.65f, 0f);  // Orange color
+            }
+            else
+            {
+                Gizmos.color = Color.yellow;  // fallback color
+            }
+
+            Gizmos.DrawLine(transform.position, neighbor.transform.position);
         }
     }
 
     private void OnDrawGizmosSelected()
     {
         // Highlight the waypoint itself when selected
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(transform.position, 0.25f); // Slightly larger sphere to indicate selection
+        // Set sphere color based on waypoint type
+        if (type == WaypointType.Roaming)
+            Gizmos.color = Color.blue;
+        else
+            Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(transform.position, 0.15f); // Slightly larger sphere to indicate selection
 
         // Highlight connections to neighbors with red lines
         Gizmos.color = highlightColor;

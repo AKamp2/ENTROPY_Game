@@ -14,7 +14,7 @@ public class Looper : MonoBehaviour
 
     public const double fadeDuration = 0.5f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
         for (int i = 0; i < 2; i++)
         {

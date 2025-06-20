@@ -7,12 +7,14 @@ using Random = UnityEngine.Random;
 public class AmbientController : MonoBehaviour
 {
 
+    public float startingVolume = 0;
     public static int maxLayers = 4;
     public float bpm = 120.0f;
     public int numBeatsPerSegment = 31;
     public AudioClip[] clips;
     public GameObject looperPrefab;
-    
+    int layerCount = 0;
+
     // I have tried a couple of ways doing this. This one is not the best for code legibility, but it is the one that...
     // is serializable. This way they can be changed in the inspector.
     public int[] beatsLookup; //Contains the beats length of each layer
@@ -28,9 +30,9 @@ public class AmbientController : MonoBehaviour
     private int[] layerLookup  = new int[maxLayers]; // the index matching the looper index contains the currently playing track
     private bool running = false;
 
-    void Start()
+    private void Awake()
     {
-        int layerCount = clips.Length;
+        layerCount = clips.Length;
         loopers = new Looper[layerCount];
         // for (int i = 0; i < layerCount; i++)
         // {
@@ -39,6 +41,9 @@ public class AmbientController : MonoBehaviour
         //     loopers[i] = child.AddComponent<AudioSource>();
         //     loopers[i].loop = false;
         // }
+    }
+    void Start()
+    {
         endTimes = new double[clips.Length];
         double startTime = AudioSettings.dspTime + 5.0f;
         for (int i = 0; i < layerCount; i++)
@@ -55,6 +60,8 @@ public class AmbientController : MonoBehaviour
             loopers[i] = prefabInstance.GetComponent<Looper>();
             layerLookup[i] = -1;
         }
+
+        SetVolume(startingVolume);
 
         nextMinLoop = startTime;
         
@@ -137,7 +144,8 @@ public class AmbientController : MonoBehaviour
     {
         foreach (Looper looper in loopers)
         {
-            //looper.SetVolume(newVolume);
+            if (looper != null)
+            looper.SetVolume(newVolume);
         }
     }
 }

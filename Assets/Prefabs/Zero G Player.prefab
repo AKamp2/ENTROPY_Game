@@ -769,27 +769,30 @@ MonoBehaviour:
   highDangerCoolDown: 5
   rollTorque: 75
   rollAcceleration: 40
+  deathRollAcceleration: 3
   rollFrictionGrab: 50
   rollFrictionNoGrab: 10
-  grabRange: 4
+  grabRange: 5
   minGrabRange: 2
   grabPadding: 100
-  propelThrust: 150
-  propelOffWallThrust: 50
+  propelThrust: 3
+  propelOffWallThrust: 100
   pushSpeed: 2
-  dangerSpeed: 8
+  dangerSpeed: 7
   mediumSpeed: 5
-  zeroGWalkSpeed: 4
+  zeroGWalkSpeed: 3.2
   minimumSpeed: 2
   swinging: 0
-  grabDrag: 0.99
-  pullToBarMod: 1.7
+  grabDrag: 0.7
+  pullToBarMod: 1.04
   swingCoolDownFastest: 4
-  swingCoolDownSlowest: 2
+  swingCoolDownMedium: 2
+  swingCoolDownSlowest: 0.2
   uiManager: {fileID: 2463627945084931592}
   grab: {fileID: 1289024538108758660, guid: 62bee993b4da21145a34bb9e2304d3d3, type: 3}
   pushOffWall: {fileID: -757749469659553165, guid: 62bee993b4da21145a34bb9e2304d3d3, type: 3}
   tutorialManager: {fileID: 0}
+  playerAudio: {fileID: 0}
   useIK: 0
   defaultHandPosition: []
   hands: []
@@ -836,7 +839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 8234961305471522324}
-  rb: {fileID: 0}
+  rb: {fileID: 8234961305471522325}
   pickupScript: {fileID: 1315194308885493417}
   doorManager: {fileID: 0}
   barInView: 0
