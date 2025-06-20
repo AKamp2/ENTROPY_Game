@@ -52,7 +52,7 @@ public class EnemySimpleAI : MonoBehaviour
     public float wakeDistance = 50f;
 
     //Line of sight
-    public LayerMask visionObstacles; // Set this to "Barrier"
+    public LayerMask barrierLayer; // Set this to "Barrier"
     public float wakeLossCooldown = 10f;
     private float timeSinceLastSeenPlayer = 0f;
     private bool hasLineOfSight = false;
@@ -62,6 +62,10 @@ public class EnemySimpleAI : MonoBehaviour
     private Queue<Waypoint> path = new Queue<Waypoint>();
     private Waypoint playerWaypoint;
     private Waypoint targetWaypoint;
+
+    private List<Waypoint> allWaypoints = new List<Waypoint>();
+    private List<Waypoint> roamingWaypoints = new List<Waypoint>();
+
 
     //private float distanceToPlayer;
     private float sqrDist;
@@ -78,20 +82,34 @@ public class EnemySimpleAI : MonoBehaviour
     private Vector3 lastPosition;
     private Vector3 currentDirection;
 
-    public Vector3 initialPosition;
+    //public Vector3 initialPosition;
     private Quaternion initialRotation;
 
-
+    private float resetCooldown = 0.1f;
     public List<TendrilOrigin> availableOrigins;
+
+    //checking for clear path
+    private float clearPathCheckCooldown = 0.25f;
+    private float clearPathCheckTimer = 0f;
+    private bool hasClearPath = true;
 
 
     void Start()
     {
+        allWaypoints = waypointGroup.GetComponentsInChildren<Waypoint>().ToList();
+        foreach (Waypoint wp in allWaypoints)
+        {
+            if (wp.type == Waypoint.WaypointType.Roaming)
+            {
+                roamingWaypoints.Add(wp);
+            }
+        }
+
         rotationSpeed = setRotationSpeed;
         // Set the current waypoint to the starting one
         currentWaypoint = startingWaypoint;
 
-        initialPosition = transform.position;
+        //initialPosition = transform.position;
         initialRotation = transform.rotation;
 
         FindPlayerPath();
@@ -119,7 +137,13 @@ public class EnemySimpleAI : MonoBehaviour
 
     void Update()
     {
-        if(playerController.IsDead == true)
+        if (resetCooldown > 0f)
+        {
+            resetCooldown -= Time.deltaTime;
+            return;
+        }
+
+        if (playerController.IsDead == true)
         {
             RoamArea();
 
@@ -170,12 +194,32 @@ public class EnemySimpleAI : MonoBehaviour
             ForceLookAtPlayer(); // Always rotate toward player during charge
             return;
         }
-        // 5) Check if player is within lungeDistance and not charging or lunging → start charging
-        if (sqrDist < (lungeDistance * lungeDistance) && !isCharging && !isLunging)
+        // 5) Check if player is within lungeDistance, the enemy has line of sight with the player, and not charging or lunging → start charging
+        if (hasLineOfSight && sqrDist < (lungeDistance * lungeDistance) && !isCharging && !isLunging)
         {
-            isCharging = true; // <-- Set this early to prevent multiple calls
-            StartCoroutine(ChargeAndLunge());
-            return;
+
+
+            Vector3 toPlayer = player.transform.position - transform.position;
+            float checkDistance = toPlayer.magnitude;
+            Vector3 direction = toPlayer.normalized;
+
+            // Perform a SphereCast in the direction of the player
+            float sphereRadius = 0.5f * transform.localScale.x; // adjust based on your alien's size
+            
+
+            //check to see if there's anything in the way before we lunge into a wall
+            if (!Physics.SphereCast(transform.position, sphereRadius, direction, out RaycastHit hit, 5f, barrierLayer))
+            {
+                isCharging = true;
+                StartCoroutine(ChargeAndLunge());
+                return;
+            }
+            else
+            {
+                // Optional: debug visualization
+                Debug.DrawRay(transform.position, direction * 5.0f, Color.red, 0.2f);
+                //Debug.Log("Lunge blocked by: " + hit.collider.name);
+            }
         }
 
         // 6) Otherwise, run normal AI (chase/roam/track)
@@ -199,7 +243,16 @@ public class EnemySimpleAI : MonoBehaviour
         {
             if (!audioSource.isPlaying) audioSource.Play();
 
-            if (hasLineOfSight)
+            clearPathCheckTimer += Time.deltaTime;
+
+            if (clearPathCheckTimer >= clearPathCheckCooldown)
+            {
+                Vector3 direction = (player.transform.position - transform.position).normalized;
+                hasClearPath = HasClearPath(direction, Vector3.Distance(player.transform.position, transform.position)); // Or some distance like 5f
+                clearPathCheckTimer = 0f;
+            }
+
+            if (hasClearPath)
             {
                 ChasePlayer(); // Direct chase
             }
@@ -208,8 +261,29 @@ public class EnemySimpleAI : MonoBehaviour
             {
                 // LOS lost, fall back to pathfinding
                 FindPlayerPath();
+                /*
+                if(path.Count > 0)
+                {
+                    Waypoint nextWaypoint = path.Peek();
+                    if (nextWaypoint != null)
+                    {
+                        // Check if we are between currentWaypoint and nextWaypoint
+                        if (IsBetweenWaypoints(currentWaypoint.transform.position, nextWaypoint.transform.position, transform.position))
+                        {
+                            Vector3 directionToNext = (nextWaypoint.transform.position - transform.position).normalized;
+
+                            // Check clear path to next waypoint
+                            if (HasClearPath(directionToNext, Vector3.Distance(transform.position, nextWaypoint.transform.position)))
+                            {
+                                currentWaypoint = nextWaypoint;
+                                path.Dequeue(); // Move along path
+                            }
+                        }
+                    }
+                }
+                */
                 TrackPlayer();
-                isChasingPlayer = false;
+                //isChasingPlayer = false;
 
             }
 
@@ -233,11 +307,21 @@ public class EnemySimpleAI : MonoBehaviour
             else if (sqrDist <= chaseDistance * chaseDistance)
             {
                 FindPlayerPath();
-                TrackPlayer();
+                isChasingPlayer = true;
             }
             else
             {
-                RoamArea();
+                //simply roam the full area if we have escaped the limited roaming area
+                if(currentWaypoint.type == Waypoint.WaypointType.General)
+                {
+                    RoamArea();
+                    
+                }
+                else
+                {
+                    RoamLimited();
+                }
+                isChasingPlayer = false;
                 if (audioSource.isPlaying) audioSource.Stop();
             }
         }
@@ -351,23 +435,29 @@ public class EnemySimpleAI : MonoBehaviour
 
     void TrackPlayer()
     {
-        //Debug.Log("Tracking player");
         if (path.Count == 0) return;
 
         targetWaypoint = path.Peek();
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.transform.position, speed * Time.deltaTime);
 
+        // Advance when close enough
         if ((transform.position - targetWaypoint.transform.position).sqrMagnitude < 0.01f)
         {
             path.Dequeue();
+            currentWaypoint = targetWaypoint;
         }
 
-        // Recalculate path if path is empty
-        if (path.Count == 0) FindPlayerPath();
+        // If finished path, recalculate
+        if (path.Count == 0)
+        {
+            FindPlayerPath();
+        }
     }
 
     void RoamArea()
     {
+        if (currentWaypoint == null) return;
+
         // Choose a random neighbor if at the current waypoint
         if (Vector3.Distance(transform.position, currentWaypoint.transform.position) < 0.1f)
         {
@@ -382,6 +472,39 @@ public class EnemySimpleAI : MonoBehaviour
         {
             isChasingPlayer = true;
         }
+    }
+
+    void RoamLimited()
+    {
+        if (currentWaypoint == null) return;
+
+        // If we've reached the current waypoint, choose a new roaming neighbor
+        if (Vector3.Distance(transform.position, currentWaypoint.transform.position) < 0.1f)
+        {
+            List<Waypoint> roamingNeighbors = new List<Waypoint>();
+
+            foreach (Waypoint neighbor in currentWaypoint.neighbors)
+            {
+                if (neighbor != null && neighbor.type == Waypoint.WaypointType.Roaming)
+                {
+                    roamingNeighbors.Add(neighbor);
+                }
+            }
+
+            if (roamingNeighbors.Count > 0)
+            {
+                Waypoint nextWaypoint = roamingNeighbors[Random.Range(0, roamingNeighbors.Count)];
+                currentWaypoint = nextWaypoint;
+            }
+            else
+            {
+                // Stay at current waypoint if no valid roaming neighbors
+                Debug.LogWarning($"Waypoint {currentWaypoint.name} has no roaming neighbors.");
+            }
+        }
+
+        // Move toward the current waypoint
+        transform.position = Vector3.MoveTowards(transform.position, currentWaypoint.transform.position, speed * Time.deltaTime);
     }
 
     private IEnumerator ChargeAndLunge()
@@ -416,9 +539,6 @@ public class EnemySimpleAI : MonoBehaviour
             yield return null;
         }
 
-        // (Optional: play a charge animation here)
-        //audioSource.Stop();
-        
 
         // Step 2: Spawn 5 tendrils at random from backwardsOrigins
         List<TendrilOrigin> shuffled = new List<TendrilOrigin>(backwardsOrigins);
@@ -455,7 +575,15 @@ public class EnemySimpleAI : MonoBehaviour
             Vector3 pullBackDirection = -toPlayer; // Opposite of direction to player
             float pullBackSpeed = 1.5f; // tweak as needed
 
-            transform.position += pullBackDirection * pullBackSpeed * Time.deltaTime;
+            float pullBackDistance = pullBackSpeed * Time.deltaTime;
+            float radius = 0.5f * transform.localScale.x;
+
+            // Raycast to prevent backing into a wall
+            RaycastHit hit;
+            if (!Physics.SphereCast(transform.position, radius, pullBackDirection, out hit, pullBackDistance + 0.25f, barrierLayer))
+            {
+                transform.position += pullBackDirection * pullBackDistance;
+            }
 
             timer += Time.deltaTime;
             yield return null;
@@ -661,7 +789,7 @@ public class EnemySimpleAI : MonoBehaviour
             Vector3 dir = (player.transform.position - origin).normalized;
             float dist = Vector3.Distance(origin, player.transform.position);
 
-            if (Physics.Raycast(origin, dir, out RaycastHit hit, dist, visionObstacles))
+            if (Physics.Raycast(origin, dir, out RaycastHit hit, dist, barrierLayer))
             {
                 // Hit something before the player
                 return false;
@@ -684,12 +812,47 @@ public class EnemySimpleAI : MonoBehaviour
         }
     }
 
+    bool HasClearPathTo(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        float distance = Vector3.Distance(transform.position, targetPosition);
+        return HasClearPath(direction, distance);
+    }
+
+    bool HasClearPath(Vector3 direction, float checkDistance)
+    {
+
+        float radius = 0.5f * transform.localScale.x; // Use the collider's radius if needed
+
+        if (Physics.SphereCast(transform.position, radius, direction, out RaycastHit hit, checkDistance, barrierLayer))
+        {
+            // If we hit *anything* in the barrier layer, the path is NOT clear
+            return false;
+        }
+
+        return true; // Nothing in the way at all
+    }
+
+    bool IsBetweenWaypoints(Vector3 a, Vector3 b, Vector3 position)
+    {
+        Vector3 ab = b - a;
+        Vector3 ap = position - a;
+
+        float abSqr = ab.sqrMagnitude;
+        float dot = Vector3.Dot(ap, ab);
+
+        // dot must be >= 0 and <= abSqr to be between the points
+        return dot >= 0 && dot <= abSqr;
+    }
+
     /// <summary>
     /// Resets the alien to its original position and state.
     /// </summary>
     public void ResetToStart()
     {
-        // Stop all behaviors
+        Debug.Log("Alien Reset called");
+
+        // Stop everything
         StopAllCoroutines();
         isAwake = false;
         isStunned = false;
@@ -697,8 +860,11 @@ public class EnemySimpleAI : MonoBehaviour
         isLunging = false;
         isChasingPlayer = false;
 
-        // Reset movement
-        transform.position = initialPosition;
+        // Reset cooldown to block Update logic for 0.1s
+        resetCooldown = 0.1f;
+
+        // Clear movement and reset position
+        transform.position = startingWaypoint.transform.position;
         transform.rotation = initialRotation;
 
         Rigidbody rb = GetComponent<Rigidbody>();
@@ -706,12 +872,15 @@ public class EnemySimpleAI : MonoBehaviour
         {
             rb.isKinematic = true;
             rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
 
-        // Reset AI state
+        // Reset AI/pathing state
+        path.Clear();
         currentWaypoint = startingWaypoint;
+        targetWaypoint = null;
 
-        // Remove all active tendrils
+        // Kill any tendrils
         foreach (var origin in tendrilOrigins)
         {
             if (origin.activeTendril != null)
@@ -724,6 +893,13 @@ public class EnemySimpleAI : MonoBehaviour
         availableOrigins.Clear();
         availableOrigins.AddRange(tendrilOrigins);
 
+        // Start line of sight tracking after a short delay
+        StartCoroutine(DelayedWake());
+    }
+
+    IEnumerator DelayedWake()
+    {
+        yield return null; // wait 1 frame to ensure position is stable
         StartCoroutine(UpdateLineOfSight());
     }
 
