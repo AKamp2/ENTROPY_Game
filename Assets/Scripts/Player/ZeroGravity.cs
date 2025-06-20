@@ -121,7 +121,16 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float grabDrag = .99f;
     [SerializeField]
+    private float pullDrag = .95f;
+    [SerializeField]
     private float pullToBarMod = 1f;
+    [SerializeField]
+    private float jointSpringForce = 4.5f;
+    [SerializeField]
+    private float jointDamperForce = 7f;
+    [SerializeField]
+    private float jointMassScale = 4.5f;
+
 
     //time stamps for swing cooldowns
     private float grabSwingTimeStamp;
@@ -701,7 +710,6 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log(rb.linearVelocity.magnitude);
     }
 
-
     private void GetBarGrabbers()
     {
         grabHolder = grabbedBar.parent.Find("Grab");
@@ -793,20 +801,15 @@ public class ZeroGravity : MonoBehaviour
 
         //Debug.Log(roll);
 
-
-
         for (int i = 0; i < grabHolder.childCount; i++)
         {
             Transform grab = grabHolder.GetChild(i).transform;
-
 
             // zero out transform for uniform translation
             grab.rotation = initGrabRotation[i];
             grab.position = initGrabPosition[i];
 
-
             grab.RotateAround(grabCollider.position, grabCollider.up, angle);
-
 
             //grab.position = initGrabPosition[i];
             Quaternion rollRotation = Quaternion.AngleAxis(roll, grab.up);
@@ -844,12 +847,13 @@ public class ZeroGravity : MonoBehaviour
             }
 
             //tweak these values for the spring for better pendulum values
-            joint.spring = 4.5f; //higher pull and push of the spring
-            joint.damper = 7f;
-            joint.massScale = 4.5f;
+            joint.spring = jointSpringForce; //higher pull and push of the spring
+            joint.damper = jointDamperForce;
+            joint.massScale = jointMassScale;
             //if the player is not swinging
             if (!swinging)
             {
+                rb.linearVelocity *= pullDrag;
                 //pull to the bar
                 PullToBar(pullToBarMod, bar);
                 return;
@@ -873,7 +877,6 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log(rb.linearVelocity.magnitude);
         //Debug.Log(bar.gameObject.name);
         //initially set the velocity to 0 so the momentum doesn't carry through from propel
-        //rb.linearVelocity = Vector3.zero;
 
         //if the joint is a long distance between the player and the bar
         if (joint.maxDistance >= joint.minDistance)
@@ -912,7 +915,7 @@ public class ZeroGravity : MonoBehaviour
             //if the position of the player and the target are about equal
             if (Vector3.Distance(rb.transform.position, target.position) < .1f)
             {
-                //Debug.Log("They are touching :)");
+                Debug.Log("They are touching :)");
                 rb.linearVelocity = Vector3.zero;
                 return;
             }
