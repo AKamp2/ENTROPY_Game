@@ -137,7 +137,7 @@ public class AmbientController : MonoBehaviour
     {
         foreach (Looper looper in loopers)
         {
-            looper.SetVolume(newVolume);
+            //looper.SetVolume(newVolume);
         }
     }
 }
