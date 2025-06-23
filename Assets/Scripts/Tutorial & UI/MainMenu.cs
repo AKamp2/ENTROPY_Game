@@ -58,10 +58,6 @@ public class MainMenu : MonoBehaviour
     }
     public void ExitOptions()
     {
-        if (volume.profile.TryGet<LensDistortion>(out LensDistortion distortion))
-        {
-            distortion.active = true;
-        }
         optionsMenu.SetActive(false);
     }
     public void QuitGame()
