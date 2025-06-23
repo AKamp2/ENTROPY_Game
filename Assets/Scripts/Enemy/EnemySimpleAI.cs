@@ -58,10 +58,10 @@ public class EnemySimpleAI : MonoBehaviour
     private bool hasLineOfSight = false;
 
     // Internal state
-    public Waypoint currentWaypoint;
+    private Waypoint currentWaypoint;
     private Queue<Waypoint> path = new Queue<Waypoint>();
-    public Waypoint playerWaypoint;
-    public Waypoint targetWaypoint;
+    private Waypoint playerWaypoint;
+    private Waypoint targetWaypoint;
 
     private List<Waypoint> allWaypoints = new List<Waypoint>();
     private List<Waypoint> roamingWaypoints = new List<Waypoint>();
@@ -69,13 +69,13 @@ public class EnemySimpleAI : MonoBehaviour
 
     //private float distanceToPlayer;
     private float sqrDist;
-    public bool isChasingPlayer = false;
-    public bool isStunned = false;
+    private bool isChasingPlayer = false;
+    private bool isStunned = false;
 
-    public bool isCharging = false;
-    public bool isLunging = false;
-    public float lungeTimer = 0f;
-    public bool isAwake = false;
+    private bool isCharging = false;
+    private bool isLunging = false;
+    private float lungeTimer = 0f;
+    private bool isAwake = false;
 
     //direction calculation
     private float directionUpdateThreshold = 0.05f; // Minimal movement to update direction
@@ -85,7 +85,7 @@ public class EnemySimpleAI : MonoBehaviour
     //public Vector3 initialPosition;
     private Quaternion initialRotation;
 
-    private float resetCooldown = 0.2f;
+    private float resetCooldown = 0.1f;
     public List<TendrilOrigin> availableOrigins;
 
     //checking for clear path
@@ -145,7 +145,7 @@ public class EnemySimpleAI : MonoBehaviour
 
         if (playerController.IsDead == true)
         {
-            //RoamArea();
+            RoamArea();
 
             CalculateDirection();
             RotateTowardsDirection();
@@ -306,8 +306,8 @@ public class EnemySimpleAI : MonoBehaviour
             }
             else if (sqrDist <= chaseDistance * chaseDistance)
             {
-                //FindPlayerPath();
-                
+                FindPlayerPath();
+                isChasingPlayer = true;
             }
             else
             {
@@ -345,14 +345,7 @@ public class EnemySimpleAI : MonoBehaviour
         // 2) If its the player, kill them
         else if (other.CompareTag("Player"))
         {
-            
-            if (!playerController.IsDead)
-            {
-                Debug.Log("Player killed by alien");
-                playerController.IsDead = true;
-                isChasingPlayer = false;
-                EndLunge();
-            }
+            playerController.IsDead = true;
             Rigidbody playerRb = other.GetComponent<Rigidbody>();
             if (playerRb != null)
             {
@@ -361,7 +354,7 @@ public class EnemySimpleAI : MonoBehaviour
 
                 playerRb.AddForce(forceDirection * knockbackStrength, ForceMode.Impulse);
             }
-            
+            EndLunge();
         }
         else if(isLunging)
         {
@@ -442,11 +435,7 @@ public class EnemySimpleAI : MonoBehaviour
 
     void TrackPlayer()
     {
-        if (path.Count == 0)
-        {
-            FindPlayerPath();
-            return;
-        }
+        if (path.Count == 0) return;
 
         targetWaypoint = path.Peek();
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.transform.position, speed * Time.deltaTime);
@@ -655,6 +644,9 @@ public class EnemySimpleAI : MonoBehaviour
                 path = BFS(currentWaypoint, playerWaypoint);
             }
         }
+            
+        
+        
 
     }
 
@@ -869,7 +861,7 @@ public class EnemySimpleAI : MonoBehaviour
         isChasingPlayer = false;
 
         // Reset cooldown to block Update logic for 0.1s
-        resetCooldown = 0.2f;
+        resetCooldown = 0.1f;
 
         // Clear movement and reset position
         transform.position = startingWaypoint.transform.position;
@@ -881,7 +873,6 @@ public class EnemySimpleAI : MonoBehaviour
             rb.isKinematic = true;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
-            //rb.MovePosition(startingWaypoint.transform.position);
         }
 
         // Reset AI/pathing state
@@ -901,9 +892,6 @@ public class EnemySimpleAI : MonoBehaviour
 
         availableOrigins.Clear();
         availableOrigins.AddRange(tendrilOrigins);
-
-        audioSource.Stop();
-        audioSource2.Stop();
 
         // Start line of sight tracking after a short delay
         StartCoroutine(DelayedWake());
