@@ -39,12 +39,6 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private GameObject confirmationPopUp;
     public bool isChanged;
 
-    // Video option
-    Resolution[] resolutions;
-    public TMP_Dropdown resolutionDropdown;
-    [SerializeField] private TMP_Dropdown graphicsQuality;
-    [SerializeField] private Toggle fullscreenCheckbox;
-
 
     private void OnEnable()
     {
@@ -52,40 +46,15 @@ public class SettingsMenu : MonoBehaviour
         
     }
 
-    private void Start()
-    {
-        resolutions = Screen.resolutions;
-        resolutionDropdown.ClearOptions();
-        List<string> options = new List<string>();
-
-        int currentResolutionIndex = 0;
-        for (int i = 0; i < resolutions.Length; i++)
-        {
-            string option = resolutions[i].width + "x" + resolutions[i].height;
-            options.Add(option);
-
-            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResolutionIndex = i;
-            }
-        }
-
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
-    }
-
     public void SetUp()
     {
         // Makes sure menus are not open when starting 
         CloseMenus();
-        dialogueSlider.value = GetPrefs("dialogueSlider", 100);
-        soundFXSlider.value = GetPrefs("soundFXSlider", 100);
-        musicSlider.value = GetPrefs("musicSlider", 100);
-        sensitivitySlider.value = GetPrefs("sensitivitySlider", 40);
+        dialogueSlider.value = GetPrefs("dialogueSlider", 1);
+        soundFXSlider.value = GetPrefs("soundFXSlider", 1);
+        sensitivitySlider.value = GetPrefs("sensitivitySlider", 4);
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
-        graphicsQuality.value = GetPrefs("qualityLevel",5);
-        fullscreenCheckbox.isOn = GetPrefs("isFullscreen", 1) == 1;
+        
         ApplyOptions();
     }
 
@@ -143,31 +112,6 @@ public class SettingsMenu : MonoBehaviour
         player.SensitivityX = sensitivitySlider.value/10;
         player.SensitivityY = sensitivitySlider.value/10;
         SetPrefs("sensitivitySlider", (int)sensitivitySlider.value);
-    }
-
-    public void SetFullscreen(bool isFullscreen)
-    {
-        Screen.fullScreen = isFullscreen;
-        if (isFullscreen)
-        {
-            SetPrefs("isFullscreen", 1);
-        }
-        if (!isFullscreen)
-        {
-            SetPrefs("isFullscreen", 0);
-        }
-    }
-
-    public void SetGraphicsQuality(int qualityIndex)
-    {
-        QualitySettings.SetQualityLevel(qualityIndex);
-        SetPrefs("qualityLevel", qualityIndex);
-    }
-
-    public void SetResolution(int resolutionIndex)
-    {
-        Resolution resolution = resolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
     public void ToggleSubtitles()
