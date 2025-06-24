@@ -61,6 +61,10 @@ public class ZeroGravity : MonoBehaviour
     private float highDangerCoolDown = 5.0f;
     private float hurtTimeStamp = 0f;
 
+    //access permissions
+    [SerializeField]
+    private bool[] accessPermissions = new bool[3];
+
     [Header("== Player Movement Settings ==")]
     [SerializeField]
     private float rollTorque = 250.0f;
@@ -302,6 +306,13 @@ public class ZeroGravity : MonoBehaviour
     {
         get { return grabRange; }
         set { grabRange = value; }
+
+    }
+
+    public bool[] AccessPermissions
+    {
+        get { return accessPermissions; }
+       
     }
 
     // getter for isGrabbing
@@ -313,6 +324,10 @@ public class ZeroGravity : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;  // Match this with your build target frame rate.
+
+        this.AccessPermissions[0] = true;
+
+        // give player default permissions
 
         //initial player booleans set if in tutorial mode
         if (tutorialMode)
