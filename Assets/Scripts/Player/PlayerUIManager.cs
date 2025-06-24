@@ -14,6 +14,9 @@ public class PlayerUIManager : MonoBehaviour
     private PickupScript pickupScript;
     [SerializeField]
     private DoorManager doorManager;
+    // eventually replace with gameplay manager
+    [SerializeField]
+    private LockdownEvent lockdownEvent;
 
     [SerializeField]
     private bool barInView;
@@ -70,6 +73,8 @@ public class PlayerUIManager : MonoBehaviour
     private LayerMask barrierLayer; //set layer for barriers
     [SerializeField]
     private LayerMask doorLayer;
+    [SerializeField]
+    private LayerMask raycastLayer; // Layer for general raycast interactions
 
 
     #region properties
@@ -172,11 +177,15 @@ public class PlayerUIManager : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
 
         // if raycast hits
-        if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | barrierLayer | doorLayer))
+        if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | barrierLayer | doorLayer | raycastLayer))
         {
             //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
             RayCastHandleGrab(hit);
             RayCastHandleDoorButton(hit);
+
+            // act 1 event - probably will eventually move to a gameplay manager
+            RayCastHandleManualLockdown(hit);
+            
 
             //if the current velocity is less than the parameter we set
             if (rb.linearVelocity.magnitude <= player.PushSpeed)
@@ -250,6 +259,23 @@ public class PlayerUIManager : MonoBehaviour
                 inputIndicator.color = new Color(256, 256, 256, 0.5f);
             }
         }
+    }
+
+    public void RayCastHandleManualLockdown(RaycastHit hit)
+    {
+        if (hit.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
+        {
+            lockdownEvent.CanPull = true;
+
+            inputIndicator.sprite = keyFIndicator;
+            inputIndicator.color = new Color(256, 256, 256, 0.5f);
+        }
+        else
+        {
+            lockdownEvent.CanPull = false;
+        }
+
+       
     }
 
     public void ResetUI()
