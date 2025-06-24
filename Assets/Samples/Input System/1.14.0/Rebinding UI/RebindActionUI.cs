@@ -1,7 +1,16 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
+using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using System.Collections;
+using UnityEngine.Audio;
+using System;
+using System.IO;
+using TMPro;
+using UnityEngine.Rendering;
+using UnityEngine.Events;
+
 
 ////TODO: localization support
 
@@ -9,6 +18,7 @@ using UnityEngine.UI;
 
 namespace UnityEngine.InputSystem.Samples.RebindUI
 {
+
     /// <summary>
     /// A reusable component with a self-contained UI for rebinding a single action.
     /// </summary>
@@ -55,7 +65,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// <summary>
         /// Text component that receives the name of the action. Optional.
         /// </summary>
-        public Text actionLabel
+        public TMP_Text actionLabel
         {
             get => m_ActionLabel;
             set
@@ -69,7 +79,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// Text component that receives the display string of the binding. Can be <c>null</c> in which
         /// case the component entirely relies on <see cref="updateBindingUIEvent"/>.
         /// </summary>
-        public Text bindingText
+        public TMP_Text bindingText
         {
             get => m_BindingText;
             set
@@ -84,7 +94,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// </summary>
         /// <seealso cref="startRebindEvent"/>
         /// <seealso cref="rebindOverlay"/>
-        public Text rebindPrompt
+        public TMP_Text rebindPrompt
         {
             get => m_RebindText;
             set => m_RebindText = value;
@@ -203,7 +213,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
             // Set on label (if any).
             if (m_BindingText != null)
-                m_BindingText.text = displayString;
+                m_BindingText.text = $"[ {displayString} ]";
 
             // Give listeners a chance to configure UI in response.
             m_UpdateBindingUIEvent?.Invoke(this, displayString, deviceLayoutName, controlPath);
@@ -236,6 +246,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// </summary>
         public void StartInteractiveRebind()
         {
+            m_Action.action.Disable();
             if (!ResolveActionAndBinding(out var action, out var bindingIndex))
                 return;
 
@@ -263,6 +274,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
                 action.actionMap.Enable();
                 m_UIInputActionMap?.Enable();
+                m_Action.action.Enable();
+                SaveActionBinding();
             }
 
             // An "InvalidOperationException: Cannot rebind action x while it is enabled" will
@@ -318,8 +331,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             if (m_RebindText != null)
             {
                 var text = !string.IsNullOrEmpty(m_RebindOperation.expectedControlType)
-                    ? $"{partName}Waiting for {m_RebindOperation.expectedControlType} input..."
-                    : $"{partName}Waiting for input...";
+                    ? $"{partName}[Waiting for {m_RebindOperation.expectedControlType} input]"
+                    : $"{partName}[Waiting for input...]";
                 m_RebindText.text = text;
             }
 
@@ -385,6 +398,26 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             }
         }
 
+        private void Start()
+        {
+            LoadActionBinding();
+        }
+
+        private void SaveActionBinding()
+        {
+            var currentBindings = actionReference.action.actionMap.SaveBindingOverridesAsJson();
+            PlayerPrefs.SetString(m_Action.action.name + bindingId, currentBindings);
+        }
+
+        private void LoadActionBinding()
+        {
+            var savedBindings = PlayerPrefs.GetString(m_Action.action.name + bindingId);
+            if (!string.IsNullOrEmpty(savedBindings))
+            {
+                actionReference.action.actionMap.LoadBindingOverridesFromJson(savedBindings);
+            }
+        }
+
         [Tooltip("Reference to action that is to be rebound from the UI.")]
         [SerializeField]
         private InputActionReference m_Action;
@@ -398,11 +431,11 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         [Tooltip("Text label that will receive the name of the action. Optional. Set to None to have the "
             + "rebind UI not show a label for the action.")]
         [SerializeField]
-        private Text m_ActionLabel;
+        private TMP_Text m_ActionLabel;
 
         [Tooltip("Text label that will receive the current, formatted binding string.")]
         [SerializeField]
-        private Text m_BindingText;
+        private TMP_Text m_BindingText;
 
         [Tooltip("Optional UI that will be shown while a rebind is in progress.")]
         [SerializeField]
@@ -410,7 +443,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
         [Tooltip("Optional text label that will be updated with prompt for user input.")]
         [SerializeField]
-        private Text m_RebindText;
+        private TMP_Text m_RebindText;
 
         [Tooltip("Optional reference to default input actions containing the UI action map. The UI action map is "
             + "disabled when rebinding is in progress.")]
