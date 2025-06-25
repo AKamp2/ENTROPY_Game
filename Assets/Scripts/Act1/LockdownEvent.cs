@@ -4,11 +4,15 @@ using UnityEngine.InputSystem;
 public class LockdownEvent : MonoBehaviour
 {
     [SerializeField]
+    ZeroGravity player;
+    [SerializeField]
     private BoxCollider DoorTrigger;
     [SerializeField]
     private GameObject lever;
     [SerializeField]
     private DoorScript[] doors;
+    [SerializeField]
+    private DoorScript brokenDoor;
 
     // lockdown bools
     private bool isActive;
@@ -27,6 +31,17 @@ public class LockdownEvent : MonoBehaviour
     public bool IsActive
     {
         get { return isActive; }
+    }
+
+    public bool CanGrab
+    {
+        get { return canGrab; }
+        set { canGrab = value; }
+    }
+
+    public bool IsGrabbable
+    {
+        get { return isGrabbable; }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -61,10 +76,20 @@ public class LockdownEvent : MonoBehaviour
     {
         if (canPull && isActive)
         {
+            // open the broken door first
+            brokenDoor.DoorState = DoorScript.States.Opening;
+
             DoorTrigger.enabled = true;
             isActive = false;
 
             // begin lighting and audio queues
+        }
+
+        if (canGrab && IsGrabbable)
+        {
+            player.AccessPermissions[0] = true;
+
+            isGrabbable = false;
         }
     }
 
