@@ -38,10 +38,11 @@ public class DoorManager : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        DoorScript ds = currentSelectedDoor.GetComponent<DoorScript>();
 
         if (currentSelectedDoor)
         {
+            DoorScript ds = currentSelectedDoor.GetComponent<DoorScript>();
+
             if (ds.HasPermissionLevel && player.AccessPermissions[(int)ds.Permission])
             {
                 currentSelectedDoor.GetComponent<DoorScript>().UseDoor();

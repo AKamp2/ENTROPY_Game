@@ -26,6 +26,7 @@ public class Trigger : MonoBehaviour
         {
             this.GetComponent<Collider>().enabled = false;
             lde.OpenDoors();
+   
         }
     }
 }
