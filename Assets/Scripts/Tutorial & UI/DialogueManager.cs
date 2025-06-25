@@ -18,6 +18,8 @@ public class DialogueManager : MonoBehaviour
     public AudioClip fillerLineBeep;
     public float typewriterSpeed = 0.08f;
 
+    public DialogueAudio dialogueAudio;
+
     // Events for handling dialogue completion
     public event Action<int> OnDialogueEnd;
     private PlayerController playerController;

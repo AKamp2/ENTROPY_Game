@@ -11,6 +11,7 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioClip bodyFoundStinger;
     public AudioClip powerCutSFX;
 
+    [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentalGroup;
     public AudioMixerGroup ambienceGroup;
 
