@@ -271,7 +271,7 @@ public class PlayerUIManager : MonoBehaviour
             inputIndicator.sprite = keyFIndicator;
             inputIndicator.color = new Color(256, 256, 256, 0.5f);
         }
-        else
+        else if (lockdownEvent)
         {
             lockdownEvent.CanPull = false;
         }
@@ -283,7 +283,7 @@ public class PlayerUIManager : MonoBehaviour
             inputIndicator.sprite = keyFIndicator;
             inputIndicator.color = new Color(256, 256, 256, 0.5f);
         }
-        else
+        else if (lockdownEvent)
         {
             lockdownEvent.CanGrab = false;
         }
