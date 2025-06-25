@@ -15,6 +15,7 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI nameTextUI;
     public TextMeshProUGUI dialogueTextUI;
     public AudioSource audioSource;
+    public AudioClip fillerLineBeep;
     public float typewriterSpeed = 0.08f;
 
     // Events for handling dialogue completion
@@ -35,6 +36,9 @@ public class DialogueManager : MonoBehaviour
     private bool isFailureSpeaking = false;
     public bool isFailureTriggered = false;
     private bool pauseMainDialogue = false;
+
+    private bool playFillerBeep = false;
+    private bool justBeeped;
 
     private int currentFailureIndex = -1;
 
@@ -106,11 +110,11 @@ public class DialogueManager : MonoBehaviour
     /// <summary>
     /// Starts a dialogue sequence based on the given index.
     /// </summary>
-    public void StartDialogueSequence(int sequenceIndex)
+    public void StartDialogueSequence(int sequenceIndex, float delayTime)
     {
         if (sequenceIndex < dialogueSequences.Length)
         {
-            StartCoroutine(DelayTime(2f, sequenceIndex));
+            StartCoroutine(DelayTime(delayTime, sequenceIndex));
         }
     }
 
@@ -149,8 +153,13 @@ public class DialogueManager : MonoBehaviour
             // Play audio if available (one audio clip for multiple lines)
             if (currentDialogue.audioClip != null)
             {
+                playFillerBeep = false;
                 audioSource.clip = currentDialogue.audioClip;
                 audioSource.Play();
+            }
+            else
+            {
+                playFillerBeep = true;
             }
 
             isDialogueSpeaking = true; // <--- Dialogue is about to speak
@@ -363,6 +372,20 @@ public class DialogueManager : MonoBehaviour
         {
             dialogueTextUI.text += letter;
 
+            if(playFillerBeep)
+            {
+                if(justBeeped)
+                {
+                    justBeeped = false;
+                }
+                else
+                {
+                    audioSource.PlayOneShot(fillerLineBeep);
+                    justBeeped = true;
+                }
+                
+            }
+
             if (isSkipping)
             {
                 if (sfxSource && skipSfxClip)
@@ -378,6 +401,37 @@ public class DialogueManager : MonoBehaviour
             yield return new WaitForSeconds(typewriterSpeed);
         }
     }
+
+    public void RestartCurrentDialogue(float delayTime)
+    {
+        StopAllCoroutines();
+
+        // Stop any audio
+        if (audioSource.isPlaying)
+            audioSource.Stop();
+
+        // Clear dialogue UI
+        nameTextUI.text = "";
+        dialogueTextUI.text = "";
+        isSkipping = false;
+        isDialogueSpeaking = false;
+        isFailureSpeaking = false;
+        isFailureTriggered = false;
+        pauseMainDialogue = false;
+
+        // Restart dialogue from first line of the current sequence
+        currentDialogueIndex = 0;
+
+        if (currentSequenceIndex >= 0 && currentSequenceIndex < dialogueSequences.Length)
+        {
+            StartCoroutine(DelayTime(delayTime, currentSequenceIndex));
+        }
+        else
+        {
+            Debug.LogWarning("Invalid currentSequenceIndex: " + currentSequenceIndex);
+        }
+    }
+
 
     private IEnumerator DelayTime(float delayTime, int sequenceIndex)
     {

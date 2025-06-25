@@ -62,6 +62,7 @@ public class PickupScript : MonoBehaviour
     public bool CanPickUp
     {
         get { return canPickUp; }
+        set { canPickUp = value; }
     }
 
     public GameObject HeldObject
