@@ -38,7 +38,7 @@ public class DoorManager : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-
+        
         if (currentSelectedDoor)
         {
             DoorScript ds = currentSelectedDoor.GetComponent<DoorScript>();
