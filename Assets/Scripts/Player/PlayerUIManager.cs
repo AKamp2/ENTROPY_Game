@@ -234,6 +234,7 @@ public class PlayerUIManager : MonoBehaviour
         }
         else
         {
+            doorManager.CurrentSelectedDoor = null;
             inputIndicator.sprite = null;
             inputIndicator.color = new Color(0, 0, 0, 0);
 
@@ -275,7 +276,19 @@ public class PlayerUIManager : MonoBehaviour
             lockdownEvent.CanPull = false;
         }
 
-       
+        if (hit.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
+        {
+            lockdownEvent.CanGrab = true;
+
+            inputIndicator.sprite = keyFIndicator;
+            inputIndicator.color = new Color(256, 256, 256, 0.5f);
+        }
+        else
+        {
+            lockdownEvent.CanGrab = false;
+        }
+
+
     }
 
     public void ResetUI()
