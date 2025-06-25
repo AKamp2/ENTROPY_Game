@@ -325,8 +325,6 @@ public class ZeroGravity : MonoBehaviour
     {
         Application.targetFrameRate = 60;  // Match this with your build target frame rate.
 
-        this.AccessPermissions[0] = true;
-
         // give player default permissions
 
         //initial player booleans set if in tutorial mode

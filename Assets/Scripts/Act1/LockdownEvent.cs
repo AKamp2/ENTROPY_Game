@@ -9,6 +9,8 @@ public class LockdownEvent : MonoBehaviour
     private GameObject lever;
     [SerializeField]
     private DoorScript[] doors;
+    [SerializeField]
+    private DoorScript brokenDoor;
 
     // lockdown bools
     private bool isActive;
@@ -61,11 +63,16 @@ public class LockdownEvent : MonoBehaviour
     {
         if (canPull && isActive)
         {
+            // open the broken door first
+            brokenDoor.DoorState = DoorScript.States.Opening;
+
             DoorTrigger.enabled = true;
             isActive = false;
 
             // begin lighting and audio queues
         }
+
+        //if (canGrab && ) 
     }
 
 
