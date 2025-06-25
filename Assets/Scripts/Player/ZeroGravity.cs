@@ -1238,7 +1238,11 @@ public class ZeroGravity : MonoBehaviour
         currentRollSpeed = 0;
 
         //reset all actions
-        if (!tutorialMode)
+        if(tutorialManager.inTutorial)
+        {
+            tutorialManager.RestartTutorial();
+        }
+        else
         {
             canGrab = true;
             canMove = true;
