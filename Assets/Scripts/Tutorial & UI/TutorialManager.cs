@@ -6,11 +6,12 @@ public class TutorialManager : MonoBehaviour
 {
     public static TutorialManager Instance;
 
-    public ZeroGravity playerController;
+    public GameObject ZeroGPlayer;
+    private ZeroGravity playerController;
     public DialogueManager dialogueManager;
-    public DoorScript tutorialDoor;
-    public DoorScript endingDoor;
-    public PickupScript pickupObject;
+    public DoorScript doorToOpen;
+    //public DoorScript endingDoor;
+    private PickupScript pickupObject;
 
     //keep track when inside of the tutorial
     public bool inTutorial = false;
@@ -32,9 +33,6 @@ public class TutorialManager : MonoBehaviour
     
     public float fadeDuration = 1f;
 
-    public AudioSource audioSource;
-    public AudioClip jingle;
-
     float timer = 10f;
     // failure flags so each only plays once
     private bool hasPlayedPushOffFailure = false;
@@ -48,6 +46,8 @@ public class TutorialManager : MonoBehaviour
     private bool canPushOff = true;
     private bool canThrow = true;
     private bool canPropel = true;
+
+    public DialogueAudio dialogueAudio;
 
     // rolling threshold (in degrees) beyond which we consider “upside down”
     [SerializeField] private float rollAngleThreshold = 150f;
@@ -67,11 +67,14 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
+        playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
+        pickupObject = ZeroGPlayer.GetComponent<PickupScript>();
+
         if (playerController.TutorialMode == true)
         {
-            if(tutorialDoor != null)
+            if(doorToOpen != null)
             {
-                tutorialDoor.LockDoor();
+                doorToOpen.LockDoor();
             }
 
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
@@ -161,7 +164,7 @@ public class TutorialManager : MonoBehaviour
         SetPlayerAbilities(false, false, false, false, false);
         inTutorial = true;
         yield return new WaitForSeconds(1f);
-        audioSource.PlayOneShot(jingle);
+        dialogueAudio.PlayJingle();
         FadeIn(enterCanvasGroup);
         dialogueManager.StartDialogueSequence(0, 2f); // Ensure correct tutorial sequence index
 
@@ -300,15 +303,11 @@ public class TutorialManager : MonoBehaviour
         inTutorial = false;
         isWaitingForAction = false;
         playerController.TutorialMode = false;
-        if (endingDoor != null)
+        if(doorToOpen!=null)
         {
-            endingDoor.UnlockDoor();
-        }
-        if(tutorialDoor!=null)
-        {
-            if(tutorialDoor.DoorState != DoorScript.States.Open)
+            if(doorToOpen.DoorState != DoorScript.States.Open)
             {
-                tutorialDoor.UnlockDoor();
+                doorToOpen.UnlockDoor();
             }
         }
 
@@ -403,19 +402,16 @@ public class TutorialManager : MonoBehaviour
         dialogueManager.TutorialSkipped = false;
 
         // Reactivate the tutorial door if it was opened
-        if (tutorialDoor != null)
+        if (doorToOpen != null)
         {
-            tutorialDoor.LockDoor();
+            doorToOpen.LockDoor();
         }
 
         // Restart dialogue from the beginning of the tutorial sequence
         dialogueManager.RestartCurrentDialogue(2f);
 
         // (Optional) Play intro jingle again
-        if (audioSource != null && jingle != null)
-        {
-            audioSource.PlayOneShot(jingle);
-        }
+        dialogueAudio.PlayJingle();
 
         // Re-show the tutorial skip panel
         FadeIn(enterCanvasGroup);
