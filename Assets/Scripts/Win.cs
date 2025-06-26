@@ -30,10 +30,10 @@ public class Win : MonoBehaviour
 
     private void Update()
     {
-        //if (winDoor.DoorState == DoorScript.States.Closed && winCondition != true)
-        //{
-        //    winCondition = true;
-        //}
+        if (winDoor.DoorState == DoorScript.States.Open && winCondition != true)
+        {
+            winCondition = true;
+        }
 
     }
 
