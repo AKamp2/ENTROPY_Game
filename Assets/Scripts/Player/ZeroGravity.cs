@@ -61,6 +61,10 @@ public class ZeroGravity : MonoBehaviour
     private float highDangerCoolDown = 5.0f;
     private float hurtTimeStamp = 0f;
 
+    //access permissions
+    [SerializeField]
+    private bool[] accessPermissions = new bool[3];
+
     [Header("== Player Movement Settings ==")]
     [SerializeField]
     private float rollTorque = 250.0f;
@@ -302,6 +306,13 @@ public class ZeroGravity : MonoBehaviour
     {
         get { return grabRange; }
         set { grabRange = value; }
+
+    }
+
+    public bool[] AccessPermissions
+    {
+        get { return accessPermissions; }
+       
     }
 
     // getter for isGrabbing
@@ -313,6 +324,8 @@ public class ZeroGravity : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;  // Match this with your build target frame rate.
+
+        // give player default permissions
 
         //initial player booleans set if in tutorial mode
         if (tutorialMode)
@@ -1212,7 +1225,12 @@ public class ZeroGravity : MonoBehaviour
     public void Respawn(GameObject? respawnOverride = null)
     {
         GameObject targetLoc = respawnOverride ?? respawnLoc;
-        enemyManager.ResetAliens();
+
+        if(enemyManager != null)
+        {
+            enemyManager.ResetAliens();
+        }
+        
         transform.position = targetLoc.transform.position;
         cam.transform.rotation = targetLoc.transform.rotation;
         isDead = false;
@@ -1223,7 +1241,11 @@ public class ZeroGravity : MonoBehaviour
         currentRollSpeed = 0;
 
         //reset all actions
-        if (!tutorialMode)
+        if(tutorialManager.inTutorial)
+        {
+            tutorialManager.RestartTutorial();
+        }
+        else
         {
             canGrab = true;
             canMove = true;

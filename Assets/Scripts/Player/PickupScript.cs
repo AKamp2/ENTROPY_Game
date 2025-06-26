@@ -62,6 +62,7 @@ public class PickupScript : MonoBehaviour
     public bool CanPickUp
     {
         get { return canPickUp; }
+        set { canPickUp = value; }
     }
 
     public GameObject HeldObject
@@ -83,10 +84,11 @@ public class PickupScript : MonoBehaviour
         {
             //perform raycast to check if player is looking at object within pickuprange
             RaycastHit hit;
-            if (Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hit, pickUpRange))
+            float sphereRadius = 0.5f; // adjust for how wide you want the grab to be
+            if (Physics.SphereCast(cam.transform.position, sphereRadius, cam.transform.forward, out hit, pickUpRange))
             {
                 //make sure pickup tag is attached
-                if (coolDown <= 0 && hit.transform.gameObject.tag == "PickupObject")
+                if (coolDown <= 0 && hit.transform.CompareTag("PickupObject"))
                 {
                     current = hit.transform.gameObject;
                     canPickUp = true;
@@ -161,6 +163,8 @@ public class PickupScript : MonoBehaviour
             heldObj.layer = 8; //change the object layer to the holdLayer
             //make sure object doesnt collide with player, it can cause weird bugs
             Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, true);
+            //heldObj.GetComponent<Collider>().enabled = false;
+
 
             MoveObject();
             zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
@@ -170,6 +174,8 @@ public class PickupScript : MonoBehaviour
     {
         //re-enable collision with player
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
+        //heldObj.GetComponent<Collider>().enabled = true;
+
         Debug.Log(objectLayer.value);
         heldObj.layer = 9; //object assigned back to default layer
         heldObjRb.isKinematic = false;
@@ -190,6 +196,7 @@ public class PickupScript : MonoBehaviour
     {
         //same as drop function, but add force to object before undefining it
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
+        //heldObj.GetComponent<Collider>().enabled = true;
         heldObj.layer = 9;
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;

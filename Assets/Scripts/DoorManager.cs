@@ -6,7 +6,8 @@ using UnityEngine.InputSystem;
 public class DoorManager : MonoBehaviour
 {
 
-
+    [SerializeField]
+    ZeroGravity player;
     [SerializeField]
     private DoorScript[] doors;
 
@@ -37,9 +38,21 @@ public class DoorManager : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
+        
         if (currentSelectedDoor)
         {
-            currentSelectedDoor.GetComponent<DoorScript>().UseDoor();
+            DoorScript ds = currentSelectedDoor.GetComponent<DoorScript>();
+
+            if (ds.HasPermissionLevel && player.AccessPermissions[(int)ds.Permission])
+            {
+                currentSelectedDoor.GetComponent<DoorScript>().UseDoor();
+            }
+            else if (!ds.HasPermissionLevel)
+            {
+                currentSelectedDoor.GetComponent<DoorScript>().UseDoor();
+            }
+
+                
         }
         
     }

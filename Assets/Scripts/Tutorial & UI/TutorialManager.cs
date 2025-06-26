@@ -6,12 +6,15 @@ public class TutorialManager : MonoBehaviour
 {
     public static TutorialManager Instance;
 
-    public ZeroGravity playerController;
+    public GameObject ZeroGPlayer;
+    private ZeroGravity playerController;
     public DialogueManager dialogueManager;
-    public DoorScript tutorialDoor;
-    public DoorScript endingDoor;
-    public PickupScript pickupObject;
+    public DoorScript doorToOpen;
+    //public DoorScript endingDoor;
+    private PickupScript pickupObject;
 
+    //keep track when inside of the tutorial
+    public bool inTutorial = false;
 
     private int currentStep = 0;
     private bool isWaitingForAction = false;
@@ -30,9 +33,6 @@ public class TutorialManager : MonoBehaviour
     
     public float fadeDuration = 1f;
 
-    public AudioSource audioSource;
-    public AudioClip jingle;
-
     float timer = 10f;
     // failure flags so each only plays once
     private bool hasPlayedPushOffFailure = false;
@@ -40,9 +40,14 @@ public class TutorialManager : MonoBehaviour
     private bool rollPanelHidden = false;
     private bool pushOffPanelHidden = false;
 
-    // which failure-dialogue index in your failureDialogues array?
-    //[SerializeField] private int pushOffFailureIndex = 0;
-    //[SerializeField] private int rollFailureIndex = 2;  // adjust to your array
+    //intended tutorial abilities
+    private bool canGrab = true;
+    private bool canRoll = true;
+    private bool canPushOff = true;
+    private bool canThrow = true;
+    private bool canPropel = true;
+
+    public DialogueAudio dialogueAudio;
 
     // rolling threshold (in degrees) beyond which we consider “upside down”
     [SerializeField] private float rollAngleThreshold = 150f;
@@ -62,11 +67,14 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
+        playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
+        pickupObject = ZeroGPlayer.GetComponent<PickupScript>();
+
         if (playerController.TutorialMode == true)
         {
-            if(tutorialDoor != null)
+            if(doorToOpen != null)
             {
-                tutorialDoor.LockDoor();
+                doorToOpen.LockDoor();
             }
 
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
@@ -144,7 +152,7 @@ public class TutorialManager : MonoBehaviour
                 Debug.Log("Detected player propel");
 
                 playerController.HasPropelled = false; // Reset to prevent multiple detections
-                SetPlayerAbilities(true, true, true, true);
+                SetPlayerAbilities(true, true, true, true, true);
                 StartCoroutine(WaitForSecondGrab());
 
             }
@@ -153,11 +161,12 @@ public class TutorialManager : MonoBehaviour
 
     private IEnumerator StartTutorial()
     {
-        SetPlayerAbilities(false, false, false, false);
+        SetPlayerAbilities(false, false, false, false, false);
+        inTutorial = true;
         yield return new WaitForSeconds(1f);
-        audioSource.PlayOneShot(jingle);
+        dialogueAudio.PlayJingle();
         FadeIn(enterCanvasGroup);
-        dialogueManager.StartDialogueSequence(0); // Ensure correct tutorial sequence index
+        dialogueManager.StartDialogueSequence(0, 2f); // Ensure correct tutorial sequence index
 
         //fading out the tutorial skip panel
         StartCoroutine(DelayFadeOut(7, enterCanvasGroup));
@@ -179,7 +188,7 @@ public class TutorialManager : MonoBehaviour
                 Debug.Log("Tutorial 1: Roll upside down");
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(false, false, false, true); // Only allow roll
+                SetPlayerAbilities(false, false, false, true, false); // Only allow roll
                 FadeIn(rollQCanvasGroup);
                 break;
 
@@ -188,7 +197,7 @@ public class TutorialManager : MonoBehaviour
                 Debug.Log("Tutorial 2: Roll upright");
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(false, false, false, true); // Still only roll
+                SetPlayerAbilities(false, false, false, true, false); // Still only roll
                 FadeIn(rollECanvasGroup);
                 break;
 
@@ -197,7 +206,7 @@ public class TutorialManager : MonoBehaviour
                 Debug.Log("Tutorial 3: Grab bar");
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(true, false, true, true); //grab, push off, roll
+                SetPlayerAbilities(true, false, true, true, false); //grab, push off, roll
                 FadeIn(grabCanvasGroup);
                 break;
 
@@ -206,7 +215,7 @@ public class TutorialManager : MonoBehaviour
                 Debug.Log("Tutorial 4: Propel and grab another bar");
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(true, true, true, true); // Enable all
+                SetPlayerAbilities(true, true, true, true, true); // Enable all
                 FadeIn(propelCanvasGroup);
                 break;
             case 5:
@@ -264,28 +273,41 @@ public class TutorialManager : MonoBehaviour
         isWaitingForAction = false;
     }
 
-    void SetPlayerAbilities(bool canGrab, bool canPropel, bool canPushOff, bool canRoll)
+    public void SetPlayerAbilities(bool canGrab, bool canPropel, bool canPushOff, bool canRoll, bool canThrow)
     {
         playerController.CanGrab = canGrab;
         playerController.CanPropel = canPropel;
         playerController.CanPushOff = canPushOff;
         playerController.CanRoll = canRoll;
+        pickupObject.CanPickUp = canThrow;
+
+        this.canGrab = canGrab;
+        this.canPropel = canPropel;
+        this.canPushOff = canPushOff;
+        this.canRoll = canRoll;
+        this.canThrow = canThrow;
+    }
+
+    public void SetAbilitiesToTutorial()
+    {
+        playerController.CanGrab = canGrab;
+        playerController.CanPropel = canPropel;
+        playerController.CanPushOff = canPushOff;
+        playerController.CanRoll = canRoll;
+        pickupObject.CanPickUp = canThrow;
     }
 
     void EndTutorial()
     {
-        SetPlayerAbilities(true, true, true, true);
+        SetPlayerAbilities(true, true, true, true, true);
+        inTutorial = false;
         isWaitingForAction = false;
         playerController.TutorialMode = false;
-        if (endingDoor != null)
+        if(doorToOpen!=null)
         {
-            endingDoor.UnlockDoor();
-        }
-        if(tutorialDoor!=null)
-        {
-            if(tutorialDoor.DoorState != DoorScript.States.Open)
+            if(doorToOpen.DoorState != DoorScript.States.Open)
             {
-                tutorialDoor.UnlockDoor();
+                doorToOpen.UnlockDoor();
             }
         }
 
@@ -340,6 +362,60 @@ public class TutorialManager : MonoBehaviour
         }
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    public void RestartTutorial()
+    {
+        Debug.Log("Restarting tutorial...");
+
+        StopAllCoroutines();
+
+        // Reset tutorial state
+        inTutorial = true;
+        currentStep = 0;
+        isWaitingForAction = false;
+        stepComplete = false;
+        tutorialSkipped = false;
+
+        // Reset failure flags
+        hasPlayedPushOffFailure = false;
+        hasPlayedRollFailure = false;
+        rollPanelHidden = false;
+        pushOffPanelHidden = false;
+
+        // Reset ability flags
+        canGrab = true;
+        canRoll = true;
+        canPushOff = true;
+        canThrow = true;
+        canPropel = true;
+
+        // Set player movement ability to NONE at the start
+        SetPlayerAbilities(false, false, false, false, false);
+
+        // Hide all tutorial canvas elements
+        HideAllPanels();
+
+        // Reset skip flags in DialogueManager
+        dialogueManager.SkipNextDialogue = false;
+        dialogueManager.IsFailureTriggered = false;
+        dialogueManager.TutorialSkipped = false;
+
+        // Reactivate the tutorial door if it was opened
+        if (doorToOpen != null)
+        {
+            doorToOpen.LockDoor();
+        }
+
+        // Restart dialogue from the beginning of the tutorial sequence
+        dialogueManager.RestartCurrentDialogue(2f);
+
+        // (Optional) Play intro jingle again
+        dialogueAudio.PlayJingle();
+
+        // Re-show the tutorial skip panel
+        FadeIn(enterCanvasGroup);
+        StartCoroutine(DelayFadeOut(7f, enterCanvasGroup));
     }
 
     private void HideAllPanels()

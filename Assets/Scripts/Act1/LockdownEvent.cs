@@ -1,0 +1,99 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class LockdownEvent : MonoBehaviour
+{
+    [SerializeField]
+    ZeroGravity player;
+    [SerializeField]
+    private BoxCollider DoorTrigger;
+    [SerializeField]
+    private GameObject lever;
+    [SerializeField]
+    private DoorScript[] doors;
+    [SerializeField]
+    private DoorScript brokenDoor;
+
+    // lockdown bools
+    private bool isActive;
+    private bool canPull;
+
+    // wrist monitor
+    private bool canGrab;
+    private bool isGrabbable;
+
+    public bool CanPull
+    {
+        get { return canPull; }
+        set { canPull = value; }
+    }
+
+    public bool IsActive
+    {
+        get { return isActive; }
+    }
+
+    public bool CanGrab
+    {
+        get { return canGrab; }
+        set { canGrab = value; }
+    }
+
+    public bool IsGrabbable
+    {
+        get { return isGrabbable; }
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        DoorTrigger.enabled = false;
+        // checks if player is currently hovering over lever
+        canPull = false;
+        // checks if system is able to be turned on
+        isActive = true;
+
+        canGrab = false;
+        isGrabbable = true;
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void OpenDoors()
+    {
+        foreach (DoorScript door in doors)
+        {
+            door.UseDoor();
+        }
+    }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (canPull && isActive)
+        {
+            // open the broken door first
+            brokenDoor.DoorState = DoorScript.States.Opening;
+
+            DoorTrigger.enabled = true;
+            isActive = false;
+
+            // begin lighting and audio queues
+        }
+
+        if (canGrab && IsGrabbable)
+        {
+            player.AccessPermissions[0] = true;
+
+            isGrabbable = false;
+        }
+    }
+
+
+
+
+}

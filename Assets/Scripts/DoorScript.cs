@@ -18,6 +18,11 @@ public class DoorScript : MonoBehaviour
         Broken
     }
 
+    public enum PermissionLevel
+    {
+        Basic = 0,
+        Captain = 1
+    }
 
     private DoorManager doorManager;
 
@@ -26,6 +31,11 @@ public class DoorScript : MonoBehaviour
 
     [SerializeField]
     private States states = States.Closed;
+    [SerializeField]
+    private bool hasPermissionlevel = false;
+    [SerializeField]
+    private PermissionLevel level;
+
 
     [SerializeField]
     private float speed = 1.0f;
@@ -50,6 +60,9 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     private Transform doorPart;
 
+    public AudioSource audioSource;
+    public EnvironmentAudio audioManager;
+
     //private DialogueManager dialogueManager;
 
     //colors
@@ -73,6 +86,15 @@ public class DoorScript : MonoBehaviour
         set { states = value; }
     }
 
+    public bool HasPermissionLevel
+    {
+        get { return hasPermissionlevel; }
+    }
+
+    public PermissionLevel Permission
+    {
+        get { return level; }
+    }
    
     // Start is called before the first frame update
     void Start()
@@ -217,8 +239,10 @@ public class DoorScript : MonoBehaviour
         }
         else if (states == States.Closed)
         {
+            audioManager.playDoorOpenAudio(speed, this);
             states = States.Opening;
         }
+
     }
 
     private void DialogueEnd(int sequenceIndex)
@@ -248,6 +272,7 @@ public class DoorScript : MonoBehaviour
     {
         if (states == States.Locked)
         {
+            audioManager.playDoorOpenAudio(speed, this);
             states = States.Opening;
         }
     }
