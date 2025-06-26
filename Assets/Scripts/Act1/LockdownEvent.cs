@@ -1,10 +1,15 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class LockdownEvent : MonoBehaviour
 {
     [SerializeField]
-    ZeroGravity player;
+    private GameObject playerObject;
+    private ZeroGravity player;
+    [SerializeField]
+    private Collider playerCollider;
+
     [SerializeField]
     private BoxCollider DoorTrigger;
     [SerializeField]
@@ -14,6 +19,10 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private DoorScript brokenDoor;
 
+
+    [SerializeField]
+    private Material leverMaterial;
+
     // lockdown bools
     private bool isActive;
     private bool canPull;
@@ -21,6 +30,8 @@ public class LockdownEvent : MonoBehaviour
     // wrist monitor
     private bool canGrab;
     private bool isGrabbable;
+
+    public GameplayBeatAudio audio;
 
     public bool CanPull
     {
@@ -47,6 +58,8 @@ public class LockdownEvent : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        player = playerObject.GetComponent<ZeroGravity>();
+
         DoorTrigger.enabled = false;
         // checks if player is currently hovering over lever
         canPull = false;
@@ -66,10 +79,19 @@ public class LockdownEvent : MonoBehaviour
 
     public void OpenDoors()
     {
+        audio.playBodyStinger();
         foreach (DoorScript door in doors)
         {
-            door.UseDoor();
+            StartCoroutine(OpenDoorWithDelay(door));
         }
+    }
+
+    //adding slight delay to door to prevent phasing.
+    private IEnumerator OpenDoorWithDelay(DoorScript door)
+    {
+        float randomDelay = Random.Range(0f, 0.2f); // Adjust range if needed
+        yield return new WaitForSeconds(randomDelay);
+        door.UseDoor();
     }
 
     public void OnInteract(InputAction.CallbackContext context)
@@ -78,11 +100,14 @@ public class LockdownEvent : MonoBehaviour
         {
             // open the broken door first
             brokenDoor.DoorState = DoorScript.States.Opening;
+            lever.GetComponent<Renderer>().material = leverMaterial;
 
             DoorTrigger.enabled = true;
             isActive = false;
 
             // begin lighting and audio queues
+            StartCoroutine(PlayLockdownFX());
+            
         }
 
         if (canGrab && IsGrabbable)
@@ -93,7 +118,12 @@ public class LockdownEvent : MonoBehaviour
         }
     }
 
+    private IEnumerator PlayLockdownFX()
+    {
+        audio.playPowerCut();
+        yield return new WaitForSeconds(9f);
 
-
+        audio.playPowerOn();
+    }
 
 }

@@ -129,7 +129,7 @@ public class PlayerUIManager : MonoBehaviour
     void Start()
     {
         //set the crosshair and grabber sprites accordingly;
-        //crosshair.sprite = crosshairIcon;
+        crosshair.sprite = crosshairIcon;
         //set bar in view intially as false
         barInView = false;
         //erase the grabber

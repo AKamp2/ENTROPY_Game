@@ -8,6 +8,10 @@ public class Win : MonoBehaviour
     [SerializeField]
     private DoorScript winDoor;
 
+    private void Start()
+    {
+        winCondition = false;
+    }
     public bool WinCondition
     {
         get { return winCondition; }
@@ -20,13 +24,13 @@ public class Win : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
-            winDoor.DoorState = DoorScript.States.Closing;
+            winCondition = true;
         }
     }
 
     private void Update()
     {
-        if (winDoor.DoorState == DoorScript.States.Closed && winCondition != true)
+        if (winDoor.DoorState == DoorScript.States.Open && winCondition != true)
         {
             winCondition = true;
         }

@@ -10,6 +10,7 @@ public class GameplayBeatAudio : MonoBehaviour
     [Header("SFX Clips")]
     public AudioClip bodyFoundStinger;
     public AudioClip powerCutSFX;
+    public AudioClip powerOnSFX;
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentalGroup;
@@ -37,5 +38,10 @@ public class GameplayBeatAudio : MonoBehaviour
     public void playPowerCut()
     {
         powerCutSource.PlayOneShot(powerCutSFX);
+    }
+
+    public void playPowerOn()
+    {
+        powerCutSource.PlayOneShot(powerOnSFX);
     }
 }

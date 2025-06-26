@@ -29,7 +29,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("sample");
-        SceneManager.LoadScene("NewLevel");
+        SceneManager.LoadScene("Level1Graybox");
 
     }
     public void Options()
@@ -58,6 +58,10 @@ public class MainMenu : MonoBehaviour
     }
     public void ExitOptions()
     {
+        if (volume.profile.TryGet<LensDistortion>(out LensDistortion distortion))
+        {
+            distortion.active = true;
+        }
         optionsMenu.SetActive(false);
     }
     public void QuitGame()
