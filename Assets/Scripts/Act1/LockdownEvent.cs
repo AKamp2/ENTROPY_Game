@@ -19,6 +19,9 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private DoorScript brokenDoor;
 
+    [SerializeField]
+    private DoorScript bodyDoor;
+
 
     [SerializeField]
     private Material leverMaterial;
@@ -79,11 +82,12 @@ public class LockdownEvent : MonoBehaviour
 
     public void OpenDoors()
     {
-        audio.playBodyStinger();
+        
         foreach (DoorScript door in doors)
         {
             StartCoroutine(OpenDoorWithDelay(door));
         }
+        StartCoroutine(WaitForBodyVisible());
     }
 
     //adding slight delay to door to prevent phasing.
@@ -92,6 +96,13 @@ public class LockdownEvent : MonoBehaviour
         float randomDelay = Random.Range(0f, 0.2f); // Adjust range if needed
         yield return new WaitForSeconds(randomDelay);
         door.UseDoor();
+    }
+
+    private IEnumerator WaitForBodyVisible()
+    {
+        yield return new WaitForSeconds(3f);
+        audio.playBodyStinger();
+
     }
 
     public void OnInteract(InputAction.CallbackContext context)
@@ -121,7 +132,7 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator PlayLockdownFX()
     {
         audio.playPowerCut();
-        yield return new WaitForSeconds(9f);
+        yield return new WaitForSeconds(6f);
 
         audio.playPowerOn();
     }
