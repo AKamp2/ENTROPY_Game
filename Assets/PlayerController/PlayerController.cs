@@ -95,7 +95,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""name"": ""Thrust"",
                     ""type"": ""Value"",
                     ""id"": ""288b4cfb-fe3c-4d7e-9807-d97ddecd251a"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
