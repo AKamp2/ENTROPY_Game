@@ -60,6 +60,9 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     private Transform doorPart;
 
+    public AudioSource audioSource;
+    public EnvironmentAudio audioManager;
+
     //private DialogueManager dialogueManager;
 
     //colors
@@ -236,6 +239,7 @@ public class DoorScript : MonoBehaviour
         }
         else if (states == States.Closed)
         {
+            audioManager.playDoorOpenAudio(speed, this);
             states = States.Opening;
         }
 
@@ -268,6 +272,7 @@ public class DoorScript : MonoBehaviour
     {
         if (states == States.Locked)
         {
+            audioManager.playDoorOpenAudio(speed, this);
             states = States.Opening;
         }
     }

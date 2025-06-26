@@ -68,7 +68,7 @@ public class LockdownEvent : MonoBehaviour
     {
         foreach (DoorScript door in doors)
         {
-            door.DoorState = DoorScript.States.Opening;
+            door.UseDoor();
         }
     }
 

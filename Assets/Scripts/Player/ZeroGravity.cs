@@ -1225,7 +1225,12 @@ public class ZeroGravity : MonoBehaviour
     public void Respawn(GameObject? respawnOverride = null)
     {
         GameObject targetLoc = respawnOverride ?? respawnLoc;
-        enemyManager.ResetAliens();
+
+        if(enemyManager != null)
+        {
+            enemyManager.ResetAliens();
+        }
+        
         transform.position = targetLoc.transform.position;
         cam.transform.rotation = targetLoc.transform.rotation;
         isDead = false;
