@@ -29,7 +29,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("sample");
-        SceneManager.LoadScene("NewLevel");
+        SceneManager.LoadScene("Level1Graybox");
 
     }
     public void Options()
