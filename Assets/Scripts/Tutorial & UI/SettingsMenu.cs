@@ -21,11 +21,14 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueSliderText;
     [SerializeField] private Slider soundFXSlider;
     [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider masterVolumeSlider;
     [SerializeField] private TextMeshProUGUI soundFXSliderText;
     [SerializeField] private AudioSource soundFXAudioSource;
     [SerializeField] private AudioSource dialogueAudioSource;
     [SerializeField] private AmbientController ambientAudioController;
     [SerializeField] private TextMeshProUGUI musicSliderText;
+    [SerializeField] private TextMeshProUGUI masterVolumeSliderText;
+    [SerializeField] private AudioMixerGroup masterVolume;
 
     // General option initialization
     [SerializeField] private Toggle subtitleCheckbox;
@@ -82,6 +85,7 @@ public class SettingsMenu : MonoBehaviour
         dialogueSlider.value = GetPrefs("dialogueSlider", 100);
         soundFXSlider.value = GetPrefs("soundFXSlider", 100);
         musicSlider.value = GetPrefs("musicSlider", 100);
+        masterVolumeSlider.value = GetPrefs("masterVolumeSlider", 100);
         sensitivitySlider.value = GetPrefs("sensitivitySlider", 40);
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
         graphicsQuality.value = GetPrefs("qualityLevel",5);
@@ -112,6 +116,11 @@ public class SettingsMenu : MonoBehaviour
         isChanged = true;
 
     }
+    public void SetMasterVolumeSliderText(TextMeshProUGUI sliderText)
+    {
+        sliderText.text = masterVolumeSlider.value.ToString();
+        isChanged = true;
+    }
     public void SetDialogueVolume()
     {
         // Sets the dialogue volume to the slide value
@@ -135,6 +144,14 @@ public class SettingsMenu : MonoBehaviour
         ambientAudioController.SetVolume(musicSlider.value/100);
         //Debug.Log(audioSource.volume);
         SetPrefs("musicSlider", (int)musicSlider.value);
+    }
+
+    public void SetMasterVolume()
+    {
+        // Sets the dialogue volume to the slide value
+        masterVolume.audioMixer.SetFloat("attentuation",masterVolumeSlider.value - 100);
+        //Debug.Log(audioSource.volume);
+        SetPrefs("masterVolumeSlider", (int)masterVolumeSlider.value);
     }
 
     public void SetSensitivity()
@@ -227,11 +244,13 @@ public class SettingsMenu : MonoBehaviour
         SetDialogueVolume();
         SetSoundFXVolume();
         SetSensitivity();
-        //SetMusicVolume();
+        SetMusicVolume();
+        SetMasterVolume();
         SetDialogueSliderText(dialogueSliderText);
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);
         SetMusicSliderText(musicSliderText);
+        SetMasterVolumeSliderText(masterVolumeSliderText);
         isChanged = false;
     }
 
