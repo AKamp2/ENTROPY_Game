@@ -130,6 +130,7 @@ public class TutorialManager : MonoBehaviour
                 float zAngle = playerController.cam.transform.eulerAngles.z;
                 if (zAngle > 180f) zAngle = 360f - zAngle;
 
+                //checking is upright
                 bool isUpright = zAngle <= 5f || zAngle >= 355f;
 
                 if (isUpright)
