@@ -149,8 +149,8 @@ public class SettingsMenu : MonoBehaviour
     public void SetMasterVolume()
     {
         // Sets the dialogue volume to the slide value
-        masterVolume.audioMixer.SetFloat("attentuation",masterVolumeSlider.value - 100);
-        //Debug.Log(audioSource.volume);
+        masterVolume.audioMixer.SetFloat("volume",masterVolumeSlider.value - 100);
+        //Debug.Log();
         SetPrefs("masterVolumeSlider", (int)masterVolumeSlider.value);
     }
 
