@@ -68,6 +68,8 @@ public class ZeroGravity : MonoBehaviour
     [Header("== Player Movement Settings ==")]
     [SerializeField]
     private float rollTorque = 250.0f;
+    [SerializeField]
+    private float maxRollSpeed = 75f;
     private float currentRollSpeed = 0f;
     [SerializeField]
     private float rollAcceleration = 10f; // How quickly it accelerates to rollTorque
@@ -118,8 +120,6 @@ public class ZeroGravity : MonoBehaviour
     [Header("== Swinging Settings==")]
     [SerializeField]
     private bool swinging = false;
-    private float maxSwingDistance = 0f; //max distance while swinging
-    private float minSwingDistance = 0f; //minimum distance while swinging
     private Vector3 swingPoint; //stores the bar transform when calculating swings
     private SpringJoint joint;
     [SerializeField]
@@ -477,14 +477,14 @@ public class ZeroGravity : MonoBehaviour
             //check for a reasonable max roll speed
             //Debug.Log(currentRollSpeed);
 
-            //ensure the roll is capped at 100 and -100 so the player does gain speed past this in the roll
-            if(currentRollSpeed > 100f)
+            //ensure the roll is capped at 100 and -100 so the player doesn't gain speed past this in the roll
+            if(currentRollSpeed > maxRollSpeed)
             {
-                currentRollSpeed = 100f;
+                currentRollSpeed = maxRollSpeed;
             }
-            else if(currentRollSpeed < -100f)
+            else if(currentRollSpeed < -maxRollSpeed)
             {
-                currentRollSpeed = -100f;
+                currentRollSpeed = -maxRollSpeed;
             }
 
                 //apply the roll rotation to the camera
@@ -515,15 +515,15 @@ public class ZeroGravity : MonoBehaviour
 
     private void DetectBarrierAndBounce()
     {
+        float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.BarrierLayer);
+
         //if the player is grabbing on a bar and going slower than walking speed
         if (isGrabbing && rb.linearVelocity.magnitude < zeroGWalkSpeed)
         {
             //ignore bouncing
             return;
         }
-
-        float detectionRadius = boundingSphere.radius + 0.3f; // Slightly larger for early detection
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.BarrierLayer);
 
         //Debug.Log(hitColliders.Length);
 
@@ -863,6 +863,7 @@ public class ZeroGravity : MonoBehaviour
             joint.spring = jointSpringForce; //higher pull and push of the spring
             joint.damper = jointDamperForce;
             joint.massScale = jointMassScale;
+
             //if the player is not swinging
             if (!swinging)
             {
@@ -961,7 +962,7 @@ public class ZeroGravity : MonoBehaviour
             {
                 //Debug.Log("Danger Speed Reached");
                 //the cooldown for swinging will be higher
-                grabSwingTimeStamp = Time.time + swingCoolDownFastest;
+                grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
                 //Debug.Log("medium Time Stamp: " + grabSwingTimeStamp + "TimeStampCurrent: " + Time.time);
             }
             //if the player is moving at a slower speed
@@ -975,7 +976,7 @@ public class ZeroGravity : MonoBehaviour
             //if the player is moving slower than the benchmark
             else if(rb.linearVelocity.magnitude < zeroGWalkSpeed)
             {
-                grabSwingTimeStamp = Time.time + swingCoolDownSlowest;
+                grabSwingTimeStamp = Time.time + swingCoolDownFastest;
             }
             //set the prev just grabbed bool to confirm we do this once 
             prevJustGrabbed = justGrabbed;
