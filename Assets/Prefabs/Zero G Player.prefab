@@ -858,8 +858,8 @@ GameObject:
   - component: {fileID: 8234961305471522324}
   - component: {fileID: 1315194308885493417}
   - component: {fileID: 2463627945084931592}
+  - component: {fileID: 7411477709003907719}
   - component: {fileID: 6340228176361870917}
-  - component: {fileID: 548731201745001308}
   m_Layer: 0
   m_Name: Zero G Player
   m_TagString: Player
@@ -1160,6 +1160,7 @@ MonoBehaviour:
   highDangerCoolDown: 5
   accessPermissions: 000000
   rollTorque: 75
+  maxRollSpeed: 75
   rollAcceleration: 40
   deathRollAcceleration: 3
   rollFrictionGrab: 50
@@ -1196,6 +1197,7 @@ MonoBehaviour:
   rigBuilder: {fileID: 0}
   animator: {fileID: 0}
   tutorialMode: 1
+  useManualPullIn: 0
 --- !u!114 &1315194308885493417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1270,6 +1272,24 @@ MonoBehaviour:
   raycastLayer:
     serializedVersion: 2
     m_Bits: 0
+--- !u!114 &7411477709003907719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8234961305471522323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0cd9a6d790b9b045a21749984611888, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSourcePrefab: {fileID: 3349211292582800795, guid: cdfd8fa27c128f84aa71ca7c4e791ccc, type: 3}
+  audioContainer: {fileID: 0}
+  softBounce: {fileID: 8300000, guid: ce86434780446e949a847be2503ca92f, type: 3}
+  hardBounce: {fileID: 8300000, guid: fd9dcfe4d42a14b3a8001dd6a87d9afb, type: 3}
+  fatalBounce: {fileID: 8300000, guid: 8b6191293c778854585b4763f47a74e6, type: 3}
+  playerGroup: {fileID: 1529270391070815761, guid: 720f457489e44c440b5082c1b507453e, type: 2}
 --- !u!82 &6340228176361870917
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1367,25 +1387,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &548731201745001308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8234961305471522323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0cd9a6d790b9b045a21749984611888, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioSource1: {fileID: 5407936904285363417}
-  audioSource2: {fileID: 2964588151121698031}
-  audioSource3: {fileID: 4597788426239966917}
-  softBounce: {fileID: 8300000, guid: ce86434780446e949a847be2503ca92f, type: 3}
-  hardBounce: {fileID: 8300000, guid: fd9dcfe4d42a14b3a8001dd6a87d9afb, type: 3}
-  fatalBounce: {fileID: 8300000, guid: 8b6191293c778854585b4763f47a74e6, type: 3}
-  playerGroup: {fileID: 1529270391070815761, guid: 720f457489e44c440b5082c1b507453e, type: 2}
 --- !u!1 &8234961306013145808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,6 +1399,7 @@ GameObject:
   - component: {fileID: 8234961306013145810}
   - component: {fileID: 8234961306013145811}
   - component: {fileID: 2484212802374499027}
+  - component: {fileID: 3054431206567501005}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -1525,6 +1527,35 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &3054431206567501005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8234961306013145808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fd9ebf1401392e4bbd47fea32f47642, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentBakedListener: {fileID: 0}
+  applyReverb: 0
+  reverbType: 0
+  useAllProbeBatches: 0
+  probeBatches: []
+  mTotalDataSize: 0
+  mProbeDataSizes: 
+  mIdentifier:
+    type: 0
+    variation: 0
+    endpointInfluence:
+      center:
+        x: 0
+        y: 0
+        z: 0
+      radius: 0
+  mProbeBatchesUsed: []
 --- !u!1 &8234961306098123234
 GameObject:
   m_ObjectHideFlags: 0

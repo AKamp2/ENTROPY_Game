@@ -549,12 +549,14 @@ public class ZeroGravity : MonoBehaviour
         Vector3 avgBounceDirection = Vector3.zero;
         int bounceCount = 0;
         float ogSpeed = rb.linearVelocity.magnitude; //store initial velocity magnitude
+        Vector3 impactPoint = transform.position;
 
         //Debug.Log(ogSpeed);
 
         foreach (Collider barrier in hitColliders)
         {
             Vector3 closestPoint = barrier.ClosestPoint(transform.position);
+            impactPoint = closestPoint; // Store most recent impact
             Vector3 wallNormal = (transform.position - closestPoint).normalized;
             Vector3 reflectDirection = Vector3.Reflect(rb.linearVelocity.normalized, wallNormal);
 
@@ -604,7 +606,7 @@ public class ZeroGravity : MonoBehaviour
             DecreaseHealth(3);
             justHit = true;
             hurt = true;
-            playerAudio.playFatalBounce();
+            playerAudio.PlayFatalBounce(impactPoint);
         }
         else if (ogSpeed >= mediumSpeed && !justHit && !isDead)
         {
@@ -612,11 +614,11 @@ public class ZeroGravity : MonoBehaviour
             DecreaseHealth(1);
             justHit = true;;
             hurt = true;
-            playerAudio.playHardBounce();
+            playerAudio.PlayHardBounce(impactPoint);
         }
         else
         {
-            playerAudio.playSoftBounce();
+            playerAudio.PlaySoftBounce(impactPoint);
         }
     }
 
@@ -633,6 +635,7 @@ public class ZeroGravity : MonoBehaviour
         }
 
         Vector3 avgBounceDirection = Vector3.zero;
+        Vector3 impactPoint = transform.position; // default
         int bounceCount = 0;
         float ogSpeed = rb.linearVelocity.magnitude; //store initial velocity magnitude
 
@@ -656,6 +659,8 @@ public class ZeroGravity : MonoBehaviour
 
                     //calculate bounce direction away from the door
                     Vector3 bounceDirection = (transform.position - door.bounds.center).normalized;
+
+                    impactPoint = door.bounds.center;
 
                     avgBounceDirection += bounceDirection;
 
@@ -688,7 +693,7 @@ public class ZeroGravity : MonoBehaviour
             Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * 0.07f;
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
-            playerAudio.playFatalBounce();
+            playerAudio.PlayFatalBounce(impactPoint);
 
             if (!isDead)
             {

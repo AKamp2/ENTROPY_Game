@@ -2652,6 +2652,15 @@ MonoBehaviour:
       delayBetweenDialogues: 0.5
     - characterName: ALAN
       dialogueLines:
+      - I am rerouting power to the door of the chamber.
+      audioClip: {fileID: 0}
+      advancesTutorial: 1
+      skipWithTutorial: 0
+      incrementsDialogue: 0
+      delayBetweenDialogues: 0.5
+  - dialogues:
+    - characterName: ALAN
+      dialogueLines:
       - 'Now, on to the concerning news. '
       - I regret to inform you that there is an unlikely crisis regarding the integrity
         of our ship.
@@ -3843,11 +3852,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef229837964ce46cd8b830c3647926b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
+  ZeroGPlayer: {fileID: 0}
   dialogueManager: {fileID: 583031186177848824}
-  tutorialDoor: {fileID: 0}
-  endingDoor: {fileID: 0}
-  pickupObject: {fileID: 0}
+  doorToOpen: {fileID: 0}
   inTutorial: 0
   grabCanvasGroup: {fileID: 892760399940880891}
   propelCanvasGroup: {fileID: 1003924171696134611}
