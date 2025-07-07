@@ -141,8 +141,10 @@ public class DoorScript : MonoBehaviour
         if (states == States.Broken)
         {
             SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
         }
-        else if (states == States.Locked)
+        
+        if (states == States.Locked)
         {
             SetButtonColor(redBase, redEmis);
             decal.material = doorManager.LockedMaterial;

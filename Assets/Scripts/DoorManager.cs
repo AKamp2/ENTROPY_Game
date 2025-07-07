@@ -40,7 +40,7 @@ public class DoorManager : MonoBehaviour
 
     public Material WarningMaterial
     {
-        get { return lockedMaterial; }
+        get { return brokenMaterial; }
     }
 
     // Start is called before the first frame update
