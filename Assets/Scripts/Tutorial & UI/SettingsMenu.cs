@@ -23,22 +23,23 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider masterVolumeSlider;
     [SerializeField] private TextMeshProUGUI soundFXSliderText;
-    [SerializeField] private AudioSource soundFXAudioSource;
-    [SerializeField] private AudioSource dialogueAudioSource;
+    [SerializeField] private AudioSource soundFXAudioSource = null;
+    [SerializeField] private AudioSource dialogueAudioSource = null;
     [SerializeField] private AmbientController ambientAudioController;
     [SerializeField] private TextMeshProUGUI musicSliderText;
     [SerializeField] private TextMeshProUGUI masterVolumeSliderText;
-    [SerializeField] private AudioMixerGroup masterVolume;
+    [SerializeField] private AudioSource masterAudioSource = null;
+    [SerializeField] private AudioMixer masterVolumeMixer;
 
     // General option initialization
     [SerializeField] private Toggle subtitleCheckbox;
     [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private TextMeshProUGUI sensitivitySliderText;
-    [SerializeField] private ZeroGravity player;
-    [SerializeField] private GameObject dialogueText;
+    [SerializeField] private ZeroGravity player = null;
+    [SerializeField] private GameObject dialogueText = null;
 
     // Menu manager variables
-    [SerializeField] private MenuManager menuManager;
+    [SerializeField] private MenuManager menuManager = null;
     [SerializeField] private GameObject confirmationPopUp;
     public bool isChanged;
 
@@ -118,13 +119,16 @@ public class SettingsMenu : MonoBehaviour
     }
     public void SetMasterVolumeSliderText(TextMeshProUGUI sliderText)
     {
-        sliderText.text = masterVolumeSlider.value.ToString();
+        sliderText.text = (masterVolumeSlider.value*100).ToString("N0");
         isChanged = true;
     }
     public void SetDialogueVolume()
     {
         // Sets the dialogue volume to the slide value
-        dialogueAudioSource.volume = dialogueSlider.value/100;
+        if(dialogueAudioSource != null)
+        {
+            dialogueAudioSource.volume = dialogueSlider.value / 100;
+        }
         //Debug.Log(audioSource.volume);
         SetPrefs("dialogueSlider", (int)dialogueSlider.value);
     }
@@ -132,33 +136,45 @@ public class SettingsMenu : MonoBehaviour
     public void SetSoundFXVolume()
     {
         // Sets the sound effects volume to the slide value
-        soundFXAudioSource.volume = soundFXSlider.value/100;
-        //Debug.Log(audioSource.volume);
-        SetPrefs("soundFXSlider", (int)soundFXSlider.value);
+        if (soundFXAudioSource != null)
+        {
+            soundFXAudioSource.volume = soundFXSlider.value / 100;
+        }
+        else
+        {
+            SetPrefs("soundFXSlider", (int)soundFXSlider.value);
+        }
     }
     
     public void SetMusicVolume()
     {
         // Sets the sound effects volume to the slide value
-        Debug.Log(musicSlider.value);
-        ambientAudioController.SetVolume(musicSlider.value/100);
+        //Debug.Log(musicSlider.value);
+        if(ambientAudioController != null)
+        {
+            ambientAudioController.SetVolume(musicSlider.value/100);
+        }
         //Debug.Log(audioSource.volume);
         SetPrefs("musicSlider", (int)musicSlider.value);
     }
 
-    public void SetMasterVolume()
+    public void SetMasterVolume(float Value)
     {
         // Sets the dialogue volume to the slide value
-        masterVolume.audioMixer.SetFloat("volume",masterVolumeSlider.value - 100);
-        //Debug.Log();
-        SetPrefs("masterVolumeSlider", (int)masterVolumeSlider.value);
+        masterVolumeMixer.SetFloat("Volume",Mathf.Log10(Value) *20);
+        Debug.Log(Value);
+        SetPrefs("masterVolumeSlider", (int)Value);
     }
 
     public void SetSensitivity()
     {
         // Sets the sound effects volume to the slide value
-        player.SensitivityX = sensitivitySlider.value/10;
-        player.SensitivityY = sensitivitySlider.value/10;
+        if (player != null)
+        {
+            player.SensitivityX = sensitivitySlider.value / 10;
+            player.SensitivityY = sensitivitySlider.value / 10;
+        }
+       
         SetPrefs("sensitivitySlider", (int)sensitivitySlider.value);
     }
 
@@ -189,17 +205,20 @@ public class SettingsMenu : MonoBehaviour
 
     public void ToggleSubtitles()
     {
-        if (subtitleCheckbox.isOn)
+        if (dialogueText != null)
         {
-            dialogueText.SetActive(true);
-            SetPrefs("subtitleCheckbox", 1);
+            if (subtitleCheckbox.isOn)
+            {
+                dialogueText.SetActive(true);
+                SetPrefs("subtitleCheckbox", 1);
+            }
+            else
+            {
+                dialogueText.SetActive(false);
+                SetPrefs("subtitleCheckbox", 0);
+            }
+            isChanged = true;
         }
-        else 
-        { 
-            dialogueText.SetActive(false);
-            SetPrefs("subtitleCheckbox", 0);
-        }
-        isChanged = true;
     }
 
     // Click handlers
@@ -245,7 +264,7 @@ public class SettingsMenu : MonoBehaviour
         SetSoundFXVolume();
         SetSensitivity();
         SetMusicVolume();
-        SetMasterVolume();
+        SetMasterVolume(GetPrefs("masterVolumeSlider", 10));
         SetDialogueSliderText(dialogueSliderText);
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);
