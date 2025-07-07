@@ -29,7 +29,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.42545512, z: 0}
   m_LocalScale: {x: 0.31657514, y: 0.020136729, z: 0.3165751}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6223690368899121018}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
@@ -42,7 +42,7 @@ ParticleSystem:
   m_GameObject: {fileID: 422727182}
   serializedVersion: 8
   lengthInSec: 1.16
-  simulationSpeed: 1
+  simulationSpeed: 1.26
   stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
@@ -169,7 +169,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 8
+      scalar: 3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -287,7 +287,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.4
+      scalar: 0.1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -4945,7 +4945,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -3.97, y: 3.46, z: -3.68}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32999992, y: 0.32999998, z: 0.32999995}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6223690368899121018}
@@ -5020,10 +5020,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
+  zg: {fileID: 0}
   bc: {fileID: 6223690368899121016}
   ps: {fileID: 422727185}
-  thrust: 150
-  useTimers: 0
+  thrust: 125
+  useTimers: 1
   activeTimeDuration: 6
   inactiveTimeDuration: 3
   timeOffset: 0
