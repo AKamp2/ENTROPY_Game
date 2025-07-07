@@ -47,6 +47,8 @@ public class TutorialManager : MonoBehaviour
     private bool canThrow = true;
     private bool canPropel = true;
 
+    private float initialRollZ;
+
     public DialogueAudio dialogueAudio;
 
     // rolling threshold (in degrees) beyond which we consider “upside down”
@@ -100,10 +102,12 @@ public class TutorialManager : MonoBehaviour
             //Debug.Log("Current step complete: " + stepComplete);
             if (currentStep == 1)
             {
-                float zAngle = playerController.cam.transform.eulerAngles.z;
-                if (zAngle > 180f) zAngle = 360f - zAngle;
+                float currentZ = playerController.cam.transform.eulerAngles.z;
 
-                bool isUpsideDown = zAngle >= 175f && zAngle <= 185f;
+                // Compute delta roll from initial orientation
+                float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
+
+                bool isUpsideDown = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
 
                 if (isUpsideDown && playerController.HasRolled)
                 {
@@ -113,25 +117,22 @@ public class TutorialManager : MonoBehaviour
                     FadeOut(rollQCanvasGroup);
                     CompleteStep();
                 }
-                //play failure dialogue for trying to cheat the roll
-                //
-                else if(isUpsideDown && !playerController.HasRolled)
+                else if (isUpsideDown && !playerController.HasRolled)
                 {
                     if (!hasPlayedRollFailure)
                     {
                         StartCoroutine(dialogueManager.PlayFailureDialogue(1));
                         hasPlayedRollFailure = true;
                     }
-                    
                 }
             }
             else if (currentStep == 2)
             {
-                float zAngle = playerController.cam.transform.eulerAngles.z;
-                if (zAngle > 180f) zAngle = 360f - zAngle;
+                float currentZ = playerController.cam.transform.eulerAngles.z;
 
-                //checking is upright
-                bool isUpright = zAngle <= 5f || zAngle >= 355f;
+                float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
+
+                bool isUpright = Mathf.Abs(delta) <= 10f; // close to original orientation
 
                 if (isUpright)
                 {
@@ -190,7 +191,9 @@ public class TutorialManager : MonoBehaviour
                 stepComplete = false;
                 isWaitingForAction = true;
                 SetPlayerAbilities(false, false, false, true, false); // Only allow roll
+                initialRollZ = playerController.cam.transform.eulerAngles.z;
                 FadeIn(rollQCanvasGroup);
+                
                 break;
 
             case 2:
@@ -377,6 +380,8 @@ public class TutorialManager : MonoBehaviour
         isWaitingForAction = false;
         stepComplete = false;
         tutorialSkipped = false;
+
+        playerController.HasRolled = false;
 
         // Reset failure flags
         hasPlayedPushOffFailure = false;
