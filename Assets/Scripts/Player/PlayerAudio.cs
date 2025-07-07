@@ -3,10 +3,11 @@ using UnityEngine.Audio;
 
 public class PlayerAudio : MonoBehaviour
 {
-    [Header("Audio Sources")]
-    public AudioSource audioSource1;
-    public AudioSource audioSource2;
-    public AudioSource audioSource3;
+    [Header("Audio Source Prefab")]
+    public GameObject audioSourcePrefab; // Must have AudioSource component
+
+    [Header("Audio Parent (for organizing instances)")]
+    public Transform audioContainer;
 
     [Header("Wall Bounce SFX")]
     public AudioClip softBounce;
@@ -15,43 +16,35 @@ public class PlayerAudio : MonoBehaviour
 
     public AudioMixerGroup playerGroup;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void PlaySoftBounce(Vector3 position)
     {
-        audioSource1.outputAudioMixerGroup = playerGroup;
-        audioSource2.outputAudioMixerGroup = playerGroup;
-        audioSource3.outputAudioMixerGroup = playerGroup;
+        PlayBounceSoundAtPosition(softBounce, position, 0.3f);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PlayHardBounce(Vector3 position)
     {
-        
+        PlayBounceSoundAtPosition(hardBounce, position, 1f);
     }
 
-    public void playSoftBounce()
+    public void PlayFatalBounce(Vector3 position)
     {
-        randomizePitch(audioSource1);
-        audioSource1.volume = 0.3f;
-        audioSource1.PlayOneShot(softBounce);
+        PlayBounceSoundAtPosition(fatalBounce, position, 1f);
     }
 
-     public void playHardBounce()
+    private void PlayBounceSoundAtPosition(AudioClip clip, Vector3 position, float volume)
     {
-        randomizePitch(audioSource2);
-        audioSource2.volume = 1;
-        audioSource2.PlayOneShot(hardBounce);
-    }
+        if (clip == null || audioSourcePrefab == null) return;
 
-     public void playFatalBounce()
-    {
-        randomizePitch(audioSource3);
-        audioSource3.volume = 1;
-        audioSource3.PlayOneShot(fatalBounce);
-    }
+        GameObject audioObj = Instantiate(audioSourcePrefab, position, Quaternion.identity, audioContainer);
+        AudioSource newSource = audioObj.GetComponent<AudioSource>();
+        if (newSource == null) return;
 
-    void randomizePitch(AudioSource audioSource)
-    {
-        audioSource.pitch = (Random.value / 5) + 0.85f;
+        newSource.clip = clip;
+        newSource.outputAudioMixerGroup = playerGroup;
+        newSource.volume = volume;
+        newSource.pitch = (Random.value / 5f) + 0.85f;
+        newSource.Play();
+
+        Destroy(audioObj, clip.length + 0.1f); // Clean up after sound finishes
     }
 }
