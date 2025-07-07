@@ -36,8 +36,20 @@ public class LockdownEvent : MonoBehaviour
     private bool canGrab;
     private bool isGrabbable;
 
-    public GameplayBeatAudio audio;
-    public AnimationCurve curve;
+    public GameplayBeatAudio audioManager;
+    public AnimationCurve powerDowncurve;
+    public AnimationCurve glitchCurve;
+    public Light[] lights;
+
+    private bool glitchLights = false;
+    private bool poweringDown = false;
+    public float powerDownDuration = 1f;
+    public float glitchDuration = 1f; // How long one cycle of the curve takes
+    public float intensityMultiplier = 1f;
+
+    private float elapsedTime = 0f;
+
+
 
     public bool CanPull
     {
@@ -80,7 +92,50 @@ public class LockdownEvent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(poweringDown)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / powerDownDuration;
+
+            // Only apply intensity if still within duration
+            if (t <= 1f)
+            {
+                float curveValue = glitchCurve.Evaluate(t);
+                foreach (Light lightSource in lights)
+                {
+                    lightSource.intensity = curveValue * intensityMultiplier;
+                }
+
+            }
+            else
+            {
+                // Glitch complete, turn off or reset as needed
+                poweringDown = false;
+            }
+        }
+
+        if(glitchLights)
+        {
+
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / glitchDuration;
+
+            // Only apply intensity if still within duration
+            if (t <= 1f)
+            {
+                float curveValue = glitchCurve.Evaluate(t);
+                foreach(Light lightSource in lights)
+                {
+                    lightSource.intensity = curveValue * intensityMultiplier;
+                }
+                
+            }
+            else
+            {
+                // Glitch complete, turn off or reset as needed
+                glitchLights = false;
+            }
+        }
     }
 
     public void OpenDoors()
@@ -104,7 +159,7 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator WaitForBodyVisible()
     {
         yield return new WaitForSeconds(3f);
-        audio.playBodyStinger();
+        audioManager.playBodyStinger();
 
     }
 
@@ -136,10 +191,26 @@ public class LockdownEvent : MonoBehaviour
 
     private IEnumerator PlayLockdownFX()
     {
-        audio.playPowerCut();
+        StartCoroutine(LockDoors());
+        audioManager.playPowerCut();
+        poweringDown = true;
+        
         yield return new WaitForSeconds(6f);
 
-        audio.playPowerOn();
+        audioManager.playPowerOn();
+        glitchLights = true;
+        yield return new WaitUntil(() => !glitchLights);
+        foreach(Light lightSource in lights)
+        {
+            lightSource.intensity = 80f;
+        }
+    }
+
+    private IEnumerator LockDoors()
+    {
+        brokenDoor.DoorState = DoorScript.States.Closing;
+        yield return new WaitForSeconds(15f);
+        brokenDoor.UseDoor();
     }
 
 }
