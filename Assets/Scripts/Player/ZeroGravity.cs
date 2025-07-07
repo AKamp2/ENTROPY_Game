@@ -202,6 +202,9 @@ public class ZeroGravity : MonoBehaviour
     // Track if the movement keys were released
     private bool movementKeysReleased;
 
+    [SerializeField] private bool useManualPullIn = false;
+    private bool isPullingIn;
+
     #region properties
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -361,6 +364,13 @@ public class ZeroGravity : MonoBehaviour
 
         //set the player health
         playerHealth = maxHealth;
+
+        if(useManualPullIn)
+        {
+            pullDrag = 0.9f;
+            grabDrag = 0.1f;
+            jointSpringForce = 5.5f;
+        }
     }
 
     // Update is called once per frame
@@ -519,11 +529,15 @@ public class ZeroGravity : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.BarrierLayer);
 
         //if the player is grabbing on a bar and going slower than walking speed
-        if (isGrabbing && rb.linearVelocity.magnitude < zeroGWalkSpeed)
+        if(!useManualPullIn)
         {
-            //ignore bouncing
-            return;
+            if (isGrabbing && rb.linearVelocity.magnitude < zeroGWalkSpeed)
+            {
+                //ignore bouncing
+                return;
+            }
         }
+
 
         //Debug.Log(hitColliders.Length);
 
@@ -535,12 +549,14 @@ public class ZeroGravity : MonoBehaviour
         Vector3 avgBounceDirection = Vector3.zero;
         int bounceCount = 0;
         float ogSpeed = rb.linearVelocity.magnitude; //store initial velocity magnitude
+        Vector3 impactPoint = transform.position;
 
         //Debug.Log(ogSpeed);
 
         foreach (Collider barrier in hitColliders)
         {
             Vector3 closestPoint = barrier.ClosestPoint(transform.position);
+            impactPoint = closestPoint; // Store most recent impact
             Vector3 wallNormal = (transform.position - closestPoint).normalized;
             Vector3 reflectDirection = Vector3.Reflect(rb.linearVelocity.normalized, wallNormal);
 
@@ -590,7 +606,7 @@ public class ZeroGravity : MonoBehaviour
             DecreaseHealth(3);
             justHit = true;
             hurt = true;
-            playerAudio.playFatalBounce();
+            playerAudio.PlayFatalBounce(impactPoint);
         }
         else if (ogSpeed >= mediumSpeed && !justHit && !isDead)
         {
@@ -598,11 +614,11 @@ public class ZeroGravity : MonoBehaviour
             DecreaseHealth(1);
             justHit = true;;
             hurt = true;
-            playerAudio.playHardBounce();
+            playerAudio.PlayHardBounce(impactPoint);
         }
         else
         {
-            playerAudio.playSoftBounce();
+            playerAudio.PlaySoftBounce(impactPoint);
         }
     }
 
@@ -619,6 +635,7 @@ public class ZeroGravity : MonoBehaviour
         }
 
         Vector3 avgBounceDirection = Vector3.zero;
+        Vector3 impactPoint = transform.position; // default
         int bounceCount = 0;
         float ogSpeed = rb.linearVelocity.magnitude; //store initial velocity magnitude
 
@@ -642,6 +659,8 @@ public class ZeroGravity : MonoBehaviour
 
                     //calculate bounce direction away from the door
                     Vector3 bounceDirection = (transform.position - door.bounds.center).normalized;
+
+                    impactPoint = door.bounds.center;
 
                     avgBounceDirection += bounceDirection;
 
@@ -674,7 +693,7 @@ public class ZeroGravity : MonoBehaviour
             Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * 0.07f;
             //Debug.Log("propel direction: " + propelDirection);
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
-            playerAudio.playFatalBounce();
+            playerAudio.PlayFatalBounce(impactPoint);
 
             if (!isDead)
             {
@@ -855,8 +874,17 @@ public class ZeroGravity : MonoBehaviour
                 float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
 
                 //ensure the max and min distances are set properly
-                joint.maxDistance = grabRange;
-                joint.minDistance = minGrabRange;
+                if(!useManualPullIn)
+                {
+                    joint.maxDistance = grabRange;
+                    joint.minDistance = minGrabRange;
+                }
+                else
+                {
+                    joint.maxDistance = 1.0f;
+                    joint.minDistance = 0.5f;
+                }
+                
             }
 
             //tweak these values for the spring for better pendulum values
@@ -869,11 +897,19 @@ public class ZeroGravity : MonoBehaviour
             {
                 rb.linearVelocity *= pullDrag;
                 //pull to the bar
-                PullToBar(pullToBarMod, bar);
+                if (!useManualPullIn || isPullingIn)
+                {
+                    PullToBar(pullToBarMod, bar);
+                }
+
                 return;
             }
             //swing cooldown
-            SwingCoolDown(bar);
+            if (!useManualPullIn)
+            {
+                SwingCoolDown(bar);
+            }
+            
         }
     }
 
@@ -891,6 +927,9 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log(rb.linearVelocity.magnitude);
         //Debug.Log(bar.gameObject.name);
         //initially set the velocity to 0 so the momentum doesn't carry through from propel
+
+        if (useManualPullIn && !isPullingIn)
+            return;
 
         //if the joint is a long distance between the player and the bar
         if (joint.maxDistance >= joint.minDistance)
@@ -1291,7 +1330,26 @@ public class ZeroGravity : MonoBehaviour
     }
     public void OffWall(InputAction.CallbackContext context)
     {
-        if(context.performed && potentialWall != null)
+        //manual pull in logic
+        if (useManualPullIn)
+        {
+            if (isGrabbing)
+            {
+                // Handle manual pull-in
+                if (context.performed)
+                {
+                    isPullingIn = true;
+                    swinging = false;
+                }
+                else if (context.canceled)
+                {
+                    isPullingIn = false;
+                    swinging = true;
+                }
+            }
+        }
+        
+        if (context.performed && potentialWall != null)
         {
             //Debug.Log("space pressed");
             PropelOffWall();
