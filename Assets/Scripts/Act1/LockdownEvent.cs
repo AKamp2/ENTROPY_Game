@@ -37,6 +37,7 @@ public class LockdownEvent : MonoBehaviour
     private bool isGrabbable;
 
     public GameplayBeatAudio audio;
+    public AnimationCurve curve;
 
     public bool CanPull
     {
