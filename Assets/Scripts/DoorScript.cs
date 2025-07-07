@@ -272,12 +272,24 @@ public class DoorScript : MonoBehaviour
 
     }
 
-    public void SetVisualStatus(States state)
+    public void SetState(States state)
     {
-        if (state == States.Closed)
+        this.states = state;
+
+        if (state == States.Closed || state == States.Open)
         {
             SetButtonColor(greenBase, greenEmis);
             decal.material = doorManager.UnlockedMaterial;
+        }
+        else if (state == States.Broken)
+        {
+            SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
+        }
+        else if (state == States.Locked)
+        {
+            SetButtonColor(redBase, redEmis);
+            decal.material = doorManager.LockedMaterial;
         }
     }
 
