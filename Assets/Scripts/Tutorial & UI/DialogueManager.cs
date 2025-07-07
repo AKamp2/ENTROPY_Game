@@ -114,8 +114,11 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     public void StartDialogueSequence(int sequenceIndex, float delayTime)
     {
+        Debug.Log("Starting Dialogue Sequence at index " + sequenceIndex);
         if (sequenceIndex < dialogueSequences.Length)
         {
+            Debug.Log("Starting Dialogue Sequence");
+            pauseMainDialogue = false;
             StartCoroutine(DelayTime(delayTime, sequenceIndex));
         }
     }
@@ -125,10 +128,12 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private IEnumerator DisplayDialogue()
     {
-        if (tutorialSkipped)
+        if (tutorialSkipped && currentSequenceIndex == 0)
         {
             yield break;
         }
+
+        dialogueCanvas.enabled = true;
         FadeIn();
         isSkipping = false;
         DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
@@ -144,7 +149,7 @@ public class DialogueManager : MonoBehaviour
             Debug.Log("Advances Tutorial? " + currentDialogue.advancesTutorial);
 
             // Skip this dialogue if tutorial is skipped and this dialogue is marked to be skipped with the tutorial
-            if (tutorialSkipped && currentDialogue.skipWithTutorial)
+            if (tutorialSkipped && currentDialogue.skipWithTutorial && currentSequenceIndex == 0)
             {
                 currentDialogueIndex++;
                 continue;
@@ -270,10 +275,12 @@ public class DialogueManager : MonoBehaviour
         }
 
         // End dialogue
+        yield return new WaitForSeconds(5f);
         FadeOut();
         isDialogueActive = false;
-        dialogueCanvas.enabled = false;
         OnDialogueEnd?.Invoke(currentSequenceIndex);
+        yield return new WaitForSeconds(1f);
+        dialogueCanvas.enabled = false;
     }
 
     public IEnumerator PlayFailureDialogue(int index)
@@ -440,7 +447,7 @@ public class DialogueManager : MonoBehaviour
         yield return new WaitForSeconds(delayTime); // Wait for the specified time
         currentSequenceIndex = sequenceIndex;
         currentDialogueIndex = 0;
-        dialogueCanvas.enabled = true;
+        
         isDialogueActive = true;
         StartCoroutine(DisplayDialogue());
     }
@@ -479,6 +486,8 @@ public class DialogueManager : MonoBehaviour
         isSkipping = true;
         pauseMainDialogue = true;
         dialogueTextUI.text = "";
+        isDialogueActive = false;
+        isDialogueSpeaking = false;
         FadeOut();
 
 
