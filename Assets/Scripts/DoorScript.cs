@@ -176,6 +176,7 @@ public class DoorScript : MonoBehaviour
                     {
                         states = States.Open;
                         SetButtonColor(greenBase, greenEmis);
+                        decal.material = doorManager.UnlockedMaterial;
                         sinTime = 0.0f;
                     }
 
@@ -200,6 +201,7 @@ public class DoorScript : MonoBehaviour
                     {
                         states = States.Closed;
                         SetButtonColor(greenBase, greenEmis);
+                        decal.material = doorManager.UnlockedMaterial;
                         sinTime = 0.0f;
 
                         //set isClosing as false
@@ -266,6 +268,15 @@ public class DoorScript : MonoBehaviour
             states = States.Opening;
         }
 
+    }
+
+    public void SetVisualStatus(States state)
+    {
+        if (state == States.Closed)
+        {
+            SetButtonColor(greenBase, greenEmis);
+            decal.material = doorManager.UnlockedMaterial;
+        }
     }
 
     private void DialogueEnd(int sequenceIndex)

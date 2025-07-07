@@ -18,9 +18,11 @@ public class LockdownEvent : MonoBehaviour
     private GameObject wrist;
     [SerializeField]
     private DoorScript[] doors;
+
+    [SerializeField]
+    private DoorScript medDoor;
     [SerializeField]
     private DoorScript brokenDoor;
-
     [SerializeField]
     private DoorScript bodyDoor;
 
@@ -187,6 +189,11 @@ public class LockdownEvent : MonoBehaviour
             isGrabbable = false;
 
             wrist.SetActive(false);
+
+            medDoor.DoorState = DoorScript.States.Closed;
+            medDoor.SetVisualStatus(DoorScript.States.Closed);
+
+
         }
     }
 
