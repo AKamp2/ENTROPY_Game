@@ -154,22 +154,19 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void HandleRaycastUI()
     {
-        if (player.IsGrabbing)
-        {
-            // remove space and f gui if player is grabbing
-            if (InputIndicator.sprite != null)
-            {
-                player.PotentialWall = null;
-
-                //erase the input indicator
-                inputIndicator.sprite = null;
-                inputIndicator.color = new Color(0, 0, 0, 0);
-                
-            }
-
-            //skip raycast if already holding a bar
-            return;
-        }
+        //if (player.IsGrabbing)
+        //{
+        //    // remove space and f gui if player is grabbing
+        //    if (InputIndicator.sprite != null)
+        //    {
+        //        player.PotentialWall = null;
+        //        //erase the input indicator
+        //        //inputIndicator.sprite = null;
+        //        //inputIndicator.color = new Color(0, 0, 0, 0);
+        //    }
+        //    //skip raycast if already holding a bar
+        //    return;
+        //}
 
         Ray ray = player.cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         RaycastHit hit;
