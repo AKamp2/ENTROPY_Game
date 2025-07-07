@@ -44,9 +44,6 @@ public class DialogueManager : MonoBehaviour
 
     private int currentFailureIndex = -1;
 
-
-
-
     public TutorialManager tutorialManager;
 
     private float fadeDuration = 0.5f;
@@ -117,7 +114,6 @@ public class DialogueManager : MonoBehaviour
         Debug.Log("Starting Dialogue Sequence at index " + sequenceIndex);
         if (sequenceIndex < dialogueSequences.Length)
         {
-            Debug.Log("Starting Dialogue Sequence");
             pauseMainDialogue = false;
             StartCoroutine(DelayTime(delayTime, sequenceIndex));
         }
@@ -482,6 +478,10 @@ public class DialogueManager : MonoBehaviour
 
     public void SkipTutorial()
     {
+        StopAllCoroutines();
+        audioSource.Stop();
+        if (sfxSource && skipSfxClip)
+            sfxSource.PlayOneShot(skipSfxClip);
         tutorialSkipped = true;
         isSkipping = true;
         pauseMainDialogue = true;
