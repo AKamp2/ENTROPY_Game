@@ -97,7 +97,7 @@ public class LockdownEvent : MonoBehaviour
     {
         float randomDelay = Random.Range(0f, 0.2f); // Adjust range if needed
         yield return new WaitForSeconds(randomDelay);
-        door.UseDoor();
+        door.DoorState = DoorScript.States.Opening;
     }
 
     private IEnumerator WaitForBodyVisible()
