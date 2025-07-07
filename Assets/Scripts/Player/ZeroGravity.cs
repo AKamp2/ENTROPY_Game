@@ -873,6 +873,9 @@ public class ZeroGravity : MonoBehaviour
                 joint.connectedAnchor = swingPoint;
                 float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
 
+                //disable the collision with bar when grabbing
+                joint.enableCollision = false;
+
                 //ensure the max and min distances are set properly
                 if(!useManualPullIn)
                 {

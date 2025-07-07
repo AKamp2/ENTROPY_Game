@@ -342,8 +342,8 @@ public class PlayerUIManager : MonoBehaviour
                 }
             }
         }
-
-        if (closestObject != null)
+        //the closest object is not null and the player is not currently grabbing
+        if (closestObject != null && !player.IsGrabbing)
         {
             // ensure closest object is a bar
             if (closestObject.gameObject.CompareTag("Grabbable"))
@@ -377,11 +377,6 @@ public class PlayerUIManager : MonoBehaviour
             }
             
         }
-        else
-        {
-            //hide grabber if no bar is in range
-            HideGrabber();
-        }
     }
 
     // this method will update the grabber icon's position based on the nearest grabbable object
@@ -395,7 +390,10 @@ public class PlayerUIManager : MonoBehaviour
                 //set the position of the bar as a screen point
                 Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.position);
 
-                if (screenPoint.z > 0)
+                //ensure the grabber is on the screen
+                if (screenPoint.z > 0 && 
+                    screenPoint.x > 0 && screenPoint.x < Screen.width &&
+                    screenPoint.y > 0 && screenPoint.y < Screen.height)
                 {
                     //update grabber position
                     grabber.rectTransform.position = screenPoint;
@@ -415,18 +413,81 @@ public class PlayerUIManager : MonoBehaviour
 
                     HidePushIndicator();
                 }
+                //if the z position of the grabber is off screen
                 else
                 {
-                    //hide the grabber when the bar is behind the camera
-                    HideGrabber();
-                }
+                    if (player.IsGrabbing)
+                    {
+                        //update grabber position
+                        if (screenPoint.z < 0)
+                        {
+                            screenPoint *= -1;
+                        }
+                        //create the screen center so we can translate the grabber to the edge relative to its position behind us
+                        Vector3 screenCenter = new Vector3(Screen.width, Screen.height, 0) / 2;
 
-            }
-            //if there is no bar
-            else
-            {
-                //remove the grabber
-                HideGrabber();
+                        //make 00 center of the screen instead of bottom left
+                        screenPoint -= screenCenter;
+
+                        //find angle from center of screen to mouse position
+                        //takes x and y and creates an angle between them
+                        float angle = Mathf.Atan2(screenPoint.y, screenPoint.x);
+                        //subtract by 90 degrees converted to radians
+                        angle -= 90 * Mathf.Deg2Rad;
+
+                        //create a cos and sin from our angle created
+                        float cos = Mathf.Cos(angle);
+                        float sin = -Mathf.Sin(angle);
+
+                        //apply a translation to the screenpoint from center based on the angle we created
+                        screenPoint = screenCenter + new Vector3(sin * 150, cos * 150, 0);
+
+                        // y = mx + b format
+                        float m = cos / sin;
+
+                        Vector3 screenBounds = screenCenter * 0.9f;
+
+                        //check up and down to see which boundary of the screen to place the marker on
+                        if (cos > 0)
+                        {
+                            screenPoint = new Vector3(screenBounds.y / m, screenBounds.y, 0);
+                        }
+                        else
+                        {
+                            //down 
+                            screenPoint = new Vector3(-screenBounds.y / m, -screenBounds.y, 0);
+                        }
+                        //if out of bounds, get point on appropriate side
+                        if (screenPoint.x > screenBounds.x) //out of bounds, must be on the right
+                        {
+                            screenPoint = new Vector3(screenBounds.x, screenBounds.x * m, 0);
+                        }
+                        else if (screenPoint.x < -screenBounds.x) // out of bounds left
+                        {
+                            screenPoint = new Vector3(-screenBounds.x, -screenBounds.x * m, 0);
+                        } //else in bounds
+
+                        //remove coordinate translation
+                        screenPoint += screenCenter;
+                        grabber.rectTransform.position = screenPoint;
+
+                        //set hand icon open if not grabbing
+                        if (!player.IsGrabbing)
+                        {
+                            grabber.sprite = openHand;
+                            grabber.color = Color.white;
+                        }
+                        //set closed hand icon if grabbing
+                        else if (player.IsGrabbing)
+                        {
+                            grabber.sprite = closedHand;
+                            grabber.color = Color.white;
+                        }
+
+                        //grabber.transform.localRotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
+                        HidePushIndicator();
+                    }
+                }
             }
         }
         else
