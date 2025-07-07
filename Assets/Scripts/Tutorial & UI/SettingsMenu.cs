@@ -10,6 +10,7 @@ using System.IO;
 using TMPro;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using static UnityEngine.Rendering.DebugUI;
 
 public class SettingsMenu : MonoBehaviour 
 {
@@ -25,10 +26,8 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private TextMeshProUGUI soundFXSliderText;
     [SerializeField] private AudioSource soundFXAudioSource = null;
     [SerializeField] private AudioSource dialogueAudioSource = null;
-    [SerializeField] private AmbientController ambientAudioController;
     [SerializeField] private TextMeshProUGUI musicSliderText;
     [SerializeField] private TextMeshProUGUI masterVolumeSliderText;
-    [SerializeField] private AudioSource masterAudioSource = null;
     [SerializeField] private AudioMixer masterVolumeMixer;
 
     // General option initialization
@@ -85,8 +84,6 @@ public class SettingsMenu : MonoBehaviour
         CloseMenus();
         dialogueSlider.value = GetPrefs("dialogueSlider", 100);
         soundFXSlider.value = GetPrefs("soundFXSlider", 100);
-        musicSlider.value = GetPrefs("musicSlider", 100);
-        masterVolumeSlider.value = GetPrefs("masterVolumeSlider", 100);
         sensitivitySlider.value = GetPrefs("sensitivitySlider", 40);
         subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
         graphicsQuality.value = GetPrefs("qualityLevel",5);
@@ -107,7 +104,7 @@ public class SettingsMenu : MonoBehaviour
     }
     public void SetMusicSliderText(TextMeshProUGUI sliderText)
     {
-        sliderText.text = musicSlider.value.ToString();
+        sliderText.text = (musicSlider.value * 100).ToString("N0");
         isChanged = true;
 
     }
@@ -130,7 +127,7 @@ public class SettingsMenu : MonoBehaviour
             dialogueAudioSource.volume = dialogueSlider.value / 100;
         }
         //Debug.Log(audioSource.volume);
-        SetPrefs("dialogueSlider", (int)dialogueSlider.value);
+        SetPrefsInt("dialogueSlider", (int)dialogueSlider.value);
     }
 
     public void SetSoundFXVolume()
@@ -142,28 +139,28 @@ public class SettingsMenu : MonoBehaviour
         }
         else
         {
-            SetPrefs("soundFXSlider", (int)soundFXSlider.value);
+            SetPrefsInt("soundFXSlider", (int)soundFXSlider.value);
         }
     }
     
-    public void SetMusicVolume()
+    public void SetMusicVolume(float Value)
     {
         // Sets the sound effects volume to the slide value
         //Debug.Log(musicSlider.value);
-        if(ambientAudioController != null)
+        if(masterVolumeMixer != null)
         {
-            ambientAudioController.SetVolume(musicSlider.value/100);
+            masterVolumeMixer.SetFloat("MusicVolume", Mathf.Log10(Value) * 20);
         }
         //Debug.Log(audioSource.volume);
-        SetPrefs("musicSlider", (int)musicSlider.value);
+        SetPrefsFloat("musicSlider", Value);
     }
 
     public void SetMasterVolume(float Value)
     {
         // Sets the dialogue volume to the slide value
-        masterVolumeMixer.SetFloat("Volume",Mathf.Log10(Value) *20);
-        Debug.Log(Value);
-        SetPrefs("masterVolumeSlider", (int)Value);
+        masterVolumeMixer.SetFloat("MasterVolume",Mathf.Log10(Value) *20);
+        Debug.Log(Mathf.Log10(Value) * 20);
+        SetPrefsFloat("masterVolumeSlider", Value);
     }
 
     public void SetSensitivity()
@@ -175,7 +172,7 @@ public class SettingsMenu : MonoBehaviour
             player.SensitivityY = sensitivitySlider.value / 10;
         }
        
-        SetPrefs("sensitivitySlider", (int)sensitivitySlider.value);
+        SetPrefsInt("sensitivitySlider", (int)sensitivitySlider.value);
     }
 
     public void SetFullscreen(bool isFullscreen)
@@ -183,18 +180,18 @@ public class SettingsMenu : MonoBehaviour
         Screen.fullScreen = isFullscreen;
         if (isFullscreen)
         {
-            SetPrefs("isFullscreen", 1);
+            SetPrefsInt("isFullscreen", 1);
         }
         if (!isFullscreen)
         {
-            SetPrefs("isFullscreen", 0);
+            SetPrefsInt("isFullscreen", 0);
         }
     }
 
     public void SetGraphicsQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
-        SetPrefs("qualityLevel", qualityIndex);
+        SetPrefsInt("qualityLevel", qualityIndex);
     }
 
     public void SetResolution(int resolutionIndex)
@@ -210,12 +207,12 @@ public class SettingsMenu : MonoBehaviour
             if (subtitleCheckbox.isOn)
             {
                 dialogueText.SetActive(true);
-                SetPrefs("subtitleCheckbox", 1);
+                SetPrefsInt("subtitleCheckbox", 1);
             }
             else
             {
                 dialogueText.SetActive(false);
-                SetPrefs("subtitleCheckbox", 0);
+                SetPrefsInt("subtitleCheckbox", 0);
             }
             isChanged = true;
         }
@@ -247,24 +244,30 @@ public class SettingsMenu : MonoBehaviour
         popUp.SetActive(false);
     }
 
-    void SetPrefs(string keyName, int value)
+    void SetPrefsInt(string keyName, int value)
     {
         PlayerPrefs.SetInt(keyName, value);
     }
-
+    void SetPrefsFloat(string keyName, float value)
+    {
+        PlayerPrefs.SetFloat(keyName, value);
+    }
     int GetPrefs(string keyName, int defaultValue)
     {
         return PlayerPrefs.GetInt(keyName, defaultValue);
     }
-
+    float GetPrefsFloat(string keyName, float defaultValue)
+    {
+        return PlayerPrefs.GetFloat(keyName, defaultValue);
+    }
     public void ApplyOptions()
     {
         ToggleSubtitles();
         SetDialogueVolume();
         SetSoundFXVolume();
         SetSensitivity();
-        SetMusicVolume();
-        SetMasterVolume(GetPrefs("masterVolumeSlider", 10));
+        SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
+        SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1));
         SetDialogueSliderText(dialogueSliderText);
         SetSensitivitySliderText(sensitivitySliderText);
         SetSoundFXSliderText(soundFXSliderText);
