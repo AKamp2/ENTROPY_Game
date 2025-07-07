@@ -49,6 +49,7 @@ public class ZeroGravity : MonoBehaviour
     //handle taking damage
     private bool justHit = false;
     private bool prevJustHit = false;
+    [SerializeField]
     private float justHitCoolDown = .6f;
     private float justHitTimeStamp = 0f;
 
@@ -551,7 +552,7 @@ public class ZeroGravity : MonoBehaviour
         float ogSpeed = rb.linearVelocity.magnitude; //store initial velocity magnitude
         Vector3 impactPoint = transform.position;
 
-        //Debug.Log(ogSpeed);
+        Debug.Log(ogSpeed);
 
         foreach (Collider barrier in hitColliders)
         {
@@ -912,7 +913,9 @@ public class ZeroGravity : MonoBehaviour
             {
                 SwingCoolDown(bar);
             }
-            
+
+            //ensure that the player will bounce off the wall
+            DetectBarrierAndBounce();
         }
     }
 
@@ -971,7 +974,7 @@ public class ZeroGravity : MonoBehaviour
             //if the position of the player and the target are about equal
             if (Vector3.Distance(rb.transform.position, target.position) < .1f)
             {
-                Debug.Log("They are touching :)");
+                //Debug.Log("They are touching :)");
                 rb.linearVelocity = Vector3.zero;
                 return;
             }
