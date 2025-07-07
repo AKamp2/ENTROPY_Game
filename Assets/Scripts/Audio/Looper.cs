@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
 // A utility class to be used by the ambient controller (and anything else that finds it useful).
 // The looper has two audio sources it switches between to make seamless transitions between loops.
@@ -13,6 +14,8 @@ public class Looper : MonoBehaviour
     private float normalVolume = 0.3f;
 
     public const double fadeDuration = 0.5f;
+    public AudioMixerGroup musicGroup;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
@@ -23,6 +26,11 @@ public class Looper : MonoBehaviour
             audioSources[i] = child.AddComponent<AudioSource>();
             audioSources[i].loop = false;
         }
+
+        foreach (AudioSource audioSource in audioSources)
+        {
+            audioSource.outputAudioMixerGroup = musicGroup;
+        }
     }
 
     // Update is called once per frame
@@ -30,6 +38,8 @@ public class Looper : MonoBehaviour
     {
         
     }
+
+    
 
     // public void Enqueue(AudioClip clip, double time, double end)
     public void Enqueue(AudioClip clip, double time)
