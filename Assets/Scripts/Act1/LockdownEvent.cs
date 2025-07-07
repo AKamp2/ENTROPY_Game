@@ -190,8 +190,7 @@ public class LockdownEvent : MonoBehaviour
 
             wrist.SetActive(false);
 
-            medDoor.DoorState = DoorScript.States.Closed;
-            medDoor.SetVisualStatus(DoorScript.States.Closed);
+            medDoor.SetState(DoorScript.States.Closed);
 
 
         }
