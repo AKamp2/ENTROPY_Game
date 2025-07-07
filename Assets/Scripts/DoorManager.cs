@@ -15,14 +15,33 @@ public class DoorManager : MonoBehaviour
 
     private GameObject currentSelectedDoor = null;
 
+    [SerializeField]
+    Material unlockedMaterial;
+    [SerializeField]
+    Material lockedMaterial;
+    [SerializeField]
+    Material brokenMaterial;
+
     public GameObject CurrentSelectedDoor
     {
         get { return currentSelectedDoor; }
         set { currentSelectedDoor = value; }
     }
 
+    public Material UnlockedMaterial
+    {
+        get { return unlockedMaterial; }
+    }
 
+    public Material LockedMaterial
+    { 
+        get { return lockedMaterial; } 
+    }
 
+    public Material WarningMaterial
+    {
+        get { return lockedMaterial; }
+    }
 
     // Start is called before the first frame update
     void Start()

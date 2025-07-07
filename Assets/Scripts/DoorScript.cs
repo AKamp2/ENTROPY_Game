@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Jobs;
+using UnityEngine.Rendering.Universal;
 
 public class DoorScript : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class DoorScript : MonoBehaviour
         Captain = 1
     }
 
+    [SerializeField]
     private DoorManager doorManager;
 
     public bool dialogueComplete = false;
@@ -60,6 +62,12 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     private Transform doorPart;
 
+    private bool inRange = false;
+    [SerializeField]
+    private BoxCollider doorTrigger;
+    [SerializeField]
+    private DecalProjector decal;
+
     public AudioSource audioSource;
     public EnvironmentAudio audioManager;
 
@@ -95,16 +103,28 @@ public class DoorScript : MonoBehaviour
     {
         get { return level; }
     }
+
+    public bool InRange
+    {
+        get { return inRange; }
+        set { inRange = value; }
+    }
    
     // Start is called before the first frame update
     void Start()
     {
+
+        doorManager = FindFirstObjectByType<DoorManager>();
+
         GetChildButtons();
 
         closedPos = doorPart.position;
         Vector3 right = doorPart.forward * -1;
         openPos = closedPos + right * openSize;
         isClosing = false;
+
+        //default unlock
+        decal.material = doorManager.UnlockedMaterial;
 
         if (states == States.Open)
         {
@@ -125,9 +145,9 @@ public class DoorScript : MonoBehaviour
         else if (states == States.Locked)
         {
             SetButtonColor(redBase, redEmis);
+            decal.material = doorManager.LockedMaterial;
         }
 
-        doorManager = FindFirstObjectByType<DoorManager>();
 
         //dialogueManager.StartDialogueSequence(0);
     }
@@ -136,8 +156,11 @@ public class DoorScript : MonoBehaviour
     void Update()
     {
 
+        // automatic door function
+        if (doorTrigger != null) AutomaticDoor();
+
         // handles different door interactions
-        switch(states)
+        switch (states)
         {
             case States.Opening:
                 {
@@ -183,7 +206,7 @@ public class DoorScript : MonoBehaviour
                         isClosing = false;
                     }
 
-                        break;
+                    break;
                 }
 
             case States.Broken:
@@ -284,6 +307,25 @@ public class DoorScript : MonoBehaviour
             if (child.gameObject.tag == "DoorButton")
             {
                 buttons.Add(child.gameObject);
+            }
+        }
+    }
+
+    private void AutomaticDoor()
+    {
+        if (inRange)
+        {
+            if (states != States.Open && states != States.Opening)
+            {
+                UseDoor();
+            }
+
+        }
+        else
+        {
+            if (states != States.Closed && states != States.Closed)
+            {
+                UseDoor();
             }
         }
     }
