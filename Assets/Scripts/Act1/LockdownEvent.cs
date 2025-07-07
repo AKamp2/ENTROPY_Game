@@ -39,7 +39,7 @@ public class LockdownEvent : MonoBehaviour
     private bool isGrabbable;
 
     public GameplayBeatAudio audioManager;
-    public AnimationCurve powerDowncurve;
+    public AnimationCurve powerDownCurve;
     public AnimationCurve glitchCurve;
     public Light[] lights;
 
@@ -49,7 +49,8 @@ public class LockdownEvent : MonoBehaviour
     public float glitchDuration = 1f; // How long one cycle of the curve takes
     public float intensityMultiplier = 1f;
 
-    private float elapsedTime = 0f;
+    private float powerDownElapsedTime = 0f;
+    private float glitchElapsedTime = 0f;
 
 
 
@@ -96,13 +97,13 @@ public class LockdownEvent : MonoBehaviour
     {
         if(poweringDown)
         {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / powerDownDuration;
+            powerDownElapsedTime += Time.deltaTime;
+            float t = powerDownElapsedTime / powerDownDuration;
 
             // Only apply intensity if still within duration
             if (t <= 1f)
             {
-                float curveValue = glitchCurve.Evaluate(t);
+                float curveValue = powerDownCurve.Evaluate(t);
                 foreach (Light lightSource in lights)
                 {
                     lightSource.intensity = curveValue * intensityMultiplier;
@@ -119,8 +120,8 @@ public class LockdownEvent : MonoBehaviour
         if(glitchLights)
         {
 
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / glitchDuration;
+            glitchElapsedTime += Time.deltaTime;
+            float t = glitchElapsedTime / glitchDuration;
 
             // Only apply intensity if still within duration
             if (t <= 1f)
@@ -160,7 +161,7 @@ public class LockdownEvent : MonoBehaviour
 
     private IEnumerator WaitForBodyVisible()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
         audioManager.playBodyStinger();
 
     }
@@ -209,14 +210,14 @@ public class LockdownEvent : MonoBehaviour
         yield return new WaitUntil(() => !glitchLights);
         foreach(Light lightSource in lights)
         {
-            lightSource.intensity = 80f;
+            lightSource.intensity = 2f;
         }
     }
 
     private IEnumerator LockDoors()
     {
         brokenDoor.DoorState = DoorScript.States.Closing;
-        yield return new WaitForSeconds(15f);
+        yield return new WaitForSeconds(13f);
         brokenDoor.UseDoor();
     }
 
