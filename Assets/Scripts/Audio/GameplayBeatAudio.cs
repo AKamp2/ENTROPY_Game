@@ -11,6 +11,7 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioClip bodyFoundStinger;
     public AudioClip powerCutSFX;
     public AudioClip powerOnSFX;
+    public AudioClip takeItem;
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentalGroup;
@@ -28,6 +29,11 @@ public class GameplayBeatAudio : MonoBehaviour
     void Update()
     {
         
+    }
+    
+    public void playMonitorPickup()
+    {
+        powerCutSource.PlayOneShot(takeItem);
     }
 
     public void playBodyStinger()

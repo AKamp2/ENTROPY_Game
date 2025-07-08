@@ -221,11 +221,20 @@ public class PlayerUIManager : MonoBehaviour
             GameObject door = hit.transform.parent.gameObject;
             DoorScript ds = door.GetComponent<DoorScript>();
 
-            if ((ds.DoorState == DoorScript.States.Open || ds.DoorState == DoorScript.States.Closed))
+            if (ds.DoorState == DoorScript.States.Open)
             {
                 //set the selected door in the door manager as this door
                 doorManager.CurrentSelectedDoor = door;
-                DoorUI();
+                inputIndicator.sprite = keyFIndicator;
+                grabUIText.text = "Close Door";
+                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            }
+            else if(ds.DoorState == DoorScript.States.Closed)
+            {
+                doorManager.CurrentSelectedDoor = door;
+                inputIndicator.sprite = keyFIndicator;
+                grabUIText.text = "Open Door";
+                inputIndicator.color = new Color(256, 256, 256, 0.5f);
             }
            
         }
@@ -234,6 +243,7 @@ public class PlayerUIManager : MonoBehaviour
             doorManager.CurrentSelectedDoor = null;
             inputIndicator.sprite = null;
             inputIndicator.color = new Color(0, 0, 0, 0);
+            grabUIText.text = "";
 
         }
     }
@@ -264,7 +274,7 @@ public class PlayerUIManager : MonoBehaviour
         if (hit.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
         {
             lockdownEvent.CanPull = true;
-
+            grabUIText.text = "Deactivate manual lockdown";
             inputIndicator.sprite = keyFIndicator;
             inputIndicator.color = new Color(256, 256, 256, 0.5f);
         }
@@ -276,7 +286,7 @@ public class PlayerUIManager : MonoBehaviour
         if (hit.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
         {
             lockdownEvent.CanGrab = true;
-
+            grabUIText.text = "Take wrist monitor";
             inputIndicator.sprite = keyFIndicator;
             inputIndicator.color = new Color(256, 256, 256, 0.5f);
         }
@@ -296,6 +306,7 @@ public class PlayerUIManager : MonoBehaviour
         //erase the input indicator
         inputIndicator.sprite = null;
         inputIndicator.color = new Color(0, 0, 0, 0);
+        grabUIText.text = "";
         /*doorManager.DoorUI.SetActive(false);*/
     }
 
