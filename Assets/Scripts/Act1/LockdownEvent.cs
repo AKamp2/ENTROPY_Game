@@ -81,7 +81,6 @@ public class LockdownEvent : MonoBehaviour
     void Start()
     {
 
-        deadBody.AddForce(new Vector3(0, -1, 0) * 5);
         player = playerObject.GetComponent<ZeroGravity>();
 
         DoorTrigger.enabled = false;
@@ -151,9 +150,13 @@ public class LockdownEvent : MonoBehaviour
         {
             StartCoroutine(OpenDoorWithDelay(door));
         }
+
+        deadBody.AddTorque(deadBody.transform.right * 15);
+        deadBody.AddForce(new Vector3(0, -1, 0) * 30);
+
         StartCoroutine(WaitForBodyVisible());
 
-        deadBody.AddForce(new Vector3(0, -1, 0) * 5);
+        
     }
 
     //adding slight delay to door to prevent phasing.
