@@ -209,7 +209,7 @@ public class LockdownEvent : MonoBehaviour
         yield return new WaitUntil(() => !glitchLights);
         foreach(Light lightSource in lights)
         {
-            lightSource.intensity = 2f;
+            lightSource.intensity = 4f;
         }
     }
 
