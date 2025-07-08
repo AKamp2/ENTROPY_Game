@@ -26,6 +26,8 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private DoorScript bodyDoor;
 
+    public DialogueManager dialogueManager;
+
 
     [SerializeField]
     private Material leverMaterial;
@@ -188,6 +190,8 @@ public class LockdownEvent : MonoBehaviour
 
             isGrabbable = false;
 
+            audioManager.playMonitorPickup();
+
             wrist.SetActive(false);
 
             medDoor.SetState(DoorScript.States.Closed);
@@ -211,6 +215,8 @@ public class LockdownEvent : MonoBehaviour
         {
             lightSource.intensity = 4f;
         }
+        yield return new WaitForSeconds(4f);
+        dialogueManager.StartDialogueSequence(4, 0f);
     }
 
     private IEnumerator LockDoors()
