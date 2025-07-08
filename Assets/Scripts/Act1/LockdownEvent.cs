@@ -25,6 +25,8 @@ public class LockdownEvent : MonoBehaviour
     private DoorScript brokenDoor;
     [SerializeField]
     private DoorScript bodyDoor;
+    [SerializeField]
+    private Rigidbody deadBody;
 
     public DialogueManager dialogueManager;
 
@@ -81,6 +83,7 @@ public class LockdownEvent : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
         player = playerObject.GetComponent<ZeroGravity>();
 
         DoorTrigger.enabled = false;
@@ -150,7 +153,13 @@ public class LockdownEvent : MonoBehaviour
         {
             StartCoroutine(OpenDoorWithDelay(door));
         }
+
+        deadBody.AddTorque(deadBody.transform.right * 15);
+        deadBody.AddForce(new Vector3(0, -1, 0) * 30);
+
         StartCoroutine(WaitForBodyVisible());
+
+        
     }
 
     //adding slight delay to door to prevent phasing.
