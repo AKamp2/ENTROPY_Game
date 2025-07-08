@@ -4,6 +4,8 @@ public class BrokenTrigger : MonoBehaviour
 {
     [SerializeField]
     DoorScript brokenDoor;
+    [SerializeField]
+    GameObject terminalWindow;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,6 +24,7 @@ public class BrokenTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             this.GetComponent<Collider>().enabled = false;
+            terminalWindow.SetActive(true);
             brokenDoor.SetState(DoorScript.States.Broken);
 
         }
