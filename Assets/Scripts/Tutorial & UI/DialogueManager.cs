@@ -451,6 +451,7 @@ public class DialogueManager : MonoBehaviour
     // Fade in the UI element (make it visible)
     public void FadeIn()
     {
+        dialogueCanvas.enabled = true;
         StartCoroutine(FadeCanvasGroup(dialogueCanvasGroup, dialogueCanvasGroup.alpha, 1f));
     }
 
