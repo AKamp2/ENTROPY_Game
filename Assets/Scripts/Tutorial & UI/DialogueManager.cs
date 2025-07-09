@@ -233,7 +233,14 @@ public class DialogueManager : MonoBehaviour
                     yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
                 }
 
+                if (currentDialogueIndex == currentSequence.dialogues.Length - 1)
+                {
+                    FadeOut();
+                }
+
                 yield return new WaitForSeconds(0.3f);
+
+                
                 currentDialogueIndex++;
                 continue;
             }
