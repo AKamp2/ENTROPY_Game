@@ -82,6 +82,8 @@ public class ZeroGravity : MonoBehaviour
     private float rollFrictionGrab = 50f;
     [SerializeField]
     private float rollFrictionNoGrab = 10f;
+    private float prevRotZ = 0f;
+
 
     [Header("== Grabbing Settings ==")]
     // Grabbing mechanic variables
@@ -191,7 +193,6 @@ public class ZeroGravity : MonoBehaviour
     private bool canMove = true;
 
     //Fields for the tutorial
-    [SerializeField]
     private bool tutorialMode = false;
     private bool canGrab = false;
     private bool canPropel = false;
@@ -205,6 +206,10 @@ public class ZeroGravity : MonoBehaviour
 
     [SerializeField] private bool useManualPullIn = false;
     private bool isPullingIn;
+
+    //determines if the player is able to roll mid air or not
+    [SerializeField]
+    private bool onlyRollOnGrab = false;
 
     #region properties
     //Properties
@@ -413,10 +418,10 @@ public class ZeroGravity : MonoBehaviour
                 if (isGrabbing && grabbedBar != null)
                 {
                     //handle the grab movement
-                    if (useIK)
-                    {
-                        AdjustBarGrabbers();
-                    }
+                    //if (useIK)
+                    //{
+                    //    AdjustBarGrabbers();
+                    //}
                     if (canGrab)
                     {
                         HandleGrabMovement(grabbedBar);
@@ -451,9 +456,16 @@ public class ZeroGravity : MonoBehaviour
     #region Player Control Methods
     private void RotateCam()
     {
+
+        float rotateAngleX = rotationHoriz * sensitivityX;
+        float rotateAngleY = -rotationVert * sensitivityY;
+
         // Horizontal and vertical rotation
-        cam.transform.Rotate(Vector3.up, rotationHoriz * sensitivityX * Time.deltaTime);
-        cam.transform.Rotate(Vector3.right, -rotationVert * sensitivityY * Time.deltaTime);
+        cam.transform.Rotate(Vector3.up, rotateAngleX * Time.deltaTime);
+        cam.transform.Rotate(Vector3.right, rotateAngleY * Time.deltaTime);
+        //Debug.Log("previous rotation: " + prevRotZ);
+        //Debug.Log("rotationZ " + rotationZ + "// PrevRotZ" + prevRotZ);
+        
 
         // Apply roll rotation (Z-axis)
         if (canRoll)
@@ -466,22 +478,39 @@ public class ZeroGravity : MonoBehaviour
                 rollFriction = rollFrictionGrab;
             }
             //if the player is not grabbing a bar
-            else
+            else if (!isGrabbing && !onlyRollOnGrab)
             {
                 //the roll friction is less
                 rollFriction = rollFrictionNoGrab;
             }
 
+            //if this is the initial roll input
+            //if (prevRotZ < 0.1f)
+            //{
+            //    //set the current roll speed to 0 to ensure direct input take over
+            //    currentRollSpeed = 0f;
+            //    //Debug.Log("first time hitting roll");
+            //}
             if (Mathf.Abs(rotationZ) > 0.1f) //only apply roll if rotationZ input is significant
             {
+                if (prevRotZ != rotationZ)
+                {
+                    //Debug.Log("It's happening");
+                    currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * Time.deltaTime);
+                }
+                //Debug.Log("applying roll");
                 //calculate target roll direction and speed based on input
                 float targetRollSpeed = -Mathf.Sign(rotationZ) * rollTorque * rollFriction;
 
                 //gradually increase currentRollSpeed towards targetRollSpeed
                 currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, targetRollSpeed, rollAcceleration * Time.deltaTime);
+
+                //update the previous roll input
+                prevRotZ = rotationZ;
             }
-            else if (Mathf.Abs(currentRollSpeed) > 0.1f) // Apply friction when no input
+            else if (Mathf.Abs(rotationZ) < 0.1f) // Apply friction when no input
             {
+                //Debug.Log("applying roll friction");
                 //gradually decrease currentRollSpeed towards zero
                 currentRollSpeed = Mathf.MoveTowards(currentRollSpeed, 0f, rollFriction * Time.deltaTime);
             }
@@ -498,11 +527,33 @@ public class ZeroGravity : MonoBehaviour
                 currentRollSpeed = -maxRollSpeed;
             }
 
-                //apply the roll rotation to the camera
+            //apply the roll rotation to the camera
+            if (!onlyRollOnGrab)
+            {
                 cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
+            }
+            else if(onlyRollOnGrab && isGrabbing)
+            {
+                cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
+            }
             
         }
     }
+
+    /// <summary>
+    /// This method will be used to create logic to automatically roll the player to be parralel or perpindicular
+    /// to the bar depending on approach when grabbing
+    /// 
+    /// too difficult to implement rn
+    /// </summary>
+    //private void rotateOnGrab(Transform bar)
+    //{
+    //    //establish z rotation values
+    //    //curent z rotation
+
+    //    //make the grab automatically rotate the camera until it goes vertical
+    //    cam.transform.rotation = Quaternion.RotateTowards()
+    //}
 
     public void StopRollingQuickly()
     {
@@ -720,6 +771,119 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// IK arms start
+    /// </summary>
+    //private void GetBarGrabbers()
+    //{
+    //    grabHolder = grabbedBar.parent.Find("Grab");
+    //    initGrabRotation = new Quaternion[2];
+    //    initGrabPosition = new Vector3[2];
+    //    initUpVector = new Vector3[2];
+
+    //    for (int i = 0; i < grabHolder.childCount; i++)
+    //    {
+    //        Transform grab = grabHolder.GetChild(i);
+    //        initGrabRotation[i] = grab.rotation;
+    //        initGrabPosition[i] = grab.position;
+    //        initUpVector[i] = grab.up;
+    //    }
+    //}
+
+    //private void MoveArmsToBar()
+    //{
+    //    if (grabHolder != null)
+    //    {
+    //        //Debug.Log(hands[0].gameObject);
+    //        hands[0].data.target = grabHolder.GetChild(0).transform;
+    //        hands[1].data.target = grabHolder.GetChild(1).transform;
+
+    //        rigBuilder.Build();
+    //        animator.Rebind();
+    //    }
+    //}
+
+    //public void MoveHandsTo(Transform left, Transform right)
+    //{
+    //    if (left == null)
+    //        hands[0].data.target = defaultHandPosition[0];
+    //    else
+    //        hands[0].data.target = left;
+
+    //    if (right == null)
+    //        hands[1].data.target = defaultHandPosition[1];
+    //    else
+    //        hands[1].data.target = right;
+
+
+    //    rigBuilder.Build();
+    //    animator.Rebind();
+    //}
+
+    //private void ResetBarGrabbers()
+    //{
+    //    if (grabHolder != null)
+    //    {
+    //        for (int i = 0; i < grabHolder.childCount; i++)
+    //        {
+    //            Transform grab = grabHolder.GetChild(i).transform;
+
+    //            //Debug.Log(i + " + " + initGrabRotation[i]);
+    //            grab.rotation = initGrabRotation[i];
+    //            grab.position = initGrabPosition[i];
+    //            grab.up = initUpVector[i];
+    //        }
+
+    //        hands[0].data.target = defaultHandPosition[0];
+    //        hands[1].data.target = defaultHandPosition[1];
+
+    //        rigBuilder.Build();
+    //        animator.Rebind();
+
+    //        initGrabRotation = null;
+    //        initGrabPosition = null;
+    //        initUpVector = null;
+    //        grabHolder = null;
+    //    }
+
+
+    //}
+
+    //private void AdjustBarGrabbers()
+    //{
+    //    Transform grabCollider = grabbedBar.parent.Find("Grabbable");
+
+
+
+    //    float roll = cam.transform.localEulerAngles.z;
+    //    if (roll > 180f) roll -= 360f;
+
+    //    // calculate angle around bar to the player
+    //    Vector3 toTarget = cam.transform.position - grabCollider.position;
+    //    Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
+    //    float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
+
+    //    //Debug.Log(roll);
+
+    //    for (int i = 0; i < grabHolder.childCount; i++)
+    //    {
+    //        Transform grab = grabHolder.GetChild(i).transform;
+
+    //        // zero out transform for uniform translation
+    //        grab.rotation = initGrabRotation[i];
+    //        grab.position = initGrabPosition[i];
+
+    //        grab.RotateAround(grabCollider.position, grabCollider.up, angle);
+
+    //        //grab.position = initGrabPosition[i];
+    //        Quaternion rollRotation = Quaternion.AngleAxis(roll, grab.up);
+    //        grab.rotation = rollRotation * grab.rotation;
+
+    //    }
+
+
+    //}
+
     public void GrabBar()
     {
         isGrabbing = true;
@@ -727,12 +891,12 @@ public class ZeroGravity : MonoBehaviour
         justGrabbed = true;
         grabbedBar = potentialGrabbedBar;
 
-        // set up grab spots
-        if (useIK)
-        {
-            GetBarGrabbers();
-            MoveArmsToBar();
-        }
+        //// set up grab spots
+        //if (useIK)
+        //{
+        //    GetBarGrabbers();
+        //    MoveArmsToBar();
+        //}
 
         //lock grabbed bar and change icon
         uiManager.ShowGrabbedGrabber(grabbedBar);
@@ -741,116 +905,6 @@ public class ZeroGravity : MonoBehaviour
         swinging = true;
 
         //Debug.Log(rb.linearVelocity.magnitude);
-    }
-
-    private void GetBarGrabbers()
-    {
-        grabHolder = grabbedBar.parent.Find("Grab");
-        initGrabRotation = new Quaternion[2];
-        initGrabPosition = new Vector3[2];
-        initUpVector = new Vector3[2];
-
-        for(int i = 0; i < grabHolder.childCount; i++)
-        {
-            Transform grab = grabHolder.GetChild(i);
-            initGrabRotation[i] = grab.rotation;
-            initGrabPosition[i] = grab.position;
-            initUpVector[i] = grab.up;
-        }    
-    }
-
-    private void MoveArmsToBar()
-    {
-        if (grabHolder != null)
-        {
-            //Debug.Log(hands[0].gameObject);
-            hands[0].data.target = grabHolder.GetChild(0).transform;
-            hands[1].data.target = grabHolder.GetChild(1).transform;
-
-            rigBuilder.Build();
-            animator.Rebind();
-        }  
-    }
-
-    public void MoveHandsTo(Transform left, Transform right)
-    {
-        if (left == null)
-            hands[0].data.target = defaultHandPosition[0];
-        else
-            hands[0].data.target = left;
-
-        if (right == null)
-            hands[1].data.target = defaultHandPosition[1];
-        else
-            hands[1].data.target = right;
-
-
-        rigBuilder.Build();
-        animator.Rebind();
-    }
-
-    private void ResetBarGrabbers()
-    {
-        if (grabHolder != null)
-        {
-            for (int i = 0; i < grabHolder.childCount; i++)
-            {
-                Transform grab = grabHolder.GetChild(i).transform;
-
-                //Debug.Log(i + " + " + initGrabRotation[i]);
-                grab.rotation = initGrabRotation[i];
-                grab.position = initGrabPosition[i];
-                grab.up = initUpVector[i];
-            }
-
-            hands[0].data.target = defaultHandPosition[0];
-            hands[1].data.target = defaultHandPosition[1];
-
-            rigBuilder.Build();
-            animator.Rebind();
-
-            initGrabRotation = null;
-            initGrabPosition = null;
-            initUpVector = null;
-            grabHolder = null;
-        }
-
-
-    }
-
-    private void AdjustBarGrabbers()
-    {
-        Transform grabCollider = grabbedBar.parent.Find("Grabbable");
-
-
-
-        float roll = cam.transform.localEulerAngles.z;
-        if (roll > 180f) roll -= 360f;
-
-        // calculate angle around bar to the player
-        Vector3 toTarget = cam.transform.position - grabCollider.position;
-        Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
-        float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
-
-        //Debug.Log(roll);
-
-        for (int i = 0; i < grabHolder.childCount; i++)
-        {
-            Transform grab = grabHolder.GetChild(i).transform;
-
-            // zero out transform for uniform translation
-            grab.rotation = initGrabRotation[i];
-            grab.position = initGrabPosition[i];
-
-            grab.RotateAround(grabCollider.position, grabCollider.up, angle);
-
-            //grab.position = initGrabPosition[i];
-            Quaternion rollRotation = Quaternion.AngleAxis(roll, grab.up);
-            grab.rotation = rollRotation * grab.rotation;
-
-        }
-
-
     }
 
 
@@ -1061,10 +1115,11 @@ public class ZeroGravity : MonoBehaviour
         grabbedBar = null;
 
         // no bar grabbed, so no more grab locations
-        if (useIK)
-        {
-            ResetBarGrabbers();
-        }
+        //IK STUFF
+        //if (useIK)
+        //{
+        //    ResetBarGrabbers();
+        //}
         
 
         //lock grabbed bar and change icon
