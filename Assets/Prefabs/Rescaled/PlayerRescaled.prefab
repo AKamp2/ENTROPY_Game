@@ -2246,7 +2246,7 @@ Transform:
   m_GameObject: {fileID: 3216940808567239249}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5, y: -0.5, z: -0.5, w: -0.5}
-  m_LocalPosition: {x: 5.921, y: 4.443, z: 3.923}
+  m_LocalPosition: {x: 42.633, y: 2.955, z: -7.387}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3276,7 +3276,7 @@ Transform:
   m_GameObject: {fileID: 5013918201525809107}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: -0.49999994, z: -0.5000009, w: -0.49999923}
-  m_LocalPosition: {x: 5.889, y: 4.318, z: 3.94}
+  m_LocalPosition: {x: 5.843, y: 4.385, z: 5.166}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3576,31 +3576,32 @@ MonoBehaviour:
   highDangerCoolDown: 5
   accessPermissions: 000000
   rollTorque: 100
-  maxRollSpeed: 50
-  rollAcceleration: 20
+  maxRollSpeed: 45
+  rollAcceleration: 70
   deathRollAcceleration: 0.3
-  rollFrictionGrab: 40
+  rollFrictionGrab: 100
   rollFrictionNoGrab: 20
-  grabRange: 1.5
-  minGrabRange: 1.3
+  bounceAcc: 2
+  grabRange: 1
+  minGrabRange: 0.3
   grabPadding: 100
   propelThrust: 1.5
-  propelOffWallThrust: 100
+  propelOffWallThrust: 60
   pushSpeed: 2
   dangerSpeed: 5
   mediumSpeed: 4
   zeroGWalkSpeed: 1.5
-  minimumSpeed: 1
+  minimumSpeed: 0.55
   swinging: 0
-  grabDrag: 0.45
+  grabDrag: 0.2
   pullDrag: 0.95
   pullToBarMod: 0.1
   jointSpringForce: 4.5
   jointDamperForce: 10
-  jointMassScale: 1.125
-  swingCoolDownFastest: 0.45
-  swingCoolDownMedium: 2
-  swingCoolDownSlowest: 3
+  jointMassScale: 1
+  swingCoolDownFastest: 0.3
+  swingCoolDownMedium: 1
+  swingCoolDownSlowest: 2
   uiManager: {fileID: 2716866956425928344}
   grab: {fileID: 1289024538108758660, guid: 62bee993b4da21145a34bb9e2304d3d3, type: 3}
   pushOffWall: {fileID: -757749469659553165, guid: 62bee993b4da21145a34bb9e2304d3d3, type: 3}
