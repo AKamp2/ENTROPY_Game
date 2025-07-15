@@ -67,9 +67,12 @@ public class DoorScript : MonoBehaviour
     private BoxCollider doorTrigger;
     [SerializeField]
     private DecalProjector decal;
+    [SerializeField]
+    private bool showSparks;
 
     public AudioSource audioSource;
     public EnvironmentAudio audioManager;
+    public ParticleSystem[] sparks;
 
     //private DialogueManager dialogueManager;
 
@@ -148,6 +151,12 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(redBase, redEmis);
             decal.material = doorManager.LockedMaterial;
+        }
+
+        foreach(ParticleSystem spark in sparks)
+        {
+            var emission = spark.emission;
+            emission.enabled = showSparks;
         }
 
 
@@ -362,6 +371,15 @@ public class DoorScript : MonoBehaviour
             Material m = button.GetComponent<Renderer>().material;
             m.SetColor("_BaseColor", baseColor);
             m.SetColor("_EmissionColor", emisColor);
+        }
+    }
+
+    private void ToggleSparks(bool value)
+    {
+        foreach(ParticleSystem spark in sparks)
+        {
+            var emission = spark.emission;
+            emission.enabled = value;
         }
     }
     
