@@ -9,25 +9,29 @@ public class WristMonitor : MonoBehaviour
     [SerializeField] ZeroGravity player;
     [SerializeField] TextMeshProUGUI healthText;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
-    public List<Objective> objectives = new List<Objective>();
+    public List<Objective> mainObjectives = new List<Objective>();
 
     public class Objective
     {
-        public Objective(string objectiveName, string objectiveDescription, bool isCompleted)
+        public Objective(string objectiveName, string objectiveDescription, string subObjective, bool isCompleted)
         {
             ObjectiveName = objectiveName;
             ObjectiveDescription = objectiveDescription;
+            SubObjective = subObjective;
             IsCompleted = isCompleted;
         }
 
         public string ObjectiveName { get; set; }
         public string ObjectiveDescription { get; set; }
+        public string SubObjective { get; set; }
         public bool IsCompleted { get; set; }
     }
 
     private void Start()
     {
-        objectives.Add(new Objective("Medbay", "Reach the Medbay", false));
+        mainObjectives.Add(new Objective("Medbay", "Reach the Medbay", "Reconnect ALAN", false));
+        mainObjectives.Add(new Objective("Server Room", "Reach the Server Room", "Override Manual Lockdown", false));
+        mainObjectives.Add(new Objective("Server Room", "Reach the Faciliteis Room","", false));
     }
 
     public void ToggleWristMonitor()
@@ -39,6 +43,6 @@ public class WristMonitor : MonoBehaviour
     private void Update()
     {
         healthText.text = $"Health: {player.PlayerHealth}";
-        currentObjectiveText.text = $"<color=orange>Current Objective: </color>\n\t{objectives[0].ObjectiveDescription}";
+        currentObjectiveText.text = $"<color=orange>Current Objective: </color>\n\t{mainObjectives[0].ObjectiveDescription}\n<size=8><color=orange>Sub Objective: </color>\n\t{mainObjectives[0].SubObjective}</size>";
     }
 }
