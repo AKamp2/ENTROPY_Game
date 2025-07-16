@@ -174,22 +174,18 @@ public class PlayerUIManager : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
 
         // if raycast hits
-        if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | barrierLayer | doorLayer | raycastLayer))
+        if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | doorLayer | raycastLayer))
         {
             //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
             RayCastHandleGrab(hit);
             RayCastHandleDoorButton(hit);
-
             // act 1 event - probably will eventually move to a gameplay manager
             RayCastHandleManualLockdown(hit);
-            
-
-            //if the current velocity is less than the parameter we set
-            if (rb.linearVelocity.magnitude <= player.PushSpeed)
-            {
-                //we handle interaction with pushing off the wall
-                RayCastHandlePushOffWall(hit);
-            }
+        }
+        else if(Physics.Raycast(ray, out hit, player.GrabRange/2f, barrierLayer))
+        {
+            //we handle interaction with pushing off the wall
+            RayCastHandlePushOffWall(hit);
         }
         else
         {
@@ -250,21 +246,24 @@ public class PlayerUIManager : MonoBehaviour
 
     public void RayCastHandlePushOffWall(RaycastHit hit)
     {
-        //Debug.Log("Push off raycast happening");
-        if (hit.transform.CompareTag("Barrier") && !barInView)
+        if (rb.linearVelocity.magnitude <= player.PushSpeed)
         {
-            player.PotentialWall = hit.transform;
-            //if in tutorial mode
-            if (barInView)
+            //Debug.Log("Push off raycast happening");
+            if (hit.transform.CompareTag("Barrier") && !barInView)
             {
-                return;
-            }
-            if (player.CanPushOff && !barInView)
-            {
-                //grabUIText.text = "'SPACEBAR'";
-                //set the sprite for the space bar indicator
-                inputIndicator.sprite = spaceIndicator;
-                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                player.PotentialWall = hit.transform;
+                //if in tutorial mode
+                if (barInView)
+                {
+                    return;
+                }
+                if (player.CanPushOff && !barInView)
+                {
+                    //grabUIText.text = "'SPACEBAR'";
+                    //set the sprite for the space bar indicator
+                    inputIndicator.sprite = spaceIndicator;
+                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                }
             }
         }
     }
@@ -384,6 +383,12 @@ public class PlayerUIManager : MonoBehaviour
                 grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(-1, 1, 1);
             }
             
+        }
+        else if(closestObject == null)
+        {
+            if (player.IsGrabbing) { return; }
+            //ensure that barinview is set false properly
+            barInView = false;
         }
     }
 
