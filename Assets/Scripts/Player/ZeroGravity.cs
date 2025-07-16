@@ -128,6 +128,8 @@ public class ZeroGravity : MonoBehaviour
     private Vector3 swingPoint; //stores the bar transform when calculating swings
     private SpringJoint joint;
     [SerializeField]
+    private ConfigurableJoint newJoint;
+    [SerializeField]
     private float grabDrag = .99f;
     [SerializeField]
     private float pullDrag = .95f;
@@ -767,7 +769,7 @@ public class ZeroGravity : MonoBehaviour
         if (isGrabbing && bar != null)
         {
             PropelOffBar();
-            Swing(bar);
+            NewSwing(bar);
             uiManager.UpdateGrabberPosition(bar);
         }
     }
@@ -908,86 +910,106 @@ public class ZeroGravity : MonoBehaviour
         //Debug.Log(rb.linearVelocity.magnitude);
     }
 
+    //public void NewPullToBar(float multiplier, Transform bar)
+    //{
+    //    //Debug.Log(bar.gameObject.name);
+    //    //Debug.Log(rb.linearVelocity.magnitude);
+    //    //Debug.Log(bar.gameObject.name);
+    //    //initially set the velocity to 0 so the momentum doesn't carry through from propel
+
+    //    if (useManualPullIn && !isPullingIn)
+    //        return;
+
+    //    //if the joint is a long distance between the player and the bar
+    //    if (joint.maxDistance >= joint.minDistance)
+    //    {
+    //        //decrease the length of the joint scaled by a multiplier to determine how fast this happens
+    //        joint.maxDistance -= 0.1f * multiplier;
+    //        //lessen the spring force of the joint scaled by a multiplier to determine how fast this happens
+    //        joint.spring -= 0.1f * multiplier;
+    //    }
+
+    //    //increment down the linear and angular velocities so the player slows down
+    //    if (rb.linearVelocity.magnitude >= zeroGWalkSpeed)
+    //    {
+    //        //decrease the velocity
+    //        rb.linearVelocity *= grabDrag;
+    //    }
+    //    //if the linear velocity magnitude is below 3  
+    //    else if (rb.linearVelocity.magnitude < zeroGWalkSpeed)
+    //    {
+    //        //create a target Transform to pull to
+    //        Transform target = null;
+    //        //iterate through the children 
+    //        foreach (Transform child in bar)
+    //        {
+    //            //find the child that is the GrabTarget
+    //            if (child.gameObject.name == "GrabTarget")
+    //            {
+    //                //save this child as the target
+    //                target = child;
+    //            }
+    //        }
+    //        //begin moving the player to the target point
+    //        //var step = multiplier * Time.deltaTime;
+    //        //rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
+
+    //        //if the position of the player and the target are about equal
+    //        if (Vector3.Distance(rb.transform.position, target.position) < .1f)
+    //        {
+    //            //Debug.Log("They are touching :)");
+    //            //begin the swing ability
+    //            Swing(bar);
+    //            return;
+    //        }
+    //        else
+    //        {
+    //            //create a direction vector to pull the player to the bar point
+    //            Vector3 pullDirection = target.position - rb.transform.position;
+    //            Vector3 normalizedpulldirection = pullDirection.normalized;
+    //            rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
+
+    //        }
+    //        //Debug.Log(target.gameObject.name);
+    //    }
+
+    //    //Debug.Log("linear velocity: " + rb.linearVelocity.magnitude);
+    //}
+
     public void NewSwing(Transform bar)
     {
-        if(isGrabbing && bar != null)
+        if (isGrabbing && bar != null)
         {
             swingPoint = bar.position;
 
             //ensure we don't have a joint created yet for swinging
-            if(this.gameObject.GetComponent<ConfigurableJoint>() == null)
+            if (this.gameObject.GetComponent<ConfigurableJoint>() != null)
             {
                 //create the joint
-                this.gameObject.AddComponent<ConfigurableJoint>();
+                //newJoint = this.gameObject.AddComponent<ConfigurableJoint>();
+                newJoint.autoConfigureConnectedAnchor = false;
+                newJoint.connectedAnchor = swingPoint;
+                //create a distance between the player to the bar
+                //float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+                Vector3 toBar = swingPoint - rb.transform.position;
+                //normalize that vector
+                float targetDistanceToBar = toBar.magnitude / 2;
+                toBar  = toBar.normalized;
+                //Debug.DrawLine(rb.transform.position, swingPoint);
+                //create the target point based on this distance between the player and the bar
+                //Debug.Log("ToBar Vector: " + toBar);
+                //scale the distance to bar 
+                toBar = toBar * targetDistanceToBar;
+                //create the target position
+                Vector3 targetPos = rb.transform.position + toBar;
+                Debug.Log(targetPos);
+                Debug.DrawLine(rb.transform.position, targetPos);
+                //set the target position of the joint to the point
+                newJoint.targetPosition = targetPos;
+
 
             }
         }
-    }
-
-    public void NewPullToBar(float multiplier, Transform bar)
-    {
-        //Debug.Log(bar.gameObject.name);
-        //Debug.Log(rb.linearVelocity.magnitude);
-        //Debug.Log(bar.gameObject.name);
-        //initially set the velocity to 0 so the momentum doesn't carry through from propel
-
-        if (useManualPullIn && !isPullingIn)
-            return;
-
-        //if the joint is a long distance between the player and the bar
-        if (joint.maxDistance >= joint.minDistance)
-        {
-            //decrease the length of the joint scaled by a multiplier to determine how fast this happens
-            joint.maxDistance -= 0.1f * multiplier;
-            //lessen the spring force of the joint scaled by a multiplier to determine how fast this happens
-            joint.spring -= 0.1f * multiplier;
-        }
-
-        //increment down the linear and angular velocities so the player slows down
-        if (rb.linearVelocity.magnitude >= zeroGWalkSpeed)
-        {
-            //decrease the velocity
-            rb.linearVelocity *= grabDrag;
-        }
-        //if the linear velocity magnitude is below 3  
-        else if (rb.linearVelocity.magnitude < zeroGWalkSpeed)
-        {
-            //create a target Transform to pull to
-            Transform target = null;
-            //iterate through the children 
-            foreach (Transform child in bar)
-            {
-                //find the child that is the GrabTarget
-                if (child.gameObject.name == "GrabTarget")
-                {
-                    //save this child as the target
-                    target = child;
-                }
-            }
-            //begin moving the player to the target point
-            //var step = multiplier * Time.deltaTime;
-            //rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
-
-            //if the position of the player and the target are about equal
-            if (Vector3.Distance(rb.transform.position, target.position) < .1f)
-            {
-                //Debug.Log("They are touching :)");
-                //begin the swing ability
-                Swing(bar);
-                return;
-            }
-            else
-            {
-                //create a direction vector to pull the player to the bar point
-                Vector3 pullDirection = target.position - rb.transform.position;
-                Vector3 normalizedpulldirection = pullDirection.normalized;
-                rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
-
-            }
-            //Debug.Log(target.gameObject.name);
-        }
-
-        //Debug.Log("linear velocity: " + rb.linearVelocity.magnitude);
     }
 
     /// <summary>
@@ -1179,7 +1201,7 @@ public class ZeroGravity : MonoBehaviour
     {
         //Debug.Log("no swingaling");
         swingPoint = Vector3.zero;
-        Destroy(joint);
+        newJoint.connectedAnchor = Vector3.zero;
         swinging = false;
     }
 

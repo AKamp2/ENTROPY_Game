@@ -171,7 +171,7 @@ public class PlayerUIManager : MonoBehaviour
         Ray ray = player.cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         RaycastHit hit;
 
-        Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
+        //Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
 
         // if raycast hits
         if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | doorLayer | raycastLayer))
