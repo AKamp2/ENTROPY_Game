@@ -10,6 +10,7 @@ public class WristMonitor : MonoBehaviour
     [SerializeField] TextMeshProUGUI healthText;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
     public List<Objective> mainObjectives = new List<Objective>();
+    public List<Objective> completedObjectives = new List<Objective>();
 
     public class Objective
     {
@@ -29,9 +30,9 @@ public class WristMonitor : MonoBehaviour
 
     private void Start()
     {
-        mainObjectives.Add(new Objective("Medbay", "Reach the Medbay", "Reconnect ALAN", false));
-        mainObjectives.Add(new Objective("Server Room", "Reach the Server Room", "Override Manual Lockdown", false));
-        mainObjectives.Add(new Objective("Server Room", "Reach the Faciliteis Room","", false));
+        mainObjectives.Add(new Objective("Medbay", "<color=orange>Current Objective: </color>\n\tReach the Medbay", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Server Room", "<color=orange>Current Objective: </color>\n\tReach the Server Room", "<size=8><color=orange>Sub Objective: </color>\n\tOverride Manual Lockdown</size>", false));
+        mainObjectives.Add(new Objective("Server Room", "<color=orange>Current Objective: </color>\n\tReach the Facilities Room", "", false));
     }
 
     public void ToggleWristMonitor()
@@ -43,6 +44,27 @@ public class WristMonitor : MonoBehaviour
     private void Update()
     {
         healthText.text = $"Health: {player.PlayerHealth}";
-        currentObjectiveText.text = $"<color=orange>Current Objective: </color>\n\t{mainObjectives[0].ObjectiveDescription}\n<size=8><color=orange>Sub Objective: </color>\n\t{mainObjectives[0].SubObjective}</size>";
+        if(mainObjectives.Count > 0)
+        {
+            currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";
+        }
+    }
+
+    public void CompleteObjective()
+    {
+        if (mainObjectives.Count > 0)
+        {
+            mainObjectives[0].IsCompleted = true;
+            CheckObjectives();
+        }
+    }
+
+    void CheckObjectives()
+    {
+        if (mainObjectives[0].IsCompleted) 
+        {
+            completedObjectives.Add(mainObjectives[0]);
+            mainObjectives.Remove(mainObjectives[0]);
+        }
     }
 }
