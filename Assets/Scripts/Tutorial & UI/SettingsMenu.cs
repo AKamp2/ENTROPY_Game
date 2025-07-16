@@ -168,8 +168,8 @@ public class SettingsMenu : MonoBehaviour
         // Sets the sound effects volume to the slide value
         if (player != null)
         {
-            player.SensitivityX = sensitivitySlider.value / 10;
-            player.SensitivityY = sensitivitySlider.value / 10;
+            player.SensitivityX = sensitivitySlider.value / 5f;
+            player.SensitivityY = sensitivitySlider.value / 10f;
         }
        
         SetPrefsInt("sensitivitySlider", (int)sensitivitySlider.value);

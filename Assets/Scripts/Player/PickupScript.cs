@@ -167,7 +167,7 @@ public class PickupScript : MonoBehaviour
 
 
             MoveObject();
-            zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
+            //zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
         }
     }
     void DropObject()
@@ -183,8 +183,7 @@ public class PickupScript : MonoBehaviour
         heldObj = null; //undefine game object
 
         //current = null;
-
-        zeroGPlayer.MoveHandsTo(null, null);
+        //zeroGPlayer.MoveHandsTo(null, null);
     }
     void MoveObject()
     {
@@ -214,7 +213,7 @@ public class PickupScript : MonoBehaviour
         canPickUp = false;
         coolDown = coolDownMax;
 
-        zeroGPlayer.MoveHandsTo(null, null);
+        //zeroGPlayer.MoveHandsTo(null, null);
     }
 
     IEnumerator ResetThrowFlag()
