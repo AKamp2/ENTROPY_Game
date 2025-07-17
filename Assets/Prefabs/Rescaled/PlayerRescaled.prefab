@@ -1188,6 +1188,7 @@ Transform:
   m_Children:
   - {fileID: 8248391141977241354}
   - {fileID: 4950291931241970116}
+  - {fileID: 5571254012300352706}
   m_Father: {fileID: 8965648279682234964}
   m_LocalEulerAnglesHint: {x: 19.629, y: 0, z: 0}
 --- !u!20 &6811617047642375532
@@ -3537,7 +3538,7 @@ MonoBehaviour:
   highDangerCoolDown: 5
   accessPermissions: 000000
   rollTorque: 100
-  maxRollSpeed: 45
+  maxRollSpeed: 30
   rollAcceleration: 70
   deathRollAcceleration: 0.3
   rollFrictionGrab: 100
@@ -3579,7 +3580,7 @@ MonoBehaviour:
   rigBuilder: {fileID: 8424001897327838611}
   animator: {fileID: 705937051614461180}
   useManualPullIn: 0
-  onlyRollOnGrab: 0
+  onlyRollOnGrab: 1
 --- !u!114 &3526291143942320977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4986,7 +4987,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4746541149963077618}
-  - {fileID: 5571254012300352706}
   m_Father: {fileID: 3693777112128538159}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7183946268706412778
@@ -5334,11 +5334,11 @@ Transform:
   m_GameObject: {fileID: 7776693999019241654}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalPosition: {x: -0, y: 0, z: -0.162}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8965648279682234964}
+  m_Father: {fileID: 4746541149963077618}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &3290862621224409757
 CapsuleCollider:
@@ -5359,7 +5359,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.3
   m_Height: 0.1
   m_Direction: 0
   m_Center: {x: 0, y: 0, z: 0}
