@@ -8,6 +8,8 @@ public class DialogueTrigger : MonoBehaviour
     float delay = 0f;
     [SerializeField]
     private Collider player;
+    [SerializeField]
+    WristMonitor monitor;
 
     [SerializeField]
     int index;
@@ -34,7 +36,7 @@ public class DialogueTrigger : MonoBehaviour
             //sart the dialogue
             manager.StartDialogueSequence(index, delay);
 
-
+            monitor.CompleteObjective();
         }
     }
 }
