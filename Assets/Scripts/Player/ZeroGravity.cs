@@ -125,6 +125,8 @@ public class ZeroGravity : MonoBehaviour
     [Header("== Swinging Settings==")]
     [SerializeField]
     private bool swinging = false;
+    [SerializeField]
+    private bool jointCreated = false;
     private Vector3 swingPoint; //stores the bar transform when calculating swings
     private SpringJoint joint;
     [SerializeField]
@@ -339,7 +341,7 @@ public class ZeroGravity : MonoBehaviour
         Application.targetFrameRate = 60;  // Match this with your build target frame rate.
 
         // give player default permissions
-
+        jointCreated = false;
         //initial player booleans set if in tutorial mode
         if (tutorialMode)
         {
@@ -980,36 +982,66 @@ public class ZeroGravity : MonoBehaviour
     {
         if (isGrabbing && bar != null)
         {
-            swingPoint = bar.position;
+            swingPoint = bar.transform.position;
+            Debug.Log("swingpoint" +  swingPoint);
+            Debug.Log("player pos" + rb.position);
 
             //ensure we don't have a joint created yet for swinging
-            if (this.gameObject.GetComponent<ConfigurableJoint>() != null)
+            if (this.gameObject.GetComponent<ConfigurableJoint>() != null && jointCreated == false) 
             {
                 //create the joint
+                newJoint.targetPosition = rb.transform.position;
                 //newJoint = this.gameObject.AddComponent<ConfigurableJoint>();
                 newJoint.autoConfigureConnectedAnchor = false;
+                //set the world space of the connected anchor point
+
                 newJoint.connectedAnchor = swingPoint;
-                //create a distance between the player to the bar
-                //float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+                
+                //create a distance between the player to the bar;
                 Vector3 toBar = swingPoint - rb.transform.position;
+                float distanceBetween = Vector3.Distance(rb.transform.position, swingPoint);
                 //normalize that vector
-                float targetDistanceToBar = toBar.magnitude / 2;
                 toBar  = toBar.normalized;
+
                 //Debug.DrawLine(rb.transform.position, swingPoint);
                 //create the target point based on this distance between the player and the bar
                 //Debug.Log("ToBar Vector: " + toBar);
                 //scale the distance to bar 
-                toBar = toBar * targetDistanceToBar;
+                Vector3 relativeToBar = toBar * distanceBetween;
                 //create the target position
-                Vector3 targetPos = rb.transform.position + toBar;
-                Debug.Log(targetPos);
-                Debug.DrawLine(rb.transform.position, targetPos);
+                //Vector3 anchorPos = rb.transform.position + toBar;
+                //Debug.Log(relativeToBar);
+                //Debug.DrawLine(rb.transform.position, relativeToBar);
                 //set the target position of the joint to the point
-                newJoint.targetPosition = targetPos;
+                newJoint.anchor = swingPoint;
+                //relativeToBar;
+                ////set up initial spring values of our joint
+                JointDrive jointDrive = new JointDrive();
+                jointDrive.positionSpring = jointSpringForce;
+                jointDrive.positionDamper = jointDamperForce;
+                //apply the drive
+                newJoint.xDrive = jointDrive;
+                newJoint.yDrive = jointDrive;
+                newJoint.zDrive = jointDrive;
+                jointCreated = true;
 
-
+                Debug.DrawLine(rb.transform.position, swingPoint);
             }
         }
+    }
+
+    /// <summary>
+    /// This method stops the swinging by destroying the pringjoint and setting the swingpoint back to zero
+    /// </summary>
+    private void StopSwing()
+    {
+        //Debug.Log("no swingaling");
+        //swingPoint = Vector3.zero;
+        //newJoint.anchor = Vector3.zero;
+        //newJoint.connectedAnchor = Vector3.zero;
+        //Destroy(newJoint);
+        jointCreated = false;
+        swinging = false;
     }
 
     /// <summary>
@@ -1192,17 +1224,6 @@ public class ZeroGravity : MonoBehaviour
             prevJustGrabbed = justGrabbed;
             grabSwingTimeStamp = 0f;
         }
-    }
-
-    /// <summary>
-    /// This method stops the swinging by destroying the pringjoint and setting the swingpoint back to zero
-    /// </summary>
-    private void StopSwing()
-    {
-        //Debug.Log("no swingaling");
-        swingPoint = Vector3.zero;
-        newJoint.connectedAnchor = Vector3.zero;
-        swinging = false;
     }
 
 
