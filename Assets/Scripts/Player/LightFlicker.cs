@@ -18,7 +18,15 @@ public class LightFlicker : MonoBehaviour
     float minOffDuration;
 
     [SerializeField]
-    float timer;
+    float defaultIntensity = 2;
+
+    [SerializeField]
+    float maxIntensity = 1;
+
+    [SerializeField]
+    float minIntensity = 0;
+
+    private float timer;
 
     bool isActive;
 
@@ -42,12 +50,12 @@ public class LightFlicker : MonoBehaviour
 
             if (isActive)
             {
-                spotLight.intensity = 30;
+                spotLight.intensity = defaultIntensity;
                 timer = Random.Range(minOnDuration, maxOnDuration);
             }
             else
             {
-                spotLight.intensity = Random.Range(25, 29);
+                spotLight.intensity = Random.Range(minIntensity, maxIntensity);
                 timer = Random.Range(-minOffDuration, maxOffDuration);
             }
         }
