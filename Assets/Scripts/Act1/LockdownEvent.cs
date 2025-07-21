@@ -30,6 +30,8 @@ public class LockdownEvent : MonoBehaviour
 
     public DialogueManager dialogueManager;
 
+    public AmbientController ambientController;
+
 
     [SerializeField]
     private Material leverMaterial;
@@ -210,6 +212,7 @@ public class LockdownEvent : MonoBehaviour
 
             medDoor.SetState(DoorScript.States.Closed);
 
+            ambientController.Progress();
 
         }
     }
