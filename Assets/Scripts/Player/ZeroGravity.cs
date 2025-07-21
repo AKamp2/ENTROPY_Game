@@ -392,7 +392,7 @@ public class ZeroGravity : MonoBehaviour
             {
                 uiManager.HandleRaycastUI();
                 //update to closest bar in view 
-                uiManager.UpdateClosestBarInView();
+                //uiManager.UpdateClosestBarInView();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null && canGrab)
                 {
@@ -416,7 +416,7 @@ public class ZeroGravity : MonoBehaviour
                 //Debug.Log("Tutorial Mode off");
                 uiManager.HandleRaycastUI();
                 //update to closest bar in view 
-                uiManager.UpdateClosestBarInView();
+                //uiManager.UpdateClosestBarInView();
                 //handle grabber icon logic
                 if (isGrabbing && grabbedBar != null)
                 {
