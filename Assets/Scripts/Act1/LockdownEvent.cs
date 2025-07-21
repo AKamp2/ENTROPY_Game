@@ -218,6 +218,7 @@ public class LockdownEvent : MonoBehaviour
 
     private IEnumerator PlayLockdownFX()
     {
+        yield return new WaitForSeconds(0.5f);
         StartCoroutine(LockDoors());
 
         foreach(HazardLight hazard in hazardsToDisable)
