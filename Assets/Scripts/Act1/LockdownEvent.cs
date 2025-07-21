@@ -172,7 +172,7 @@ public class LockdownEvent : MonoBehaviour
     {
         float randomDelay = Random.Range(0f, 0.2f); // Adjust range if needed
         yield return new WaitForSeconds(randomDelay);
-        door.DoorState = DoorScript.States.Opening;
+        door.SetState(DoorScript.States.Open);
     }
 
     private IEnumerator WaitForBodyVisible()
@@ -189,7 +189,7 @@ public class LockdownEvent : MonoBehaviour
             audioManager.PlayButtonClick();
             buttonLight.intensity = 0;
             // open the broken door first
-            brokenDoor.DoorState = DoorScript.States.Opening;
+            brokenDoor.SetState(DoorScript.States.Open);
             lever.GetComponent<Renderer>().material = leverMaterial;
 
             DoorTrigger.enabled = true;
@@ -253,7 +253,7 @@ public class LockdownEvent : MonoBehaviour
 
     private IEnumerator LockDoors()
     {
-        brokenDoor.DoorState = DoorScript.States.Closing;
+        brokenDoor.SetState(DoorScript.States.Closed);
         yield return new WaitForSeconds(13f);
         brokenDoor.UseDoor();
     }
