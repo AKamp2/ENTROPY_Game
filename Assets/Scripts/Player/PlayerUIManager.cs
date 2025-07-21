@@ -182,7 +182,7 @@ public class PlayerUIManager : MonoBehaviour
             // act 1 event - probably will eventually move to a gameplay manager
             RayCastHandleManualLockdown(hit);
         }
-        else if(Physics.Raycast(ray, out hit, player.GrabRange/2f, barrierLayer))
+        else if(Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer))
         {
             //we handle interaction with pushing off the wall
             RayCastHandlePushOffWall(hit);
