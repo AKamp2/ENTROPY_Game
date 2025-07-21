@@ -63,7 +63,7 @@
                     "name": "Pause",
                     "type": "Button",
                     "id": "bc57e8e3-cabd-4898-b2f6-3ba6914cf90f",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -91,6 +91,15 @@
                     "type": "Button",
                     "id": "b5d2d613-ece4-400e-9f1b-e83d6c87dc27",
                     "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "OpenWristMonitor",
+                    "type": "Button",
+                    "id": "a587e671-b71e-4099-9c5f-13de8b0ef4f4",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -446,6 +455,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "OffWall",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c020c83-0b47-45d6-b269-20e8db2ad004",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenWristMonitor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

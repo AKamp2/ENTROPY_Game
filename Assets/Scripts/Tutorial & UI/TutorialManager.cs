@@ -50,8 +50,9 @@ public class TutorialManager : MonoBehaviour
     private float initialRollZ;
 
     public DialogueAudio dialogueAudio;
+    public AmbientController ambientController;
 
-    // rolling threshold (in degrees) beyond which we consider “upside down”
+    // rolling threshold (in degrees) beyond which we consider ï¿½upside downï¿½
     [SerializeField] private float rollAngleThreshold = 150f;
 
     
@@ -317,6 +318,7 @@ public class TutorialManager : MonoBehaviour
 
         //remove all tutorial panels
         HideAllPanels();
+        ambientController.Progress();
 
         currentStep = 5;
     }
