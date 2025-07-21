@@ -24,8 +24,6 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider masterVolumeSlider;
     [SerializeField] private TextMeshProUGUI soundFXSliderText;
-    [SerializeField] private AudioSource soundFXAudioSource = null;
-    [SerializeField] private AudioSource dialogueAudioSource = null;
     [SerializeField] private TextMeshProUGUI musicSliderText;
     [SerializeField] private TextMeshProUGUI masterVolumeSliderText;
     [SerializeField] private AudioMixer masterVolumeMixer;
@@ -82,97 +80,75 @@ public class SettingsMenu : MonoBehaviour
     {
         // Makes sure menus are not open when starting 
         CloseMenus();
-        dialogueSlider.value = GetPrefs("dialogueSlider", 100);
-        soundFXSlider.value = GetPrefs("soundFXSlider", 100);
-        sensitivitySlider.value = GetPrefs("sensitivitySlider", 40);
-        subtitleCheckbox.isOn = GetPrefs("subtitleCheckbox", 1) == 1;
         graphicsQuality.value = GetPrefs("qualityLevel",5);
         fullscreenCheckbox.isOn = GetPrefs("isFullscreen", 1) == 1;
+        ResetValues();
         ApplyOptions();
     }
 
-    public void SetSoundFXSliderText(TextMeshProUGUI sliderText)
+    public void SetSliderText(TextMeshProUGUI sliderText, Slider volumeSlider)
     {
-        sliderText.text = soundFXSlider.value.ToString();
+        sliderText.text = (volumeSlider.value * 100).ToString("N0");
         isChanged = true;
     }
-    public void SetDialogueSliderText(TextMeshProUGUI sliderText)
-    {
-        sliderText.text = dialogueSlider.value.ToString();
-        isChanged = true;
 
-    }
-    public void SetMusicSliderText(TextMeshProUGUI sliderText)
+    public void SetDialogueVolume(float Value)
     {
-        sliderText.text = (musicSlider.value * 100).ToString("N0");
-        isChanged = true;
-
-    }
-    public void SetSensitivitySliderText(TextMeshProUGUI sliderText)
-    {
-        sliderText.text = sensitivitySlider.value.ToString();
-        isChanged = true;
-
-    }
-    public void SetMasterVolumeSliderText(TextMeshProUGUI sliderText)
-    {
-        sliderText.text = (masterVolumeSlider.value*100).ToString("N0");
-        isChanged = true;
-    }
-    public void SetDialogueVolume()
-    {
-        // Sets the dialogue volume to the slide value
-        if(dialogueAudioSource != null)
+        dialogueSlider.value = Value;
+        if (masterVolumeMixer != null)
         {
-            dialogueAudioSource.volume = dialogueSlider.value / 100;
+            masterVolumeMixer.SetFloat("DialogueVolume", Mathf.Log10(Value) * 20);
         }
         //Debug.Log(audioSource.volume);
-        SetPrefsInt("dialogueSlider", (int)dialogueSlider.value);
+        SetSliderText(dialogueSliderText, dialogueSlider);
     }
 
-    public void SetSoundFXVolume()
+    public void SetSoundFXVolume(float Value)
     {
-        // Sets the sound effects volume to the slide value
-        if (soundFXAudioSource != null)
+        soundFXSlider.value = Value;
+        if (masterVolumeMixer != null)
         {
-            soundFXAudioSource.volume = soundFXSlider.value / 100;
+            masterVolumeMixer.SetFloat("SoundFXVolume", Mathf.Log10(Value) * 20);
         }
-        else
-        {
-            SetPrefsInt("soundFXSlider", (int)soundFXSlider.value);
-        }
+        //Debug.Log(audioSource.volume);
+        SetSliderText(soundFXSliderText, soundFXSlider);
     }
-    
+
     public void SetMusicVolume(float Value)
     {
+        musicSlider.value = Value;
         // Sets the sound effects volume to the slide value
         //Debug.Log(musicSlider.value);
-        if(masterVolumeMixer != null)
+        if (masterVolumeMixer != null)
         {
             masterVolumeMixer.SetFloat("MusicVolume", Mathf.Log10(Value) * 20);
         }
         //Debug.Log(audioSource.volume);
-        SetPrefsFloat("musicSlider", Value);
+        SetSliderText(musicSliderText, musicSlider);
     }
 
     public void SetMasterVolume(float Value)
     {
+        masterVolumeSlider.value = Value;
         // Sets the dialogue volume to the slide value
-        masterVolumeMixer.SetFloat("MasterVolume",Mathf.Log10(Value) *20);
-        Debug.Log(Mathf.Log10(Value) * 20);
-        SetPrefsFloat("masterVolumeSlider", Value);
+        if (masterVolumeMixer != null)
+        {
+            masterVolumeMixer.SetFloat("MasterVolume", Mathf.Log10(Value) * 20);
+        }
+        SetSliderText(masterVolumeSliderText, masterVolumeSlider);
     }
 
-    public void SetSensitivity()
+    public void SetSensitivity(float Value)
     {
+        sensitivitySlider.value = Value;
         // Sets the sound effects volume to the slide value
         if (player != null)
         {
-            player.SensitivityX = sensitivitySlider.value / 5f;
-            player.SensitivityY = sensitivitySlider.value / 10f;
+            player.SensitivityX = Value / 5f;
+            player.SensitivityY = Value / 10f;
         }
-       
-        SetPrefsInt("sensitivitySlider", (int)sensitivitySlider.value);
+        sensitivitySliderText.text = Value.ToString();
+        isChanged = true;
     }
 
     public void SetFullscreen(bool isFullscreen)
@@ -207,7 +183,6 @@ public class SettingsMenu : MonoBehaviour
             if (subtitleCheckbox.isOn)
             {
                 dialogueText.SetActive(true);
-                SetPrefsInt("subtitleCheckbox", 1);
             }
             else
             {
@@ -262,18 +237,35 @@ public class SettingsMenu : MonoBehaviour
     }
     public void ApplyOptions()
     {
-        ToggleSubtitles();
-        SetDialogueVolume();
-        SetSoundFXVolume();
-        SetSensitivity();
-        SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
-        SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1));
-        SetDialogueSliderText(dialogueSliderText);
-        SetSensitivitySliderText(sensitivitySliderText);
-        SetSoundFXSliderText(soundFXSliderText);
-        SetMusicSliderText(musicSliderText);
-        SetMasterVolumeSliderText(masterVolumeSliderText);
+        SetAllPrefs();
         isChanged = false;
+    }
+
+    void SetAllPrefs()
+    {
+        SetPrefsFloat("dialogueSlider", dialogueSlider.value);
+        SetPrefsFloat("soundFXSlider", soundFXSlider.value);
+        SetPrefsFloat("musicSlider", musicSlider.value);
+        SetPrefsFloat("masterVolumeSlider", masterVolumeSlider.value);
+        SetPrefsInt("sensitivitySlider", (int)sensitivitySlider.value);
+        if (subtitleCheckbox.isOn)
+        {
+            SetPrefsInt("subtitleCheckbox", 1);
+        }
+        else 
+        { 
+            SetPrefsInt("subtitleCheckbox", 0);
+        }
+    }
+
+    public void ResetValues()
+    {
+        SetDialogueVolume(GetPrefsFloat("dialogueSlider", 1f));
+        SetSoundFXVolume(GetPrefsFloat("soundFXSlider", 1f));
+        SetSensitivity(GetPrefs("sensitivitySlider", 40));
+        SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
+        SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
+        ToggleSubtitles();
     }
 
     public void ExitOptions()
