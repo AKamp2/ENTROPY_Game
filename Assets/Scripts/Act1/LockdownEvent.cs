@@ -30,6 +30,8 @@ public class LockdownEvent : MonoBehaviour
 
     public DialogueManager dialogueManager;
 
+    public AmbientController ambientController;
+
 
     [SerializeField]
     private Material leverMaterial;
@@ -41,6 +43,8 @@ public class LockdownEvent : MonoBehaviour
     // wrist monitor
     private bool canGrab;
     private bool isGrabbable;
+    [SerializeField]
+    private WristMonitor wristMonitor;
 
     public GameplayBeatAudio audioManager;
     public AnimationCurve powerDownCurve;
@@ -142,6 +146,9 @@ public class LockdownEvent : MonoBehaviour
             {
                 // Glitch complete, turn off or reset as needed
                 glitchLights = false;
+
+                // Updates wrist monitor objective 
+                wristMonitor.CompleteObjective();
             }
         }
     }
@@ -205,6 +212,7 @@ public class LockdownEvent : MonoBehaviour
 
             medDoor.SetState(DoorScript.States.Closed);
 
+            ambientController.Progress();
 
         }
     }

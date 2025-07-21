@@ -24,6 +24,7 @@ public class Sparks : MonoBehaviour
 
     public IEnumerator BurstLoop()
     {
+        yield return new WaitForSeconds(5f);
         while (true)
         {
             if (spark.emission.enabled)

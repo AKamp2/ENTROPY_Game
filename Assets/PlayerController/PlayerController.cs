@@ -149,7 +149,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""name"": ""Pause"",
                     ""type"": ""Button"",
                     ""id"": ""bc57e8e3-cabd-4898-b2f6-3ba6914cf90f"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -177,6 +177,15 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""type"": ""Button"",
                     ""id"": ""b5d2d613-ece4-400e-9f1b-e83d6c87dc27"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenWristMonitor"",
+                    ""type"": ""Button"",
+                    ""id"": ""a587e671-b71e-4099-9c5f-13de8b0ef4f4"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -534,6 +543,17 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""action"": ""OffWall"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2c020c83-0b47-45d6-b269-20e8db2ad004"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenWristMonitor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -676,6 +696,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         m_PlayerControls_Interact = m_PlayerControls.FindAction("Interact", throwIfNotFound: true);
         m_PlayerControls_Throw = m_PlayerControls.FindAction("Throw", throwIfNotFound: true);
         m_PlayerControls_OffWall = m_PlayerControls.FindAction("OffWall", throwIfNotFound: true);
+        m_PlayerControls_OpenWristMonitor = m_PlayerControls.FindAction("OpenWristMonitor", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
         m_Dialogue_ContinueDialogue = m_Dialogue.FindAction("ContinueDialogue", throwIfNotFound: true);
@@ -780,6 +801,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerControls_Interact;
     private readonly InputAction m_PlayerControls_Throw;
     private readonly InputAction m_PlayerControls_OffWall;
+    private readonly InputAction m_PlayerControls_OpenWristMonitor;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerControls".
     /// </summary>
@@ -831,6 +853,10 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerControls/OffWall".
         /// </summary>
         public InputAction @OffWall => m_Wrapper.m_PlayerControls_OffWall;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerControls/OpenWristMonitor".
+        /// </summary>
+        public InputAction @OpenWristMonitor => m_Wrapper.m_PlayerControls_OpenWristMonitor;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -887,6 +913,9 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
             @OffWall.started += instance.OnOffWall;
             @OffWall.performed += instance.OnOffWall;
             @OffWall.canceled += instance.OnOffWall;
+            @OpenWristMonitor.started += instance.OnOpenWristMonitor;
+            @OpenWristMonitor.performed += instance.OnOpenWristMonitor;
+            @OpenWristMonitor.canceled += instance.OnOpenWristMonitor;
         }
 
         /// <summary>
@@ -928,6 +957,9 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
             @OffWall.started -= instance.OnOffWall;
             @OffWall.performed -= instance.OnOffWall;
             @OffWall.canceled -= instance.OnOffWall;
+            @OpenWristMonitor.started -= instance.OnOpenWristMonitor;
+            @OpenWristMonitor.performed -= instance.OnOpenWristMonitor;
+            @OpenWristMonitor.canceled -= instance.OnOpenWristMonitor;
         }
 
         /// <summary>
@@ -1348,6 +1380,13 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOffWall(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenWristMonitor" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenWristMonitor(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Dialogue" which allows adding and removing callbacks.
