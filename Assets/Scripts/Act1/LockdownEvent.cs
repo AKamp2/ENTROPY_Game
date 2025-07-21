@@ -32,6 +32,7 @@ public class LockdownEvent : MonoBehaviour
 
     public DialogueManager dialogueManager;
 
+    public HazardLight[] hazardsToDisable;
 
     [SerializeField]
     private Material leverMaterial;
@@ -218,6 +219,12 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator PlayLockdownFX()
     {
         StartCoroutine(LockDoors());
+
+        foreach(HazardLight hazard in hazardsToDisable)
+        {
+            hazard.IsHazard = false;
+        }
+
         audioManager.FadeServers(false);
         audioManager.playPowerCut();
         poweringDown = true;
@@ -230,13 +237,13 @@ public class LockdownEvent : MonoBehaviour
         {
             StartCoroutine(FadeLightColor(light, light.color, endColor, 5f));
         }
-        StartCoroutine(FadeLightIntensity(buttonLight, 0.5f, 1f));
-        StartCoroutine(FadeLightColor(buttonLight, buttonLight.color, endButtonColor, 5f));
+        StartCoroutine(FadeLightIntensity(buttonLight, 0.5f, 5f));
+        StartCoroutine(FadeLightColor(buttonLight, buttonLight.color, endButtonColor, 0.5f));
         
         yield return new WaitUntil(() => !glitchLights);
         foreach(Light lightSource in lights)
         {
-            lightSource.intensity = 4f;
+            lightSource.intensity = intensityMultiplier;
         }
         yield return new WaitForSeconds(4f);
         dialogueManager.StartDialogueSequence(4, 0f);
