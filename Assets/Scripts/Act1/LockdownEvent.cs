@@ -15,6 +15,8 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private GameObject lever;
     [SerializeField]
+    private Light buttonLight;
+    [SerializeField]
     private GameObject wrist;
     [SerializeField]
     private DoorScript[] doors;
@@ -46,6 +48,8 @@ public class LockdownEvent : MonoBehaviour
     public AnimationCurve powerDownCurve;
     public AnimationCurve glitchCurve;
     public Light[] lights;
+    public Color endColor;
+    public Color endButtonColor;
 
     private bool glitchLights = false;
     private bool poweringDown = false;
@@ -181,6 +185,8 @@ public class LockdownEvent : MonoBehaviour
     {
         if (canPull && isActive)
         {
+            audioManager.PlayButtonClick();
+            buttonLight.intensity = 0;
             // open the broken door first
             brokenDoor.DoorState = DoorScript.States.Opening;
             lever.GetComponent<Renderer>().material = leverMaterial;
@@ -212,13 +218,21 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator PlayLockdownFX()
     {
         StartCoroutine(LockDoors());
+        audioManager.FadeServers(false);
         audioManager.playPowerCut();
         poweringDown = true;
         
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(8.5f);
 
         audioManager.playPowerOn();
         glitchLights = true;
+        foreach(Light light in lights)
+        {
+            StartCoroutine(FadeLightColor(light, light.color, endColor, 5f));
+        }
+        StartCoroutine(FadeLightIntensity(buttonLight, 0.5f, 1f));
+        StartCoroutine(FadeLightColor(buttonLight, buttonLight.color, endButtonColor, 5f));
+        
         yield return new WaitUntil(() => !glitchLights);
         foreach(Light lightSource in lights)
         {
@@ -226,6 +240,7 @@ public class LockdownEvent : MonoBehaviour
         }
         yield return new WaitForSeconds(4f);
         dialogueManager.StartDialogueSequence(4, 0f);
+        audioManager.FadeServers(true);
     }
 
     private IEnumerator LockDoors()
@@ -233,6 +248,37 @@ public class LockdownEvent : MonoBehaviour
         brokenDoor.DoorState = DoorScript.States.Closing;
         yield return new WaitForSeconds(13f);
         brokenDoor.UseDoor();
+    }
+
+    public IEnumerator FadeLightColor(Light lightSource, Color fromColor, Color toColor, float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            lightSource.color = Color.Lerp(fromColor, toColor, t);
+            yield return null;
+        }
+
+        lightSource.color = toColor;
+    }
+
+    public IEnumerator FadeLightIntensity(Light lightSource, float targetIntensity, float duration)
+    {
+        float startIntensity = lightSource.intensity;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            lightSource.intensity = Mathf.Lerp(startIntensity, targetIntensity, t);
+            yield return null;
+        }
+
+        lightSource.intensity = targetIntensity;
     }
 
 }
