@@ -144,6 +144,8 @@ public class LockdownEvent : MonoBehaviour
             {
                 // Glitch complete, turn off or reset as needed
                 glitchLights = false;
+
+                // Updates wrist monitor objective 
                 wristMonitor.CompleteObjective();
             }
         }

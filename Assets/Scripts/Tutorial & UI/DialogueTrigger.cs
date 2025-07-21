@@ -35,7 +35,7 @@ public class DialogueTrigger : MonoBehaviour
             this.GetComponent<Collider>().enabled = false;
             //sart the dialogue
             manager.StartDialogueSequence(index, delay);
-
+            //update wrist monitor objective
             monitor.CompleteObjective();
         }
     }
