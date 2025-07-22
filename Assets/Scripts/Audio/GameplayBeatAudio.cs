@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -5,24 +6,45 @@ public class GameplayBeatAudio : MonoBehaviour
 {
     [Header("Audio Sources")]
     public AudioSource bodyStingerSource;
-    public AudioSource powerCutSource;
+    public AudioSource[] serverSources;
+    public AudioSource[] lockdownSources;
+    public AudioSource buttonSource;
+    public AudioSource ventSource;
 
     [Header("SFX Clips")]
     public AudioClip bodyFoundStinger;
     public AudioClip powerCutSFX;
     public AudioClip powerOnSFX;
     public AudioClip takeItem;
+    public AudioClip serverHum;
+    public AudioClip buttonPress;
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentalGroup;
     public AudioMixerGroup ambienceGroup;
 
+    private float serverVolume;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        powerCutSource.outputAudioMixerGroup = environmentalGroup;
+        foreach(AudioSource source in lockdownSources)
+        {
+            source.outputAudioMixerGroup = environmentalGroup;
+        }
+
+        foreach (AudioSource source in serverSources)
+        {
+            source.outputAudioMixerGroup = environmentalGroup;
+        }
+        buttonSource.outputAudioMixerGroup = environmentalGroup;
         bodyStingerSource.outputAudioMixerGroup = ambienceGroup;
+
+        if(serverSources[0] != null)
+        {
+            serverVolume = serverSources[0].volume;
+        }
     }
 
     // Update is called once per frame
@@ -33,7 +55,7 @@ public class GameplayBeatAudio : MonoBehaviour
     
     public void playMonitorPickup()
     {
-        powerCutSource.PlayOneShot(takeItem);
+        bodyStingerSource.PlayOneShot(takeItem);
     }
 
     public void playBodyStinger()
@@ -43,11 +65,60 @@ public class GameplayBeatAudio : MonoBehaviour
 
     public void playPowerCut()
     {
-        powerCutSource.PlayOneShot(powerCutSFX);
+        foreach(AudioSource source in lockdownSources)
+        {
+            source.clip = powerCutSFX;
+            source.Play();
+        }
     }
 
     public void playPowerOn()
     {
-        powerCutSource.PlayOneShot(powerOnSFX);
+        foreach (AudioSource source in lockdownSources)
+        {
+            source.clip = powerOnSFX;
+            source.Play();
+        }
+    }
+
+    public void FadeServers(bool fadeIn)
+    {
+        foreach(AudioSource source in serverSources)
+        {
+            StartCoroutine(Fade(source, 0, 2f, fadeIn, serverVolume));
+        }
+    }
+
+    public void PlayButtonClick()
+    {
+        buttonSource.PlayOneShot(buttonPress);
+    }
+
+    public IEnumerator Fade(AudioSource source, float timeBeforeFade, float fadeDuration, bool fadeIn, float originalVolume)
+    {
+        yield return new WaitForSecondsRealtime(timeBeforeFade);
+
+        float startVolume = fadeIn ? 0f : originalVolume;
+        float endVolume = fadeIn ? originalVolume : 0f;
+
+        double startTime = AudioSettings.dspTime;
+        double endTime = startTime + fadeDuration;
+
+        source.volume = startVolume;
+
+        if (fadeIn && !source.isPlaying)
+            source.Play();
+
+        while (AudioSettings.dspTime < endTime)
+        {
+            float t = (float)((AudioSettings.dspTime - startTime) / fadeDuration);
+            source.volume = Mathf.Lerp(startVolume, endVolume, t);
+            yield return null;
+        }
+
+        source.volume = endVolume;
+
+        if (!fadeIn)
+            source.Stop();
     }
 }

@@ -32,6 +32,10 @@ public class VentScript : MonoBehaviour
     [SerializeField]
     private float timer;
 
+    private bool isActive = true; // Start with active state
+
+    public AudioSource ventAudio;
+
 
     // Start is called before the first frame update
     void Start()
@@ -39,10 +43,14 @@ public class VentScript : MonoBehaviour
         rb = GameObject.Find("Player").GetComponentInChildren<Rigidbody>();
         zg = rb.GetComponent<ZeroGravity>();
 
+        // Initial delay before first switch
         timer = activeTimeDuration - timeOffset;
+
+        ps.Play();
+        ventAudio.Play();
+        bc.enabled = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (inRegion && zg.IsDead)
@@ -54,31 +62,31 @@ public class VentScript : MonoBehaviour
         {
             timer -= Time.deltaTime;
 
-            // Check for when timer is over
             if (timer <= 0)
             {
-                // sets the collider to active/inactive
-                bc.enabled = !bc.enabled;
+                isActive = !isActive;
 
-                // handle particle system based on the new enabled state for the collider
-                if (bc.enabled)
+                bc.enabled = isActive;
+
+                if (isActive)
                 {
                     ps.Play();
+                    ventAudio.Play();
                     timer = activeTimeDuration;
                 }
                 else
                 {
                     ps.Stop();
+                    ventAudio.Stop();
                     timer = inactiveTimeDuration;
                     inRegion = false;
                 }
             }
         }
-        
     }
 
-    // FixedUpdate used mainly for physics
-    void FixedUpdate()
+        // FixedUpdate used mainly for physics
+        void FixedUpdate()
     {
 
         if (inRegion)

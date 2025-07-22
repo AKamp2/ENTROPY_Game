@@ -77,7 +77,7 @@ public class TutorialManager : MonoBehaviour
         {
             if(doorToOpen != null)
             {
-                doorToOpen.LockDoor();
+                //doorToOpen.SetState(DoorScript.States.Locked);
             }
 
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
@@ -312,7 +312,7 @@ public class TutorialManager : MonoBehaviour
         {
             if(doorToOpen.DoorState != DoorScript.States.Open)
             {
-                doorToOpen.UnlockDoor();
+                doorToOpen.SetState(DoorScript.States.Open);
             }
         }
 
