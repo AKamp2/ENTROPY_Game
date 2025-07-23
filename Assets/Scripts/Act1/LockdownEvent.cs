@@ -15,6 +15,8 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private GameObject lever;
     [SerializeField]
+    private Light buttonLight;
+    [SerializeField]
     private GameObject wrist;
     [SerializeField]
     private DoorScript[] doors;
@@ -30,6 +32,9 @@ public class LockdownEvent : MonoBehaviour
 
     public DialogueManager dialogueManager;
 
+    public HazardLight[] hazardsToDisable;
+    public AmbientController ambientController;
+
 
     [SerializeField]
     private Material leverMaterial;
@@ -41,11 +46,15 @@ public class LockdownEvent : MonoBehaviour
     // wrist monitor
     private bool canGrab;
     private bool isGrabbable;
+    [SerializeField]
+    private WristMonitor wristMonitor;
 
     public GameplayBeatAudio audioManager;
     public AnimationCurve powerDownCurve;
     public AnimationCurve glitchCurve;
     public Light[] lights;
+    public Color endColor;
+    public Color endButtonColor;
 
     private bool glitchLights = false;
     private bool poweringDown = false;
@@ -142,6 +151,9 @@ public class LockdownEvent : MonoBehaviour
             {
                 // Glitch complete, turn off or reset as needed
                 glitchLights = false;
+
+                // Updates wrist monitor objective 
+                wristMonitor.CompleteObjective();
             }
         }
     }
@@ -167,7 +179,7 @@ public class LockdownEvent : MonoBehaviour
     {
         float randomDelay = Random.Range(0f, 0.2f); // Adjust range if needed
         yield return new WaitForSeconds(randomDelay);
-        door.DoorState = DoorScript.States.Opening;
+        door.SetState(DoorScript.States.Open);
     }
 
     private IEnumerator WaitForBodyVisible()
@@ -181,8 +193,10 @@ public class LockdownEvent : MonoBehaviour
     {
         if (canPull && isActive)
         {
+            audioManager.PlayButtonClick();
+            buttonLight.intensity = 0;
             // open the broken door first
-            brokenDoor.DoorState = DoorScript.States.Opening;
+            brokenDoor.SetState(DoorScript.States.Open);
             lever.GetComponent<Renderer>().material = leverMaterial;
 
             DoorTrigger.enabled = true;
@@ -205,34 +219,82 @@ public class LockdownEvent : MonoBehaviour
 
             medDoor.SetState(DoorScript.States.Closed);
 
+            ambientController.Progress();
 
         }
     }
 
     private IEnumerator PlayLockdownFX()
     {
+        yield return new WaitForSeconds(0.5f);
         StartCoroutine(LockDoors());
+
+        foreach(HazardLight hazard in hazardsToDisable)
+        {
+            hazard.IsHazard = false;
+        }
+
+        audioManager.FadeServers(false);
         audioManager.playPowerCut();
         poweringDown = true;
         
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(8.5f);
 
         audioManager.playPowerOn();
         glitchLights = true;
+        foreach(Light light in lights)
+        {
+            StartCoroutine(FadeLightColor(light, light.color, endColor, 5f));
+        }
+        StartCoroutine(FadeLightIntensity(buttonLight, 0.5f, 5f));
+        StartCoroutine(FadeLightColor(buttonLight, buttonLight.color, endButtonColor, 0.5f));
+        
         yield return new WaitUntil(() => !glitchLights);
         foreach(Light lightSource in lights)
         {
-            lightSource.intensity = 4f;
+            lightSource.intensity = intensityMultiplier;
         }
         yield return new WaitForSeconds(4f);
         dialogueManager.StartDialogueSequence(4, 0f);
+        audioManager.FadeServers(true);
     }
 
     private IEnumerator LockDoors()
     {
-        brokenDoor.DoorState = DoorScript.States.Closing;
+        brokenDoor.SetState(DoorScript.States.Closed);
         yield return new WaitForSeconds(13f);
         brokenDoor.UseDoor();
+    }
+
+    public IEnumerator FadeLightColor(Light lightSource, Color fromColor, Color toColor, float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            lightSource.color = Color.Lerp(fromColor, toColor, t);
+            yield return null;
+        }
+
+        lightSource.color = toColor;
+    }
+
+    public IEnumerator FadeLightIntensity(Light lightSource, float targetIntensity, float duration)
+    {
+        float startIntensity = lightSource.intensity;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            lightSource.intensity = Mathf.Lerp(startIntensity, targetIntensity, t);
+            yield return null;
+        }
+
+        lightSource.intensity = targetIntensity;
     }
 
 }

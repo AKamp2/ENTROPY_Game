@@ -199,6 +199,7 @@ public class ZeroGravity : MonoBehaviour
     private bool canMove = true;
 
     //Fields for the tutorial
+    [SerializeField]
     private bool tutorialMode = false;
     private bool canGrab = false;
     private bool canPropel = false;
