@@ -154,6 +154,7 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void HandleRaycastUI()
     {
+        //Debug.Log("handle raycast called");
         RaycastHit hit;
 
         Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
@@ -169,25 +170,50 @@ public class PlayerUIManager : MonoBehaviour
             for (float y = paddedMin.y; y <= paddedMax.y; y += player.GrabPadding / 4)
             {
                 Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
-                // if raycast doesn't hit
-                if (!Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
-                {
-                    UpdateClosestBarInView();
-                }
-                // id raycast
-                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | doorLayer | raycastLayer))
+                
+                // if raycast hits a bar
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | doorLayer | raycastLayer | barrierLayer))
                 {
                     //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
-                    RayCastHandleGrab(hit);
-                    RayCastHandleDoorButton(hit);
-                    // act 1 event - probably will eventually move to a gameplay manager
-                    RayCastHandleManualLockdown(hit);
+                    //RayCastHandleGrab(hit);
+                    //RayCastHandleDoorButton(hit);
+                    //// act 1 event - probably will eventually move to a gameplay manager
+                    //RayCastHandleManualLockdown(hit);
+                    ////we handle interaction with pushing off the wall
+                    //RayCastHandlePushOffWall(hit);
+
+                    switch (hit.transform.tag)
+                    {
+                        case "Grabbable":
+                            Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
+                            RayCastHandleGrab(hit);
+                            break;
+                        case "DoorButton":
+                            RayCastHandleDoorButton(hit);
+                            break;
+                        case "Barrier":
+                            RayCastHandlePushOffWall(hit);
+                            break;
+                        default:
+                            RayCastHandleManualLockdown(hit);
+
+                            //reset ui elements
+                            ResetUI();
+                            //set the potential grabbed bar to null
+                            player.PotentialGrabbedBar = null;
+                            //set the potential wall to null
+                            player.PotentialWall = null;
+                            //doorManager.CurrentSelectedDoor = null;
+                            break;
+                    }
                 }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer))
-                {
-                    //we handle interaction with pushing off the wall
-                    RayCastHandlePushOffWall(hit);
-                }
+
+                
+                // if raycast doesn't hit a bar
+                //else if (!Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
+                //{
+                //    UpdateClosestBarInView();
+                //}
                 else
                 {
                     //reset ui elements
@@ -208,10 +234,14 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (hit.transform.CompareTag("Grabbable"))
         {
-            //Debug.Log("raycast called");
+            Debug.Log("raycast called");
             player.PotentialGrabbedBar = hit.transform;
             UpdateGrabberPosition(player.PotentialGrabbedBar);
         }
+        //else
+        //{
+        //    player.PotentialGrabbedBar = null; 
+        //}
     }
 
     public void RayCastHandleDoorButton(RaycastHit hit)
