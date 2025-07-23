@@ -91,10 +91,14 @@ public class TutorialManager : MonoBehaviour
         // Skip tutorial with Enter
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
-            tutorialSkipped = true;
-            dialogueManager.SkipTutorial();
-            FadeOut(enterCanvasGroup);
-            EndTutorial();
+            if (!tutorialSkipped)
+            {
+                tutorialSkipped = true;
+                dialogueManager.SkipTutorial();
+                FadeOut(enterCanvasGroup);
+                EndTutorial();
+            }
+            
         }
 
         if (isWaitingForAction)
@@ -103,7 +107,9 @@ public class TutorialManager : MonoBehaviour
             //Debug.Log("Current step complete: " + stepComplete);
             if (currentStep == 1)
             {
+                
                 float currentZ = playerController.cam.transform.eulerAngles.z;
+                Debug.Log(currentZ);
 
                 // Compute delta roll from initial orientation
                 float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
