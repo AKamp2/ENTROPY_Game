@@ -154,48 +154,52 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void HandleRaycastUI()
     {
-        //if (player.IsGrabbing)
-        //{
-        //    // remove space and f gui if player is grabbing
-        //    if (InputIndicator.sprite != null)
-        //    {
-        //        player.PotentialWall = null;
-        //        //erase the input indicator
-        //        //inputIndicator.sprite = null;
-        //        //inputIndicator.color = new Color(0, 0, 0, 0);
-        //    }
-        //    //skip raycast if already holding a bar
-        //    return;
-        //}
-
-        Ray ray = player.cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         RaycastHit hit;
 
-        //Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
 
-        // if raycast hits
-        if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | doorLayer | raycastLayer))
+        // Define padded bounds
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+        Vector2 paddedMin = new Vector2(screenPoint.x - player.GrabPadding, screenPoint.y - player.GrabPadding);
+        Vector2 paddedMax = new Vector2(screenPoint.x + player.GrabPadding, screenPoint.y + player.GrabPadding);
+
+        for (float x = paddedMin.x; x <= paddedMax.x; x += player.GrabPadding / 4)
         {
-            //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
-            RayCastHandleGrab(hit);
-            RayCastHandleDoorButton(hit);
-            // act 1 event - probably will eventually move to a gameplay manager
-            RayCastHandleManualLockdown(hit);
-        }
-        else if(Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer))
-        {
-            //we handle interaction with pushing off the wall
-            RayCastHandlePushOffWall(hit);
-        }
-        else
-        {
-            //reset ui elements
-            ResetUI();
-            //set the potential grabbed bar to null
-            player.PotentialGrabbedBar = null;
-            //set the potential wall to null
-            player.PotentialWall = null;
-            //doorManager.CurrentSelectedDoor = null;
+            for (float y = paddedMin.y; y <= paddedMax.y; y += player.GrabPadding / 4)
+            {
+                Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
+                // if raycast doesn't hit
+                if (!Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
+                {
+                    UpdateClosestBarInView();
+                }
+                // id raycast
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | doorLayer | raycastLayer))
+                {
+                    //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
+                    RayCastHandleGrab(hit);
+                    RayCastHandleDoorButton(hit);
+                    // act 1 event - probably will eventually move to a gameplay manager
+                    RayCastHandleManualLockdown(hit);
+                }
+                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer))
+                {
+                    //we handle interaction with pushing off the wall
+                    RayCastHandlePushOffWall(hit);
+                }
+                else
+                {
+                    //reset ui elements
+                    ResetUI();
+                    //set the potential grabbed bar to null
+                    player.PotentialGrabbedBar = null;
+                    //set the potential wall to null
+                    player.PotentialWall = null;
+                    //doorManager.CurrentSelectedDoor = null;
+                }
+                //Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
+            }
         }
     }
 
@@ -204,6 +208,7 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (hit.transform.CompareTag("Grabbable"))
         {
+            //Debug.Log("raycast called");
             player.PotentialGrabbedBar = hit.transform;
             UpdateGrabberPosition(player.PotentialGrabbedBar);
         }
@@ -357,6 +362,7 @@ public class PlayerUIManager : MonoBehaviour
             {
                 //set our bool tracking if a bar is in view as true
                 barInView = true;
+                //Debug.Log("closestbar called");
                 //update the grabber if a new bar is detected
                 if (player.PotentialGrabbedBar != closestObject)
                 {
@@ -377,11 +383,11 @@ public class PlayerUIManager : MonoBehaviour
                 UpdateGrabberPosition(closestObject);
                 grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             }
-            else
-            {
-                UpdateGrabberPosition(closestObject);
-                grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(-1, 1, 1);
-            }
+            //else
+            //{
+            //    UpdateGrabberPosition(closestObject);
+            //    grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(-1, 1, 1);
+            //}
             
         }
         else if(closestObject == null)
@@ -502,18 +508,18 @@ public class PlayerUIManager : MonoBehaviour
                     }
                 }
             }
+            else
+            {
+                //remove the grabber
+                HideGrabber();
+            }
         }
-        else
-        {
-            //remove the grabber
-            HideGrabber();
-        }
-
     }
 
     // this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
     public void HideGrabber()
     {
+        Debug.Log("hide grabber called");
         grabber.sprite = null;
         grabber.color = new Color(0, 0, 0, 0); //transparent
         //set the bar in view bool as false
@@ -591,9 +597,9 @@ public class PlayerUIManager : MonoBehaviour
 
             // Draw a box at the grab range with padding
             Gizmos.color = Color.green;
-            for (float x = paddedMin.x; x <= paddedMax.x; x += player.GrabPadding / 2)
+            for (float x = paddedMin.x; x <= paddedMax.x; x += player.GrabPadding / 4)
             {
-                for (float y = paddedMin.y; y <= paddedMax.y; y += player.GrabPadding / 2)
+                for (float y = paddedMin.y; y <= paddedMax.y; y += player.GrabPadding / 4)
                 {
                     Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
                     Gizmos.DrawRay(ray.origin, ray.direction * player.GrabRange);
