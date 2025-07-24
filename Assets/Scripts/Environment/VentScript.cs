@@ -4,60 +4,32 @@ using UnityEngine;
 
 public class VentScript : MonoBehaviour
 {
-	[SerializeField]
-	private Rigidbody rb;
-    [SerializeField]
-    private ZeroGravity zg;
+    [SerializeField] private float thrust = 10.0f;
+    [SerializeField] private bool useTimers = false;
+    [SerializeField] private float activeTimeDuration = 6.0f;
+    [SerializeField] private float inactiveTimeDuration = 3.0f;
+    [SerializeField] private float timeOffset = 0.0f;
+    [SerializeField] private BoxCollider bc;
+    [SerializeField] private ParticleSystem ps;
+    [SerializeField] private AudioSource ventAudio;
 
-    [SerializeField]
-    private BoxCollider bc;
-
-    [SerializeField]
-    private ParticleSystem ps;
-
-
-    [SerializeField]
-    private float thrust = 10.0f;
-
-    private bool inRegion = false;
-
-    [SerializeField]
-    private bool useTimers = false;
-    [SerializeField]
-    private float activeTimeDuration = 6.0f;
-    [SerializeField]
-    private float inactiveTimeDuration = 3.0f;
-    [SerializeField]
-    private float timeOffset = 0.0f;
-    [SerializeField]
     private float timer;
+    private bool isActive = true;
 
-    private bool isActive = true; // Start with active state
+    private HashSet<Rigidbody> affectedRigidbodies = new HashSet<Rigidbody>();
 
-    public AudioSource ventAudio;
-
-
-    // Start is called before the first frame update
     void Start()
     {
-        rb = GameObject.Find("Player").GetComponentInChildren<Rigidbody>();
-        zg = rb.GetComponent<ZeroGravity>();
-
-        // Initial delay before first switch
+        // Start with offset timer
         timer = activeTimeDuration - timeOffset;
 
-        ps.Play();
-        ventAudio.Play();
-        bc.enabled = true;
+        if (ps != null) ps.Play();
+        if (ventAudio != null) ventAudio.Play();
+        if (bc != null) bc.enabled = true;
     }
 
     void Update()
     {
-        if (inRegion && zg.IsDead)
-        {
-            inRegion = false;
-        }
-
         if (useTimers)
         {
             timer -= Time.deltaTime;
@@ -65,55 +37,58 @@ public class VentScript : MonoBehaviour
             if (timer <= 0)
             {
                 isActive = !isActive;
-
                 bc.enabled = isActive;
 
                 if (isActive)
                 {
-                    ps.Play();
-                    ventAudio.Play();
+                    ps?.Play();
+                    ventAudio?.Play();
                     timer = activeTimeDuration;
                 }
                 else
                 {
-                    ps.Stop();
-                    ventAudio.Stop();
+                    ps?.Stop();
+                    ventAudio?.Stop();
                     timer = inactiveTimeDuration;
-                    inRegion = false;
+                    affectedRigidbodies.Clear(); // Stop affecting when disabled
                 }
             }
         }
     }
 
-        // FixedUpdate used mainly for physics
-        void FixedUpdate()
+    void FixedUpdate()
     {
+        if (!isActive) return;
 
-        if (inRegion)
+        foreach (var rb in affectedRigidbodies)
         {
-            rb.AddForce(transform.up * thrust);
+            if (rb != null)
+            {
+                rb.AddForce(transform.up * thrust);
+            }
         }
-        
     }
-
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            if (rb != null)
-			    inRegion = true;
-		}
-       
-    }
+        if (!isActive) return;
 
+        if (other.CompareTag("PickupObject") || other.CompareTag("Player"))
+        {
+            Rigidbody rb = other.attachedRigidbody;
+            if (rb != null && !affectedRigidbodies.Contains(rb))
+            {
+                affectedRigidbodies.Add(rb);
+            }
+        }
+    }
 
     void OnTriggerExit(Collider other)
     {
-		if (other.CompareTag("Player"))
-		{
-			if (rb != null)
-				inRegion = false;
-		}
-	}
+        Rigidbody rb = other.attachedRigidbody;
+        if (rb != null && affectedRigidbodies.Contains(rb))
+        {
+            affectedRigidbodies.Remove(rb);
+        }
+    }
 }

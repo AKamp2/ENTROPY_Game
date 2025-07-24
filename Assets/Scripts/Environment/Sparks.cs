@@ -8,8 +8,8 @@ public class Sparks : MonoBehaviour
     public AudioClip sparkSFX;
     public bool enabled = true;
 
-    public float minBurstDelay = 2f;
-    public float maxBurstDelay = 6f;
+    public float minBurstDelay = 1.5f;
+    public float maxBurstDelay = 4f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,7 +32,7 @@ public class Sparks : MonoBehaviour
                 float delay = Random.Range(minBurstDelay, maxBurstDelay);
                 yield return new WaitForSeconds(delay);
 
-                spark.Emit(Random.Range(3, 10));
+                spark.Emit(Random.Range(5, 12));
                 audio.PlayOneShot(sparkSFX);
             }
             else

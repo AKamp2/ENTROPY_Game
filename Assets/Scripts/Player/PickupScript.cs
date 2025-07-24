@@ -33,7 +33,7 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private float throwForce = 5f; //force at which the object is thrown at
     [SerializeField]
-    private float pickUpRange = 2f; //how far the player can pickup the object from
+    private float pickUpRange = 1.3f; //how far the player can pickup the object from
     private GameObject heldObj; //object which we pick up
     private Rigidbody heldObjRb; //rigidbody of object we pick up
 
