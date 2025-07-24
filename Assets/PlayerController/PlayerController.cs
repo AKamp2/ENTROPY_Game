@@ -122,16 +122,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""name"": ""Grab"",
                     ""type"": ""Button"",
                     ""id"": ""2f5c2291-1bf2-4ff8-b01f-ee34141f6667"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Stim"",
-                    ""type"": ""Button"",
-                    ""id"": ""914b9b86-2ce3-42ce-b210-0babaeefa53a"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -563,28 +554,6 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""action"": ""OpenWristMonitor"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""01fa63c5-7b63-4c7c-93d7-6eaf0a4f93e3"",
-                    ""path"": ""<Keyboard>/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Stim"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7b439f9f-895b-4c3f-9d57-a124dece32aa"",
-                    ""path"": ""<Gamepad>/dpad/up"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Stim"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -721,7 +690,6 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         m_PlayerControls_Strafe = m_PlayerControls.FindAction("Strafe", throwIfNotFound: true);
         m_PlayerControls_Roll = m_PlayerControls.FindAction("Roll", throwIfNotFound: true);
         m_PlayerControls_Grab = m_PlayerControls.FindAction("Grab", throwIfNotFound: true);
-        m_PlayerControls_Stim = m_PlayerControls.FindAction("Stim", throwIfNotFound: true);
         m_PlayerControls_LookX = m_PlayerControls.FindAction("LookX", throwIfNotFound: true);
         m_PlayerControls_LookY = m_PlayerControls.FindAction("LookY", throwIfNotFound: true);
         m_PlayerControls_Pause = m_PlayerControls.FindAction("Pause", throwIfNotFound: true);
@@ -827,7 +795,6 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerControls_Strafe;
     private readonly InputAction m_PlayerControls_Roll;
     private readonly InputAction m_PlayerControls_Grab;
-    private readonly InputAction m_PlayerControls_Stim;
     private readonly InputAction m_PlayerControls_LookX;
     private readonly InputAction m_PlayerControls_LookY;
     private readonly InputAction m_PlayerControls_Pause;
@@ -862,10 +829,6 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerControls/Grab".
         /// </summary>
         public InputAction @Grab => m_Wrapper.m_PlayerControls_Grab;
-        /// <summary>
-        /// Provides access to the underlying input action "PlayerControls/Stim".
-        /// </summary>
-        public InputAction @Stim => m_Wrapper.m_PlayerControls_Stim;
         /// <summary>
         /// Provides access to the underlying input action "PlayerControls/LookX".
         /// </summary>
@@ -932,9 +895,6 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
             @Grab.started += instance.OnGrab;
             @Grab.performed += instance.OnGrab;
             @Grab.canceled += instance.OnGrab;
-            @Stim.started += instance.OnStim;
-            @Stim.performed += instance.OnStim;
-            @Stim.canceled += instance.OnStim;
             @LookX.started += instance.OnLookX;
             @LookX.performed += instance.OnLookX;
             @LookX.canceled += instance.OnLookX;
@@ -979,9 +939,6 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
             @Grab.started -= instance.OnGrab;
             @Grab.performed -= instance.OnGrab;
             @Grab.canceled -= instance.OnGrab;
-            @Stim.started -= instance.OnStim;
-            @Stim.performed -= instance.OnStim;
-            @Stim.canceled -= instance.OnStim;
             @LookX.started -= instance.OnLookX;
             @LookX.performed -= instance.OnLookX;
             @LookX.canceled -= instance.OnLookX;
@@ -1381,13 +1338,6 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnGrab(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Stim" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnStim(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "LookX" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
