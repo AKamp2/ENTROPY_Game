@@ -554,8 +554,8 @@ public class PlayerUIManager : MonoBehaviour
                 healthIndicator.color = new Color(0, 0, 0, 0);
                 break;
             case 3:
-                healthIndicator.sprite = dangerIndicator;
-                healthIndicator.color = new Color(256, 256, 256, 0.50f);
+                healthIndicator.sprite = highDangerIndicator;
+                healthIndicator.color = new Color(0, 0, 0, 0.5f);
                 break;
             case 2:
                 healthIndicator.sprite = dangerIndicator;
