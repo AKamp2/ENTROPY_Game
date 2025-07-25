@@ -204,7 +204,7 @@ public class PickupScript : MonoBehaviour
         hasThrownObject = true;
         StartCoroutine(ResetThrowFlag());
 
-        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)), ForceMode.VelocityChange);
+        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass / transform.GetComponent<Rigidbody>().mass) * 1.5f), ForceMode.VelocityChange);
         //Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
 
       

@@ -12,6 +12,7 @@ public class VentScript : MonoBehaviour
     [SerializeField] private BoxCollider bc;
     [SerializeField] private ParticleSystem ps;
     [SerializeField] private AudioSource ventAudio;
+    [SerializeField] private float ventVolume;
 
     private float timer;
     private bool isActive = true;
@@ -26,6 +27,9 @@ public class VentScript : MonoBehaviour
         if (ps != null) ps.Play();
         if (ventAudio != null) ventAudio.Play();
         if (bc != null) bc.enabled = true;
+        ventVolume = ventAudio.volume;
+
+        
     }
 
     void Update()
@@ -41,12 +45,14 @@ public class VentScript : MonoBehaviour
 
                 if (isActive)
                 {
+                    StartCoroutine(Fade(ventAudio, 0, 0.1f, true, ventVolume));
                     ps?.Play();
                     ventAudio?.Play();
                     timer = activeTimeDuration;
                 }
                 else
                 {
+                    StartCoroutine(Fade(ventAudio, 0, 0.1f, false, ventVolume));
                     ps?.Stop();
                     ventAudio?.Stop();
                     timer = inactiveTimeDuration;
@@ -90,5 +96,33 @@ public class VentScript : MonoBehaviour
         {
             affectedRigidbodies.Remove(rb);
         }
+    }
+
+    public IEnumerator Fade(AudioSource source, float timeBeforeFade, float fadeDuration, bool fadeIn, float originalVolume)
+    {
+        yield return new WaitForSecondsRealtime(timeBeforeFade);
+
+        float startVolume = fadeIn ? 0f : originalVolume;
+        float endVolume = fadeIn ? originalVolume : 0f;
+
+        double startTime = AudioSettings.dspTime;
+        double endTime = startTime + fadeDuration;
+
+        source.volume = startVolume;
+
+        if (fadeIn && !source.isPlaying)
+            source.Play();
+
+        while (AudioSettings.dspTime < endTime)
+        {
+            float t = (float)((AudioSettings.dspTime - startTime) / fadeDuration);
+            source.volume = Mathf.Lerp(startVolume, endVolume, t);
+            yield return null;
+        }
+
+        source.volume = endVolume;
+
+        if (!fadeIn)
+            source.Stop();
     }
 }
