@@ -204,7 +204,7 @@ public class SettingsMenu : MonoBehaviour
         fovSlider.value = Value;
         if (player != null)
         {
-            player.cam.fieldOfView = fovSlider.value;
+            player.cam.fieldOfView = Value;
         }
         fovSliderText.text = fovSlider.value.ToString();
         isChanged = true;
@@ -214,7 +214,7 @@ public class SettingsMenu : MonoBehaviour
         gammaSlider.value = Value;
         if (player != null)
         {
-            if(postProcessing.profile.TryGet<LiftGammaGain>(out LiftGammaGain liftGammaGain))
+            if(postProcessing != null && postProcessing.profile.TryGet<LiftGammaGain>(out LiftGammaGain liftGammaGain))
             {
                 liftGammaGain.gamma.Override(new Vector4(1f, 1f, 1f, Value));
             }
@@ -225,7 +225,7 @@ public class SettingsMenu : MonoBehaviour
     public void SetBloom(float Value)
     {
         bloomSlider.value = Value;
-        if (postProcessing.profile.TryGet<Bloom>(out Bloom bloom))
+        if (postProcessing!=null && postProcessing.profile.TryGet<Bloom>(out Bloom bloom))
         {
             bloom.intensity.value = Value;
         }
