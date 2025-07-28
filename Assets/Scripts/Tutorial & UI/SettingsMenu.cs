@@ -30,8 +30,10 @@ public class SettingsMenu : MonoBehaviour
 
     // General option initialization
     [SerializeField] private Toggle subtitleCheckbox;
-    [SerializeField] private Slider sensitivitySlider;
-    [SerializeField] private TextMeshProUGUI sensitivitySliderText;
+    [SerializeField] private Slider sensitivitySliderX;
+    [SerializeField] private Slider sensitivitySliderY;
+    [SerializeField] private TextMeshProUGUI sensitivityXSliderText;
+    [SerializeField] private TextMeshProUGUI sensitivityYSliderText;
     [SerializeField] private ZeroGravity player = null;
     [SerializeField] private GameObject dialogueText = null;
 
@@ -46,6 +48,13 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private TMP_Dropdown graphicsQuality;
     [SerializeField] private Toggle fullscreenCheckbox;
 
+    // Camera option initialization
+    [SerializeField] private Slider fovSlider;
+    [SerializeField] private Slider gammaSlider;
+    [SerializeField] private Slider bloomSlider;
+    [SerializeField] private TextMeshProUGUI fovSliderText;
+    [SerializeField] private TextMeshProUGUI gammaSliderText;
+    [SerializeField] private TextMeshProUGUI bloomSliderText;
 
     private void OnEnable()
     {
@@ -138,19 +147,28 @@ public class SettingsMenu : MonoBehaviour
         SetSliderText(masterVolumeSliderText, masterVolumeSlider);
     }
 
-    public void SetSensitivity(float Value)
+    public void SetSensitivityX(float Value)
     {
-        sensitivitySlider.value = Value;
+        sensitivitySliderX.value = Value;
         // Sets the sound effects volume to the slide value
         if (player != null)
         {
             player.SensitivityX = Value / 5f;
-            player.SensitivityY = Value / 10f;
         }
-        sensitivitySliderText.text = Value.ToString();
+        sensitivityXSliderText.text = Value.ToString();
         isChanged = true;
     }
-
+    public void SetSensitivityY(float Value)
+    {
+        sensitivitySliderY.value = Value;
+        // Sets the sound effects volume to the slide value
+        if (player != null)
+        {
+            player.SensitivityY = Value / 10f;
+        }
+        sensitivityYSliderText.text = Value.ToString();
+        isChanged = true;
+    }
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
@@ -191,6 +209,31 @@ public class SettingsMenu : MonoBehaviour
             }
             isChanged = true;
         }
+    }
+
+    public void SetFOV(float Value)
+    {
+        fovSlider.value = Value;
+        if (player != null)
+        {
+            player.cam.fieldOfView = fovSlider.value;
+        }
+        SetSliderText(fovSliderText, fovSlider);
+    }
+    public void SetGamma(float Value)
+    {
+        gammaSlider.value = Value;
+        if (player != null)
+        {
+            
+        }
+        SetSliderText(gammaSliderText, gammaSlider);
+    }
+    public void SetBloom(float Value)
+    {
+        bloomSlider.value = Value;
+        // volume.bloom = Value;
+        SetSliderText(bloomSliderText, bloomSlider);
     }
 
     // Click handlers
@@ -247,7 +290,11 @@ public class SettingsMenu : MonoBehaviour
         SetPrefsFloat("soundFXSlider", soundFXSlider.value);
         SetPrefsFloat("musicSlider", musicSlider.value);
         SetPrefsFloat("masterVolumeSlider", masterVolumeSlider.value);
-        SetPrefsInt("sensitivitySlider", (int)sensitivitySlider.value);
+        SetPrefsInt("sensitivitySliderX", (int)sensitivitySliderX.value);
+        SetPrefsInt("sensitivitySliderY", (int)sensitivitySliderY.value);
+        SetPrefsFloat("fovSlider", fovSlider.value);
+        SetPrefsFloat("gammaSlider", gammaSlider.value);
+        SetPrefsFloat("bloomSlider", bloomSlider.value);
         if (subtitleCheckbox.isOn)
         {
             SetPrefsInt("subtitleCheckbox", 1);
@@ -262,9 +309,13 @@ public class SettingsMenu : MonoBehaviour
     {
         SetDialogueVolume(GetPrefsFloat("dialogueSlider", 1f));
         SetSoundFXVolume(GetPrefsFloat("soundFXSlider", 1f));
-        SetSensitivity(GetPrefs("sensitivitySlider", 40));
+        SetSensitivityX(GetPrefs("sensitivitySliderX", 40));
+        SetSensitivityY(GetPrefs("sensitivitySliderY", 40));
         SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
         SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
+        SetFOV(GetPrefsFloat("fovSlider", 0f));
+        SetGamma(GetPrefsFloat("gammaSlider", 0f));
+        SetBloom(GetPrefsFloat("bloomSlider", 0f));
         ToggleSubtitles();
     }
 
