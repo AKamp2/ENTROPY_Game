@@ -192,11 +192,14 @@ public class PlayerUIManager : MonoBehaviour
                             RayCastHandleDoorButton(hit);
                             break;
                         case "Barrier":
+                            Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
                             RayCastHandlePushOffWall(hit);
                             break;
                         default:
                             RayCastHandleManualLockdown(hit);
 
+
+                            UpdateGrabberPosition(player.PotentialGrabbedBar);
                             //reset ui elements
                             ResetUI();
                             //set the potential grabbed bar to null
@@ -207,13 +210,12 @@ public class PlayerUIManager : MonoBehaviour
                             break;
                     }
                 }
-
                 
                 // if raycast doesn't hit a bar
                 //else if (!Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
                 //{
                 //    UpdateClosestBarInView();
-                //}
+                //
                 else
                 {
                     //reset ui elements
@@ -224,6 +226,8 @@ public class PlayerUIManager : MonoBehaviour
                     player.PotentialWall = null;
                     //doorManager.CurrentSelectedDoor = null;
                 }
+
+                //UpdateClosestBarInView();
                 //Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
             }
         }
@@ -235,13 +239,9 @@ public class PlayerUIManager : MonoBehaviour
         if (hit.transform.CompareTag("Grabbable"))
         {
             Debug.Log("raycast called");
+            barInView = true;
             player.PotentialGrabbedBar = hit.transform;
-            UpdateGrabberPosition(player.PotentialGrabbedBar);
         }
-        //else
-        //{
-        //    player.PotentialGrabbedBar = null; 
-        //}
     }
 
     public void RayCastHandleDoorButton(RaycastHit hit)
