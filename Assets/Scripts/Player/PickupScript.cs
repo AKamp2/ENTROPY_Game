@@ -103,8 +103,8 @@ public class PickupScript : MonoBehaviour
                 {
                     current = null;
                     canPickUp = false;
-                    uiManager.InputIndicator.sprite = null;
-                    uiManager.InputIndicator.color = emptyColor;
+                    //uiManager.InputIndicator.sprite = null;
+                    //uiManager.InputIndicator.color = emptyColor;
                 }
             }
             else
@@ -129,8 +129,8 @@ public class PickupScript : MonoBehaviour
                 {
                     current = null;
                     canPickUp = false;
-                    uiManager.InputIndicator.sprite = null;
-                    uiManager.InputIndicator.color = emptyColor;
+                    //uiManager.InputIndicator.sprite = null;
+                    //uiManager.InputIndicator.color = emptyColor;
                 }
             }
         }
