@@ -57,6 +57,7 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private TextMeshProUGUI bloomSliderText;
     [SerializeField] private Volume postProcessing;
 
+
     // Menu manager variables
     [Header("Menu Manager")]
     [SerializeField] private MenuManager menuManager = null;
@@ -187,6 +188,7 @@ public class SettingsMenu : MonoBehaviour
             if (subtitleCheckbox.isOn)
             {
                 dialogueText.SetActive(true);
+                SetPrefsInt("subtitleCheckbox", 1);
             }
             else
             {
@@ -214,8 +216,7 @@ public class SettingsMenu : MonoBehaviour
         {
             if(postProcessing.profile.TryGet<LiftGammaGain>(out LiftGammaGain liftGammaGain))
             {
-                liftGammaGain.gamma.value = new Vector4(Value, Value, Value, 0);
-                Debug.Log(liftGammaGain.gamma.value + "is the current gamma value");
+                liftGammaGain.gamma.Override(new Vector4(1f, 1f, 1f, Value));
             }
 
         }
@@ -224,8 +225,12 @@ public class SettingsMenu : MonoBehaviour
     public void SetBloom(float Value)
     {
         bloomSlider.value = Value;
-        // volume.bloom = Value;
-        SetSliderText(bloomSliderText, bloomSlider);
+        if (postProcessing.profile.TryGet<Bloom>(out Bloom bloom))
+        {
+            bloom.intensity.value = Value;
+        }
+        bloomSliderText.text = (bloomSlider.value*10).ToString();
+        isChanged = true;
     }
 
     #endregion
