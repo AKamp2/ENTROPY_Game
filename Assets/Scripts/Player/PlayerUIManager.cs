@@ -223,14 +223,14 @@ public class PlayerUIManager : MonoBehaviour
                 doorManager.CurrentSelectedDoor = door;
                 inputIndicator.sprite = keyFIndicator;
                 grabUIText.text = "Close Door";
-                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
             else if(ds.DoorState == DoorScript.States.Closed)
             {
                 doorManager.CurrentSelectedDoor = door;
                 inputIndicator.sprite = keyFIndicator;
                 grabUIText.text = "Open Door";
-                inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
            
         }
@@ -262,7 +262,7 @@ public class PlayerUIManager : MonoBehaviour
                     //grabUIText.text = "'SPACEBAR'";
                     //set the sprite for the space bar indicator
                     inputIndicator.sprite = spaceIndicator;
-                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                    inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                 }
             }
         }
@@ -275,7 +275,7 @@ public class PlayerUIManager : MonoBehaviour
             lockdownEvent.CanPull = true;
             grabUIText.text = "Deactivate manual lockdown";
             inputIndicator.sprite = keyFIndicator;
-            inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
         }
         else if (lockdownEvent)
         {
@@ -287,7 +287,7 @@ public class PlayerUIManager : MonoBehaviour
             lockdownEvent.CanGrab = true;
             grabUIText.text = "Take wrist monitor";
             inputIndicator.sprite = keyFIndicator;
-            inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
         }
         else if (lockdownEvent)
         {
@@ -370,7 +370,7 @@ public class PlayerUIManager : MonoBehaviour
                         //set the sprite for the right click
                         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         inputIndicator.sprite = rightClickIndicator;
-                        inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                     }
                 }
                 //update the sprite for the grabber and its position
@@ -418,7 +418,7 @@ public class PlayerUIManager : MonoBehaviour
                         grabber.color = Color.white;
                     }
                     //set closed hand icon if grabbing
-                    else if (player.IsGrabbing)
+                    else
                     {
                         grabber.sprite = closedHand;
                         grabber.color = Color.white;
@@ -555,7 +555,7 @@ public class PlayerUIManager : MonoBehaviour
                 break;
             case 3:
                 healthIndicator.sprite = dangerIndicator;
-                healthIndicator.color = new Color(256, 256, 256, 0.50f);
+                healthIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                 break;
             case 2:
                 healthIndicator.sprite = dangerIndicator;
@@ -573,7 +573,7 @@ public class PlayerUIManager : MonoBehaviour
    public void DoorUI()
     {
         inputIndicator.sprite = keyFIndicator;
-        inputIndicator.color = new Color(256, 256, 256, 0.5f);
+        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
     }
 
     void OnDrawGizmos()
