@@ -156,92 +156,95 @@ public class PlayerUIManager : MonoBehaviour
     {
         //Debug.Log("handle raycast called");
         RaycastHit hit;
+        //create a raycast that stores the most favorable hit object, this will ensure when a bar is on screen it is chosen
+        RaycastHit? bestHit = null;
+        float bestHitDistance = float.MaxValue;
 
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
+        //this is a raycast that stores a fall back to ensure we can fall back on a previous hit if need be
+        RaycastHit? fallbackHit = null;
+
+        Vector2 screenCenter = RectTransformUtility.WorldToScreenPoint(null, crosshair.rectTransform.position);
 
         // Define padded bounds
         float screenWidth = Screen.width;
         float screenHeight = Screen.height;
-        Vector2 paddedMin = new Vector2(screenPoint.x - player.GrabPadding, screenPoint.y - player.GrabPadding);
-        Vector2 paddedMax = new Vector2(screenPoint.x + player.GrabPadding, screenPoint.y + player.GrabPadding);
+        Vector2 paddedMin = new Vector2(screenCenter.x - player.GrabPadding, screenCenter.y - player.GrabPadding);
+        Vector2 paddedMax = new Vector2(screenCenter.x + player.GrabPadding, screenCenter.y + player.GrabPadding);
 
         for (float x = paddedMin.x; x <= paddedMax.x; x += player.GrabPadding / 4)
         {
             for (float y = paddedMin.y; y <= paddedMax.y; y += player.GrabPadding / 4)
             {
                 Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
-                
+
                 // if raycast hits a bar
                 if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer | doorLayer | raycastLayer | barrierLayer))
                 {
-                    //Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
-                    //RayCastHandleGrab(hit);
-                    //RayCastHandleDoorButton(hit);
-                    //// act 1 event - probably will eventually move to a gameplay manager
-                    //RayCastHandleManualLockdown(hit);
-                    ////we handle interaction with pushing off the wall
-                    //RayCastHandlePushOffWall(hit);
-
-                    switch (hit.transform.tag)
+                    string tag = hit.transform.tag;
+                    //create a vector for the position of the bar on the screen
+                    Vector2 hitScreenPoint = player.cam.WorldToScreenPoint(hit.point);
+                    //calculate the distance from the center to that point
+                    float distanceToCenter = Vector2.Distance(hitScreenPoint, screenCenter);
+                    if (tag == "Grabbable")
                     {
-                        case "Grabbable":
-                            Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
-                            RayCastHandleGrab(hit);
-                            break;
-                        case "DoorButton":
-                            RayCastHandleDoorButton(hit);
-                            break;
-                        case "Barrier":
-                            Debug.Log("Hit: " + hit.transform.name + " | Tag: " + hit.transform.tag); // Debugging
-                            RayCastHandlePushOffWall(hit);
-                            break;
-                        default:
-                            RayCastHandleManualLockdown(hit);
-
-
-                            UpdateGrabberPosition(player.PotentialGrabbedBar);
-                            //reset ui elements
-                            ResetUI();
-                            //set the potential grabbed bar to null
-                            player.PotentialGrabbedBar = null;
-                            //set the potential wall to null
-                            player.PotentialWall = null;
-                            //doorManager.CurrentSelectedDoor = null;
-                            break;
+                        if (distanceToCenter < bestHitDistance)
+                        {
+                            bestHitDistance = distanceToCenter;
+                            bestHit = hit;
+                        }
+                    }
+                    else if (!bestHit.HasValue && !fallbackHit.HasValue)
+                    {
+                        //store the barrier as a fallback if we don't get a bar on screen
+                        fallbackHit = hit;
+                        
                     }
                 }
-                
-                // if raycast doesn't hit a bar
-                //else if (!Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
-                //{
-                //    UpdateClosestBarInView();
-                //
-                else
-                {
-                    //reset ui elements
-                    ResetUI();
-                    //set the potential grabbed bar to null
-                    player.PotentialGrabbedBar = null;
-                    //set the potential wall to null
-                    player.PotentialWall = null;
-                    //doorManager.CurrentSelectedDoor = null;
-                }
-
-                //UpdateClosestBarInView();
-                //Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
             }
         }
+
+        //process the results of the raycast
+        if (bestHit.HasValue)
+        {
+            RayCastHandleGrab(bestHit.Value);
+            UpdateGrabberPosition(player.PotentialGrabbedBar);
+        }
+        else if (!bestHit.HasValue && fallbackHit.HasValue)
+        {
+            string tag = fallbackHit.Value.transform.tag;
+            switch (tag)
+            {
+                case "DoorButton":
+                    RayCastHandleDoorButton(fallbackHit.Value);
+                    break;
+                case "Barrier":
+                    RayCastHandlePushOffWall(fallbackHit.Value);
+                    break;
+                default: 
+                    RayCastHandleManualLockdown(fallbackHit.Value);
+                    break;
+            }
+        }
+        else
+        {
+            //set the potential grabbed bar to null
+            player.PotentialGrabbedBar = null;
+            //set the potential wall to null
+            player.PotentialWall = null;
+            //reset ui elements
+            ResetUI();
+            //doorManager.CurrentSelectedDoor = null;
+        }
+        //Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.red, 0.1f); // Debug visualization
     }
 
     //helper methods for raycast handling
     public void RayCastHandleGrab(RaycastHit hit)
     {
-        if (hit.transform.CompareTag("Grabbable"))
-        {
-            Debug.Log("raycast called");
-            barInView = true;
-            player.PotentialGrabbedBar = hit.transform;
-        }
+        //Debug.Log("raycast called");
+        barInView = true;
+        player.PotentialGrabbedBar = hit.transform;
+        //UpdateGrabberPosition(player.PotentialGrabbedBar);
     }
 
     public void RayCastHandleDoorButton(RaycastHit hit)

@@ -335,7 +335,7 @@ public class ZeroGravity : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Application.targetFrameRate = 60;  // Match this with your build target frame rate.
+        Application.targetFrameRate = 120;  // match this with your build target frame rate.
 
         // give player default permissions
 
@@ -390,7 +390,10 @@ public class ZeroGravity : MonoBehaviour
         {
             if (tutorialMode)
             {
-                uiManager.HandleRaycastUI();
+                if (!isGrabbing)
+                {
+                    uiManager.HandleRaycastUI();
+                }
                 //update to closest bar in view 
                 //uiManager.UpdateClosestBarInView();
                 //handle grabber icon logic
@@ -400,7 +403,6 @@ public class ZeroGravity : MonoBehaviour
                     {
                         //handle the grab movement
                         HandleGrabMovement(grabbedBar);
-
                     }
                     //set the sprite for input indicator to the wasd indicator
                     if (canPropel)
@@ -414,7 +416,10 @@ public class ZeroGravity : MonoBehaviour
             else if (!tutorialMode)
             {
                 //Debug.Log("Tutorial Mode off");
-                uiManager.HandleRaycastUI();
+                if (!isGrabbing)
+                {
+                    uiManager.HandleRaycastUI();
+                }
                 //update to closest bar in view 
                 //uiManager.UpdateClosestBarInView();
                 //handle grabber icon logic
@@ -609,7 +614,7 @@ public class ZeroGravity : MonoBehaviour
 
         foreach (Collider barrier in hitColliders)
         {
-            Debug.Log("colliding");
+            //Debug.Log("colliding");
             Vector3 closestPoint = barrier.ClosestPoint(transform.position);
             impactPoint = closestPoint; // Store most recent impact
             Vector3 wallNormal = (transform.position - closestPoint).normalized;
