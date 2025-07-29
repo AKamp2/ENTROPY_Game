@@ -4769,11 +4769,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6125442833777929006}
         m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetSensitivitySliderText
-        m_Mode: 2
+        m_MethodName: SetSensitivity
+        m_Mode: 0
         m_Arguments:
-          m_ObjectArgument: {fileID: 3477025632635438018}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -10651,20 +10651,20 @@ MonoBehaviour:
   m_FillRect: {fileID: 1751648192572545062}
   m_HandleRect: {fileID: 533992308805620209}
   m_Direction: 0
-  m_MinValue: 0
-  m_MaxValue: 100
-  m_WholeNumbers: 1
+  m_MinValue: 0.001
+  m_MaxValue: 1
+  m_WholeNumbers: 0
   m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6125442833777929006}
         m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetSoundFXSliderText
-        m_Mode: 2
+        m_MethodName: SetSoundFXVolume
+        m_Mode: 0
         m_Arguments:
-          m_ObjectArgument: {fileID: 8451319177347986342}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -11782,14 +11782,14 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 100
-  m_WholeNumbers: 1
+  m_WholeNumbers: 0
   m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6125442833777929006}
         m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetDialogueSliderText
+        m_MethodName: SetDialogueVolume
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1788761918390655811}
@@ -16635,18 +16635,6 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6125442833777929006}
         m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetMasterVolumeSliderText
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 8551742143227715584}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 6125442833777929006}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
         m_MethodName: SetMasterVolume
         m_Mode: 0
         m_Arguments:
@@ -16846,8 +16834,6 @@ MonoBehaviour:
   musicSlider: {fileID: 2067688665401715317}
   masterVolumeSlider: {fileID: 7648170441092436550}
   soundFXSliderText: {fileID: 8451319177347986342}
-  soundFXAudioSource: {fileID: 0}
-  dialogueAudioSource: {fileID: 0}
   musicSliderText: {fileID: 5685363053098744543}
   masterVolumeSliderText: {fileID: 8551742143227715584}
   masterVolumeMixer: {fileID: 24100000, guid: 720f457489e44c440b5082c1b507453e, type: 2}
@@ -17466,18 +17452,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6125442833777929006}
-        m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
-        m_MethodName: SetMusicSliderText
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 5685363053098744543}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 6125442833777929006}
         m_TargetAssemblyTypeName: SettingsMenu, Assembly-CSharp
         m_MethodName: SetMusicVolume
