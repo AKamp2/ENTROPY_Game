@@ -33,7 +33,7 @@ public class PickupScript : MonoBehaviour
     [SerializeField]
     private float throwForce = 5f; //force at which the object is thrown at
     [SerializeField]
-    private float pickUpRange = 2f; //how far the player can pickup the object from
+    private float pickUpRange = 1.3f; //how far the player can pickup the object from
     private GameObject heldObj; //object which we pick up
     private Rigidbody heldObjRb; //rigidbody of object we pick up
 
@@ -42,6 +42,9 @@ public class PickupScript : MonoBehaviour
     private GameObject current;
 
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
+
+    private Color indicatorColor = new Color(256, 256, 256, 0.5f);
+    private Color emptyColor = new Color(0, 0, 0, 0f);
 
     public float PickUpRange
     {
@@ -76,6 +79,7 @@ public class PickupScript : MonoBehaviour
          coolDown = 0;
     }
 
+
     // Update is called once per frame
     void Update()
     {
@@ -84,27 +88,54 @@ public class PickupScript : MonoBehaviour
         {
             //perform raycast to check if player is looking at object within pickuprange
             RaycastHit hit;
-            float sphereRadius = 0.5f; // adjust for how wide you want the grab to be
+            float sphereRadius = 0.3f; // adjust for how wide you want the grab to be
             if (Physics.SphereCast(cam.transform.position, sphereRadius, cam.transform.forward, out hit, pickUpRange))
             {
-                //make sure pickup tag is attached
-                if (coolDown <= 0 && hit.transform.CompareTag("PickupObject"))
+                GameObject hitObj = hit.collider.gameObject;
+                if (hitObj.layer == LayerMask.NameToLayer("FloatingObject"))
                 {
-                    current = hit.transform.gameObject;
+                    current = hitObj;
                     canPickUp = true;
-
-                    // activate the F key UI
-                    // Removing the UI is handled by ZeroGPlayer
                     uiManager.InputIndicator.sprite = uiManager.KeyFIndicator;
-                    uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
+                    uiManager.InputIndicator.color = indicatorColor;
+                }
+                else
+                {
+                    current = null;
+                    canPickUp = false;
+                    //uiManager.InputIndicator.sprite = null;
+                    //uiManager.InputIndicator.color = emptyColor;
                 }
             }
             else
             {
-                current = null;
-                canPickUp = false;
+                // NEW: Check if something is extremely close to the camera
+                Collider[] nearby = Physics.OverlapSphere(cam.transform.position + cam.transform.forward * 0.2f, 0.4f, objectLayer);
+                bool found = false;
+                foreach (Collider col in nearby)
+                {
+                    if (col.gameObject.layer == LayerMask.NameToLayer("FloatingObject"))
+                    {
+                        current = col.gameObject;
+                        canPickUp = true;
+                        uiManager.InputIndicator.sprite = uiManager.KeyFIndicator;
+                        uiManager.InputIndicator.color = indicatorColor;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    current = null;
+                    canPickUp = false;
+                    //uiManager.InputIndicator.sprite = null;
+                    //uiManager.InputIndicator.color = emptyColor;
+                }
             }
         }
+
+        //Debug.DrawRay(cam.transform.position, cam.transform.forward * pickUpRange, Color.blue);
 
         if (coolDown > 0)
         {
@@ -204,7 +235,7 @@ public class PickupScript : MonoBehaviour
         hasThrownObject = true;
         StartCoroutine(ResetThrowFlag());
 
-        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass * 0.5f)), ForceMode.VelocityChange);
+        transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass / transform.GetComponent<Rigidbody>().mass) * 1.5f), ForceMode.VelocityChange);
         //Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
 
       
