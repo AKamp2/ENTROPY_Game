@@ -81,7 +81,7 @@ public class PlayerUIManager : MonoBehaviour
     private LayerMask raycastLayer; // Layer for general raycast interactions
     //this list stores the tags of all Interactable items we will have in ENTROPY, this will hopefully future proof ui interaction 
     [SerializeField]
-    private List<string> interactables = new List<string>() { "DoorButton", "PickupObject", "LockdownLever"};
+    private List<string> interactables = new List<string>() {}; //populated in inspector
 
     //optimizing
 
@@ -97,6 +97,11 @@ public class PlayerUIManager : MonoBehaviour
     public bool BarInPeripheral
     {
         get { return barInPeripheral; }
+    }
+
+    public bool UIHandled
+    {
+        get { return UIHandled; }
     }
 
     public UnityEngine.UI.Image InputIndicator
@@ -255,10 +260,16 @@ public class PlayerUIManager : MonoBehaviour
                 else if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
                 {
                     tag = hit.transform.tag;
+                    //Debug.Log(tag);
                     //if we have this tag in our list
-                    if (interactables.Contains(tag))
+                    for(int i = 0; i < interactables.Count; i++)
                     {
-                        interactableHit = hit;
+                        Debug.Log(interactables[i]);
+                        if(tag == interactables[i])
+                        {
+                            Debug.Log("interactable hit verified");
+                            interactableHit = hit;
+                        } 
                     }
                 }
             }
@@ -270,20 +281,7 @@ public class PlayerUIManager : MonoBehaviour
         //1. available bar grabs should always be shown 
         //2. push off wall indicators should only be shown when there are no present bars
         //2. interactable items should always be shown
-        if (barHit != null)
-        {
-            //Debug.Log("bar hit: " + barHit);
-            RayCastHandleGrab(barHit);
-        }
-        else if(barHit == null)
-        {
-            barInRaycast = false;
-        }
-        else if (wallHit != null && barHit == null)
-        {
-            RayCastHandlePushOffWall(wallHit);
-        }
-        else  if (interactableHit != null) 
+        if (interactableHit != null)
         {
             string interactTag = interactableHit.Value.collider.tag;
             switch (interactTag)
@@ -294,16 +292,35 @@ public class PlayerUIManager : MonoBehaviour
                 case "LockdownLever":
                     RayCastHandleManualLockdown(interactableHit);
                     break;
+                case "WristGrab":
+                    //Debug.Log("WristMonitor Detected");
+                    RayCastHandleManualLockdown(interactableHit);
+                    break;
                 default:
-                    ResetUI();
                     break;
             }
         }
-        else
+        else if(interactableHit == null)
         {
-            ResetUI();  
+            HideObjectives();
         }
-        
+
+        if (barHit != null)
+        {
+            //Debug.Log("bar hit: " + barHit);
+            RayCastHandleGrab(barHit);
+            return;
+        }
+        else if (barHit == null)
+        {
+            barInRaycast = false;
+        }
+
+        if (wallHit != null && !barInPeripheral && !barInRaycast)
+        {
+            RayCastHandlePushOffWall(wallHit);
+            return;
+        }
     }
 
     //helper methods for raycast handling
@@ -401,20 +418,40 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
-    public void ResetUI()
+    public void HideObjectives()
     {
-        //erase the grabber
-        grabber.sprite = null;
-        grabber.color = new Color(0, 0, 0, 0);
-        //remove values of the bars
-        barInRaycast = false;
-        barInPeripheral = false;
-        player.PotentialGrabbedBar = null;
         //erase the input indicator
         inputIndicator.sprite = null;
         inputIndicator.color = new Color(0, 0, 0, 0);
         grabUIText.text = "";
         /*doorManager.DoorUI.SetActive(false);*/
+    }
+    /// <summary>
+    /// this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
+    /// </summary>
+    public void HideGrabber()
+    {
+        //Debug.Log("hide grabber called");
+        grabber.sprite = null;
+        grabber.color = new Color(0, 0, 0, 0); //transparent
+        //set the bar in view bool as false
+        player.PotentialGrabbedBar = null;
+    }
+
+    public void HidePushIndicator()
+    {
+        if (inputIndicator.sprite == spaceIndicator)
+        {
+            inputIndicator.sprite = null;
+            inputIndicator.color = new Color(0, 0, 0, 0);
+        }
+    }
+
+    public void ReleaseGrabber()
+    {
+        grabber.sprite = openHand;
+        inputIndicator.sprite = null;
+        inputIndicator.color = new Color(0, 0, 0, 0);
     }
 
     /// <summary>
@@ -620,34 +657,7 @@ public class PlayerUIManager : MonoBehaviour
                 HideGrabber();
             }
         }
-    }
-
-    // this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
-    public void HideGrabber()
-    {
-        //Debug.Log("hide grabber called");
-        grabber.sprite = null;
-        grabber.color = new Color(0, 0, 0, 0); //transparent
-        //set the bar in view bool as false
-        player.PotentialGrabbedBar = null;
-    }
-
-    public void HidePushIndicator()
-    {
-        if (inputIndicator.sprite == spaceIndicator)
-        {
-            inputIndicator.sprite = null;
-            inputIndicator.color = new Color(0,0,0,0);
-        }
-    }
-
-    public void ReleaseGrabber()
-    {
-        grabber.sprite = openHand;
-        inputIndicator.sprite = null;
-        inputIndicator.color = new Color(0, 0, 0, 0);
-    }
-        
+    }   
 
     //Health Methods
     //controls the UI for the Player Health
