@@ -22,6 +22,8 @@ public class PlayerUIManager : MonoBehaviour
 
     private bool barInRaycast;
     private bool barInPeripheral;
+    [SerializeField]
+    private bool floatingObjInRaycast;
 
     [Header("== UI Canvas ==")]
     [SerializeField]
@@ -77,6 +79,8 @@ public class PlayerUIManager : MonoBehaviour
     private LayerMask doorLayer;
     [SerializeField]
     private LayerMask raycastLayer; // Layer for general raycast interactions
+    [SerializeField]
+    private LayerMask floatingObjLayer;
     //this list stores the tags of all Interactable items we will have in ENTROPY, this will hopefully future proof ui interaction 
     [SerializeField]
     private List<string> interactables = new List<string>() {}; //populated in inspector
@@ -152,6 +156,7 @@ public class PlayerUIManager : MonoBehaviour
         //set bar in view intially as false
         barInRaycast = false;
         barInPeripheral = false;
+        floatingObjInRaycast = false;
         //erase the grabber
         grabber.sprite = null;
         grabber.color = new Color(0, 0, 0, 0); //transparent
@@ -203,7 +208,8 @@ public class PlayerUIManager : MonoBehaviour
         RaycastHit? barHit = null;
         //stores if something labeled as "button, switch" or any other interactable is hit by a ray
         RaycastHit? interactableHit = null; 
-        float bestHitDistance = float.MaxValue;
+        float bestBarHitDistance = float.MaxValue;
+        float bestInteractableHitDistance = float.MaxValue; 
         //this is a raycast that stores a fall back to ensure we can fall back on a previous hit if need be
         RaycastHit? wallHit = null;
 
@@ -235,13 +241,15 @@ public class PlayerUIManager : MonoBehaviour
                         Vector2 hitScreenPoint = player.cam.WorldToScreenPoint(hit.point);
                         //calculate the distance from the center to that point
                         float distanceToCenter = Vector2.Distance(hitScreenPoint, screenCenter);
-                        if (distanceToCenter < bestHitDistance)
+                        if (distanceToCenter < bestBarHitDistance)
                         {
                             barHit = hit;
-                            bestHitDistance = distanceToCenter;
+                            bestBarHitDistance = distanceToCenter;
                         }
                     }
                 }
+                //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                //will need to create a raycast for the floating objects seperate of this one, something to go back and fix
                 else if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
                 {
                     tag = hit.transform.tag;
@@ -252,8 +260,17 @@ public class PlayerUIManager : MonoBehaviour
                         //Debug.Log(interactables[i]);
                         if (tag == interactables[i])
                         {
-                            Debug.Log("interactable hit verified");
-                            interactableHit = hit;
+                            //Debug.Log("interactable hit verified");
+                            //Debug.Log("hit bar");
+                            //create a vector for the position of the bar on the screen
+                            Vector2 hitScreenPoint = player.cam.WorldToScreenPoint(hit.point);
+                            //calculate the distance from the center to that point
+                            float distanceToCenter = Vector2.Distance(hitScreenPoint, screenCenter);
+                            if (distanceToCenter < bestInteractableHitDistance)
+                            {
+                                interactableHit = hit;
+                                bestInteractableHitDistance = distanceToCenter;
+                            }
                         }
                     }
                 }
@@ -295,6 +312,9 @@ public class PlayerUIManager : MonoBehaviour
                     //Debug.Log("WristMonitor Detected");
                     RayCastHandleManualLockdown(interactableHit);
                     break;
+                //case "PickupObject":
+                //    RayCastHandleFloatingObject(interactableHit);
+                //    break;
                 default:
                     break;
             }
@@ -302,7 +322,7 @@ public class PlayerUIManager : MonoBehaviour
         else if(interactableHit == null)
         {
             //Debug.Log("interactable null");
-            HideObjectives();
+            Hideinteractables();
         }
 
         if (barHit != null)
@@ -418,12 +438,27 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
-    public void HideObjectives()
+    /// <summary>
+    /// This needs to be incorporated with pick up script working directlyt in this script
+    /// </summary>
+    /// <param name="hit"></param>
+    public void RayCastHandleFloatingObject(RaycastHit? hit)
+    {
+        if (hit.Value.transform.CompareTag("PickupObject"))
+        {
+            floatingObjInRaycast = true;
+            //UpdateGrabberPosition(hit.Value.transform);
+            //grabber.gameObject.GetComponent<RectTransform>().localScale = new Vector3(-1, 1, 1);
+        }
+    }
+
+    public void Hideinteractables()
     {
         //erase the input indicator
         inputIndicator.sprite = null;
         inputIndicator.color = new Color(0, 0, 0, 0);
         grabUIText.text = "";
+        floatingObjInRaycast = false;
         /*doorManager.DoorUI.SetActive(false);*/
     }
     /// <summary>
@@ -531,7 +566,10 @@ public class PlayerUIManager : MonoBehaviour
                 return closestObject;
             }
         }
-        HideGrabber();
+        if (!floatingObjInRaycast)
+        {
+            HideGrabber();
+        }
         barInPeripheral = false;
         return null;
     }
