@@ -25,7 +25,9 @@ public class EnvironmentAudio : MonoBehaviour
         
         foreach(DoorScript door in doors)
         {
-            door.audioSource.outputAudioMixerGroup = environmentGroup;
+            door.startAudioSource.outputAudioMixerGroup = environmentGroup;
+            door.middleAudioSource.outputAudioMixerGroup = environmentGroup;
+            door.endAudioSource.outputAudioMixerGroup = environmentGroup;
             door.audioManager = this;
         }
     }
@@ -36,11 +38,14 @@ public class EnvironmentAudio : MonoBehaviour
         
     }
 
+
+    /*
     public void playDoorOpenAudio(float speed, DoorScript door)
     {
         StartCoroutine(doorOpen(speed, door));
     }
 
+    
     private IEnumerator doorOpen(float speed, DoorScript door)
     {
         AudioSource source = door.audioSource;
@@ -55,4 +60,5 @@ public class EnvironmentAudio : MonoBehaviour
         source.PlayOneShot(doorClosingClick);
         
     }
+    */
 }

@@ -381,7 +381,7 @@ public class PlayerUIManager : MonoBehaviour
                     //grabUIText.text = "'SPACEBAR'";
                     //set the sprite for the space bar indicator
                     inputIndicator.sprite = spaceIndicator;
-                    inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                    inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                 }
             }
             else
@@ -398,7 +398,7 @@ public class PlayerUIManager : MonoBehaviour
             lockdownEvent.CanPull = true;
             grabUIText.text = "Deactivate manual lockdown";
             inputIndicator.sprite = keyFIndicator;
-            inputIndicator.color = new Color(256, 256, 256, 0.5f);
+            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
         }
         else if (lockdownEvent)
         {
@@ -523,7 +523,7 @@ public class PlayerUIManager : MonoBehaviour
                         //set the sprite for the right click
                         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         inputIndicator.sprite = rightClickIndicator;
-                        inputIndicator.color = new Color(256, 256, 256, 0.5f);
+                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                     }
                 }
                 //update the sprite for the grabber
@@ -567,7 +567,7 @@ public class PlayerUIManager : MonoBehaviour
                         grabber.color = Color.white;
                     }
                     //set closed hand icon if grabbing
-                    else if (player.IsGrabbing)
+                    else
                     {
                         grabber.sprite = closedHand;
                         grabber.color = Color.white;
@@ -670,8 +670,8 @@ public class PlayerUIManager : MonoBehaviour
                 healthIndicator.color = new Color(0, 0, 0, 0);
                 break;
             case 3:
-                healthIndicator.sprite = highDangerIndicator;
-                healthIndicator.color = new Color(0, 0, 0, 0.5f);
+                healthIndicator.sprite = dangerIndicator;
+                healthIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                 break;
             case 2:
                 healthIndicator.sprite = dangerIndicator;

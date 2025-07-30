@@ -77,7 +77,7 @@ public class TutorialManager : MonoBehaviour
         {
             if(doorToOpen != null)
             {
-                doorToOpen.LockDoor();
+                //doorToOpen.SetState(DoorScript.States.Locked);
             }
 
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
@@ -91,10 +91,14 @@ public class TutorialManager : MonoBehaviour
         // Skip tutorial with Enter
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
-            tutorialSkipped = true;
-            dialogueManager.SkipTutorial();
-            FadeOut(enterCanvasGroup);
-            EndTutorial();
+            if (!tutorialSkipped)
+            {
+                tutorialSkipped = true;
+                dialogueManager.SkipTutorial();
+                FadeOut(enterCanvasGroup);
+                EndTutorial();
+            }
+            
         }
 
         if (isWaitingForAction)
@@ -103,7 +107,9 @@ public class TutorialManager : MonoBehaviour
             //Debug.Log("Current step complete: " + stepComplete);
             if (currentStep == 1)
             {
+                
                 float currentZ = playerController.cam.transform.eulerAngles.z;
+                //Debug.Log(currentZ);
 
                 // Compute delta roll from initial orientation
                 float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
@@ -112,7 +118,7 @@ public class TutorialManager : MonoBehaviour
 
                 if (isUpsideDown && playerController.HasRolled)
                 {
-                    Debug.Log("Player rolled upside down");
+                    //Debug.Log("Player rolled upside down");
                     playerController.StopRollingQuickly();
                     stepComplete = true;
                     FadeOut(rollQCanvasGroup);
@@ -137,7 +143,7 @@ public class TutorialManager : MonoBehaviour
 
                 if (isUpright)
                 {
-                    Debug.Log("Player rolled upright");
+                    //Debug.Log("Player rolled upright");
                     playerController.StopRollingQuickly();
                     stepComplete = true;
                     FadeOut(rollECanvasGroup);
@@ -152,7 +158,7 @@ public class TutorialManager : MonoBehaviour
             }
             else if (currentStep == 4 && playerController.HasPropelled)
             {
-                Debug.Log("Detected player propel");
+                //Debug.Log("Detected player propel");
 
                 playerController.HasPropelled = false; // Reset to prevent multiple detections
                 SetPlayerAbilities(true, true, true, true, true);
@@ -188,7 +194,7 @@ public class TutorialManager : MonoBehaviour
         {
             case 1:
                 // Step 1: Roll 180 degrees upside down
-                Debug.Log("Tutorial 1: Roll upside down");
+                //Debug.Log("Tutorial 1: Roll upside down");
                 stepComplete = false;
                 isWaitingForAction = true;
                 SetPlayerAbilities(false, false, false, true, false); // Only allow roll
@@ -199,7 +205,7 @@ public class TutorialManager : MonoBehaviour
 
             case 2:
                 // Step 2: Roll back upright
-                Debug.Log("Tutorial 2: Roll upright");
+                //Debug.Log("Tutorial 2: Roll upright");
                 stepComplete = false;
                 isWaitingForAction = true;
                 SetPlayerAbilities(false, false, false, true, false); // Still only roll
@@ -208,7 +214,7 @@ public class TutorialManager : MonoBehaviour
 
             case 3:
                 // Step 3: Grab a bar
-                Debug.Log("Tutorial 3: Grab bar");
+                //Debug.Log("Tutorial 3: Grab bar");
                 stepComplete = false;
                 isWaitingForAction = true;
                 SetPlayerAbilities(true, false, true, true, false); //grab, push off, roll
@@ -217,17 +223,17 @@ public class TutorialManager : MonoBehaviour
 
             case 4:
                 // Step 4: Propel and grab another bar
-                Debug.Log("Tutorial 4: Propel and grab another bar");
+                //Debug.Log("Tutorial 4: Propel and grab another bar");
                 stepComplete = false;
                 isWaitingForAction = true;
                 SetPlayerAbilities(true, true, true, true, true); // Enable all
                 FadeIn(propelCanvasGroup);
                 break;
             case 5:
-                Debug.Log("Tutorial 5: Wait for exposition");
+                //Debug.Log("Tutorial 5: Wait for exposition");
                 break;
             case 6:
-                Debug.Log("Tutorial Complete");
+                //Debug.Log("Tutorial Complete");
                 EndTutorial();
                 break;
         }
@@ -254,7 +260,7 @@ public class TutorialManager : MonoBehaviour
 
         if (!barGrabbed)
         {
-            Debug.Log("Player failed to grab in time");
+            //Debug.Log("Player failed to grab in time");
 
             if (dialogueManager.IsFailureTriggered)
             {
@@ -312,7 +318,7 @@ public class TutorialManager : MonoBehaviour
         {
             if(doorToOpen.DoorState != DoorScript.States.Open)
             {
-                doorToOpen.UnlockDoor();
+                doorToOpen.SetState(DoorScript.States.Open);
             }
         }
 
@@ -372,7 +378,7 @@ public class TutorialManager : MonoBehaviour
 
     public void RestartTutorial()
     {
-        Debug.Log("Restarting tutorial...");
+        //Debug.Log("Restarting tutorial...");
 
         StopAllCoroutines();
 

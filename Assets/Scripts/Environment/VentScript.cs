@@ -4,108 +4,125 @@ using UnityEngine;
 
 public class VentScript : MonoBehaviour
 {
-	[SerializeField]
-	private Rigidbody rb;
-    [SerializeField]
-    private ZeroGravity zg;
+    [SerializeField] private float thrust = 10.0f;
+    [SerializeField] private bool useTimers = false;
+    [SerializeField] private float activeTimeDuration = 6.0f;
+    [SerializeField] private float inactiveTimeDuration = 3.0f;
+    [SerializeField] private float timeOffset = 0.0f;
+    [SerializeField] private BoxCollider bc;
+    [SerializeField] private ParticleSystem ps;
+    [SerializeField] private AudioSource ventAudio;
+    [SerializeField] private float ventVolume;
 
-    [SerializeField]
-    private BoxCollider bc;
-
-    [SerializeField]
-    private ParticleSystem ps;
-
-
-    [SerializeField]
-    private float thrust = 10.0f;
-
-    private bool inRegion = false;
-
-    [SerializeField]
-    private bool useTimers = false;
-    [SerializeField]
-    private float activeTimeDuration = 6.0f;
-    [SerializeField]
-    private float inactiveTimeDuration = 3.0f;
-    [SerializeField]
-    private float timeOffset = 0.0f;
-    [SerializeField]
     private float timer;
+    private bool isActive = true;
 
+    private HashSet<Rigidbody> affectedRigidbodies = new HashSet<Rigidbody>();
 
-    // Start is called before the first frame update
     void Start()
     {
-        rb = GameObject.Find("Player").GetComponentInChildren<Rigidbody>();
-        zg = rb.GetComponent<ZeroGravity>();
-
+        // Start with offset timer
         timer = activeTimeDuration - timeOffset;
+
+        if (ps != null) ps.Play();
+        if (ventAudio != null) ventAudio.Play();
+        if (bc != null) bc.enabled = true;
+        ventVolume = ventAudio.volume;
+
+        
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (inRegion && zg.IsDead)
-        {
-            inRegion = false;
-        }
-
         if (useTimers)
         {
             timer -= Time.deltaTime;
 
-            // Check for when timer is over
             if (timer <= 0)
             {
-                // sets the collider to active/inactive
-                bc.enabled = !bc.enabled;
+                isActive = !isActive;
+                bc.enabled = isActive;
 
-                // handle particle system based on the new enabled state for the collider
-                if (bc.enabled)
+                if (isActive)
                 {
-                    ps.Play();
+                    StartCoroutine(Fade(ventAudio, 0, 0.1f, true, ventVolume));
+                    ps?.Play();
+                    ventAudio?.Play();
                     timer = activeTimeDuration;
                 }
                 else
                 {
-                    ps.Stop();
+                    StartCoroutine(Fade(ventAudio, 0, 0.1f, false, ventVolume));
+                    ps?.Stop();
+                    ventAudio?.Stop();
                     timer = inactiveTimeDuration;
-                    inRegion = false;
+                    affectedRigidbodies.Clear(); // Stop affecting when disabled
                 }
             }
         }
-        
     }
 
-    // FixedUpdate used mainly for physics
     void FixedUpdate()
     {
+        if (!isActive) return;
 
-        if (inRegion)
+        foreach (var rb in affectedRigidbodies)
         {
-            rb.AddForce(transform.up * thrust);
+            if (rb != null)
+            {
+                rb.AddForce(transform.up * thrust);
+            }
         }
-        
     }
-
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            if (rb != null)
-			    inRegion = true;
-		}
-       
-    }
+        if (!isActive) return;
 
+        if (other.CompareTag("PickupObject") || other.CompareTag("Player"))
+        {
+            Rigidbody rb = other.attachedRigidbody;
+            if (rb != null && !affectedRigidbodies.Contains(rb))
+            {
+                affectedRigidbodies.Add(rb);
+            }
+        }
+    }
 
     void OnTriggerExit(Collider other)
     {
-		if (other.CompareTag("Player"))
-		{
-			if (rb != null)
-				inRegion = false;
-		}
-	}
+        Rigidbody rb = other.attachedRigidbody;
+        if (rb != null && affectedRigidbodies.Contains(rb))
+        {
+            affectedRigidbodies.Remove(rb);
+        }
+    }
+
+    public IEnumerator Fade(AudioSource source, float timeBeforeFade, float fadeDuration, bool fadeIn, float originalVolume)
+    {
+        yield return new WaitForSecondsRealtime(timeBeforeFade);
+
+        float startVolume = fadeIn ? 0f : originalVolume;
+        float endVolume = fadeIn ? originalVolume : 0f;
+
+        double startTime = AudioSettings.dspTime;
+        double endTime = startTime + fadeDuration;
+
+        source.volume = startVolume;
+
+        if (fadeIn && !source.isPlaying)
+            source.Play();
+
+        while (AudioSettings.dspTime < endTime)
+        {
+            float t = (float)((AudioSettings.dspTime - startTime) / fadeDuration);
+            source.volume = Mathf.Lerp(startVolume, endVolume, t);
+            yield return null;
+        }
+
+        source.volume = endVolume;
+
+        if (!fadeIn)
+            source.Stop();
+    }
 }

@@ -39,6 +39,13 @@ public class ZeroGravity : MonoBehaviour
     private int playerHealth = 4;
     [SerializeField]
     private int maxHealth = 4;
+
+    [SerializeField]
+    private int numStims = 0;
+    [SerializeField]
+    private int maxNumStim = 3;
+
+
     private bool isDead = false;
 
     //win tracker
@@ -54,6 +61,7 @@ public class ZeroGravity : MonoBehaviour
     private float justHitTimeStamp = 0f;
 
     //health indicator cooldown
+    [SerializeField]
     private bool hurt = false;
     private bool prevHurt = false;
     [SerializeField]
@@ -296,6 +304,8 @@ public class ZeroGravity : MonoBehaviour
 
     public int PlayerHealth { get { return playerHealth; } }
 
+    public int NumStims { get { return numStims; } }
+
     public bool IsDead
     {
         get { return isDead; }
@@ -373,6 +383,8 @@ public class ZeroGravity : MonoBehaviour
 
         //set the player health
         playerHealth = maxHealth;
+        //make sure there are no stims in teh plaeyr inventory
+        numStims = 0;
 
         if(useManualPullIn)
         {
@@ -439,8 +451,9 @@ public class ZeroGravity : MonoBehaviour
             //take damage from door closing on the player
             DetectClosingDoorTakeDamageAndBounce();
             //manage the cooldowns  
-            HurtCoolDown();
+            //HurtCoolDown();
             JustHitCoolDown();
+
             if (isDead)
             {
                 //apply the roll rotation to the camera
@@ -664,7 +677,7 @@ public class ZeroGravity : MonoBehaviour
             //decrease the player's health by 3
             DecreaseHealth(2);
             justHit = true;
-            hurt = true;
+            //hurt = true;
             playerAudio.PlayFatalBounce(impactPoint);
         }
         else if (ogSpeed >= mediumSpeed && !justHit && !isDead)
@@ -672,7 +685,7 @@ public class ZeroGravity : MonoBehaviour
             //decrease the player's health by 1
             DecreaseHealth(1);
             justHit = true;;
-            hurt = true;
+            //hurt = true;
             playerAudio.PlayHardBounce(impactPoint);
         }
         else
@@ -683,7 +696,7 @@ public class ZeroGravity : MonoBehaviour
 
     private void DetectClosingDoorTakeDamageAndBounce()
     {
-        float detectionRadius = boundingSphere.radius + 0.3f; // slightly larger for early detection
+        float detectionRadius = boundingSphere.radius + 0.1f; // slightly larger for early detection
         Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.DoorLayer);
 
         if (hitDoors.Length == 0)
@@ -701,18 +714,13 @@ public class ZeroGravity : MonoBehaviour
             //get the doorscript of the parent object of the door collider
             DoorScript doorScript = door.GetComponentInParent<DoorScript>();
 
-
             if (doorScript != null && doorScript.IsClosing)
             {
-
-
                 //check that the state is a broken door
                 if (doorScript.DoorState == DoorScript.States.Broken)
-                {
-                    
+                { 
                     bounceCount++;
                     //Debug.Log("bounce count" + bounceCount);
-
 
                     //calculate bounce direction away from the door
                     Vector3 bounceDirection = (transform.position - door.bounds.center).normalized;
@@ -744,7 +752,7 @@ public class ZeroGravity : MonoBehaviour
 
             //Debug.Log("Avg Bounce Direction: " + avgBounceDirection);
 
-            float bounceSpeed = ogSpeed * .3f; // keep 30% of initial speed so it doesn't gain 
+            float bounceSpeed = ogSpeed * .75f; // keep 30% of initial speed so it doesn't gain 
 
             //calculate the direction of the bounce
             Vector3 propelDirection = avgBounceDirection * ogSpeed * (propelThrust * .50f) * 0.07f;
@@ -922,7 +930,6 @@ public class ZeroGravity : MonoBehaviour
             {
                 //create the joint
                 this.gameObject.AddComponent<ConfigurableJoint>();
-
             }
         }
     }
@@ -1225,7 +1232,7 @@ public class ZeroGravity : MonoBehaviour
         {
             playerHealth -= i;
             //make a call to update the cooldown
-            HurtCoolDown();
+            //HurtCoolDown();
         }
 
         //check for if the player is dead or not
@@ -1238,14 +1245,38 @@ public class ZeroGravity : MonoBehaviour
 
     private void IncreaseHealth(int i)
     {
+        playerHealth += i;
         if (playerHealth > 4)
         {
             playerHealth = 4;
             return;
         }
-
-        playerHealth += i;
         prevHurt = false;
+    }
+
+    //this controls logic for the stim charges to be used
+    public void UseStimCharge()
+    {
+        if(playerHealth < 4 && numStims > 0)
+        {
+            IncreaseHealth(2);
+            numStims--;
+        }
+    }
+    /// <summary>
+    /// logic that allows you to add stims to the inventory. the integer inputed is added to the current stim inventory. however, if the added amt goes over the max, it sets it only to the max
+    /// </summary>
+    /// <param name="i"></param>
+    public void AddStimsToInv(int i)
+    {
+        if(numStims < maxNumStim)
+        {
+            numStims += i;
+            if(numStims > maxNumStim)
+            {
+                numStims = maxNumStim;
+            }
+        }
     }
 
     private void JustHitCoolDown()
@@ -1518,6 +1549,14 @@ public class ZeroGravity : MonoBehaviour
         else if (context.canceled)
         {
             ReleaseBar();
+        }
+    }
+
+    public void OnStim(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            UseStimCharge();
         }
     }
     #endregion
