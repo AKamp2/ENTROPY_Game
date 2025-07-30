@@ -173,7 +173,7 @@ public class PlayerUIManager : MonoBehaviour
         HandleHealthUI();
         if (!player.IsGrabbing)
         {
-            //search for bars in the raycast
+            //search for bars and other stuff in the raycast
             HandleRaycastUI();
             //if there are no bars in the raycast 
             if (!BarInRaycast)
@@ -242,6 +242,21 @@ public class PlayerUIManager : MonoBehaviour
                         }
                     }
                 }
+                else if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
+                {
+                    tag = hit.transform.tag;
+                    //Debug.Log(tag);
+                    //if we have this tag in our list
+                    for (int i = 0; i < interactables.Count; i++)
+                    {
+                        //Debug.Log(interactables[i]);
+                        if (tag == interactables[i])
+                        {
+                            Debug.Log("interactable hit verified");
+                            interactableHit = hit;
+                        }
+                    }
+                }
                 else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer))
                 {
                     tag = hit.transform.tag;
@@ -253,21 +268,6 @@ public class PlayerUIManager : MonoBehaviour
                             //store the barrier as a fallback if we don't get a bar on screen
                             wallHit = hit;
                         }
-                    }
-                }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
-                {
-                    tag = hit.transform.tag;
-                    //Debug.Log(tag);
-                    //if we have this tag in our list
-                    for(int i = 0; i < interactables.Count; i++)
-                    {
-                        Debug.Log(interactables[i]);
-                        if(tag == interactables[i])
-                        {
-                            Debug.Log("interactable hit verified");
-                            interactableHit = hit;
-                        } 
                     }
                 }
             }
@@ -288,7 +288,7 @@ public class PlayerUIManager : MonoBehaviour
                     RayCastHandleDoorButton(interactableHit);
                     break;
                 case "LockdownLever":
-                    Debug.Log("LockdownLever detected");
+                    //Debug.Log("LockdownLever detected");
                     RayCastHandleManualLockdown(interactableHit);
                     break;
                 case "WristGrab":
