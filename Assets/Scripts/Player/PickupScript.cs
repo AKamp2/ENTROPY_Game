@@ -43,7 +43,7 @@ public class PickupScript : MonoBehaviour
 
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
 
-    private Color indicatorColor = new Color(256, 256, 256, 0.5f);
+    private Color indicatorColor = new Color(1f, 1f, 1f, 0.5f);
     private Color emptyColor = new Color(0, 0, 0, 0f);
 
     public float PickUpRange
