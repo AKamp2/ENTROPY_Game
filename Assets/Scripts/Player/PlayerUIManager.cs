@@ -20,9 +20,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private LockdownEvent lockdownEvent;
 
-    [SerializeField]
     private bool barInRaycast;
-    [SerializeField]
     private bool barInPeripheral;
 
     [Header("== UI Canvas ==")]
@@ -290,6 +288,7 @@ public class PlayerUIManager : MonoBehaviour
                     RayCastHandleDoorButton(interactableHit);
                     break;
                 case "LockdownLever":
+                    Debug.Log("LockdownLever detected");
                     RayCastHandleManualLockdown(interactableHit);
                     break;
                 case "WristGrab":
@@ -302,6 +301,7 @@ public class PlayerUIManager : MonoBehaviour
         }
         else if(interactableHit == null)
         {
+            //Debug.Log("interactable null");
             HideObjectives();
         }
 
