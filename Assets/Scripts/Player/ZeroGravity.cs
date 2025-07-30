@@ -1318,7 +1318,7 @@ public class ZeroGravity : MonoBehaviour
     /// </summary>
     private void PropelOffWall()
     {
-        if (rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInRaycast)
+        if (rb.linearVelocity.magnitude <= pushSpeed && canPushOff && !uiManager.BarInRaycast && !uiManager.BarInPeripheral)
         {
             //create a vector for the new velocity
             Vector3 propelDirection = Vector3.zero;

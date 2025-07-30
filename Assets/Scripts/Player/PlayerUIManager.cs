@@ -170,13 +170,20 @@ public class PlayerUIManager : MonoBehaviour
         HandleHealthUI();
         if (!player.IsGrabbing)
         {
-            //if there are no bars in the raycast
-            if(!BarInRaycast)
+            //search for bars in the raycast
+            HandleRaycastUI();
+            //if there are no bars in the raycast 
+            if (!BarInRaycast)
             {
                 //then we search for closest bar in the peripheral
                 player.PotentialGrabbedBar = UpdateClosestBarInView();
             }
-            HandleRaycastUI();
+            //if there are no bars in the raycast or peripheral
+            if (!BarInPeripheral && !barInRaycast)
+            {
+                //hide the hand
+                HideGrabber();
+            }
         }
         grabberRectTransform = grabber.GetComponent<RectTransform>();
     }
@@ -268,26 +275,15 @@ public class PlayerUIManager : MonoBehaviour
             //Debug.Log("bar hit: " + barHit);
             RayCastHandleGrab(barHit);
         }
-        else if (barHit == null && wallHit != null)
+        else if(barHit == null)
+        {
+            barInRaycast = false;
+        }
+        else if (wallHit != null && barHit == null)
         {
             RayCastHandlePushOffWall(wallHit);
         }
-        else if (barHit == null && wallHit == null && !barInRaycast)
-        {
-            //set the potential wall to null
-            player.PotentialWall = null;
-            //reset ui elements
-            ResetUI();
-            //doorManager.CurrentSelectedDoor = null;
-        }
-
-        if (interactableHit == null && barHit == null && wallHit == null)
-        {
-            ResetUI();
-            return;
-        }
-        //                                     might have to change based on how people have tagged interactables
-        else if (interactableHit != null) 
+        else  if (interactableHit != null) 
         {
             string interactTag = interactableHit.Value.collider.tag;
             switch (interactTag)
@@ -303,6 +299,10 @@ public class PlayerUIManager : MonoBehaviour
                     break;
             }
         }
+        else
+        {
+            ResetUI();  
+        }
         
     }
 
@@ -310,12 +310,6 @@ public class PlayerUIManager : MonoBehaviour
     public void RayCastHandleGrab(RaycastHit? hit)
     {
         //Debug.Log("raycast called");
-        if(hit == null)
-        {
-            barInRaycast = false;
-            return;
-        }
-
         barInRaycast = true;
         player.PotentialGrabbedBar = hit.Value.transform;
         
@@ -361,17 +355,21 @@ public class PlayerUIManager : MonoBehaviour
         if (rb.linearVelocity.magnitude <= player.PushSpeed)
         {
             //Debug.Log("Push off raycast happening");
-            if (hit.Value.transform.CompareTag("Barrier") && !barInRaycast)
+            if (hit.Value.transform.CompareTag("Barrier") && !barInRaycast && !barInPeripheral)
             {
                 player.PotentialWall = hit.Value.transform;
                 //if in tutorial mode
-                if (player.CanPushOff && !barInRaycast)
+                if (player.CanPushOff)
                 {
                     //grabUIText.text = "'SPACEBAR'";
                     //set the sprite for the space bar indicator
                     inputIndicator.sprite = spaceIndicator;
                     inputIndicator.color = new Color(256, 256, 256, 0.5f);
                 }
+            }
+            else
+            {
+                HidePushIndicator();
             }
         }
     }
@@ -410,6 +408,7 @@ public class PlayerUIManager : MonoBehaviour
         grabber.color = new Color(0, 0, 0, 0);
         //remove values of the bars
         barInRaycast = false;
+        barInPeripheral = false;
         player.PotentialGrabbedBar = null;
         //erase the input indicator
         inputIndicator.sprite = null;
@@ -426,7 +425,7 @@ public class PlayerUIManager : MonoBehaviour
     /// <returns></returns>
     public Transform UpdateClosestBarInView()
     {
-        //Debug.Log("updatedclosestbarinview executed");
+        //Debug.Log("updatedclosestw executed");
         //check for all nearby bars to the player
         Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, barLayer);
         Collider[] nearbyObjects;
@@ -478,7 +477,7 @@ public class PlayerUIManager : MonoBehaviour
                     //the potential bar is now this bar in view
                     player.PotentialGrabbedBar = closestObject;
                     barInPeripheral = true;
-                    Debug.Log("update closest bar in view found a bar");
+                    //Debug.Log("update closest bar in view found a bar");
 
                     //if in tutorial mode
                     if (player.TutorialMode && player.CanGrab)
@@ -635,7 +634,7 @@ public class PlayerUIManager : MonoBehaviour
 
     public void HidePushIndicator()
     {
-        if (barInRaycast && inputIndicator.sprite == spaceIndicator)
+        if (inputIndicator.sprite == spaceIndicator)
         {
             inputIndicator.sprite = null;
             inputIndicator.color = new Color(0,0,0,0);
