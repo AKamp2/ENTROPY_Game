@@ -22,7 +22,6 @@ public class PlayerUIManager : MonoBehaviour
 
     private bool barInRaycast;
     private bool barInPeripheral;
-    [SerializeField]
     private bool floatingObjInRaycast;
 
     [Header("== UI Canvas ==")]
@@ -41,6 +40,8 @@ public class PlayerUIManager : MonoBehaviour
     private UnityEngine.UI.Image grabber;
     [SerializeField]
     private UnityEngine.UI.Image inputIndicator;
+    [SerializeField]
+    private UnityEngine.UI.Image inputIndicatorThrow;
     [SerializeField]
     private UnityEngine.UI.Image healthIndicator;
 
@@ -112,6 +113,12 @@ public class PlayerUIManager : MonoBehaviour
         set { inputIndicator = value; }
     }
 
+    public UnityEngine.UI.Image InputIndicatorThrow
+    {
+        get { return inputIndicatorThrow; }
+        set { inputIndicatorThrow = value; }
+    }
+
     public UnityEngine.UI.Image Crosshair 
     { 
         get { return crosshair; } 
@@ -163,6 +170,9 @@ public class PlayerUIManager : MonoBehaviour
         //erase the input indicator
         inputIndicator.sprite = null;
         inputIndicator.color = new Color(0, 0, 0, 0); // transparent
+        //erase input Indicator Throw
+        inputIndicatorThrow.sprite = null;
+        inputIndicatorThrow.color = new Color(0, 0, 0, 0);
         //hide the health indicator
         healthIndicator.sprite = null;
         healthIndicator.color = new Color(0, 0, 0, 0); //transparent
@@ -319,10 +329,10 @@ public class PlayerUIManager : MonoBehaviour
                     break;
             }
         }
-        else if(interactableHit == null)
+        else if (interactableHit == null)
         {
             //Debug.Log("interactable null");
-            Hideinteractables();
+            HideInteractables();
         }
 
         if (barHit != null)
@@ -396,12 +406,17 @@ public class PlayerUIManager : MonoBehaviour
             {
                 player.PotentialWall = hit.Value.transform;
                 //if in tutorial mode
-                if (player.CanPushOff)
+                //easy fix for playtest, return to fix
+                //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                if (!player.TutorialMode)
                 {
-                    //grabUIText.text = "'SPACEBAR'";
-                    //set the sprite for the space bar indicator
-                    inputIndicator.sprite = spaceIndicator;
-                    inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                    if (player.CanPushOff)
+                    {
+                        //grabUIText.text = "'SPACEBAR'";
+                        //set the sprite for the space bar indicator
+                        inputIndicator.sprite = spaceIndicator;
+                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                    }
                 }
             }
             else
@@ -452,14 +467,19 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
-    public void Hideinteractables()
+    public void HideInteractables()
     {
-        //erase the input indicator
-        inputIndicator.sprite = null;
-        inputIndicator.color = new Color(0, 0, 0, 0);
-        grabUIText.text = "";
-        floatingObjInRaycast = false;
-        /*doorManager.DoorUI.SetActive(false);*/
+        //easy fix spam reset wasd in tutorialfor playtest, need to come back to ensure this is most efficient
+        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        //if (!player.TutorialMode)
+        //{
+            //erase the input indicator
+            inputIndicator.sprite = null;
+            inputIndicator.color = new Color(0, 0, 0, 0);
+            grabUIText.text = "";
+            floatingObjInRaycast = false;
+            /*doorManager.DoorUI.SetActive(false);*/
+        //}
     }
     /// <summary>
     /// this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
