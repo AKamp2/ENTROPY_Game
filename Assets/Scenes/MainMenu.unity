@@ -1129,13 +1129,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 866360925}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.258819, w: 0.9659259}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -30}
 --- !u!1 &923654237
 GameObject:
   m_ObjectHideFlags: 0
@@ -1697,6 +1697,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3233464900353294693, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4473162415504288743, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -1717,6 +1721,10 @@ PrefabInstance:
       propertyPath: m_MinValue
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 6125442833777929006, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
+      propertyPath: postProcessing
+      value: 
+      objectReference: {fileID: 116208035}
     - target: {fileID: 6735667017558283651, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_MinValue
       value: -0.25
@@ -1772,6 +1780,14 @@ PrefabInstance:
     - target: {fileID: 7066890172053793882, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8275103607634385874, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 866360926}
+    - target: {fileID: 8275103607634385874, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
+      propertyPath: m_RenderMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8793376500610892714, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_Name

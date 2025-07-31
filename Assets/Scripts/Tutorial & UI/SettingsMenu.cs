@@ -220,7 +220,7 @@ public class SettingsMenu : MonoBehaviour
             }
 
         }
-        SetSliderText(gammaSliderText, gammaSlider);
+        gammaSliderText.text = (gammaSlider.value*10).ToString("N0");
     }
     public void SetBloom(float Value)
     {
@@ -229,7 +229,7 @@ public class SettingsMenu : MonoBehaviour
         {
             bloom.intensity.value = Value;
         }
-        bloomSliderText.text = (bloomSlider.value*10).ToString();
+        bloomSliderText.text = (bloomSlider.value*10).ToString("N0");
         isChanged = true;
     }
 
