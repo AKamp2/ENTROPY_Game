@@ -91,7 +91,11 @@ public class FloatingObject : MonoBehaviour
         Gizmos.color = Color.cyan;
         Vector3 origin = transform.position;
         Vector3 dir = initDirection.normalized * 0.8f; // scale for visibility
-        Gizmos.DrawLine(origin, origin + dir);
-        Gizmos.DrawSphere(origin + dir, 0.05f);
+        if (useDirectionInput)
+        {
+            Gizmos.DrawLine(origin, origin + dir);
+        }
+        
+        
     }
 }

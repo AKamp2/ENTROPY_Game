@@ -192,7 +192,11 @@ public class DoorScript : MonoBehaviour
 
         foreach(Sparks spark in sparks)
         {
-            spark.ToggleSparks(showSparks);
+            if(spark != null)
+            {
+                spark.ToggleSparks(showSparks);
+            }
+            
         }
 
 
