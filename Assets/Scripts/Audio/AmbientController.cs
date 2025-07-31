@@ -286,7 +286,7 @@ public class AmbientController : MonoBehaviour
                 int looperIndex = Array.IndexOf(layerLookup,7); //Find looper for drum track
                 if (looperIndex == -1)
                 {
-                    Debug.Log("Somehow had no muted drum track to unmute prog = 1");
+                    //Debug.Log("Somehow had no muted drum track to unmute prog = 1");
                 }
                 else
                 {

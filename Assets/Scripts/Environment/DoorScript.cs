@@ -124,7 +124,10 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     private AudioClip doorBrokenJolt;
     [SerializeField]
+    private AudioClip doorStuck;
+    [SerializeField]
     private AudioClip doorAlarm;
+
     
 
     //private DialogueManager dialogueManager;
@@ -395,20 +398,34 @@ public class DoorScript : MonoBehaviour
         isShortBreakOver = true;
     }
 
-    public IEnumerator HandleDoorJoltOpen()
+    public IEnumerator HandleDoorStuck()
     {
-        
         yield return new WaitUntil(() => isShortBreakOver);
 
-        //StartCoroutine(FadeOutAndStop(startAudioSource, 0.1f));
-        //StartCoroutine(FadeOutAndStop(middleAudioSource, 0.1f));
-
-        yield return new WaitForSeconds(0.5f);
-
-        endAudioSource.clip = doorBrokenJolt;
+        endAudioSource.clip = doorStuck;
         endAudioSource.Play();
 
-        yield return MoveDoor(closedPos, bodyPos, 0.2f, null);
+        yield return MoveDoor(closedPos, crackedPos, 1.4f, null);
+
+        //yield return new WaitForSeconds(0.2f);
+
+        StartCoroutine(HandleDoorJoltOpen());
+
+        
+    }
+
+    public IEnumerator HandleDoorJoltOpen()
+    {
+        //StartCoroutine(FadeOutAndStop(middleAudioSource, 0.1f));
+
+        
+
+        startAudioSource.clip = doorBrokenJolt;
+        startAudioSource.Play();
+
+
+
+        yield return MoveDoor(doorPart.position, bodyPos, 0.2f, null);
 
         showingBody = true;
 
@@ -472,7 +489,7 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
-            StartCoroutine(HandleDoorJoltOpen());
+            StartCoroutine(HandleDoorStuck());
         }
     }
 
