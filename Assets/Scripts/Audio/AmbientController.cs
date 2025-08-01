@@ -41,7 +41,7 @@ public class AmbientController : MonoBehaviour
     private void Awake()
     {
         layerCount = clips.Length;
-        loopers = new Looper[layerCount];
+        loopers = new Looper[maxLayers];
         // for (int i = 0; i < layerCount; i++)
         // {
         //     GameObject child = new GameObject("MusicPlayer");
@@ -326,6 +326,27 @@ public class AmbientController : MonoBehaviour
             case 7: //level beat
                 break;
                 
+        }
+    }
+
+    public void FadeAll(bool fadingIn)
+    {
+        //Debug.Log(loopers);
+        if(fadingIn)
+        {
+            foreach(Looper looper in loopers)
+            {
+                if(looper != null)
+                looper.FadeIn();
+            }
+        }
+        else
+        {
+            foreach(Looper looper in loopers)
+            {
+                if(looper != null)
+                looper.FadeOut();
+            }
         }
     }
 }

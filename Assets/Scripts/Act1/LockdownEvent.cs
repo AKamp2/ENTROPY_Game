@@ -13,6 +13,9 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private BoxCollider DoorTrigger;
     [SerializeField]
+    private BoxCollider MusicTrigger;
+
+    [SerializeField]
     private GameObject lever;
     [SerializeField]
     private Light buttonLight;
@@ -102,6 +105,7 @@ public class LockdownEvent : MonoBehaviour
         player = playerObject.GetComponent<ZeroGravity>();
 
         DoorTrigger.enabled = false;
+        MusicTrigger.enabled = false;
         // checks if player is currently hovering over lever
         canPull = false;
         // checks if system is able to be turned on
@@ -214,6 +218,7 @@ public class LockdownEvent : MonoBehaviour
             lever.GetComponent<Renderer>().material = leverMaterial;
 
             DoorTrigger.enabled = true;
+            MusicTrigger.enabled = true;
             isActive = false;
 
             // begin lighting and audio queues
