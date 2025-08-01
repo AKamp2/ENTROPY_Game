@@ -38,7 +38,7 @@ public class BrokenTrigger : MonoBehaviour
     private IEnumerator BreakDoorWhenFinished()
     {
         //yield return new WaitUntil(() => manager.IsDialogueSpeaking == false);
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(6f);
         brokenDoor.SetState(DoorScript.States.Broken);
 
     }

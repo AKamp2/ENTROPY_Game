@@ -31,7 +31,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1695360630973752331}
-  - {fileID: 7181139933160283435}
   - {fileID: 1790390382277718374}
   - {fileID: 2739752963941202668}
   - {fileID: 5419167117480204176}
@@ -51,16 +50,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerObject: {fileID: 0}
   playerCollider: {fileID: 0}
-  DoorTrigger: {fileID: 7618062563466665343}
+  DoorTrigger: {fileID: 0}
   lever: {fileID: 7657196582588850602}
+  buttonLight: {fileID: 0}
   wrist: {fileID: 4735945169043094729}
-  doors:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  doorsToOpen: []
+  doorsToLock: []
+  medDoor: {fileID: 0}
   brokenDoor: {fileID: 0}
   bodyDoor: {fileID: 0}
+  deadBody: {fileID: 0}
+  dialogueManager: {fileID: 0}
+  hazardsToDisable: []
+  ambientController: {fileID: 0}
+  auxLightObj: {fileID: 0}
+  auxLight: {fileID: 0}
   leverMaterial: {fileID: 2100000, guid: a2e6e4c7cb9b2744ca5cd21a9c945ec1, type: 2}
+  wristMonitor: {fileID: 0}
   audioManager: {fileID: 0}
   powerDownCurve:
     serializedVersion: 2
@@ -272,6 +278,8 @@ MonoBehaviour:
   - {fileID: 6685311196836517271}
   - {fileID: 4755236078933800369}
   - {fileID: 3940582769294316}
+  endColor: {r: 0, g: 0, b: 0, a: 0}
+  endButtonColor: {r: 0, g: 0, b: 0, a: 0}
   powerDownDuration: 5
   glitchDuration: 2
   intensityMultiplier: 2
@@ -1351,74 +1359,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &5520705990942904101
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7181139933160283435}
-  - component: {fileID: 7618062563466665343}
-  - component: {fileID: 3128727455448736776}
-  m_Layer: 0
-  m_Name: DoorTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7181139933160283435
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5520705990942904101}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 20.52, y: 0.29, z: -5.14}
-  m_LocalScale: {x: 3.976228, y: 1.2610381, z: 3.7115862}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8327659006920130323}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &7618062563466665343
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5520705990942904101}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3128727455448736776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5520705990942904101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c006fe7ff9c137940ac727bd85345da9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lde: {fileID: 523133996991289118}
-  player: {fileID: 0}
 --- !u!1 &7657196582588850602
 GameObject:
   m_ObjectHideFlags: 0
