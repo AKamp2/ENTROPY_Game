@@ -47,7 +47,7 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\n\tReach the Medbay", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\n\tEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Medbay", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Medbay</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Dining Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Dining Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Server Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Server Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Override Manual Lockdown</size>", false));
