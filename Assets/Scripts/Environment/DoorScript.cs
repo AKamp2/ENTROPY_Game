@@ -16,7 +16,9 @@ public class DoorScript : MonoBehaviour
         Closing,
         Open,
         Opening,
-        Broken
+        Broken,
+        BrokenShort,
+        JoltOpen
     }
 
     public enum PermissionLevel
@@ -54,9 +56,19 @@ public class DoorScript : MonoBehaviour
 
     [SerializeField]
     private float openSize = 8.0f;
-    private float sinTime = 0.0f;
+    //private float sinTime = 0.0f;
     private Vector3 openPos;
     private Vector3 closedPos;
+    private Vector3 crackedPos;
+    private Vector3 bodyPos;
+
+    [SerializeField]
+    private GameObject crackedReference;
+    [SerializeField]
+    private GameObject bodyOpenReference;
+
+
+
 
     //bool to track when doors are closing. Used for collision detection 
     [SerializeField]
@@ -84,6 +96,10 @@ public class DoorScript : MonoBehaviour
     public EnvironmentAudio audioManager;
     public Sparks[] sparks;
 
+    private bool isShortBreakOver = false;
+
+    public bool showingBody = false;
+
     [Header ("Sound Effects")]
     [SerializeField]
     private AudioClip doorOpenStart;
@@ -104,7 +120,15 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     private AudioClip doorBrokenSlam;
     [SerializeField]
+    private AudioClip doorBrokenSlamShort;
+    [SerializeField]
+    private AudioClip doorBrokenJolt;
+    [SerializeField]
+    private AudioClip doorStuck;
+    [SerializeField]
     private AudioClip doorAlarm;
+
+    
 
     //private DialogueManager dialogueManager;
 
@@ -190,6 +214,12 @@ public class DoorScript : MonoBehaviour
             decal.material = doorManager.LockedMaterial;
         }
 
+        if (states == States.BrokenShort)
+        {
+            SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
+        }
+
         foreach(Sparks spark in sparks)
         {
             if(spark != null)
@@ -197,6 +227,16 @@ public class DoorScript : MonoBehaviour
                 spark.ToggleSparks(showSparks);
             }
             
+        }
+
+        if(crackedReference != null)
+        {
+            crackedPos = crackedReference.transform.position;
+        }
+
+        if (bodyOpenReference != null)
+        {
+            bodyPos = bodyOpenReference.transform.position;
         }
 
 
@@ -263,7 +303,7 @@ public class DoorScript : MonoBehaviour
         yield return MoveDoor(closedPos, openPos, openDuration, () =>
         {
             states = States.Open;
-            sinTime = 0f;
+            //sinTime = 0f;
         });
 
         StartCoroutine(FadeOutAndStop(middleAudioSource, 0.3f));
@@ -291,7 +331,7 @@ public class DoorScript : MonoBehaviour
         yield return MoveDoor(openPos, closedPos, closeDuration, () =>
         {
             states = States.Closed;
-            sinTime = 0f;
+            //sinTime = 0f;
             isClosing = false;
         });
 
@@ -326,6 +366,72 @@ public class DoorScript : MonoBehaviour
         }
     }
 
+    private IEnumerator HandleBrokenDoorShort()
+    {
+        while (states == States.BrokenShort)
+        {
+            float waitTime = UnityEngine.Random.Range(0.2f, 0.4f);
+            
+            // Play opening start sound
+            startAudioSource.clip = doorBrokenStart;
+            startAudioSource.Play();
+
+            // Wait for door to fully open
+            yield return MoveDoor(closedPos, crackedPos, 0.4f, null);
+
+            StartCoroutine(FadeOutAndStop(startAudioSource, 0.1f));
+
+            // Pause before slamming shut
+            //yield return new WaitForSeconds(brokenDoorPause);
+
+            // Play slam SFX
+            middleAudioSource.clip = doorBrokenSlamShort;
+            middleAudioSource.Play();
+
+            isClosing = true;
+            // Wait for door to fully close
+            yield return MoveDoor(crackedPos, closedPos, 0.2f, () => isClosing = false);
+
+            yield return new WaitForSeconds(brokenDoorPause);
+        }
+
+        isShortBreakOver = true;
+    }
+
+    public IEnumerator HandleDoorStuck()
+    {
+        yield return new WaitUntil(() => isShortBreakOver);
+
+        endAudioSource.clip = doorStuck;
+        endAudioSource.Play();
+
+        yield return MoveDoor(closedPos, crackedPos, 1.4f, null);
+
+        //yield return new WaitForSeconds(0.2f);
+
+        StartCoroutine(HandleDoorJoltOpen());
+
+        
+    }
+
+    public IEnumerator HandleDoorJoltOpen()
+    {
+        //StartCoroutine(FadeOutAndStop(middleAudioSource, 0.1f));
+
+        
+
+        startAudioSource.clip = doorBrokenJolt;
+        startAudioSource.Play();
+
+
+
+        yield return MoveDoor(doorPart.position, bodyPos, 0.2f, null);
+
+        showingBody = true;
+
+
+    }
+
 
 
     public void SetState(States state)
@@ -342,7 +448,7 @@ public class DoorScript : MonoBehaviour
             {
                 Debug.Log("This part of the script is happening");
                 //open the door if it wasn't already opening
-                if (previousState != States.Open || previousState != States.Opening)
+                if (previousState != States.Open && previousState != States.Opening)
                 {
                     StartCoroutine(OpenDoor());
                 }
@@ -350,7 +456,7 @@ public class DoorScript : MonoBehaviour
             if (state == States.Closed)
             {
                 //close the door if it wasn't already closed
-                if (previousState != States.Closed || previousState != States.Locked || previousState != States.Closing)
+                if (previousState != States.Closed && previousState != States.Locked && previousState != States.Closing)
                 {
                     StartCoroutine(CloseDoor());
                 }
@@ -367,11 +473,23 @@ public class DoorScript : MonoBehaviour
             SetButtonColor(redBase, redEmis);
             decal.material = doorManager.LockedMaterial;
 
-            if(previousState != States.Locked || previousState != States.Closed)
+            if(previousState != States.Locked && previousState != States.Closed)
             {
                 StartCoroutine(CloseAndLock());
             }
             
+        }
+        else if(state == States.BrokenShort)
+        {
+            SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
+            StartCoroutine(HandleBrokenDoorShort());
+        }
+        else if(state == States.JoltOpen)
+        {
+            SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
+            StartCoroutine(HandleDoorStuck());
         }
     }
 
@@ -448,9 +566,13 @@ public class DoorScript : MonoBehaviour
     {
         foreach(GameObject button in buttons)
         {
-            Material m = button.GetComponent<Renderer>().material;
-            m.SetColor("_BaseColor", baseColor);
-            m.SetColor("_EmissionColor", emisColor);
+            if(button != null)
+            {
+                Material m = button.GetComponent<Renderer>().material;
+                m.SetColor("_BaseColor", baseColor);
+                m.SetColor("_EmissionColor", emisColor);
+            }
+            
         }
     }
 
@@ -472,6 +594,21 @@ public class DoorScript : MonoBehaviour
         source.Stop();
         source.volume = startVolume; // Restore volume for future use
     }
+
+    public void ToggleSparks(bool isActive)
+    {
+        showSparks = isActive;
+        foreach (Sparks spark in sparks)
+        {
+            if (spark != null)
+            {
+                spark.ToggleSparks(isActive);
+            }
+            
+        }
+    }
+
+    
 
 
 

@@ -14,10 +14,12 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class SettingsMenu : MonoBehaviour 
 {
+    #region Fields
     // Array of submenus to be toggled
     public GameObject[] optionsMenus;
 
     // Audio option initialization
+    [Header("Audio Section")]
     [SerializeField] private Slider dialogueSlider;
     [SerializeField] private TextMeshProUGUI dialogueSliderText;
     [SerializeField] private Slider soundFXSlider;
@@ -29,53 +31,51 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private AudioMixer masterVolumeMixer;
 
     // General option initialization
+    [Header("General Section")]
     [SerializeField] private Toggle subtitleCheckbox;
-    [SerializeField] private Slider sensitivitySlider;
-    [SerializeField] private TextMeshProUGUI sensitivitySliderText;
+    [SerializeField] private Slider sensitivitySliderX;
+    [SerializeField] private Slider sensitivitySliderY;
+    [SerializeField] private TextMeshProUGUI sensitivityXSliderText;
+    [SerializeField] private TextMeshProUGUI sensitivityYSliderText;
     [SerializeField] private ZeroGravity player = null;
     [SerializeField] private GameObject dialogueText = null;
 
-    // Menu manager variables
-    [SerializeField] private MenuManager menuManager = null;
-    [SerializeField] private GameObject confirmationPopUp;
-    public bool isChanged;
-
     // Video option
+    [Header("Video Section")]
     Resolution[] resolutions;
     public TMP_Dropdown resolutionDropdown;
     [SerializeField] private TMP_Dropdown graphicsQuality;
     [SerializeField] private Toggle fullscreenCheckbox;
 
+    // Camera option initialization
+    [Header("Camera Section")]
+    [SerializeField] private Slider fovSlider;
+    [SerializeField] private Slider gammaSlider;
+    [SerializeField] private Slider bloomSlider;
+    [SerializeField] private TextMeshProUGUI fovSliderText;
+    [SerializeField] private TextMeshProUGUI gammaSliderText;
+    [SerializeField] private TextMeshProUGUI bloomSliderText;
+    [SerializeField] private Volume postProcessing;
 
+
+    // Menu manager variables
+    [Header("Menu Manager")]
+    [SerializeField] private MenuManager menuManager = null;
+    [SerializeField] private GameObject confirmationPopUp;
+    public bool isChanged;
+    #endregion
+
+    /// <summary> 
+    /// Runs the setup method when the game object is enabled in the scene
+    /// </summary>
     private void OnEnable()
     {
         SetUp();
-        
+        GetResolutions();
     }
 
-    private void Start()
-    {
-        resolutions = Screen.resolutions;
-        resolutionDropdown.ClearOptions();
-        List<string> options = new List<string>();
-
-        int currentResolutionIndex = 0;
-        for (int i = 0; i < resolutions.Length; i++)
-        {
-            string option = resolutions[i].width + "x" + resolutions[i].height;
-            options.Add(option);
-
-            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResolutionIndex = i;
-            }
-        }
-
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
-    }
-
+    // Setting methods
+    #region Setters
     public void SetUp()
     {
         // Makes sure menus are not open when starting 
@@ -86,11 +86,7 @@ public class SettingsMenu : MonoBehaviour
         ApplyOptions();
     }
 
-    public void SetSliderText(TextMeshProUGUI sliderText, Slider volumeSlider)
-    {
-        sliderText.text = (volumeSlider.value * 100).ToString("N0");
-        isChanged = true;
-    }
+    
 
     public void SetDialogueVolume(float Value)
     {
@@ -138,19 +134,28 @@ public class SettingsMenu : MonoBehaviour
         SetSliderText(masterVolumeSliderText, masterVolumeSlider);
     }
 
-    public void SetSensitivity(float Value)
+    public void SetSensitivityX(float Value)
     {
-        sensitivitySlider.value = Value;
+        sensitivitySliderX.value = Value;
         // Sets the sound effects volume to the slide value
         if (player != null)
         {
             player.SensitivityX = Value / 5f;
-            player.SensitivityY = Value / 10f;
         }
-        sensitivitySliderText.text = Value.ToString();
+        sensitivityXSliderText.text = Value.ToString();
         isChanged = true;
     }
-
+    public void SetSensitivityY(float Value)
+    {
+        sensitivitySliderY.value = Value;
+        // Sets the sound effects volume to the slide value
+        if (player != null)
+        {
+            player.SensitivityY = Value / 10f;
+        }
+        sensitivityYSliderText.text = Value.ToString();
+        isChanged = true;
+    }
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
@@ -183,6 +188,7 @@ public class SettingsMenu : MonoBehaviour
             if (subtitleCheckbox.isOn)
             {
                 dialogueText.SetActive(true);
+                SetPrefsInt("subtitleCheckbox", 1);
             }
             else
             {
@@ -193,7 +199,43 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
-    // Click handlers
+    public void SetFOV(float Value)
+    {
+        fovSlider.value = Value;
+        if (player != null)
+        {
+            player.cam.fieldOfView = Value;
+        }
+        fovSliderText.text = fovSlider.value.ToString();
+        isChanged = true;
+    }
+    public void SetGamma(float Value)
+    {
+        gammaSlider.value = Value;
+        if (player != null)
+        {
+            if(postProcessing != null && postProcessing.profile.TryGet<LiftGammaGain>(out LiftGammaGain liftGammaGain))
+            {
+                liftGammaGain.gamma.Override(new Vector4(1f, 1f, 1f, Value));
+            }
+
+        }
+        gammaSliderText.text = (gammaSlider.value*10).ToString("N0");
+    }
+    public void SetBloom(float Value)
+    {
+        bloomSlider.value = Value;
+        if (postProcessing!=null && postProcessing.profile.TryGet<Bloom>(out Bloom bloom))
+        {
+            bloom.intensity.value = Value;
+        }
+        bloomSliderText.text = (bloomSlider.value*10).ToString("N0");
+        isChanged = true;
+    }
+
+    #endregion
+    // Menu management
+    #region Popups
     public void OpenMenu(GameObject menu)
     {
         // Closes other menus before opening
@@ -218,7 +260,23 @@ public class SettingsMenu : MonoBehaviour
     {
         popUp.SetActive(false);
     }
-
+    /// <summary>
+    /// Closes options menu or pulls up confirmation page if options are changed
+    /// </summary>
+    public void ExitOptions()
+    {
+        if (isChanged)
+        {
+            OpenPopUp(confirmationPopUp);
+        }
+        else
+        {
+            menuManager.LastMenu();
+        }
+    }
+    #endregion
+    // Helper Methods
+    #region Helpers
     void SetPrefsInt(string keyName, int value)
     {
         PlayerPrefs.SetInt(keyName, value);
@@ -240,14 +298,53 @@ public class SettingsMenu : MonoBehaviour
         SetAllPrefs();
         isChanged = false;
     }
+    public void SetSliderText(TextMeshProUGUI sliderText, Slider volumeSlider)
+    {
+        sliderText.text = (volumeSlider.value * 100).ToString("N0");
+        isChanged = true;
+    }
+    /// <summary>
+    /// Gets all possible Resolutions for current displayed monitor
+    /// </summary>
+    private void GetResolutions()
+    {
+        resolutions = Screen.resolutions;
+        resolutionDropdown.ClearOptions();
+        List<string> options = new List<string>();
 
+        int currentResolutionIndex = 0;
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            string option = resolutions[i].width + "x" + resolutions[i].height;
+            options.Add(option);
+
+            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
+            {
+                currentResolutionIndex = i;
+            }
+        }
+
+        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.value = currentResolutionIndex;
+        resolutionDropdown.RefreshShownValue();
+    }
+    #endregion
+    // Persistant options
+    #region Preferences
+    /// <summary>
+    /// Sets the preferences of all the options
+    /// </summary>
     void SetAllPrefs()
     {
         SetPrefsFloat("dialogueSlider", dialogueSlider.value);
         SetPrefsFloat("soundFXSlider", soundFXSlider.value);
         SetPrefsFloat("musicSlider", musicSlider.value);
         SetPrefsFloat("masterVolumeSlider", masterVolumeSlider.value);
-        SetPrefsInt("sensitivitySlider", (int)sensitivitySlider.value);
+        SetPrefsInt("sensitivitySliderX", (int)sensitivitySliderX.value);
+        SetPrefsInt("sensitivitySliderY", (int)sensitivitySliderY.value);
+        SetPrefsFloat("fovSlider", fovSlider.value);
+        SetPrefsFloat("gammaSlider", gammaSlider.value);
+        SetPrefsFloat("bloomSlider", bloomSlider.value);
         if (subtitleCheckbox.isOn)
         {
             SetPrefsInt("subtitleCheckbox", 1);
@@ -258,24 +355,22 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Takes saved player preferences and applies to all options
+    /// </summary>
     public void ResetValues()
     {
         SetDialogueVolume(GetPrefsFloat("dialogueSlider", 1f));
         SetSoundFXVolume(GetPrefsFloat("soundFXSlider", 1f));
-        SetSensitivity(GetPrefs("sensitivitySlider", 40));
+        SetSensitivityX(GetPrefs("sensitivitySliderX", 40));
+        SetSensitivityY(GetPrefs("sensitivitySliderY", 40));
         SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
         SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
+        SetFOV(GetPrefsFloat("fovSlider", 112f));
+        SetGamma(GetPrefsFloat("gammaSlider", 0f));
+        SetBloom(GetPrefsFloat("bloomSlider", 0f));
         ToggleSubtitles();
     }
-
-    public void ExitOptions()
-    {
-        if (isChanged) {
-            OpenPopUp(confirmationPopUp);
-        }
-        else
-        {
-            menuManager.LastMenu();
-        }
-    }
+    #endregion
+    
 }

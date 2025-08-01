@@ -13,13 +13,18 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private BoxCollider DoorTrigger;
     [SerializeField]
+    private BoxCollider MusicTrigger;
+
+    [SerializeField]
     private GameObject lever;
     [SerializeField]
     private Light buttonLight;
     [SerializeField]
     private GameObject wrist;
     [SerializeField]
-    private DoorScript[] doors;
+    private DoorScript[] doorsToOpen;
+    [SerializeField]
+    private DoorScript[] doorsToLock;
 
     [SerializeField]
     private DoorScript medDoor;
@@ -35,6 +40,10 @@ public class LockdownEvent : MonoBehaviour
     public HazardLight[] hazardsToDisable;
     public AmbientController ambientController;
 
+    [SerializeField]
+    private GameObject auxLightObj;
+    [SerializeField]
+    private Light auxLight;
 
     [SerializeField]
     private Material leverMaterial;
@@ -96,6 +105,7 @@ public class LockdownEvent : MonoBehaviour
         player = playerObject.GetComponent<ZeroGravity>();
 
         DoorTrigger.enabled = false;
+        MusicTrigger.enabled = false;
         // checks if player is currently hovering over lever
         canPull = false;
         // checks if system is able to be turned on
@@ -158,18 +168,26 @@ public class LockdownEvent : MonoBehaviour
         }
     }
 
+    public void LockDoors()
+    {
+        foreach(DoorScript door in doorsToLock)
+        {
+            door.SetState(DoorScript.States.Locked);
+        }
+    }
+
     public void OpenDoors()
     {
         
-        foreach (DoorScript door in doors)
+        foreach (DoorScript door in doorsToOpen)
         {
             StartCoroutine(OpenDoorWithDelay(door));
         }
 
-        deadBody.AddTorque(deadBody.transform.right * 15);
-        deadBody.AddForce(new Vector3(0, -1, 0) * 30);
+        //deadBody.AddTorque(deadBody.transform.right * 15);
+        //deadBody.AddForce(new Vector3(0, -1, 0) * 30);
 
-        StartCoroutine(WaitForBodyVisible());
+        //StartCoroutine(WaitForBodyVisible());
 
         
     }
@@ -200,6 +218,7 @@ public class LockdownEvent : MonoBehaviour
             lever.GetComponent<Renderer>().material = leverMaterial;
 
             DoorTrigger.enabled = true;
+            MusicTrigger.enabled = true;
             isActive = false;
 
             // begin lighting and audio queues
@@ -226,13 +245,19 @@ public class LockdownEvent : MonoBehaviour
 
     private IEnumerator PlayLockdownFX()
     {
+        //Wait for button Press
         yield return new WaitForSeconds(0.5f);
-        StartCoroutine(LockDoors());
+        
+        //Lock the Entrance Door;
+        StartCoroutine(LockServerEntrance());
 
         foreach(HazardLight hazard in hazardsToDisable)
         {
             hazard.IsHazard = false;
         }
+
+        bodyDoor.SetState(DoorScript.States.BrokenShort);
+        LockDoors();
 
         audioManager.FadeServers(false);
         audioManager.playPowerCut();
@@ -256,14 +281,22 @@ public class LockdownEvent : MonoBehaviour
         }
         yield return new WaitForSeconds(4f);
         dialogueManager.StartDialogueSequence(4, 0f);
+        //Open doors in the doors to open array, this is the dining hall to facilities door.
+
+        OpenDoors();
         audioManager.FadeServers(true);
     }
 
-    private IEnumerator LockDoors()
+    private IEnumerator LockServerEntrance()
     {
         brokenDoor.SetState(DoorScript.States.Closed);
+        
         yield return new WaitForSeconds(13f);
-        brokenDoor.UseDoor();
+
+        auxLightObj.GetComponent<Renderer>().material = leverMaterial;
+        auxLight.color = endButtonColor;
+
+        brokenDoor.SetState(DoorScript.States.Open);
     }
 
     public IEnumerator FadeLightColor(Light lightSource, Color fromColor, Color toColor, float duration)

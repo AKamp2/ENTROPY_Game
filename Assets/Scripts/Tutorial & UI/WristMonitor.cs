@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class WristMonitor : MonoBehaviour
 {
     // Variables
     bool isActive = false;
     [SerializeField] ZeroGravity player;
-    [SerializeField] TextMeshProUGUI healthText;
+    [SerializeField] Slider healthSlider;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
     [SerializeField] GameObject wristMonitor;
     public List<Objective> mainObjectives = new List<Objective>();
@@ -46,11 +47,11 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\n\tReach the Medbay", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Medbay", "<color=orange>Current Objective: </color>\n\tReach the Medbay", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Dining Room", "<color=orange>Current Objective: </color>\n\tReach the Dining Room", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Server Room", "<color=orange>Current Objective: </color>\n\tReach the Server Room", "<size=8><color=orange>Sub Objective: </color>\n\tOverride Manual Lockdown</size>", false));
-        mainObjectives.Add(new Objective("Facilities Room", "<color=orange>Current Objective: </color>\n\tReach the Facilities Room", "", false));
+        mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\n\tEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Medbay", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Medbay</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Dining Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Dining Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Server Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Server Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Override Manual Lockdown</size>", false));
+        mainObjectives.Add(new Objective("Facilities Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Facilities Room</size> \n", "", false));
         if (targetRectTransform == null) {
             Debug.LogError("TargetRectTransform not assigned");
             return;
@@ -82,7 +83,7 @@ public class WristMonitor : MonoBehaviour
 
     public void StartLerp()
     {
-        startPosition = new Vector3(-300,110,0);
+        startPosition = new Vector3(-300,0,0);
         duration = 0f;
     }
 
@@ -93,7 +94,7 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
-        healthText.text = $"Health: {player.PlayerHealth}";
+        healthSlider.value = player.PlayerHealth;
         if(mainObjectives.Count > 0)
         {
             currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";

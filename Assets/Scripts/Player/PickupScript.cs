@@ -43,7 +43,7 @@ public class PickupScript : MonoBehaviour
 
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
 
-    private Color indicatorColor = new Color(256, 256, 256, 0.5f);
+    private Color indicatorColor = new Color(1f, 1f, 1f, 0.5f);
     private Color emptyColor = new Color(0, 0, 0, 0f);
 
     public float PickUpRange
@@ -196,6 +196,14 @@ public class PickupScript : MonoBehaviour
             Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, true);
             //heldObj.GetComponent<Collider>().enabled = false;
 
+            //easy fix for playtest, ensure good later
+            //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            if (uiManager.InputIndicatorThrow.sprite == null)
+            {
+                uiManager.InputIndicatorThrow.sprite = uiManager.LeftClickIndicator; 
+                uiManager.InputIndicatorThrow.color = new Color(1, 1, 1, 1);
+                //uiManager.InputIndicatorThrow.transform.position = zeroGPlayer.cam.WorldToScreenPoint(holdPos.GetChild(0).transform.position);
+            }  
 
             MoveObject();
             //zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
@@ -212,6 +220,14 @@ public class PickupScript : MonoBehaviour
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
+
+        //easy fix for playtest, ensure good later
+        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        if (uiManager.InputIndicatorThrow.sprite != null)
+        {
+            uiManager.InputIndicatorThrow.sprite = null;
+            uiManager.InputIndicatorThrow.color = new Color(0, 0, 0, 0);
+        }
 
         //current = null;
         //zeroGPlayer.MoveHandsTo(null, null);
@@ -238,7 +254,14 @@ public class PickupScript : MonoBehaviour
         transform.GetComponent<Rigidbody>().AddForce(-cam.transform.forward.normalized * (throwForce * (heldObjRb.mass / transform.GetComponent<Rigidbody>().mass) * 1.5f), ForceMode.VelocityChange);
         //Debug.Log("Thrown at velocity: " + heldObjRb.linearVelocity.magnitude);
 
-      
+
+        //easy fix for playtest, ensure good later
+        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        if(uiManager.InputIndicatorThrow.sprite != null)
+        {
+            uiManager.InputIndicatorThrow.sprite = null;
+            uiManager.InputIndicatorThrow.color = new Color(0, 0, 0, 0);
+        }
 
         // initiate pick up cd
         canPickUp = false;

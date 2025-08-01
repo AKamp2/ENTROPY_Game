@@ -41,7 +41,7 @@ public class AmbientController : MonoBehaviour
     private void Awake()
     {
         layerCount = clips.Length;
-        loopers = new Looper[layerCount];
+        loopers = new Looper[maxLayers];
         // for (int i = 0; i < layerCount; i++)
         // {
         //     GameObject child = new GameObject("MusicPlayer");
@@ -286,7 +286,7 @@ public class AmbientController : MonoBehaviour
                 int looperIndex = Array.IndexOf(layerLookup,7); //Find looper for drum track
                 if (looperIndex == -1)
                 {
-                    Debug.Log("Somehow had no muted drum track to unmute prog = 1");
+                    //Debug.Log("Somehow had no muted drum track to unmute prog = 1");
                 }
                 else
                 {
@@ -326,6 +326,27 @@ public class AmbientController : MonoBehaviour
             case 7: //level beat
                 break;
                 
+        }
+    }
+
+    public void FadeAll(bool fadingIn)
+    {
+        //Debug.Log(loopers);
+        if(fadingIn)
+        {
+            foreach(Looper looper in loopers)
+            {
+                if(looper != null)
+                looper.FadeIn();
+            }
+        }
+        else
+        {
+            foreach(Looper looper in loopers)
+            {
+                if(looper != null)
+                looper.FadeOut();
+            }
         }
     }
 }
