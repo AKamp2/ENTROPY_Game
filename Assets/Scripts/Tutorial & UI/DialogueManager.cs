@@ -111,7 +111,7 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     public void StartDialogueSequence(int sequenceIndex, float delayTime)
     {
-        Debug.Log("Starting Dialogue Sequence at index " + sequenceIndex);
+        //Debug.Log("Starting Dialogue Sequence at index " + sequenceIndex);
         if (sequenceIndex < dialogueSequences.Length)
         {
             pauseMainDialogue = false;
@@ -142,7 +142,7 @@ public class DialogueManager : MonoBehaviour
 
             Dialogue currentDialogue = currentSequence.dialogues[currentDialogueIndex];
 
-            Debug.Log("Advances Tutorial? " + currentDialogue.advancesTutorial);
+            //Debug.Log("Advances Tutorial? " + currentDialogue.advancesTutorial);
 
             // Skip this dialogue if tutorial is skipped and this dialogue is marked to be skipped with the tutorial
             if (tutorialSkipped && currentDialogue.skipWithTutorial && currentSequenceIndex == 0)
