@@ -446,7 +446,7 @@ public class DoorScript : MonoBehaviour
 
             if (state == States.Open)
             {
-                Debug.Log("This part of the script is happening");
+                //Debug.Log("This part of the script is happening");
                 //open the door if it wasn't already opening
                 if (previousState != States.Open && previousState != States.Opening)
                 {
@@ -505,7 +505,7 @@ public class DoorScript : MonoBehaviour
         // Only open door if the first dialogue sequence is completed
         if (sequenceIndex == 0)
         {
-            Debug.Log($"Dialogue {sequenceIndex} completed, door can be opened.");
+            //Debug.Log($"Dialogue {sequenceIndex} completed, door can be opened.");
             dialogueComplete = true;
         }
     }

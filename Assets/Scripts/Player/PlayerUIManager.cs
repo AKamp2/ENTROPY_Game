@@ -19,10 +19,15 @@ public class PlayerUIManager : MonoBehaviour
     // eventually replace with gameplay manager
     [SerializeField]
     private LockdownEvent lockdownEvent;
+    [SerializeField]
+    private GameObject stimDispenserContainer;
+    private StimDispenser[] stimDispensers;
+    private bool lookingAtStim;
 
     private bool barInRaycast;
     private bool barInPeripheral;
     private bool floatingObjInRaycast;
+
 
     [Header("== UI Canvas ==")]
     [SerializeField]
@@ -44,6 +49,8 @@ public class PlayerUIManager : MonoBehaviour
     private UnityEngine.UI.Image inputIndicatorThrow;
     [SerializeField]
     private UnityEngine.UI.Image healthIndicator;
+    [SerializeField]
+    private UnityEngine.UI.Image progressBar;
 
     //sprite assets
     //grabber
@@ -84,7 +91,7 @@ public class PlayerUIManager : MonoBehaviour
     private LayerMask floatingObjLayer;
     //this list stores the tags of all Interactable items we will have in ENTROPY, this will hopefully future proof ui interaction 
     [SerializeField]
-    private List<string> interactables = new List<string>() {}; //populated in inspector
+    private List<string> interactables = new List<string>() { }; //populated in inspector
 
     //optimizing
 
@@ -119,10 +126,16 @@ public class PlayerUIManager : MonoBehaviour
         set { inputIndicatorThrow = value; }
     }
 
-    public UnityEngine.UI.Image Crosshair 
-    { 
-        get { return crosshair; } 
+    public UnityEngine.UI.Image Crosshair
+    {
+        get { return crosshair; }
         set { crosshair = value; }
+    }
+
+    public UnityEngine.UI.Image ProgressBar
+    {
+        get { return progressBar; }
+        set { progressBar = value; }
     }
 
     public Sprite WASDIndicator { get { return wasdIndicator; } }
@@ -131,13 +144,13 @@ public class PlayerUIManager : MonoBehaviour
 
     public Sprite RightClickIndicator { get { return rightClickIndicator; } }
 
-    public Sprite LeftClickIndicator { get {return leftClickIndicator; } }
+    public Sprite LeftClickIndicator { get { return leftClickIndicator; } }
 
     public Sprite KeyFIndicator { get { return keyFIndicator; } }
 
     public Sprite DangerIndicator { get { return dangerIndicator; } }
 
-    public Sprite HighDangerIndicator {  get { return highDangerIndicator; } }
+    public Sprite HighDangerIndicator { get { return highDangerIndicator; } }
 
     public LayerMask BarLayer
     {
@@ -180,6 +193,8 @@ public class PlayerUIManager : MonoBehaviour
         //cached so we don't need to constantly look for them all the time 
         grabberRectTransform = grabber.GetComponent<RectTransform>();
         crosshairRectTransform = crosshair.GetComponent<RectTransform>();
+        stimDispensers = stimDispenserContainer.GetComponentsInChildren<StimDispenser>();
+        progressBar.enabled = false;
     }
 
     // Update is called once per frame
@@ -217,9 +232,9 @@ public class PlayerUIManager : MonoBehaviour
         //create a raycast that stores the most favorable hit object, this will ensure when a bar is on screen it is chosen
         RaycastHit? barHit = null;
         //stores if something labeled as "button, switch" or any other interactable is hit by a ray
-        RaycastHit? interactableHit = null; 
+        RaycastHit? interactableHit = null;
         float bestBarHitDistance = float.MaxValue;
-        float bestInteractableHitDistance = float.MaxValue; 
+        float bestInteractableHitDistance = float.MaxValue;
         //this is a raycast that stores a fall back to ensure we can fall back on a previous hit if need be
         RaycastHit? wallHit = null;
 
@@ -290,7 +305,7 @@ public class PlayerUIManager : MonoBehaviour
                     if (tag == "Barrier")
                     {
                         //ensure we arent continuously updating wall detections. we only need one
-                        if(wallHit == null)
+                        if (wallHit == null)
                         {
                             //store the barrier as a fallback if we don't get a bar on screen
                             wallHit = hit;
@@ -322,6 +337,10 @@ public class PlayerUIManager : MonoBehaviour
                     //Debug.Log("WristMonitor Detected");
                     RayCastHandleManualLockdown(interactableHit);
                     break;
+                case "StimDispenser":
+                    //Debug.Log("WristMonitor Detected");
+                    RayCastHandleStimDispenser(interactableHit);
+                    break;
                 //case "PickupObject":
                 //    RayCastHandleFloatingObject(interactableHit);
                 //    break;
@@ -333,6 +352,14 @@ public class PlayerUIManager : MonoBehaviour
         {
             //Debug.Log("interactable null");
             HideInteractables();
+            if (lookingAtStim)
+            {
+                lookingAtStim = false;
+                foreach (StimDispenser stim in stimDispensers)
+                {
+                    stim.CanRefill = false;
+                }
+            }
         }
 
         if (barHit != null)
@@ -359,7 +386,7 @@ public class PlayerUIManager : MonoBehaviour
         //Debug.Log("raycast called");
         barInRaycast = true;
         player.PotentialGrabbedBar = hit.Value.transform;
-        
+
     }
 
     public void RayCastHandleDoorButton(RaycastHit? hit)
@@ -378,14 +405,14 @@ public class PlayerUIManager : MonoBehaviour
                 grabUIText.text = "Close Door";
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
-            else if(ds.DoorState == DoorScript.States.Closed)
+            else if (ds.DoorState == DoorScript.States.Closed)
             {
                 doorManager.CurrentSelectedDoor = door;
                 inputIndicator.sprite = keyFIndicator;
                 grabUIText.text = "Open Door";
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
-           
+
         }
         else
         {
@@ -453,6 +480,35 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
+    public void RayCastHandleStimDispenser(RaycastHit? hit)
+    {
+        if (hit.Value.transform.CompareTag("StimDispenser"))
+        {
+            StimDispenser stim = hit.Value.transform.parent.GetComponent<StimDispenser>();
+            if (player.NumStims < 3)
+            {
+                //Debug.Log("I see a stim dispenser");
+                
+                if (stim != null)
+                {
+                    lookingAtStim = true;
+                    stim.CanRefill = true;
+                    grabUIText.text = "Hold to refill stim";
+                    inputIndicator.sprite = keyFIndicator;
+                    inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                }
+            }
+            else
+            {
+                stim.CanRefill = false;
+                grabUIText.text = "Stims Full";
+                inputIndicator.sprite = null;
+                inputIndicator.color = new Color(0, 0, 0, 0);
+            }
+            
+        }
+    }
+
     /// <summary>
     /// This needs to be incorporated with pick up script working directlyt in this script
     /// </summary>
@@ -473,12 +529,12 @@ public class PlayerUIManager : MonoBehaviour
         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         //if (!player.TutorialMode)
         //{
-            //erase the input indicator
-            inputIndicator.sprite = null;
-            inputIndicator.color = new Color(0, 0, 0, 0);
-            grabUIText.text = "";
-            floatingObjInRaycast = false;
-            /*doorManager.DoorUI.SetActive(false);*/
+        //erase the input indicator
+        inputIndicator.sprite = null;
+        inputIndicator.color = new Color(0, 0, 0, 0);
+        grabUIText.text = "";
+        floatingObjInRaycast = false;
+        /*doorManager.DoorUI.SetActive(false);*/
         //}
     }
     /// <summary>
@@ -525,7 +581,7 @@ public class PlayerUIManager : MonoBehaviour
         // Only track floating objects if able to pick up object
         if (pickupScript.CanPickUp && !pickupScript.HeldObject)
         {
-             nearbyObjects = Physics.OverlapSphere(transform.position, pickupScript.PickUpRange, pickupScript.ObjectLayer);
+            nearbyObjects = Physics.OverlapSphere(transform.position, pickupScript.PickUpRange, pickupScript.ObjectLayer);
         }
         else
         {
@@ -611,7 +667,7 @@ public class PlayerUIManager : MonoBehaviour
                 Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.position);
 
                 //ensure the grabber is on the screen
-                if (screenPoint.z > 0 && 
+                if (screenPoint.z > 0 &&
                     screenPoint.x > 0 && screenPoint.x < Screen.width &&
                     screenPoint.y > 0 && screenPoint.y < Screen.height)
                 {
@@ -709,13 +765,13 @@ public class PlayerUIManager : MonoBehaviour
                     }
                 }
             }
-            else if(bar == null)
+            else if (bar == null)
             {
                 //remove the grabber
                 HideGrabber();
             }
         }
-    }   
+    }
 
     //Health Methods
     //controls the UI for the Player Health
@@ -744,7 +800,7 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
-   public void DoorUI()
+    public void DoorUI()
     {
         inputIndicator.sprite = keyFIndicator;
         inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);

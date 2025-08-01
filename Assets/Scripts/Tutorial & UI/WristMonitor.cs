@@ -13,6 +13,7 @@ public class WristMonitor : MonoBehaviour
     [SerializeField] Slider healthSlider;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
     [SerializeField] GameObject wristMonitor;
+    [SerializeField] TextMeshProUGUI stimText;
     public List<Objective> mainObjectives = new List<Objective>();
     public List<Objective> completedObjectives = new List<Objective>();
     public RectTransform targetRectTransform;
@@ -58,6 +59,7 @@ public class WristMonitor : MonoBehaviour
         }
         startPosition = targetRectTransform.anchoredPosition3D;
         duration = 0f;
+        //this.enabled = false;
     }
 
 
@@ -143,5 +145,10 @@ public class WristMonitor : MonoBehaviour
             completedObjectives.Add(mainObjectives[0]);
             mainObjectives.Remove(mainObjectives[0]);
         }
+    }
+
+    public void UpdateStims(int numStims)
+    {
+        stimText.text = numStims + "/3";
     }
 }
