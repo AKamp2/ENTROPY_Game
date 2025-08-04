@@ -418,8 +418,8 @@ public class ZeroGravity : MonoBehaviour
                     //set the sprite for input indicator to the wasd indicator
                     if (canPropel)
                     {
-                        uiManager.InputIndicator.sprite = uiManager.WASDIndicator;
-                        uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
+                        //uiManager.InputIndicator.sprite = uiManager.WASDIndicator;
+                        //uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
                     }
 
                 }
