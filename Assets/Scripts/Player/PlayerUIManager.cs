@@ -205,8 +205,6 @@ public class PlayerUIManager : MonoBehaviour
         HandleHealthUI();
         if (!player.IsGrabbing)
         {
-            //search for bars and other stuff in the raycast
-            HandleRaycastUI();
             //if there are no bars in the raycast 
             if (!BarInRaycast)
             {
@@ -220,6 +218,8 @@ public class PlayerUIManager : MonoBehaviour
                 HideGrabber();
             }
         }
+        //search for bars and other stuff in the raycast
+        HandleRaycastUI();
         grabberRectTransform = grabber.GetComponent<RectTransform>();
     }
 
@@ -257,7 +257,7 @@ public class PlayerUIManager : MonoBehaviour
                 string tag = null;
 
                 // if raycast hits a bar
-                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     //if the ray hits a grabbable object
@@ -301,7 +301,7 @@ public class PlayerUIManager : MonoBehaviour
                         }
                     }
                 }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer))
+                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     if (tag == "Barrier")
@@ -364,7 +364,7 @@ public class PlayerUIManager : MonoBehaviour
             }
         }
 
-        if (barHit != null)
+        if (barHit != null && player.CanGrab && !player.IsGrabbing)
         {
             //Debug.Log("bar hit: " + barHit);
             RayCastHandleGrab(barHit);
@@ -375,7 +375,7 @@ public class PlayerUIManager : MonoBehaviour
             barInRaycast = false;
         }
 
-        if (wallHit != null && !barInPeripheral && !barInRaycast)
+        if (wallHit != null && !barInPeripheral && !barInRaycast && player.CanPushOff && !player.IsGrabbing)
         {
             RayCastHandlePushOffWall(wallHit);
             return;
@@ -459,26 +459,38 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
         {
-            lockdownEvent.CanPull = true;
-            grabUIText.text = "Deactivate manual lockdown";
-            inputIndicator.sprite = keyFIndicator;
-            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+            //Debug.Log("lockdown lever hit by raycast");
+            if (lockdownEvent.IsActive)
+            {
+                lockdownEvent.CanPull = true;
+                grabUIText.text = "Deactivate manual lockdown";
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+            }
+            else if (!lockdownEvent.IsActive)
+            {
+                lockdownEvent.CanPull = false;
+                HideInteractables();
+            }
         }
-        else if (lockdownEvent)
+        else if (hit.Value.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
         {
-            lockdownEvent.CanPull = false;
+            if (lockdownEvent.IsGrabbable)
+            {
+                lockdownEvent.CanGrab = true;
+                grabUIText.text = "Take wrist monitor";
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+            }
+            else if(!lockdownEvent.IsGrabbable)
+            {
+                lockdownEvent.CanGrab = false;
+                HideInteractables();
+            }
         }
-
-        if (hit.Value.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
+        else
         {
-            lockdownEvent.CanGrab = true;
-            grabUIText.text = "Take wrist monitor";
-            inputIndicator.sprite = keyFIndicator;
-            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
-        }
-        else if (lockdownEvent)
-        {
-            lockdownEvent.CanGrab = false;
+            HideInteractables();
         }
     }
 
@@ -542,15 +554,15 @@ public class PlayerUIManager : MonoBehaviour
     {
         //easy fix spam reset wasd in tutorialfor playtest, need to come back to ensure this is most efficient
         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        //if (!player.TutorialMode)
-        //{
-        //erase the input indicator
-        inputIndicator.sprite = null;
-        inputIndicator.color = new Color(0, 0, 0, 0);
-        grabUIText.text = "";
-        floatingObjInRaycast = false;
-        /*doorManager.DoorUI.SetActive(false);*/
-        //}
+        if (!player.TutorialMode)
+        {
+            //erase the input indicator
+            inputIndicator.sprite = null;
+            inputIndicator.color = new Color(0, 0, 0, 0);
+            grabUIText.text = "";
+            floatingObjInRaycast = false;
+            /*doorManager.DoorUI.SetActive(false);*/
+        }
     }
     /// <summary>
     /// this method removes the grabber sprite from the screen. making sure there are no floating grabbers in the ui
@@ -640,17 +652,7 @@ public class PlayerUIManager : MonoBehaviour
                     //the potential bar is now this bar in view
                     player.PotentialGrabbedBar = closestObject;
                     barInPeripheral = true;
-                    //Debug.Log("update closest bar in view found a bar");
-
-                    //if in tutorial mode
-                    if (player.TutorialMode && player.CanGrab)
-                    {
-                        //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
-                        //set the sprite for the right click
-                        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                        inputIndicator.sprite = rightClickIndicator;
-                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
-                    }
+                    //Debug.Log("update closest bar in view found a bar");              
                 }
                 //update the sprite for the grabber
                 grabberRectTransform.localScale = new Vector3(1, 1, 1);
@@ -694,13 +696,52 @@ public class PlayerUIManager : MonoBehaviour
                     {
                         grabber.sprite = openHand;
                         grabber.color = Color.white;
+
+                        //if in tutorial mode
+                        if (player.TutorialMode && player.CanGrab)
+                        {
+                            //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
+                            //set the sprite for the right click
+                            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                            inputIndicator.sprite = rightClickIndicator;
+                            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                        }
                     }
                     //set closed hand icon if grabbing
-                    else
+                    else if(player.IsGrabbing)
                     {
                         grabber.sprite = closedHand;
                         grabber.color = Color.white;
+
+                        //if in tutorial mode
+                        if (player.TutorialMode)
+                        {
+                            //set the sprite for the wasd pending if they can propel
+                            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                            if (player.CanPropel)
+                            {
+                                inputIndicator.sprite = WASDIndicator;
+                                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                            }
+                            else if (!player.CanPropel)
+                            {
+                                inputIndicator.sprite = null;
+                                inputIndicator.color = new Color(0f, 0f, 0f, 0f);
+                            }
+                        }
                     }
+                    //else
+                    //{
+                    //    //if in tutorial mode
+                    //    if (player.TutorialMode)
+                    //    {
+                    //        //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
+                    //        //set the sprite for the right click
+                    //        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                    //        inputIndicator.sprite = null;
+                    //        inputIndicator.color = new Color(0f, 0f, 0f, 0f);
+                    //    }
+                    //}
 
                     HidePushIndicator();
                 }
