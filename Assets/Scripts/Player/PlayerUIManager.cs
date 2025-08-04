@@ -430,7 +430,7 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
         {
-            Debug.Log("lockdown lever hit by raycast");
+            //Debug.Log("lockdown lever hit by raycast");
             if (lockdownEvent.IsActive)
             {
                 lockdownEvent.CanPull = true;
