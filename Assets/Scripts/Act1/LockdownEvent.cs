@@ -79,6 +79,9 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private GameObject grateMoveLocation;
 
+    [SerializeField]
+    private CanvasGroup wristMonitorTutorial;
+
 
 
 
@@ -244,6 +247,8 @@ public class LockdownEvent : MonoBehaviour
 
             wrist.SetActive(false);
 
+            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 0f, 1f));
+
             medDoor.SetState(DoorScript.States.Closed);
 
             ambientController.Progress();
@@ -349,6 +354,28 @@ public class LockdownEvent : MonoBehaviour
         }
 
         lightSource.intensity = targetIntensity;
+    }
+
+    // Coroutine to fade the CanvasGroup over time
+    private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
+    {
+        float timeElapsed = 0f;
+        float fadeDuration = 1f;
+
+        while (timeElapsed < fadeDuration)
+        {
+            // Lerp alpha from start to end
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timeElapsed / fadeDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null; // Wait until the next frame
+        }
+
+        canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    public void FadeOutMonitorTutorial()
+    {
+        StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
     }
 
     private IEnumerator MoveDoor(Vector3 fromPos, Vector3 toPos, float duration, System.Action onComplete)

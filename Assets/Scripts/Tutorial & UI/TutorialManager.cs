@@ -113,14 +113,15 @@ public class TutorialManager : MonoBehaviour
             //Debug.Log("Current step complete: " + stepComplete);
             else if (currentStep == 2)
             {
-                
+
                 float currentZ = playerController.cam.transform.eulerAngles.z;
                 //Debug.Log(currentZ);
 
                 // Compute delta roll from initial orientation
                 float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
-                bool isUpsideDown = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
+                bool isUpsideDownLook = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
+                bool isUpsideDown = playerController.TotalRotation <= -350;
 
                 if (isUpsideDown && playerController.HasRolled)
                 {
@@ -129,8 +130,9 @@ public class TutorialManager : MonoBehaviour
                     stepComplete = true;
                     FadeOut(rollQCanvasGroup);
                     CompleteStep();
+                    playerController.TotalRotation = 0;
                 }
-                else if (isUpsideDown && !playerController.HasRolled)
+                else if (isUpsideDownLook && !playerController.HasRolled)
                 {
                     if (!hasPlayedRollFailure)
                     {
@@ -141,11 +143,12 @@ public class TutorialManager : MonoBehaviour
             }
             else if (currentStep == 3)
             {
-                float currentZ = playerController.cam.transform.eulerAngles.z;
+                //float currentZ = playerController.cam.transform.eulerAngles.z;
 
-                float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
+                //float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
-                bool isUpright = Mathf.Abs(delta) <= 10f; // close to original orientation
+                //bool isUpright = Mathf.Abs(delta) <= 10f; // close to original orientation
+                bool isUpright = playerController.TotalRotation >= 350;
 
                 if (isUpright)
                 {
@@ -154,6 +157,7 @@ public class TutorialManager : MonoBehaviour
                     stepComplete = true;
                     FadeOut(rollECanvasGroup);
                     CompleteStep();
+                    playerController.TotalRotation = 0;
                 }
             }
             

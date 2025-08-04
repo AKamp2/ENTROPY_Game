@@ -28,6 +28,12 @@ public class WristMonitor : MonoBehaviour
 
     [SerializeField] ObjectiveUpdate objectiveUpdator;
 
+    
+
+    private bool tutorialShowing = true;
+    [SerializeField]
+    private LockdownEvent lockdownScript;
+
 
     /// <summary>
     /// Public class used to display vital information to the player of how they must proceed
@@ -79,6 +85,12 @@ public class WristMonitor : MonoBehaviour
             isActive = true;
             this.gameObject.SetActive(true);
             StartLerp();
+
+            if(tutorialShowing && lockdownScript != null)
+            {
+                tutorialShowing = false;
+                lockdownScript.FadeOutMonitorTutorial();
+            }
         }
         else if (context.canceled)
         {
