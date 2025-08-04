@@ -59,11 +59,15 @@ public class DoorScript : MonoBehaviour
     //private float sinTime = 0.0f;
     private Vector3 openPos;
     private Vector3 closedPos;
-    private Vector3 crackedPos;
+    private Vector3 shortPos;
+    private Vector3 midPos;
     private Vector3 bodyPos;
 
+    
     [SerializeField]
-    private GameObject crackedReference;
+    private GameObject shortReference;
+    [SerializeField]
+    private GameObject midReference;
     [SerializeField]
     private GameObject bodyOpenReference;
 
@@ -229,9 +233,14 @@ public class DoorScript : MonoBehaviour
             
         }
 
-        if(crackedReference != null)
+        if(midReference != null)
         {
-            crackedPos = crackedReference.transform.position;
+            midPos = midReference.transform.position;
+        }
+
+        if (shortReference != null)
+        {
+            shortPos = shortReference.transform.position;
         }
 
         if (bodyOpenReference != null)
@@ -377,7 +386,7 @@ public class DoorScript : MonoBehaviour
             startAudioSource.Play();
 
             // Wait for door to fully open
-            yield return MoveDoor(closedPos, crackedPos, 0.4f, null);
+            yield return MoveDoor(closedPos, midPos, 0.4f, null);
 
             StartCoroutine(FadeOutAndStop(startAudioSource, 0.1f));
 
@@ -390,7 +399,7 @@ public class DoorScript : MonoBehaviour
 
             isClosing = true;
             // Wait for door to fully close
-            yield return MoveDoor(crackedPos, closedPos, 0.2f, () => isClosing = false);
+            yield return MoveDoor(midPos, closedPos, 0.2f, () => isClosing = false);
 
             yield return new WaitForSeconds(brokenDoorPause);
         }
@@ -405,7 +414,7 @@ public class DoorScript : MonoBehaviour
         endAudioSource.clip = doorStuck;
         endAudioSource.Play();
 
-        yield return MoveDoor(closedPos, crackedPos, 1.4f, null);
+        yield return MoveDoor(closedPos, shortPos, 1.4f, null);
 
         //yield return new WaitForSeconds(0.2f);
 

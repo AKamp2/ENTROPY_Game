@@ -44,6 +44,7 @@ public class ZeroGravity : MonoBehaviour
     private int numStims = 0;
     [SerializeField]
     private int maxNumStim = 3;
+    private bool usingStimCharge = false;
 
 
     private bool isDead = false;
@@ -1259,8 +1260,12 @@ public class ZeroGravity : MonoBehaviour
     {
         if(playerHealth < 4 && numStims > 0)
         {
-            IncreaseHealth(2);
-            numStims--;
+            if (!usingStimCharge)
+            {
+                usingStimCharge = true;
+                StartCoroutine(UseStim());
+            }
+            
         }
     }
     /// <summary>
@@ -1476,6 +1481,16 @@ public class ZeroGravity : MonoBehaviour
             rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
             rb.angularVelocity = Vector3.zero;
         }
+    }
+
+    private IEnumerator UseStim()
+    {
+        playerAudio.PlayUseStim();
+        yield return new WaitForSeconds(1.8f);
+        IncreaseHealth(2);
+        numStims--;
+        usingStimCharge = false;
+        
     }
 
     #endregion

@@ -1,10 +1,27 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
 
 public class StimDispenser : MonoBehaviour
 {
-    public bool canRefill = false;
+    //var for detecting if the player is close enough to the dispenser to refill.
+    [SerializeField]
+    private bool canRefill = false;
+    //var for detecting if the stim dispenser is available to be used - can make temporarily out of order.
+    [SerializeField]
+    private bool isUsable = false;
+
+    [SerializeField]
+    private Light spotlight;
+
+    [SerializeField]
+    private DecalProjector decal;
+
+    [SerializeField]
+    private Material glowingDecal;
+    [SerializeField]
+    private Material unlitDecal;
 
     private GameObject playerObj;
     private ZeroGravity playerScript;
@@ -15,6 +32,7 @@ public class StimDispenser : MonoBehaviour
     private float holdTimer = 0f;
     private bool isRefilling = false;
     private float maxRefillDistance = 1.5f;
+    private float lightIntensity = 0f;
 
     private Image progressBar;
 
@@ -27,9 +45,28 @@ public class StimDispenser : MonoBehaviour
         get { return canRefill; }
         set { canRefill = value; }
     }
+
+    public bool IsUsable
+    {
+        get { return isUsable; }
+        set { isUsable = value; }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        lightIntensity = spotlight.intensity;
+        if(isUsable)
+        {
+            decal.material = glowingDecal;
+            spotlight.intensity = lightIntensity;
+        }
+        else
+        {
+            decal.material = unlitDecal;
+            spotlight.intensity = 0f;
+        }
+
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
         uiScript = playerObj.GetComponent<PlayerUIManager>();
@@ -108,7 +145,24 @@ public class StimDispenser : MonoBehaviour
     {
         // Replace this with logic to update wrist monitor and stim counts
         Debug.Log("Stim refill complete!");
+        audioSource.Play();
         playerScript.AddStimsToInv(3);
         wristMonitor.UpdateStims(3);
+    }
+
+    public void ToggleUsability(bool isUsable)
+    {
+        this.isUsable = isUsable;
+
+        if(isUsable)
+        {
+            decal.material = glowingDecal;
+            spotlight.intensity = lightIntensity;
+        }
+        else
+        {
+            decal.material = unlitDecal;
+            spotlight.intensity = 0f;
+        }
     }
 }

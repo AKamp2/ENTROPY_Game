@@ -14,6 +14,8 @@ public class LockdownEvent : MonoBehaviour
     private BoxCollider DoorTrigger;
     [SerializeField]
     private BoxCollider MusicTrigger;
+    [SerializeField]
+    private BoxCollider cuttingOutTrigger;
 
     [SerializeField]
     private GameObject lever;
@@ -35,7 +37,7 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private Rigidbody deadBody;
 
-    public DialogueManager dialogueManager;
+    private DialogueManager dialogueManager;
 
     public HazardLight[] hazardsToDisable;
     public AmbientController ambientController;
@@ -105,7 +107,8 @@ public class LockdownEvent : MonoBehaviour
         player = playerObject.GetComponent<ZeroGravity>();
 
         DoorTrigger.enabled = false;
-        MusicTrigger.enabled = false;
+        //MusicTrigger.enabled = false;
+        cuttingOutTrigger.enabled = false;
         // checks if player is currently hovering over lever
         canPull = false;
         // checks if system is able to be turned on
@@ -113,6 +116,8 @@ public class LockdownEvent : MonoBehaviour
 
         canGrab = false;
         isGrabbable = true;
+
+        dialogueManager = FindFirstObjectByType<DialogueManager>();
 
     }
 
@@ -239,6 +244,12 @@ public class LockdownEvent : MonoBehaviour
             medDoor.SetState(DoorScript.States.Closed);
 
             ambientController.Progress();
+
+            dialogueManager.StartDialogueSequence(6, 1f);
+
+            cuttingOutTrigger.enabled = true;
+
+            
 
         }
     }

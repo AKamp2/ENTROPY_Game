@@ -485,27 +485,40 @@ public class PlayerUIManager : MonoBehaviour
         if (hit.Value.transform.CompareTag("StimDispenser"))
         {
             StimDispenser stim = hit.Value.transform.parent.GetComponent<StimDispenser>();
-            if (player.NumStims < 3)
+
+            if (stim != null)
             {
-                //Debug.Log("I see a stim dispenser");
-                
-                if (stim != null)
+                if(stim.IsUsable)
                 {
-                    lookingAtStim = true;
-                    stim.CanRefill = true;
-                    grabUIText.text = "Hold to refill stim";
-                    inputIndicator.sprite = keyFIndicator;
-                    inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                    //check to see if the player's stims aren't full
+                    if (player.NumStims < 3)
+                    {
+                        //Debug.Log("I see a stim dispenser");
+
+
+                        lookingAtStim = true;
+                        stim.CanRefill = true;
+                        grabUIText.text = "Hold to refill stim";
+                        inputIndicator.sprite = keyFIndicator;
+                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+
+                    }
+                    else
+                    {
+                        stim.CanRefill = false;
+                        grabUIText.text = "Stims Full";
+                        inputIndicator.sprite = null;
+                        inputIndicator.color = new Color(0, 0, 0, 0);
+                    }
                 }
+                else //if the stim dispenser is out of order
+                {
+                    //no logic here for now
+                }
+                
             }
-            else
-            {
-                stim.CanRefill = false;
-                grabUIText.text = "Stims Full";
-                inputIndicator.sprite = null;
-                inputIndicator.color = new Color(0, 0, 0, 0);
-            }
-            
+
+
         }
     }
 

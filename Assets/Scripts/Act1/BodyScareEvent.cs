@@ -12,6 +12,7 @@ public class BodyScareEvent : MonoBehaviour
     private GameObject body;
     [SerializeField]
     private Rigidbody bodyRb;
+    private DialogueManager dialogueManager;
     
 
     public GameObject bodyPos;
@@ -21,7 +22,7 @@ public class BodyScareEvent : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        dialogueManager = FindFirstObjectByType<DialogueManager>();
     }
 
     // Update is called once per frame
@@ -51,5 +52,9 @@ public class BodyScareEvent : MonoBehaviour
         {
             door.SetState(DoorScript.States.Closed);
         }
+
+        yield return new WaitForSeconds(4f);
+
+        dialogueManager.StartDialogueSequence(8, 0f);
     }
 }
