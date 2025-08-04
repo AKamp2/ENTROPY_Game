@@ -43,7 +43,10 @@ public class SettingsMenu : MonoBehaviour
     // Video option
     [Header("Video Section")]
     Resolution[] resolutions;
+    private List<int> commonHz = new List<int> { 60, 75, 120, 144, 165 };
+    RefreshRate refresh;
     public TMP_Dropdown resolutionDropdown;
+    public TMP_Dropdown refreshRateDropdown;
     [SerializeField] private TMP_Dropdown graphicsQuality;
     [SerializeField] private Toggle fullscreenCheckbox;
 
@@ -70,8 +73,9 @@ public class SettingsMenu : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        SetUp();
+        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         GetResolutions();
+        SetUp();
     }
 
     // Setting methods
@@ -177,8 +181,17 @@ public class SettingsMenu : MonoBehaviour
 
     public void SetResolution(int resolutionIndex)
     {
+        resolutionDropdown.value = resolutionIndex;
         Resolution resolution = resolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        Screen.SetResolution(resolution.width, resolution.height, FullScreenMode.ExclusiveFullScreen, refresh);
+    }
+
+    public void SetRefreshRate(int refreshRate)
+    {
+        refreshRateDropdown.value = refreshRate;
+        refresh = new RefreshRate { numerator = (uint)commonHz[refreshRateDropdown.value], denominator = 1 };
+        Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.ExclusiveFullScreen, refresh);
+        PopulateResolutionDropdown();
     }
 
     public void ToggleSubtitles()
@@ -308,25 +321,41 @@ public class SettingsMenu : MonoBehaviour
     /// </summary>
     private void GetResolutions()
     {
-        resolutions = Screen.resolutions;
+        PopulateRefreshRateDropdown();
+        PopulateResolutionDropdown();
+    }
+
+    void PopulateRefreshRateDropdown()
+    {
+        refreshRateDropdown.ClearOptions();
+
+        List<string> hzOptions = new List<string>();
+        foreach (int hz in commonHz)
+            hzOptions.Add(hz + " Hz");
+
+        refreshRateDropdown.AddOptions(hzOptions);
+    }
+
+    void PopulateResolutionDropdown()
+    {
         resolutionDropdown.ClearOptions();
-        List<string> options = new List<string>();
+        resolutions = Screen.resolutions;
 
-        int currentResolutionIndex = 0;
-        for (int i = 0; i < resolutions.Length; i++)
+        List<string> resOptions = new List<string>();
+        List<Resolution> uniqueResolutions = new List<Resolution>();
+
+        foreach (Resolution res in resolutions)
         {
-            string option = resolutions[i].width + "x" + resolutions[i].height;
-            options.Add(option);
-
-            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResolutionIndex = i;
-            }
+            // Avoid duplicates
+            if (!uniqueResolutions.Exists(r => r.width == res.width && r.height == res.height))
+                uniqueResolutions.Add(res);
         }
+        resolutions = uniqueResolutions.ToArray();
 
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
+        foreach (var res in uniqueResolutions)
+            resOptions.Add(res.width + " x " + res.height);
+        
+        resolutionDropdown.AddOptions(resOptions);
     }
     #endregion
     // Persistant options
@@ -342,6 +371,8 @@ public class SettingsMenu : MonoBehaviour
         SetPrefsFloat("masterVolumeSlider", masterVolumeSlider.value);
         SetPrefsInt("sensitivitySliderX", (int)sensitivitySliderX.value);
         SetPrefsInt("sensitivitySliderY", (int)sensitivitySliderY.value);
+        SetPrefsInt("refreshRate", refreshRateDropdown.value);
+        SetPrefsInt("resolution", resolutionDropdown.value);
         SetPrefsFloat("fovSlider", fovSlider.value);
         SetPrefsFloat("gammaSlider", gammaSlider.value);
         SetPrefsFloat("bloomSlider", bloomSlider.value);
@@ -366,6 +397,8 @@ public class SettingsMenu : MonoBehaviour
         SetSensitivityY(GetPrefs("sensitivitySliderY", 40));
         SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
         SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
+        SetRefreshRate(GetPrefs("refreshRate", 0));
+        SetResolution(GetPrefs("resolution", 0));
         SetFOV(GetPrefsFloat("fovSlider", 112f));
         SetGamma(GetPrefsFloat("gammaSlider", 0f));
         SetBloom(GetPrefsFloat("bloomSlider", 0f));
