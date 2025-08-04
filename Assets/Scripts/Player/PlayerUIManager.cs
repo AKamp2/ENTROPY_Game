@@ -11,6 +11,8 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private ZeroGravity player;
     [SerializeField]
+    private TutorialManager tutorialManager;
+    [SerializeField]
     private Rigidbody rb;
     [SerializeField]
     private PickupScript pickupScript;
@@ -186,7 +188,7 @@ public class PlayerUIManager : MonoBehaviour
     void Update()
     {
         HandleHealthUI();
-        if (!player.IsGrabbing)
+        if (!player.IsGrabbing && !tutorialManager.inTutorial)
         {
             //search for bars and other stuff in the raycast
             HandleRaycastUI();
