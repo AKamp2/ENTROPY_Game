@@ -77,6 +77,8 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private Sprite dangerIndicator;
     [SerializeField]
+    private Sprite midDangerIndicator;
+    [SerializeField]
     private Sprite highDangerIndicator;
 
     [SerializeField]
@@ -801,7 +803,7 @@ public class PlayerUIManager : MonoBehaviour
                 healthIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                 break;
             case 2:
-                healthIndicator.sprite = dangerIndicator;
+                healthIndicator.sprite = midDangerIndicator;
                 healthIndicator.color = Color.white;
                 break;
             case 1:

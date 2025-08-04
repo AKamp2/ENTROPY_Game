@@ -19,10 +19,13 @@ public class BodyScareEvent : MonoBehaviour
 
     public GameplayBeatAudio audioManager;
 
+    private AmbientController ambientController;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         dialogueManager = FindFirstObjectByType<DialogueManager>();
+        ambientController = FindFirstObjectByType<AmbientController>();
     }
 
     // Update is called once per frame
@@ -53,8 +56,14 @@ public class BodyScareEvent : MonoBehaviour
             door.SetState(DoorScript.States.Closed);
         }
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(3.5f);
 
         dialogueManager.StartDialogueSequence(8, 0f);
+
+        yield return new WaitForSeconds(5f);
+
+        ambientController.Progress();
+
+
     }
 }

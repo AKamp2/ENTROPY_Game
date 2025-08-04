@@ -103,9 +103,15 @@ public class TutorialManager : MonoBehaviour
 
         if (isWaitingForAction)
         {
+            if (currentStep == 1 && playerController.IsGrabbing)
+            {
+                stepComplete = true;
+                FadeOut(grabCanvasGroup);
+                CompleteStep();
+            }
             //Debug.Log("Waiting for step " + currentStep);
             //Debug.Log("Current step complete: " + stepComplete);
-            if (currentStep == 1)
+            else if (currentStep == 2)
             {
                 
                 float currentZ = playerController.cam.transform.eulerAngles.z;
@@ -133,7 +139,7 @@ public class TutorialManager : MonoBehaviour
                     }
                 }
             }
-            else if (currentStep == 2)
+            else if (currentStep == 3)
             {
                 float currentZ = playerController.cam.transform.eulerAngles.z;
 
@@ -150,12 +156,7 @@ public class TutorialManager : MonoBehaviour
                     CompleteStep();
                 }
             }
-            else if (currentStep == 3 && playerController.IsGrabbing)
-            {
-                stepComplete = true;
-                FadeOut(grabCanvasGroup);
-                CompleteStep();
-            }
+            
             else if (currentStep == 4 && playerController.HasPropelled)
             {
                 //Debug.Log("Detected player propel");
@@ -193,32 +194,37 @@ public class TutorialManager : MonoBehaviour
         switch (currentStep)
         {
             case 1:
-                // Step 1: Roll 180 degrees upside down
-                //Debug.Log("Tutorial 1: Roll upside down");
+                // Step 1: Grab a bar
+                //Debug.Log("Tutorial 1: Grab bar");
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(false, false, false, true, false); // Only allow roll
+                SetPlayerAbilities(true, false, false, false, false); // Only allow roll
+                FadeIn(grabCanvasGroup);
+
+                break;
+
+            case 2:
+                // Step 2: Roll 180 degrees upside down
+                //Debug.Log("Tutorial 2: Roll upside down");
+                
+                stepComplete = false;
+                isWaitingForAction = true;
+                SetPlayerAbilities(true, false, false, true, false); // grab and roll only
                 initialRollZ = playerController.cam.transform.eulerAngles.z;
                 FadeIn(rollQCanvasGroup);
                 
                 break;
 
-            case 2:
-                // Step 2: Roll back upright
-                //Debug.Log("Tutorial 2: Roll upright");
-                stepComplete = false;
-                isWaitingForAction = true;
-                SetPlayerAbilities(false, false, false, true, false); // Still only roll
-                FadeIn(rollECanvasGroup);
-                break;
-
             case 3:
-                // Step 3: Grab a bar
-                //Debug.Log("Tutorial 3: Grab bar");
+                // Step 3: Roll back upright
+                //Debug.Log("Tutorial 3: Roll upright");
+                
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(true, false, true, true, false); //grab, push off, roll
-                FadeIn(grabCanvasGroup);
+                SetPlayerAbilities(true, false, false, true, false); //grab, push off, roll
+                initialRollZ = playerController.cam.transform.eulerAngles.z;
+                FadeIn(rollECanvasGroup);
+                
                 break;
 
             case 4:

@@ -10,6 +10,7 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioSource[] lockdownSources;
     public AudioSource buttonSource;
     public AudioSource ventSource;
+    public AudioSource grateSource;
 
     [Header("SFX Clips")]
     public AudioClip bodyFoundStinger;
@@ -18,6 +19,8 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioClip takeItem;
     public AudioClip serverHum;
     public AudioClip buttonPress;
+    public AudioClip alienRunAway;
+    public AudioClip moveGrate;
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentalGroup;
@@ -92,6 +95,18 @@ public class GameplayBeatAudio : MonoBehaviour
     public void PlayButtonClick()
     {
         buttonSource.PlayOneShot(buttonPress);
+    }
+
+    public void playAlienRunAway()
+    {
+        ventSource.clip = alienRunAway;
+        ventSource.Play();
+    }
+
+    public void PlayMoveGrate()
+    {
+        grateSource.clip = moveGrate;
+        grateSource.Play();
     }
 
     public IEnumerator Fade(AudioSource source, float timeBeforeFade, float fadeDuration, bool fadeIn, float originalVolume)

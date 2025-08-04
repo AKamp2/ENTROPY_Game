@@ -34,8 +34,6 @@ public class LockdownEvent : MonoBehaviour
     private DoorScript brokenDoor;
     [SerializeField]
     private DoorScript bodyDoor;
-    [SerializeField]
-    private Rigidbody deadBody;
 
     private DialogueManager dialogueManager;
 
@@ -75,6 +73,12 @@ public class LockdownEvent : MonoBehaviour
 
     private float powerDownElapsedTime = 0f;
     private float glitchElapsedTime = 0f;
+
+    [SerializeField]
+    private GameObject grateToMove;
+    [SerializeField]
+    private GameObject grateMoveLocation;
+
 
 
 
@@ -223,7 +227,6 @@ public class LockdownEvent : MonoBehaviour
             lever.GetComponent<Renderer>().material = leverMaterial;
 
             DoorTrigger.enabled = true;
-            MusicTrigger.enabled = true;
             isActive = false;
 
             // begin lighting and audio queues
@@ -261,6 +264,7 @@ public class LockdownEvent : MonoBehaviour
         
         //Lock the Entrance Door;
         StartCoroutine(LockServerEntrance());
+        MusicTrigger.enabled = true;
 
         foreach(HazardLight hazard in hazardsToDisable)
         {
@@ -274,7 +278,11 @@ public class LockdownEvent : MonoBehaviour
         audioManager.playPowerCut();
         poweringDown = true;
         
-        yield return new WaitForSeconds(8.5f);
+        yield return new WaitForSeconds(7f);
+
+        audioManager.playAlienRunAway();
+
+        yield return new WaitForSeconds(7f);
 
         audioManager.playPowerOn();
         glitchLights = true;
@@ -296,13 +304,15 @@ public class LockdownEvent : MonoBehaviour
 
         OpenDoors();
         audioManager.FadeServers(true);
+        ambientController.Progress();
+        
     }
 
     private IEnumerator LockServerEntrance()
     {
         brokenDoor.SetState(DoorScript.States.Closed);
         
-        yield return new WaitForSeconds(13f);
+        yield return new WaitForSeconds(19.5f);
 
         auxLightObj.GetComponent<Renderer>().material = leverMaterial;
         auxLight.color = endButtonColor;
@@ -339,6 +349,22 @@ public class LockdownEvent : MonoBehaviour
         }
 
         lightSource.intensity = targetIntensity;
+    }
+
+    private IEnumerator MoveDoor(Vector3 fromPos, Vector3 toPos, float duration, System.Action onComplete)
+    {
+        audioManager.PlayMoveGrate();
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            float t = 0.5f * Mathf.Sin((elapsed / duration) * Mathf.PI - Mathf.PI / 2f) + 0.5f;
+            grateToMove.transform.position = Vector3.Lerp(fromPos, toPos, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        grateToMove.transform.position = toPos;
+        onComplete?.Invoke();
     }
 
 }
