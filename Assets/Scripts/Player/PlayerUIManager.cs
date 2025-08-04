@@ -430,32 +430,38 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
         {
-            lockdownEvent.CanPull = true;
-            grabUIText.text = "Deactivate manual lockdown";
-            inputIndicator.sprite = keyFIndicator;
-            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+            Debug.Log("lockdown lever hit by raycast");
+            if (lockdownEvent.IsActive)
+            {
+                lockdownEvent.CanPull = true;
+                grabUIText.text = "Deactivate manual lockdown";
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+            }
+            else if (!lockdownEvent.IsActive)
+            {
+                lockdownEvent.CanPull = false;
+                HideInteractables();
+            }
         }
-        else if (lockdownEvent && !lockdownEvent.IsActive)
+        else if (hit.Value.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
         {
-            lockdownEvent.CanPull = false;
-            grabUIText.text = null;
-            inputIndicator.sprite = null;
-            inputIndicator.color = new Color(0f, 0f, 0f, 0f);
+            if (lockdownEvent.IsGrabbable)
+            {
+                lockdownEvent.CanGrab = true;
+                grabUIText.text = "Take wrist monitor";
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+            }
+            else if(!lockdownEvent.IsGrabbable)
+            {
+                lockdownEvent.CanGrab = false;
+                HideInteractables();
+            }
         }
-
-        if (hit.Value.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
+        else
         {
-            lockdownEvent.CanGrab = true;
-            grabUIText.text = "Take wrist monitor";
-            inputIndicator.sprite = keyFIndicator;
-            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
-        }
-        else if (lockdownEvent && !lockdownEvent.IsGrabbable)
-        {
-            lockdownEvent.CanGrab = false;
-            grabUIText.text = null;
-            inputIndicator.sprite = null;
-            inputIndicator.color = new Color(0f, 0f, 0f, 0f);
+            HideInteractables();
         }
     }
 
