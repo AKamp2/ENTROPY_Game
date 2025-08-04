@@ -11,8 +11,6 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private ZeroGravity player;
     [SerializeField]
-    private TutorialManager tutorialManager;
-    [SerializeField]
     private Rigidbody rb;
     [SerializeField]
     private PickupScript pickupScript;
@@ -190,8 +188,6 @@ public class PlayerUIManager : MonoBehaviour
         HandleHealthUI();
         if (!player.IsGrabbing)
         {
-            //search for bars and other stuff in the raycast
-            HandleRaycastUI();
             //if there are no bars in the raycast 
             if (!BarInRaycast)
             {
@@ -205,6 +201,8 @@ public class PlayerUIManager : MonoBehaviour
                 HideGrabber();
             }
         }
+        //search for bars and other stuff in the raycast
+        HandleRaycastUI();
         grabberRectTransform = grabber.GetComponent<RectTransform>();
     }
 
@@ -242,7 +240,7 @@ public class PlayerUIManager : MonoBehaviour
                 string tag = null;
 
                 // if raycast hits a bar
-                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     //if the ray hits a grabbable object
@@ -286,7 +284,7 @@ public class PlayerUIManager : MonoBehaviour
                         }
                     }
                 }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer))
+                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     if (tag == "Barrier")
@@ -337,7 +335,7 @@ public class PlayerUIManager : MonoBehaviour
             HideInteractables();
         }
 
-        if (barHit != null && player.CanGrab)
+        if (barHit != null && player.CanGrab && !player.IsGrabbing)
         {
             //Debug.Log("bar hit: " + barHit);
             RayCastHandleGrab(barHit);
@@ -348,7 +346,7 @@ public class PlayerUIManager : MonoBehaviour
             barInRaycast = false;
         }
 
-        if (wallHit != null && !barInPeripheral && !barInRaycast && player.CanPushOff)
+        if (wallHit != null && !barInPeripheral && !barInRaycast && player.CanPushOff && !player.IsGrabbing)
         {
             RayCastHandlePushOffWall(wallHit);
             return;
@@ -437,9 +435,12 @@ public class PlayerUIManager : MonoBehaviour
             inputIndicator.sprite = keyFIndicator;
             inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
         }
-        else if (lockdownEvent)
+        else if (lockdownEvent && !lockdownEvent.IsActive)
         {
             lockdownEvent.CanPull = false;
+            grabUIText.text = null;
+            inputIndicator.sprite = null;
+            inputIndicator.color = new Color(0f, 0f, 0f, 0f);
         }
 
         if (hit.Value.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
@@ -449,9 +450,12 @@ public class PlayerUIManager : MonoBehaviour
             inputIndicator.sprite = keyFIndicator;
             inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
         }
-        else if (lockdownEvent)
+        else if (lockdownEvent && !lockdownEvent.IsGrabbable)
         {
             lockdownEvent.CanGrab = false;
+            grabUIText.text = null;
+            inputIndicator.sprite = null;
+            inputIndicator.color = new Color(0f, 0f, 0f, 0f);
         }
     }
 

@@ -400,52 +400,59 @@ public class ZeroGravity : MonoBehaviour
     {
         if (canMove)
         {
-            if (tutorialMode)
+            //handle grabber icon logic
+            if (canGrab)
             {
-                //handle grabber icon logic
-                if (canGrab)
-                {
- 
-                    //handle the grab movement
-                    if (isGrabbing)
-                    {
-                        HandleGrabMovement(grabbedBar);
-                    }
-                    else if (!isGrabbing)
-                    {
-                        uiManager.UpdateGrabberPosition(potentialGrabbedBar);
-                    }
-                    //set the sprite for input indicator to the wasd indicator
-                    if (canPropel)
-                    {
-                        //uiManager.InputIndicator.sprite = uiManager.WASDIndicator;
-                        //uiManager.InputIndicator.color = new Color(256, 256, 256, 0.5f);
-                    }
 
-                }
-            }
-            else if (!tutorialMode)
-            {
-                //Debug.Log("Tutorial Mode off");
-                //handle grabber icon logic
-                if (canGrab)
+                //handle the grab movement
+                if (isGrabbing)
                 {
-                    //handle the grab movement
-                    //if (useIK)
-                    //{
-                    //    AdjustBarGrabbers();
-                    //}
-                    //handle the grab movement
-                    if (isGrabbing)
-                    {
-                        HandleGrabMovement(grabbedBar);
-                    }
-                    else if (!isGrabbing)
-                    {
-                        uiManager.UpdateGrabberPosition(potentialGrabbedBar);
-                    }
+                    HandleGrabMovement(grabbedBar);
+                }
+                else if (!isGrabbing)
+                {
+                    uiManager.UpdateGrabberPosition(potentialGrabbedBar);
                 }
             }
+            //if (tutorialMode)
+            //{
+            //    //handle grabber icon logic
+            //    if (canGrab)
+            //    {
+
+            //        //handle the grab movement
+            //        if (isGrabbing)
+            //        {
+            //            HandleGrabMovement(grabbedBar);
+            //        }
+            //        else if (!isGrabbing)
+            //        {
+            //            uiManager.UpdateGrabberPosition(potentialGrabbedBar);
+            //        }
+            //    }
+            //}
+            //else if (!tutorialMode)
+            //{
+            //    //Debug.Log("Tutorial Mode off");
+            //    //handle grabber icon logic
+            //    if (canGrab)
+            //    {
+            //        //handle the grab movement
+            //        //if (useIK)
+            //        //{
+            //        //    AdjustBarGrabbers();
+            //        //}
+            //        //handle the grab movement
+            //        if (isGrabbing)
+            //        {
+            //            HandleGrabMovement(grabbedBar);
+            //        }
+            //        else if (!isGrabbing)
+            //        {
+            //            uiManager.UpdateGrabberPosition(potentialGrabbedBar);
+            //        }
+            //    }
+            //}
             //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
             //take damage from door closing on the player
