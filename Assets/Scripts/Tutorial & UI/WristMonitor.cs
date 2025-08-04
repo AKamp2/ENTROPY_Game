@@ -1,9 +1,11 @@
 using NUnit.Framework;
-using System.Collections.Generic;
+using System.Collections;
+using System.Xml;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class WristMonitor : MonoBehaviour
 {
@@ -22,6 +24,9 @@ public class WristMonitor : MonoBehaviour
     Vector3 startPosition;
     public float duration;
     Vector3 currentPosition;
+
+    [SerializeField] ObjectiveUpdate objectiveUpdator;
+
 
     /// <summary>
     /// Public class used to display vital information to the player of how they must proceed
@@ -129,6 +134,8 @@ public class WristMonitor : MonoBehaviour
         {
             mainObjectives[0].IsCompleted = true;
             CheckObjectives();
+            objectiveUpdator.TextFade();
+
             //Debug.Log(mainObjectives[0].ObjectiveDescription);
         }
     }
@@ -144,4 +151,7 @@ public class WristMonitor : MonoBehaviour
             mainObjectives.Remove(mainObjectives[0]);
         }
     }
+
+    
 }
+
