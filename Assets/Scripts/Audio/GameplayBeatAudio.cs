@@ -19,9 +19,9 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioClip serverHum;
     public AudioClip buttonPress;
 
-    [Header("Audio Mixer Groups")]
-    public AudioMixerGroup environmentalGroup;
-    public AudioMixerGroup ambienceGroup;
+    //[Header("Audio Mixer Groups")]
+    //public AudioMixerGroup environmentalGroup;
+    //public AudioMixerGroup ambienceGroup;
 
     private float serverVolume;
 
@@ -29,17 +29,17 @@ public class GameplayBeatAudio : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        foreach(AudioSource source in lockdownSources)
-        {
-            source.outputAudioMixerGroup = environmentalGroup;
-        }
+        //foreach(AudioSource source in lockdownSources)
+        //{
+        //    source.outputAudioMixerGroup = environmentalGroup;
+        //}
 
-        foreach (AudioSource source in serverSources)
-        {
-            source.outputAudioMixerGroup = environmentalGroup;
-        }
-        buttonSource.outputAudioMixerGroup = environmentalGroup;
-        bodyStingerSource.outputAudioMixerGroup = ambienceGroup;
+        //foreach (AudioSource source in serverSources)
+        //{
+        //    source.outputAudioMixerGroup = environmentalGroup;
+        //}
+        //buttonSource.outputAudioMixerGroup = environmentalGroup;
+        //bodyStingerSource.outputAudioMixerGroup = ambienceGroup;
 
         if(serverSources[0] != null)
         {

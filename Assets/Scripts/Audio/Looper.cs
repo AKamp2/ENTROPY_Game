@@ -12,7 +12,7 @@ public class Looper : MonoBehaviour
     private int sourceIndex = 0;
     private AudioSource[] audioSources = new AudioSource[2];
     // private double endTime = 0.0f;
-    private float normalVolume = 0.05f;
+    private float normalVolume = 1f;
     private string currentClip = "none";
 
     public const double shortFadeDuration = 0.5f;

@@ -179,11 +179,11 @@ AudioSource:
   m_GameObject: {fileID: 298852124103791595}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 1322416197769002415, guid: 720f457489e44c440b5082c1b507453e, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.35
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5566,6 +5566,7 @@ MonoBehaviour:
   audio: {fileID: 4602460787527176794}
   sparkSFX: {fileID: 8300000, guid: f8f18c0a458e37f429c26cd1b7c2333d, type: 3}
   enabled: 1
+  lightSource: {fileID: 0}
   minBurstDelay: 1
   maxBurstDelay: 3
 --- !u!1 &1663342638606284920
@@ -6710,11 +6711,11 @@ AudioSource:
   m_GameObject: {fileID: 5761226707705160164}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -7301664318749973321, guid: 720f457489e44c440b5082c1b507453e, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.35
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -7132,6 +7133,8 @@ MonoBehaviour:
   brokenCloseDuration: 1
   brokenDoorPause: 2
   openSize: 2
+  crackedReference: {fileID: 0}
+  bodyOpenReference: {fileID: 0}
   isClosing: 0
   buttons: []
   doorPart: {fileID: 0}
@@ -7146,6 +7149,7 @@ MonoBehaviour:
   sparks:
   - {fileID: 8270764465314267869}
   - {fileID: 59860943983749883}
+  showingBody: 0
   doorOpenStart: {fileID: 8300000, guid: 615630bfdccfdc9449212e75e74069df, type: 3}
   doorOpenMiddle: {fileID: 8300000, guid: 74248a5a6ec944f42b0acf9ca3410f3a, type: 3}
   doorOpenEnd: {fileID: 8300000, guid: 2366cc46e1ff41a44a989bd425d611da, type: 3}
@@ -7155,6 +7159,9 @@ MonoBehaviour:
   doorBrokenStart: {fileID: 8300000, guid: fc9c0008fa7c13a44acec63d6dfc27cb, type: 3}
   doorBrokenEnd: {fileID: 8300000, guid: 8ffd135ad9766e0479604f700dc563f0, type: 3}
   doorBrokenSlam: {fileID: 8300000, guid: 78080de3bbbd75649af46d2883324321, type: 3}
+  doorBrokenSlamShort: {fileID: 0}
+  doorBrokenJolt: {fileID: 0}
+  doorStuck: {fileID: 0}
   doorAlarm: {fileID: 8300000, guid: f3dc9842c809a7041bf891e019cb2f41, type: 3}
 --- !u!1 &7787987687636511970
 GameObject:
@@ -7421,11 +7428,11 @@ AudioSource:
   m_GameObject: {fileID: 8498129991510564566}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3625337712062068325, guid: 720f457489e44c440b5082c1b507453e, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.35
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -12431,6 +12438,7 @@ MonoBehaviour:
   audio: {fileID: 442598193069091570}
   sparkSFX: {fileID: 8300000, guid: f8f18c0a458e37f429c26cd1b7c2333d, type: 3}
   enabled: 1
+  lightSource: {fileID: 0}
   minBurstDelay: 1
   maxBurstDelay: 3
 --- !u!1 &9131770888971754110
