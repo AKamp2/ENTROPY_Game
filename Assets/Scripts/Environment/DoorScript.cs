@@ -59,11 +59,15 @@ public class DoorScript : MonoBehaviour
     //private float sinTime = 0.0f;
     private Vector3 openPos;
     private Vector3 closedPos;
-    private Vector3 crackedPos;
+    private Vector3 shortPos;
+    private Vector3 midPos;
     private Vector3 bodyPos;
 
+    
     [SerializeField]
-    private GameObject crackedReference;
+    private GameObject shortReference;
+    [SerializeField]
+    private GameObject midReference;
     [SerializeField]
     private GameObject bodyOpenReference;
 
@@ -229,9 +233,14 @@ public class DoorScript : MonoBehaviour
             
         }
 
-        if(crackedReference != null)
+        if(midReference != null)
         {
-            crackedPos = crackedReference.transform.position;
+            midPos = midReference.transform.position;
+        }
+
+        if (shortReference != null)
+        {
+            shortPos = shortReference.transform.position;
         }
 
         if (bodyOpenReference != null)
@@ -370,6 +379,8 @@ public class DoorScript : MonoBehaviour
     {
         while (states == States.BrokenShort)
         {
+            yield return new WaitForSeconds(brokenDoorPause);
+
             float waitTime = UnityEngine.Random.Range(0.2f, 0.4f);
             
             // Play opening start sound
@@ -377,7 +388,7 @@ public class DoorScript : MonoBehaviour
             startAudioSource.Play();
 
             // Wait for door to fully open
-            yield return MoveDoor(closedPos, crackedPos, 0.4f, null);
+            yield return MoveDoor(closedPos, midPos, 0.4f, null);
 
             StartCoroutine(FadeOutAndStop(startAudioSource, 0.1f));
 
@@ -390,9 +401,9 @@ public class DoorScript : MonoBehaviour
 
             isClosing = true;
             // Wait for door to fully close
-            yield return MoveDoor(crackedPos, closedPos, 0.2f, () => isClosing = false);
+            yield return MoveDoor(midPos, closedPos, 0.2f, () => isClosing = false);
 
-            yield return new WaitForSeconds(brokenDoorPause);
+            
         }
 
         isShortBreakOver = true;
@@ -405,7 +416,7 @@ public class DoorScript : MonoBehaviour
         endAudioSource.clip = doorStuck;
         endAudioSource.Play();
 
-        yield return MoveDoor(closedPos, crackedPos, 1.4f, null);
+        yield return MoveDoor(closedPos, shortPos, 1.4f, null);
 
         //yield return new WaitForSeconds(0.2f);
 
@@ -446,7 +457,7 @@ public class DoorScript : MonoBehaviour
 
             if (state == States.Open)
             {
-                Debug.Log("This part of the script is happening");
+                //Debug.Log("This part of the script is happening");
                 //open the door if it wasn't already opening
                 if (previousState != States.Open && previousState != States.Opening)
                 {
@@ -505,7 +516,7 @@ public class DoorScript : MonoBehaviour
         // Only open door if the first dialogue sequence is completed
         if (sequenceIndex == 0)
         {
-            Debug.Log($"Dialogue {sequenceIndex} completed, door can be opened.");
+            //Debug.Log($"Dialogue {sequenceIndex} completed, door can be opened.");
             dialogueComplete = true;
         }
     }

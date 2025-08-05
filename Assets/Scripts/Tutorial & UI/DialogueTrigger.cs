@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class DialogueTrigger : MonoBehaviour
@@ -10,6 +11,7 @@ public class DialogueTrigger : MonoBehaviour
     private Collider player;
     [SerializeField]
     WristMonitor monitor;
+    public bool updateWristMonitor = true;
 
     [SerializeField]
     int index;
@@ -33,10 +35,21 @@ public class DialogueTrigger : MonoBehaviour
             Debug.Log("player collided");
             //ensure it only happens
             this.GetComponent<Collider>().enabled = false;
-            //sart the dialogue
-            manager.StartDialogueSequence(index, delay);
-            //update wrist monitor objective
+
+            StartCoroutine(StartDialogue());
+        }
+    }
+
+    private IEnumerator StartDialogue()
+    {
+        //start dialogue when it's not talking
+        yield return new WaitUntil(() => manager.IsDialogueSpeaking == false);
+        manager.StartDialogueSequence(index, delay);
+        //update wrist monitor objective
+        if(updateWristMonitor)
+        {
             monitor.CompleteObjective();
         }
+        
     }
 }

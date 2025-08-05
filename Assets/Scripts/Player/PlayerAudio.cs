@@ -5,6 +5,7 @@ public class PlayerAudio : MonoBehaviour
 {
     [Header("Audio Source Prefab")]
     public GameObject audioSourcePrefab; // Must have AudioSource component
+    public AudioSource playerAudioSource;
 
     [Header("Audio Parent (for organizing instances)")]
     public Transform audioContainer;
@@ -13,6 +14,7 @@ public class PlayerAudio : MonoBehaviour
     public AudioClip softBounce;
     public AudioClip hardBounce;
     public AudioClip fatalBounce;
+    public AudioClip useStim;
 
     public AudioMixerGroup playerGroup;
 
@@ -29,6 +31,12 @@ public class PlayerAudio : MonoBehaviour
     public void PlayFatalBounce(Vector3 position)
     {
         PlayBounceSoundAtPosition(fatalBounce, position, 1f);
+    }
+
+    public void PlayUseStim()
+    {
+        playerAudioSource.clip = useStim;
+        playerAudioSource.Play();
     }
 
     private void PlayBounceSoundAtPosition(AudioClip clip, Vector3 position, float volume)

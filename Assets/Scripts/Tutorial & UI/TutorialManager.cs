@@ -51,6 +51,7 @@ public class TutorialManager : MonoBehaviour
 
     public DialogueAudio dialogueAudio;
     public AmbientController ambientController;
+    private WristMonitor wristMonitor;
 
     // rolling threshold (in degrees) beyond which we consider �upside down�
     [SerializeField] private float rollAngleThreshold = 150f;
@@ -70,6 +71,7 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
+        wristMonitor = FindFirstObjectByType<WristMonitor>();
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
         pickupObject = ZeroGPlayer.GetComponent<PickupScript>();
 
@@ -103,18 +105,25 @@ public class TutorialManager : MonoBehaviour
 
         if (isWaitingForAction)
         {
+            if (currentStep == 1 && playerController.IsGrabbing)
+            {
+                stepComplete = true;
+                FadeOut(grabCanvasGroup);
+                CompleteStep();
+            }
             //Debug.Log("Waiting for step " + currentStep);
             //Debug.Log("Current step complete: " + stepComplete);
-            if (currentStep == 1)
+            else if (currentStep == 2)
             {
-                
+
                 float currentZ = playerController.cam.transform.eulerAngles.z;
                 //Debug.Log(currentZ);
 
                 // Compute delta roll from initial orientation
                 float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
-                bool isUpsideDown = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
+                bool isUpsideDownLook = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
+                bool isUpsideDown = playerController.TotalRotation <= -350;
 
                 if (isUpsideDown && playerController.HasRolled)
                 {
@@ -123,8 +132,9 @@ public class TutorialManager : MonoBehaviour
                     stepComplete = true;
                     FadeOut(rollQCanvasGroup);
                     CompleteStep();
+                    playerController.TotalRotation = 0;
                 }
-                else if (isUpsideDown && !playerController.HasRolled)
+                else if (isUpsideDownLook && !playerController.HasRolled)
                 {
                     if (!hasPlayedRollFailure)
                     {
@@ -133,13 +143,14 @@ public class TutorialManager : MonoBehaviour
                     }
                 }
             }
-            else if (currentStep == 2)
+            else if (currentStep == 3)
             {
-                float currentZ = playerController.cam.transform.eulerAngles.z;
+                //float currentZ = playerController.cam.transform.eulerAngles.z;
 
-                float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
+                //float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
-                bool isUpright = Mathf.Abs(delta) <= 10f; // close to original orientation
+                //bool isUpright = Mathf.Abs(delta) <= 10f; // close to original orientation
+                bool isUpright = playerController.TotalRotation >= 350;
 
                 if (isUpright)
                 {
@@ -148,14 +159,10 @@ public class TutorialManager : MonoBehaviour
                     stepComplete = true;
                     FadeOut(rollECanvasGroup);
                     CompleteStep();
+                    playerController.TotalRotation = 0;
                 }
             }
-            else if (currentStep == 3 && playerController.IsGrabbing)
-            {
-                stepComplete = true;
-                FadeOut(grabCanvasGroup);
-                CompleteStep();
-            }
+            
             else if (currentStep == 4 && playerController.HasPropelled)
             {
                 //Debug.Log("Detected player propel");
@@ -193,32 +200,37 @@ public class TutorialManager : MonoBehaviour
         switch (currentStep)
         {
             case 1:
-                // Step 1: Roll 180 degrees upside down
-                //Debug.Log("Tutorial 1: Roll upside down");
+                // Step 1: Grab a bar
+                //Debug.Log("Tutorial 1: Grab bar");
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(false, false, false, true, false); // Only allow roll
+                SetPlayerAbilities(true, false, false, false, false); // Only allow roll
+                FadeIn(grabCanvasGroup);
+
+                break;
+
+            case 2:
+                // Step 2: Roll 180 degrees upside down
+                //Debug.Log("Tutorial 2: Roll upside down");
+                
+                stepComplete = false;
+                isWaitingForAction = true;
+                SetPlayerAbilities(true, false, false, true, false); // grab and roll only
                 initialRollZ = playerController.cam.transform.eulerAngles.z;
                 FadeIn(rollQCanvasGroup);
                 
                 break;
 
-            case 2:
-                // Step 2: Roll back upright
-                //Debug.Log("Tutorial 2: Roll upright");
-                stepComplete = false;
-                isWaitingForAction = true;
-                SetPlayerAbilities(false, false, false, true, false); // Still only roll
-                FadeIn(rollECanvasGroup);
-                break;
-
             case 3:
-                // Step 3: Grab a bar
-                //Debug.Log("Tutorial 3: Grab bar");
+                // Step 3: Roll back upright
+                //Debug.Log("Tutorial 3: Roll upright");
+                
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(true, false, true, true, false); //grab, push off, roll
-                FadeIn(grabCanvasGroup);
+                SetPlayerAbilities(true, false, false, true, false); //grab, push off, roll
+                initialRollZ = playerController.cam.transform.eulerAngles.z;
+                FadeIn(rollECanvasGroup);
+                
                 break;
 
             case 4:
@@ -230,9 +242,6 @@ public class TutorialManager : MonoBehaviour
                 FadeIn(propelCanvasGroup);
                 break;
             case 5:
-                //Debug.Log("Tutorial 5: Wait for exposition");
-                break;
-            case 6:
                 //Debug.Log("Tutorial Complete");
                 EndTutorial();
                 break;
@@ -325,8 +334,10 @@ public class TutorialManager : MonoBehaviour
         //remove all tutorial panels
         HideAllPanels();
         ambientController.Progress();
-
+        wristMonitor.CompleteObjective();
         currentStep = 5;
+
+        dialogueManager.StartDialogueSequence(1, 0.2f);
     }
 
     //checks to see if the tutorial step is complete

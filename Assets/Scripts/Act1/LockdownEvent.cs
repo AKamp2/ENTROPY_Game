@@ -14,6 +14,8 @@ public class LockdownEvent : MonoBehaviour
     private BoxCollider DoorTrigger;
     [SerializeField]
     private BoxCollider MusicTrigger;
+    [SerializeField]
+    private BoxCollider cuttingOutTrigger;
 
     [SerializeField]
     private GameObject lever;
@@ -32,10 +34,8 @@ public class LockdownEvent : MonoBehaviour
     private DoorScript brokenDoor;
     [SerializeField]
     private DoorScript bodyDoor;
-    [SerializeField]
-    private Rigidbody deadBody;
 
-    public DialogueManager dialogueManager;
+    private DialogueManager dialogueManager;
 
     public HazardLight[] hazardsToDisable;
     public AmbientController ambientController;
@@ -74,6 +74,15 @@ public class LockdownEvent : MonoBehaviour
     private float powerDownElapsedTime = 0f;
     private float glitchElapsedTime = 0f;
 
+    [SerializeField]
+    private GameObject grateToMove;
+    [SerializeField]
+    private GameObject grateMoveLocation;
+
+    [SerializeField]
+    private CanvasGroup wristMonitorTutorial;
+
+
 
 
     public bool CanPull
@@ -105,7 +114,8 @@ public class LockdownEvent : MonoBehaviour
         player = playerObject.GetComponent<ZeroGravity>();
 
         DoorTrigger.enabled = false;
-        MusicTrigger.enabled = false;
+        //MusicTrigger.enabled = false;
+        cuttingOutTrigger.enabled = false;
         // checks if player is currently hovering over lever
         canPull = false;
         // checks if system is able to be turned on
@@ -113,6 +123,8 @@ public class LockdownEvent : MonoBehaviour
 
         canGrab = false;
         isGrabbable = true;
+
+        dialogueManager = FindFirstObjectByType<DialogueManager>();
 
     }
 
@@ -218,7 +230,6 @@ public class LockdownEvent : MonoBehaviour
             lever.GetComponent<Renderer>().material = leverMaterial;
 
             DoorTrigger.enabled = true;
-            MusicTrigger.enabled = true;
             isActive = false;
 
             // begin lighting and audio queues
@@ -236,9 +247,17 @@ public class LockdownEvent : MonoBehaviour
 
             wrist.SetActive(false);
 
+            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 0f, 1f));
+
             medDoor.SetState(DoorScript.States.Closed);
 
             ambientController.Progress();
+
+            dialogueManager.StartDialogueSequence(6, 1f);
+
+            cuttingOutTrigger.enabled = true;
+
+            
 
         }
     }
@@ -250,6 +269,7 @@ public class LockdownEvent : MonoBehaviour
         
         //Lock the Entrance Door;
         StartCoroutine(LockServerEntrance());
+        MusicTrigger.enabled = true;
 
         foreach(HazardLight hazard in hazardsToDisable)
         {
@@ -263,7 +283,11 @@ public class LockdownEvent : MonoBehaviour
         audioManager.playPowerCut();
         poweringDown = true;
         
-        yield return new WaitForSeconds(8.5f);
+        yield return new WaitForSeconds(7f);
+
+        audioManager.playAlienRunAway();
+
+        yield return new WaitForSeconds(7f);
 
         audioManager.playPowerOn();
         glitchLights = true;
@@ -285,13 +309,15 @@ public class LockdownEvent : MonoBehaviour
 
         OpenDoors();
         audioManager.FadeServers(true);
+        ambientController.Progress();
+        
     }
 
     private IEnumerator LockServerEntrance()
     {
         brokenDoor.SetState(DoorScript.States.Closed);
         
-        yield return new WaitForSeconds(13f);
+        yield return new WaitForSeconds(19.5f);
 
         auxLightObj.GetComponent<Renderer>().material = leverMaterial;
         auxLight.color = endButtonColor;
@@ -328,6 +354,44 @@ public class LockdownEvent : MonoBehaviour
         }
 
         lightSource.intensity = targetIntensity;
+    }
+
+    // Coroutine to fade the CanvasGroup over time
+    private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
+    {
+        float timeElapsed = 0f;
+        float fadeDuration = 1f;
+
+        while (timeElapsed < fadeDuration)
+        {
+            // Lerp alpha from start to end
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timeElapsed / fadeDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null; // Wait until the next frame
+        }
+
+        canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    public void FadeOutMonitorTutorial()
+    {
+        StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
+    }
+
+    private IEnumerator MoveDoor(Vector3 fromPos, Vector3 toPos, float duration, System.Action onComplete)
+    {
+        audioManager.PlayMoveGrate();
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            float t = 0.5f * Mathf.Sin((elapsed / duration) * Mathf.PI - Mathf.PI / 2f) + 0.5f;
+            grateToMove.transform.position = Vector3.Lerp(fromPos, toPos, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        grateToMove.transform.position = toPos;
+        onComplete?.Invoke();
     }
 
 }
