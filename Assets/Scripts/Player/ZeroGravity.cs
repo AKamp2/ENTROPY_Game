@@ -450,7 +450,7 @@ public class ZeroGravity : MonoBehaviour
     #endregion 
 
     #region Player Control Methods
-    private void PlayerCutsceneHandler(bool inCutScene)
+    private void PlayerCutSceneHandler(bool inCutScene)
     {
         if (inCutScene)
         {
