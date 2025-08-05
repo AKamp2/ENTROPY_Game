@@ -240,7 +240,7 @@ public class DialogueManager : MonoBehaviour
                     //consider this dialogue finished, remove from the queue count
                     numDialoguesQueued--;
                     //don't fade out if there's another dialogue queued
-                    if(numDialoguesQueued == 0)
+                    if(numDialoguesQueued <= 0)
                     {
                         FadeOut();
                     }
@@ -293,7 +293,7 @@ public class DialogueManager : MonoBehaviour
         isDialogueActive = false;
         OnDialogueEnd?.Invoke(currentSequenceIndex);
 
-        if(numDialoguesQueued == 0)
+        if(numDialoguesQueued <= 0)
         {
             FadeOut();
             yield return new WaitForSeconds(1f);

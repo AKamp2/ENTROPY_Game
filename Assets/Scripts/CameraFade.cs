@@ -5,6 +5,7 @@ public class CameraFade : MonoBehaviour
 {
     public CanvasGroup fadeCanvasGroup; // Reference to the UI panel with CanvasGroup
     public float defaultFadeDuration = 1.5f; // Default fade time (modifiable)
+    public bool startFadedOut = true;
 
     private void Start()
     {
@@ -14,8 +15,16 @@ public class CameraFade : MonoBehaviour
             return;
         }
 
-        fadeCanvasGroup.alpha = 1; // Start fully faded out
-        StartCoroutine(FadeIn(defaultFadeDuration)); // Automatically fade in
+        if(startFadedOut)
+        {
+            fadeCanvasGroup.alpha = 1; // Start fully faded out
+            StartCoroutine(FadeIn(defaultFadeDuration)); // Automatically fade in
+        }
+        else
+        {
+            fadeCanvasGroup.alpha = 0;
+        }
+        
     }
 
     public IEnumerator FadeIn(float duration)
