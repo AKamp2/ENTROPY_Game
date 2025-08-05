@@ -15,6 +15,7 @@ public class WristMonitor : MonoBehaviour
     [SerializeField] Slider healthSlider;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
     [SerializeField] GameObject wristMonitor;
+    [SerializeField] TextMeshProUGUI stimText;
     public List<Objective> mainObjectives = new List<Objective>();
     public List<Objective> completedObjectives = new List<Objective>();
     public RectTransform targetRectTransform;
@@ -26,6 +27,12 @@ public class WristMonitor : MonoBehaviour
     Vector3 currentPosition;
 
     [SerializeField] ObjectiveUpdate objectiveUpdator;
+
+    
+
+    private bool tutorialShowing = true;
+    [SerializeField]
+    private LockdownEvent lockdownScript;
 
 
     /// <summary>
@@ -63,6 +70,7 @@ public class WristMonitor : MonoBehaviour
         }
         startPosition = targetRectTransform.anchoredPosition3D;
         duration = 0f;
+        //this.enabled = false;
     }
 
 
@@ -77,6 +85,12 @@ public class WristMonitor : MonoBehaviour
             isActive = true;
             this.gameObject.SetActive(true);
             StartLerp();
+
+            if(tutorialShowing && lockdownScript != null)
+            {
+                tutorialShowing = false;
+                lockdownScript.FadeOutMonitorTutorial();
+            }
         }
         else if (context.canceled)
         {
@@ -152,6 +166,9 @@ public class WristMonitor : MonoBehaviour
         }
     }
 
-    
+    public void UpdateStims(int numStims)
+    {
+        stimText.text = numStims + "/3";
+    }
 }
 

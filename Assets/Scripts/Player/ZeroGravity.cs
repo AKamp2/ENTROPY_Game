@@ -44,6 +44,7 @@ public class ZeroGravity : MonoBehaviour
     private int numStims = 0;
     [SerializeField]
     private int maxNumStim = 3;
+    private bool usingStimCharge = false;
 
 
     private bool isDead = false;
@@ -222,6 +223,10 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private bool onlyRollOnGrab = false;
 
+    private bool hasUsedStim = false;
+
+    private float totalRotation;
+
     #region properties
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -300,6 +305,12 @@ public class ZeroGravity : MonoBehaviour
     {
         get { return hasRolled; }
         set { hasRolled = value; }
+    }
+
+    public float TotalRotation
+    {
+        get { return totalRotation; }
+        set { totalRotation = value; }
     }
 
     public int PlayerHealth { get { return playerHealth; } }
@@ -382,7 +393,7 @@ public class ZeroGravity : MonoBehaviour
         cam = Camera.main;
 
         //set the player health
-        playerHealth = maxHealth;
+        playerHealth = 3;
         //make sure there are no stims in teh plaeyr inventory
         numStims = 0;
 
@@ -562,6 +573,21 @@ public class ZeroGravity : MonoBehaviour
             {
                 cam.transform.Rotate(Vector3.forward, currentRollSpeed * Time.deltaTime);
             }
+            if (tutorialManager.inTutorial)
+            {
+                totalRotation += rotationZ;
+                if (totalRotation > 360)
+                {
+                    totalRotation = 0;
+                }
+                if (totalRotation < -360)
+                {
+                    totalRotation = 0;
+                }
+                //Debug.Log(totalRotation);
+            }
+            
+            
             
         }
     }
@@ -1266,8 +1292,12 @@ public class ZeroGravity : MonoBehaviour
     {
         if(playerHealth < 4 && numStims > 0)
         {
-            IncreaseHealth(2);
-            numStims--;
+            if (!usingStimCharge)
+            {
+                usingStimCharge = true;
+                StartCoroutine(UseStim());
+            }
+            
         }
     }
     /// <summary>
@@ -1457,7 +1487,15 @@ public class ZeroGravity : MonoBehaviour
         transform.position = targetLoc.transform.position;
         cam.transform.rotation = targetLoc.transform.rotation;
         isDead = false;
-        playerHealth = maxHealth;
+        if(hasUsedStim)
+        {
+            playerHealth = maxHealth;
+        }
+        else
+        {
+            playerHealth = 3;
+        }
+        
         
         //stop rolling
         rotationZ = 0;
@@ -1483,6 +1521,21 @@ public class ZeroGravity : MonoBehaviour
             rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
             rb.angularVelocity = Vector3.zero;
         }
+    }
+
+    private IEnumerator UseStim()
+    {
+        if(hasUsedStim == false)
+        {
+            hasUsedStim = true;
+        }
+
+        playerAudio.PlayUseStim();
+        yield return new WaitForSeconds(1.8f);
+        IncreaseHealth(2);
+        numStims--;
+        usingStimCharge = false;
+        
     }
 
     #endregion

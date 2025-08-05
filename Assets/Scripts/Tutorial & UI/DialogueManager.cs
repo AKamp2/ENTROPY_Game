@@ -52,6 +52,7 @@ public class DialogueManager : MonoBehaviour
     public AudioSource sfxSource;         // assign in inspector
     public AudioClip skipSfxClip;        
     public float skipPauseDuration = 0.3f;
+    public int numDialoguesQueued = 0;
 
     public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
     public bool IsDialogueSpeaking => isDialogueSpeaking; // Optional public getter if needed elsewhere
@@ -115,6 +116,7 @@ public class DialogueManager : MonoBehaviour
         if (sequenceIndex < dialogueSequences.Length)
         {
             pauseMainDialogue = false;
+            numDialoguesQueued++;
             StartCoroutine(DelayTime(delayTime, sequenceIndex));
         }
     }
@@ -235,7 +237,14 @@ public class DialogueManager : MonoBehaviour
 
                 if (currentDialogueIndex == currentSequence.dialogues.Length - 1)
                 {
-                    FadeOut();
+                    //consider this dialogue finished, remove from the queue count
+                    numDialoguesQueued--;
+                    //don't fade out if there's another dialogue queued
+                    if(numDialoguesQueued == 0)
+                    {
+                        FadeOut();
+                    }
+                    
                 }
 
                 yield return new WaitForSeconds(0.3f);
@@ -278,12 +287,19 @@ public class DialogueManager : MonoBehaviour
         }
 
         // End dialogue
+        numDialoguesQueued--;
         yield return new WaitForSeconds(5f);
-        FadeOut();
+        
         isDialogueActive = false;
         OnDialogueEnd?.Invoke(currentSequenceIndex);
-        yield return new WaitForSeconds(1f);
-        dialogueCanvas.enabled = false;
+
+        if(numDialoguesQueued == 0)
+        {
+            FadeOut();
+            yield return new WaitForSeconds(1f);
+            dialogueCanvas.enabled = false;
+        }
+        
     }
 
     public IEnumerator PlayFailureDialogue(int index)
@@ -491,6 +507,7 @@ public class DialogueManager : MonoBehaviour
         if (sfxSource && skipSfxClip)
             sfxSource.PlayOneShot(skipSfxClip);
         tutorialSkipped = true;
+        numDialoguesQueued--;
         isSkipping = true;
         pauseMainDialogue = true;
         dialogueTextUI.text = "";

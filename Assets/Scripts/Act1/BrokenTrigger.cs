@@ -8,7 +8,7 @@ public class BrokenTrigger : MonoBehaviour
     [SerializeField]
     GameObject terminalWindow;
     [SerializeField]
-    DialogueManager manager;
+    private AudioSource brokenDoorAudio;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -38,7 +38,9 @@ public class BrokenTrigger : MonoBehaviour
     private IEnumerator BreakDoorWhenFinished()
     {
         //yield return new WaitUntil(() => manager.IsDialogueSpeaking == false);
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(16f);
+        brokenDoorAudio.Play();
+        yield return new WaitForSeconds(3f);
         brokenDoor.SetState(DoorScript.States.Broken);
 
     }
