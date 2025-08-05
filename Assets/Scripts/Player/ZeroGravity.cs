@@ -48,8 +48,6 @@ public class ZeroGravity : MonoBehaviour
 
 
     private bool isDead = false;
-    [SerializeField]
-    private bool inCutScene = false;
     //win tracker
     private bool didWin = false;
     [SerializeField]
@@ -254,11 +252,6 @@ public class ZeroGravity : MonoBehaviour
         get { return potentialWall; }
         set { potentialWall = value; }
     }
-    public bool InCutScene
-    {
-        get { return inCutScene; }
-        set { inCutScene = value; }
-    }
 
     public bool TutorialMode
     {
@@ -438,7 +431,6 @@ public class ZeroGravity : MonoBehaviour
             //manage the cooldowns  
             //HurtCoolDown();
             JustHitCoolDown();
-            PlayerCutsceneHandler();
 
             if (isDead)
             {
@@ -458,7 +450,7 @@ public class ZeroGravity : MonoBehaviour
     #endregion 
 
     #region Player Control Methods
-    private void PlayerCutsceneHandler()
+    private void PlayerCutsceneHandler(bool inCutScene)
     {
         if (inCutScene)
         {
@@ -472,7 +464,7 @@ public class ZeroGravity : MonoBehaviour
         }
         else if (!inCutScene && uiManager.Crosshair.sprite == null)
         {
-            Debug.Log("running player cutscene handler");
+            //Debug.Log("running player cutscene handler");
             canGrab = true;
             canPushOff = true;
             canPropel = true;
