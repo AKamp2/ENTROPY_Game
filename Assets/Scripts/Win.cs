@@ -20,7 +20,7 @@ public class Win : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Was triggerd by: " + other.name);
+        Debug.Log("Was triggered by: " + other.name);
 
         if (other.CompareTag("Player"))
         {
