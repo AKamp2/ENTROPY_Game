@@ -62,8 +62,10 @@ public class LockdownEvent : MonoBehaviour
     public AnimationCurve powerDownCurve;
     public AnimationCurve glitchCurve;
     public Light[] lights;
+    public Light[] softLights;
     public Color endColor;
     public Color endButtonColor;
+    public Color endEmissionColor;
 
     private bool glitchLights = false;
     private bool poweringDown = false;
@@ -85,6 +87,14 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private CanvasGroup wristMonitorTutorial;
 
+    [SerializeField]
+    private GameObject serverObj;
+    [SerializeField]
+    private Material serverMaterial;
+    private Material serverMaterialInstance;
+    private Color initialEmissionColor;
+
+    private bool tutorialMonitorFaded = false;
 
 
 
@@ -137,6 +147,11 @@ public class LockdownEvent : MonoBehaviour
         isGrabbable = true;
 
         dialogueManager = FindFirstObjectByType<DialogueManager>();
+
+        
+        Renderer rend = serverObj.GetComponent<Renderer>();
+        serverMaterialInstance = rend.materials[1]; // this clones the material at runtime
+        initialEmissionColor = serverMaterialInstance.GetColor("_EmissionColor");
 
     }
 
@@ -261,6 +276,8 @@ public class LockdownEvent : MonoBehaviour
 
             StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 0f, 1f));
 
+            StartCoroutine(FadeTutorialPanelTimer());
+
             medDoor.SetState(DoorScript.States.Closed);
 
             ambientController.Progress();
@@ -293,6 +310,7 @@ public class LockdownEvent : MonoBehaviour
 
         audioManager.FadeServers(false);
         audioManager.playPowerCut();
+        StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, initialEmissionColor, 4f, 0, 6.5f, 0f));
         poweringDown = true;
         
         yield return new WaitForSeconds(7f);
@@ -302,10 +320,15 @@ public class LockdownEvent : MonoBehaviour
         yield return new WaitForSeconds(7f);
 
         audioManager.playPowerOn();
+        StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, endEmissionColor, 0, 4f, 4f, 2f));
         glitchLights = true;
         foreach(Light light in lights)
         {
             StartCoroutine(FadeLightColor(light, light.color, endColor, 5f));
+        }
+        foreach (Light lightSource in softLights)
+        {
+            StartCoroutine(FadeLightIntensity(lightSource, 0.2f, 5f));
         }
         StartCoroutine(FadeLightIntensity(buttonLight, 0.5f, 5f));
         StartCoroutine(FadeLightColor(buttonLight, buttonLight.color, endButtonColor, 0.5f));
@@ -315,6 +338,7 @@ public class LockdownEvent : MonoBehaviour
         {
             lightSource.intensity = intensityMultiplier;
         }
+        
         yield return new WaitForSeconds(4f);
         StartCoroutine(MoveDoor(gratePos, grateMovePos, 4f, null));
         dialogueManager.StartDialogueSequence(4, 0f);
@@ -386,9 +410,41 @@ public class LockdownEvent : MonoBehaviour
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
     }
 
+    public IEnumerator FadeEmission(Material mat, Color fromColor, Color toColor, float fromIntensity, float toIntensity, float duration, float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        // Ensure the emission is enabled on the material
+        mat.EnableKeyword("_EMISSION");
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+
+            // Interpolate color and intensity separately
+            Color currentColor = Color.Lerp(fromColor, toColor, t);
+            float currentIntensity = Mathf.Lerp(fromIntensity, toIntensity, t);
+
+            // Apply combined color * intensity as emission
+            mat.SetColor("_EmissionColor", currentColor * currentIntensity);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Final value at end of fade
+        mat.SetColor("_EmissionColor", toColor * toIntensity);
+    }
+
     public void FadeOutMonitorTutorial()
     {
-        StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
+        if(tutorialMonitorFaded == false)
+        {
+            tutorialMonitorFaded = true;
+            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
+        }
+        
     }
 
     private IEnumerator MoveDoor(Vector3 fromPos, Vector3 toPos, float duration, System.Action onComplete)
@@ -405,6 +461,17 @@ public class LockdownEvent : MonoBehaviour
 
         grateToMove.transform.position = toPos;
         onComplete?.Invoke();
+    }
+
+    private IEnumerator FadeTutorialPanelTimer()
+    {
+        yield return new WaitForSeconds(8f);
+        
+        if(tutorialMonitorFaded == false)
+        {
+            tutorialMonitorFaded = true;
+            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
+        }
     }
 
 }
