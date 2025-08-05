@@ -147,7 +147,6 @@ public class StimDispenser : MonoBehaviour
         Debug.Log("Stim refill complete!");
         audioSource.Play();
         playerScript.AddStimsToInv(3);
-        wristMonitor.UpdateStims(3);
     }
 
     public void ToggleUsability(bool isUsable)

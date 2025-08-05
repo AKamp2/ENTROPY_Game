@@ -59,7 +59,8 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\n\tEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Empty", "<size=16><color=orange>Current Objective: </size></color><size=14>\nwaiting for objective</size>\n", "<size=12><color=orange>Sub Objective: </color>\n</size>", false));
         mainObjectives.Add(new Objective("Medbay", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Medbay</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Dining Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Dining Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Server Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Server Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Override Manual Lockdown</size>", false));
@@ -114,6 +115,7 @@ public class WristMonitor : MonoBehaviour
     private void FixedUpdate()
     {
         healthSlider.value = player.PlayerHealth;
+        stimText.text = $"{player.NumStims}/3";
         if(mainObjectives.Count > 0)
         {
             currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";
@@ -164,11 +166,6 @@ public class WristMonitor : MonoBehaviour
             completedObjectives.Add(mainObjectives[0]);
             mainObjectives.Remove(mainObjectives[0]);
         }
-    }
-
-    public void UpdateStims(int numStims)
-    {
-        stimText.text = numStims + "/3";
     }
 }
 
