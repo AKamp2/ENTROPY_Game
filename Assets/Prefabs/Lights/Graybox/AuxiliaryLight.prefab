@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2103038019567406450}
   - component: {fileID: 7348728955189176189}
   - component: {fileID: 5894391643909465434}
-  - component: {fileID: 5131375593151920010}
   m_Layer: 6
   m_Name: AuxiliaryLight
   m_TagString: Barrier
@@ -27,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 669286964134471292}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.6583828, y: 0.25792632, z: 0.25792915, w: 0.6583911}
+  m_LocalRotation: {x: -0.6583874, y: 0.25792637, z: 0.25792637, w: 0.6583874}
   m_LocalPosition: {x: -0.695, y: -3.294, z: -4.089}
   m_LocalScale: {x: 0.2, y: 0.21503, z: 0.5}
   m_ConstrainProportionsScale: 0
@@ -88,27 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5131375593151920010
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 669286964134471292}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &932288554841194501
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,10 +170,10 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0.2
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
