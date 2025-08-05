@@ -48,7 +48,8 @@ public class ZeroGravity : MonoBehaviour
 
 
     private bool isDead = false;
-
+    [SerializeField]
+    private bool inCutScene = false;
     //win tracker
     private bool didWin = false;
     [SerializeField]
@@ -253,6 +254,11 @@ public class ZeroGravity : MonoBehaviour
         get { return potentialWall; }
         set { potentialWall = value; }
     }
+    public bool InCutScene
+    {
+        get { return inCutScene; }
+        set { inCutScene = value; }
+    }
 
     public bool TutorialMode
     {
@@ -425,45 +431,6 @@ public class ZeroGravity : MonoBehaviour
                     uiManager.UpdateGrabberPosition(potentialGrabbedBar);
                 }
             }
-            //if (tutorialMode)
-            //{
-            //    //handle grabber icon logic
-            //    if (canGrab)
-            //    {
-
-            //        //handle the grab movement
-            //        if (isGrabbing)
-            //        {
-            //            HandleGrabMovement(grabbedBar);
-            //        }
-            //        else if (!isGrabbing)
-            //        {
-            //            uiManager.UpdateGrabberPosition(potentialGrabbedBar);
-            //        }
-            //    }
-            //}
-            //else if (!tutorialMode)
-            //{
-            //    //Debug.Log("Tutorial Mode off");
-            //    //handle grabber icon logic
-            //    if (canGrab)
-            //    {
-            //        //handle the grab movement
-            //        //if (useIK)
-            //        //{
-            //        //    AdjustBarGrabbers();
-            //        //}
-            //        //handle the grab movement
-            //        if (isGrabbing)
-            //        {
-            //            HandleGrabMovement(grabbedBar);
-            //        }
-            //        else if (!isGrabbing)
-            //        {
-            //            uiManager.UpdateGrabberPosition(potentialGrabbedBar);
-            //        }
-            //    }
-            //}
             //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
             //take damage from door closing on the player
@@ -471,12 +438,12 @@ public class ZeroGravity : MonoBehaviour
             //manage the cooldowns  
             //HurtCoolDown();
             JustHitCoolDown();
+            PlayerCutsceneHandler();
 
             if (isDead)
             {
                 //apply the roll rotation to the camera
                 cam.transform.Rotate(Vector3.forward * -1f * deathRollAcceleration);
-
             }
         }
     }
@@ -491,6 +458,31 @@ public class ZeroGravity : MonoBehaviour
     #endregion 
 
     #region Player Control Methods
+    private void PlayerCutsceneHandler()
+    {
+        if (inCutScene)
+        {
+            rb.linearVelocity = Vector3.zero;
+            canGrab = false;
+            canPushOff = false;
+            canPropel = false;
+            canRoll = false;
+            uiManager.Crosshair.sprite = null;
+            uiManager.Crosshair.color = new Color(0f, 0f, 0f, 0f);
+        }
+        else if (!inCutScene && uiManager.Crosshair.sprite == null)
+        {
+            Debug.Log("running player cutscene handler");
+            canGrab = true;
+            canPushOff = true;
+            canPropel = true;
+            canRoll = true;
+            uiManager.Crosshair.sprite = uiManager.CrosshairIcon;
+            uiManager.Crosshair.color = new Color(1f, 1f, 1f, .5f);
+
+        }
+    }
+
     private void RotateCam()
     {
 
