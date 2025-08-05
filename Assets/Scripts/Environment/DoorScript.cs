@@ -379,6 +379,8 @@ public class DoorScript : MonoBehaviour
     {
         while (states == States.BrokenShort)
         {
+            yield return new WaitForSeconds(brokenDoorPause);
+
             float waitTime = UnityEngine.Random.Range(0.2f, 0.4f);
             
             // Play opening start sound
@@ -401,7 +403,7 @@ public class DoorScript : MonoBehaviour
             // Wait for door to fully close
             yield return MoveDoor(midPos, closedPos, 0.2f, () => isClosing = false);
 
-            yield return new WaitForSeconds(brokenDoorPause);
+            
         }
 
         isShortBreakOver = true;

@@ -584,7 +584,7 @@ public class ZeroGravity : MonoBehaviour
                 {
                     totalRotation = 0;
                 }
-                Debug.Log(totalRotation);
+                //Debug.Log(totalRotation);
             }
             
             
