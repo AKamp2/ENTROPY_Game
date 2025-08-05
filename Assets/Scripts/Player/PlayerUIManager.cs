@@ -140,6 +140,8 @@ public class PlayerUIManager : MonoBehaviour
         set { progressBar = value; }
     }
 
+    public Sprite CrosshairIcon { get { return crosshairIcon; } }
+
     public Sprite WASDIndicator { get { return wasdIndicator; } }
 
     public Sprite SpaceIndicator { get { return spaceIndicator; } }
