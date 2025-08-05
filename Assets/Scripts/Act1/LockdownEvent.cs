@@ -260,6 +260,7 @@ public class LockdownEvent : MonoBehaviour
             isActive = false;
 
             // begin lighting and audio queues
+            player.PlayerCutSceneHandler(true);
             StartCoroutine(PlayLockdownFX());
             
         }
@@ -340,6 +341,7 @@ public class LockdownEvent : MonoBehaviour
         }
         
         yield return new WaitForSeconds(4f);
+        player.PlayerCutSceneHandler(false);
         StartCoroutine(MoveDoor(gratePos, grateMovePos, 4f, null));
         dialogueManager.StartDialogueSequence(4, 0f);
         //Open doors in the doors to open array, this is the dining hall to facilities door.
