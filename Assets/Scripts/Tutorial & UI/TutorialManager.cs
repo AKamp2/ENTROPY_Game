@@ -123,7 +123,7 @@ public class TutorialManager : MonoBehaviour
                 float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
                 bool isUpsideDownLook = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
-                bool isUpsideDown = playerController.TotalRotation <= -350;
+                bool isUpsideDown = playerController.TotalRotation <= -330;
 
                 if (isUpsideDown && playerController.HasRolled)
                 {
@@ -150,7 +150,7 @@ public class TutorialManager : MonoBehaviour
                 //float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
                 //bool isUpright = Mathf.Abs(delta) <= 10f; // close to original orientation
-                bool isUpright = playerController.TotalRotation >= 350;
+                bool isUpright = playerController.TotalRotation >= 330;
 
                 if (isUpright)
                 {

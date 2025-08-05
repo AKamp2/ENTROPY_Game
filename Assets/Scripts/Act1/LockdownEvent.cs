@@ -79,6 +79,9 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private GameObject grateMoveLocation;
 
+    private Vector3 gratePos;
+    private Vector3 grateMovePos;
+
     [SerializeField]
     private CanvasGroup wristMonitorTutorial;
 
@@ -110,6 +113,15 @@ public class LockdownEvent : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if(grateToMove != null)
+        {
+            gratePos = grateToMove.transform.position;
+        }
+
+        if (grateMoveLocation != null)
+        {
+            grateMovePos = grateMoveLocation.transform.position;
+        }
 
         player = playerObject.GetComponent<ZeroGravity>();
 
@@ -304,6 +316,7 @@ public class LockdownEvent : MonoBehaviour
             lightSource.intensity = intensityMultiplier;
         }
         yield return new WaitForSeconds(4f);
+        StartCoroutine(MoveDoor(gratePos, grateMovePos, 4f, null));
         dialogueManager.StartDialogueSequence(4, 0f);
         //Open doors in the doors to open array, this is the dining hall to facilities door.
 
