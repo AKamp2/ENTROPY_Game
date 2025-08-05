@@ -351,7 +351,7 @@ public class SettingsMenu : MonoBehaviour
                 uniqueResolutions.Add(res);
         }
         resolutions = uniqueResolutions.ToArray();
-
+        resolutionDropdown.value = resolutions.Length-1;
         foreach (var res in uniqueResolutions)
             resOptions.Add(res.width + " x " + res.height);
         
@@ -397,8 +397,8 @@ public class SettingsMenu : MonoBehaviour
         SetSensitivityY(GetPrefs("sensitivitySliderY", 40));
         SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
         SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
-        SetRefreshRate(GetPrefs("refreshRate", 0));
-        SetResolution(GetPrefs("resolution", 0));
+        SetRefreshRate(GetPrefs("refreshRate", 2));
+        SetResolution(GetPrefs("resolution",resolutions.Length-1));
         SetFOV(GetPrefsFloat("fovSlider", 112f));
         SetGamma(GetPrefsFloat("gammaSlider", 0f));
         SetBloom(GetPrefsFloat("bloomSlider", 0f));
