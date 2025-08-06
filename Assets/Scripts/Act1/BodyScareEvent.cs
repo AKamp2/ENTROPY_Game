@@ -56,7 +56,7 @@ public class BodyScareEvent : MonoBehaviour
             door.SetState(DoorScript.States.Closed);
         }
 
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(5.5f);
 
         dialogueManager.StartDialogueSequence(8, 0f);
 
