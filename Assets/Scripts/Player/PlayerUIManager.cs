@@ -346,7 +346,7 @@ public class PlayerUIManager : MonoBehaviour
                     RayCastHandleStimDispenser(interactableHit);
                     break;
                 case "Terminal":
-                    Debug.Log("Terminal Detected");
+                    //Debug.Log("Terminal Detected");
                     RayCastHandleTerminal(interactableHit);
                     break;
                 //case "PickupObject":
@@ -368,6 +368,7 @@ public class PlayerUIManager : MonoBehaviour
                     stim.CanRefill = false;
                 }
             }
+            
         }
 
         if (barHit != null && player.CanGrab && !player.IsGrabbing)
@@ -551,10 +552,12 @@ public class PlayerUIManager : MonoBehaviour
             if (terminal != null)
             {
                 Debug.Log("TERMINAL HIT");
+                terminal.isLookedAt = true;
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
-
-
         }
+        
     }
 
     /// <summary>

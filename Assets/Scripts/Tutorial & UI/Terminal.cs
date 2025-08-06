@@ -3,22 +3,24 @@ using UnityEngine.InputSystem;
 
 public class Terminal : MonoBehaviour
 {
-    ZeroGravity playerScript;
-    GameObject playerObj;
-    [SerializeField] Vector3 targetTransform;
+    private ZeroGravity playerScript;
+    private GameObject playerObj;
+    [SerializeField] GameObject terminalScreen;
+    [SerializeField] GameObject targetTransform;
+    public bool isLookedAt;
     private void Start()
     {
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
+        isLookedAt = false;
     }
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
-            // Turn on terminal 
-            // Lerp player to a set place to watch the animation
+        if (context.performed && isLookedAt)
+        { 
             playerScript.PlayerCutSceneHandler(true);
-            playerObj.transform.position = targetTransform;
+            terminalScreen.SetActive(true);
+            playerObj.transform.position = targetTransform.transform.position;
         }
     }
 }
