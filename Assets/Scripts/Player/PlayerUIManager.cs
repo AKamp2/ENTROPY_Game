@@ -345,6 +345,10 @@ public class PlayerUIManager : MonoBehaviour
                     //Debug.Log("WristMonitor Detected");
                     RayCastHandleStimDispenser(interactableHit);
                     break;
+                case "Terminal":
+                    Debug.Log("Terminal Detected");
+                    RayCastHandleTerminal(interactableHit);
+                    break;
                 //case "PickupObject":
                 //    RayCastHandleFloatingObject(interactableHit);
                 //    break;
@@ -532,6 +536,21 @@ public class PlayerUIManager : MonoBehaviour
                     //no logic here for now
                 }
                 
+            }
+
+
+        }
+    }
+
+    public void RayCastHandleTerminal(RaycastHit? hit)
+    {
+        if (hit.Value.transform.CompareTag("Terminal"))
+        {
+            Terminal terminal = hit.Value.transform.parent.GetComponent<Terminal>();
+
+            if (terminal != null)
+            {
+                Debug.Log("TERMINAL HIT");
             }
 
 
