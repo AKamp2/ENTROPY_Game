@@ -551,10 +551,20 @@ public class PlayerUIManager : MonoBehaviour
 
             if (terminal != null)
             {
-                Debug.Log("TERMINAL HIT");
-                terminal.isLookedAt = true;
-                inputIndicator.sprite = keyFIndicator;
-                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                if (terminal.isActivated)
+                {
+                    inputIndicator.sprite = null;
+                    inputIndicator.color = new Color(0, 0, 0, 0);
+                    return;
+                }
+                else
+                {
+                    grabUIText.text = "Hold to reconnect ALAN";
+                    terminal.isLookedAt = true;
+                    inputIndicator.sprite = keyFIndicator;
+                    inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                    Debug.Log("Deactivated TERMINAL HIT");
+                }
             }
         }
         

@@ -1,26 +1,56 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class Terminal : MonoBehaviour
 {
     private ZeroGravity playerScript;
     private GameObject playerObj;
-    [SerializeField] GameObject terminalScreen;
+    [SerializeField] TerminalScreen terminalScreenScript;
+    [SerializeField] GameObject terminalScreenObj;
     [SerializeField] GameObject targetTransform;
-    public bool isLookedAt;
+    public bool isLookedAt = false;
+    public bool isActivated = false;
+    public bool isUploadHidden = false;
+    [SerializeField] TerminalPopup popup;
     private void Start()
     {
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
-        isLookedAt = false;
     }
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.performed && isLookedAt)
+        if (context.performed && isLookedAt && !popup.isUploaded)
         { 
+            isActivated = true;
             playerScript.PlayerCutSceneHandler(true);
-            terminalScreen.SetActive(true);
-            playerObj.transform.position = targetTransform.transform.position;
+            terminalScreenObj.SetActive(true);
+            terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());
+            StartCoroutine(LerpPosition(targetTransform.transform.position, 1f));
         }
+    }
+    private void Update()
+    {
+        if (popup.isUploaded && !isUploadHidden)
+        {
+            isUploadHidden = true;
+            playerScript.PlayerCutSceneHandler(false);
+            terminalScreenObj.SetActive(false);
+        }
+    }
+
+    IEnumerator LerpPosition(Vector3 destination, float duration)
+    {
+        Vector3 start = playerObj.transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            playerObj.transform.position = Vector3.Lerp(start, destination, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        playerObj.transform.position = destination; // Snap to final position
     }
 }
