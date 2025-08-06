@@ -454,6 +454,9 @@ public class ZeroGravity : MonoBehaviour
     {
         if (inCutScene)
         {
+            uiManager.HideInteractables();
+            uiManager.HideGrabber();
+            ReleaseBar();
             rb.linearVelocity = Vector3.zero;
             canGrab = false;
             canPushOff = false;

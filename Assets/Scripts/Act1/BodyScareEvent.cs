@@ -40,7 +40,7 @@ public class BodyScareEvent : MonoBehaviour
         body.transform.position = bodyPos.transform.position;
         body.transform.rotation = bodyPos.transform.rotation;
 
-        bodyRb.AddForce(new Vector3(-.5f, -1, 0) * 30f, ForceMode.Impulse);
+        //bodyRb.AddForce(new Vector3(-.5f, -1, 0) * 30f, ForceMode.Impulse);
 
         bodyDoor.SetState(DoorScript.States.JoltOpen);
 
