@@ -18,17 +18,7 @@ public class Terminal : MonoBehaviour
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
     }
-    public void OnInteract(InputAction.CallbackContext context)
-    {
-        if (context.performed && isLookedAt && !popup.isUploaded)
-        { 
-            isActivated = true;
-            playerScript.PlayerCutSceneHandler(true);
-            terminalScreenObj.SetActive(true);
-            terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());
-            StartCoroutine(LerpPosition(targetTransform.transform.position, 1f));
-        }
-    }
+    
     private void Update()
     {
         if (popup.isUploaded && !isUploadHidden)
@@ -39,7 +29,16 @@ public class Terminal : MonoBehaviour
         }
     }
 
-    IEnumerator LerpPosition(Vector3 destination, float duration)
+    public void Activation()
+    {
+        isActivated = true;
+        playerScript.PlayerCutSceneHandler(true);
+        terminalScreenObj.SetActive(true);
+        terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());
+        StartCoroutine(LerpPosition(targetTransform.transform.position, 0.75f));
+    }
+
+    public IEnumerator LerpPosition(Vector3 destination, float duration)
     {
         Vector3 start = playerObj.transform.position;
         float elapsed = 0f;

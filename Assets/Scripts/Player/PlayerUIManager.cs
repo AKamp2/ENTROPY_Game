@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 public class PlayerUIManager : MonoBehaviour
 {
+    [Header("== Managers ==")]
     [SerializeField]
     private ZeroGravity player;
     [SerializeField]
@@ -27,6 +28,8 @@ public class PlayerUIManager : MonoBehaviour
     private bool barInRaycast;
     private bool barInPeripheral;
     private bool floatingObjInRaycast;
+    [SerializeField]
+    TerminalManager terminalManager;
 
 
     [Header("== UI Canvas ==")]
@@ -552,9 +555,10 @@ public class PlayerUIManager : MonoBehaviour
         if (hit.Value.transform.CompareTag("Terminal"))
         {
             Terminal terminal = hit.Value.transform.parent.GetComponent<Terminal>();
-
+            
             if (terminal != null)
             {
+                terminalManager.GetCurrentTerminal(terminal);
                 if (terminal.isActivated)
                 {
                     inputIndicator.sprite = null;
