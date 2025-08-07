@@ -543,6 +543,10 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Raycast handler for the terminal event. Icon and text popup when raycast hits the deactivated terminal
+    /// </summary>
+    /// <param name="hit"></param>
     public void RayCastHandleTerminal(RaycastHit? hit)
     {
         if (hit.Value.transform.CompareTag("Terminal"))
@@ -559,11 +563,11 @@ public class PlayerUIManager : MonoBehaviour
                 }
                 else
                 {
-                    grabUIText.text = "Hold to reconnect ALAN";
+                    grabUIText.text = "Press to reconnect ALAN";
                     terminal.isLookedAt = true;
                     inputIndicator.sprite = keyFIndicator;
                     inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
-                    Debug.Log("Deactivated TERMINAL HIT");
+                    //Debug.Log("Deactivated TERMINAL HIT");
                 }
             }
         }
