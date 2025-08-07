@@ -210,6 +210,10 @@ public class SettingsMenu : MonoBehaviour
             }
             isChanged = true;
         }
+        else
+        {
+            //Debug.Log($"<color=orange>{dialogueText}</color> and saved pref is{GetPrefs("subtitleCheckbox", 0)}");
+        }
     }
 
     public void SetFOV(float Value)

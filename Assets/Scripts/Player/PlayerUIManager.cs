@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 public class PlayerUIManager : MonoBehaviour
 {
+    [Header("== Managers ==")]
     [SerializeField]
     private ZeroGravity player;
     [SerializeField]
@@ -27,6 +28,8 @@ public class PlayerUIManager : MonoBehaviour
     private bool barInRaycast;
     private bool barInPeripheral;
     private bool floatingObjInRaycast;
+    [SerializeField]
+    TerminalManager terminalManager;
 
 
     [Header("== UI Canvas ==")]
@@ -345,6 +348,10 @@ public class PlayerUIManager : MonoBehaviour
                     //Debug.Log("WristMonitor Detected");
                     RayCastHandleStimDispenser(interactableHit);
                     break;
+                case "Terminal":
+                    //Debug.Log("Terminal Detected");
+                    RayCastHandleTerminal(interactableHit);
+                    break;
                 //case "PickupObject":
                 //    RayCastHandleFloatingObject(interactableHit);
                 //    break;
@@ -364,6 +371,7 @@ public class PlayerUIManager : MonoBehaviour
                     stim.CanRefill = false;
                 }
             }
+            
         }
 
         if (barHit != null && player.CanGrab && !player.IsGrabbing)
@@ -536,6 +544,38 @@ public class PlayerUIManager : MonoBehaviour
 
 
         }
+    }
+
+    /// <summary>
+    /// Raycast handler for the terminal event. Icon and text popup when raycast hits the deactivated terminal
+    /// </summary>
+    /// <param name="hit"></param>
+    public void RayCastHandleTerminal(RaycastHit? hit)
+    {
+        if (hit.Value.transform.CompareTag("Terminal"))
+        {
+            Terminal terminal = hit.Value.transform.parent.GetComponent<Terminal>();
+            
+            if (terminal != null)
+            {
+                terminalManager.GetCurrentTerminal(terminal);
+                if (terminal.isActivated)
+                {
+                    inputIndicator.sprite = null;
+                    inputIndicator.color = new Color(0, 0, 0, 0);
+                    return;
+                }
+                else
+                {
+                    grabUIText.text = "Press to reconnect ALAN";
+                    terminal.isLookedAt = true;
+                    inputIndicator.sprite = keyFIndicator;
+                    inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                    //Debug.Log("Deactivated TERMINAL HIT");
+                }
+            }
+        }
+        
     }
 
     /// <summary>
