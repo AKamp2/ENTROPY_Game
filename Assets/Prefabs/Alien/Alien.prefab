@@ -1267,6 +1267,62 @@ MonoBehaviour:
   gizmoLength: 1
   gizmoColor: {r: 0, g: 1, b: 1, a: 1}
   activeTendril: {fileID: 0}
+--- !u!1 &7979549188111121661
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7447441257496200812}
+  - component: {fileID: 644052853617692191}
+  m_Layer: 0
+  m_Name: Face Decal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7447441257496200812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7979549188111121661}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.004, y: 0.001, z: 0.201}
+  m_LocalScale: {x: 1.0688503, y: 1.0688503, z: 0.3072529}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2615944725862339765}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &644052853617692191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7979549188111121661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: f711e928461c9b947a5eb690a1f3e2ef, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 1
+  m_Offset: {x: 0, y: 0, z: 0.5}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_FadeFactor: 0.695
 --- !u!1 &8394495500731185296
 GameObject:
   m_ObjectHideFlags: 0
@@ -1440,11 +1496,12 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.0093286475, z: 0, w: 0.99995655}
   m_LocalPosition: {x: 54.530003, y: 28.69, z: 6.98}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3887759488470295348}
   - {fileID: 7956771806235462752}
+  - {fileID: 7447441257496200812}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 1.069, z: 0}
 --- !u!33 &6019657701260748713
@@ -1560,14 +1617,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627ea0bfeda3ec0448b9566e68435f2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  chaseDistance: 20
-  escapeDistance: 25
+  speed: 0.6
+  chaseDistance: 6
+  escapeDistance: 8
   useRandomRoaming: 0
   setRotationSpeed: 2.5
-  lungeDistance: 6
+  lungeDistance: 2
   chargeUpTime: 1
-  lungeSpeed: 4.5
+  lungeSpeed: 1.2
   lungeDuration: 3
   maxRicochets: 6
   ricochetSpeedMultiplier: 0.8
@@ -1618,12 +1675,20 @@ MonoBehaviour:
   - {fileID: 5174279754291146030}
   - {fileID: 7124250167008591511}
   spawnInterval: 0.25
-  wakeDistance: 50
+  wakeDistance: 15
   barrierLayer:
     serializedVersion: 2
     m_Bits: 64
   wakeLossCooldown: 10
-  initialPosition: {x: 0, y: 0, z: 0}
+  currentWaypoint: {fileID: 0}
+  playerWaypoint: {fileID: 0}
+  targetWaypoint: {fileID: 0}
+  isChasingPlayer: 0
+  isStunned: 0
+  isCharging: 0
+  isLunging: 0
+  lungeTimer: 0
+  isAwake: 0
   availableOrigins: []
 --- !u!82 &8517424139226028849
 AudioSource:

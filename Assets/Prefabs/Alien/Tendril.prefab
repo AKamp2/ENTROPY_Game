@@ -47,15 +47,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   origin: {fileID: 0}
   ownerEnemy: {fileID: 0}
-  maxLength: 6
-  extendSpeed: 5
-  retractSpeed: 5
+  maxLength: 4
+  extendSpeed: 2
+  retractSpeed: 3
   holdDuration: 2
   manualRetract: 0
   retractCalled: 0
   retracting: 0
   curveResolution: 20
-  curveAmount: 2
+  curveAmount: 1.1
 --- !u!1 &8116635972734408203
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +135,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.4885994
@@ -143,8 +143,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 1
+        time: 0.0016479492
+        value: 0.38460732
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -152,8 +152,8 @@ LineRenderer:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.91461706
-        value: 0.28527987
+        time: 0.95087194
+        value: 0.11311495
         inSlope: 0
         outSlope: 0
         tangentMode: 0
