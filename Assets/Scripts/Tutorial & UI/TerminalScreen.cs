@@ -11,14 +11,9 @@ public class TerminalScreen : MonoBehaviour
     private string currentText = "";
     private bool isTyping = true;
 
-    [SerializeField] TerminalPopup popup;
-    void Start()
-    {
-        terminalText.text = "";
-        StartCoroutine(TypeText());
-    }
+    [SerializeField] TerminalPopup popup; 
 
-    IEnumerator TypeText()
+    public IEnumerator TypeText()
     {
         foreach (char c in fullText)
         {
