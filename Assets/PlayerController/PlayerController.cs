@@ -167,7 +167,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""0d051d0c-c9b7-4f11-b18e-0c874d16e3be"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -176,7 +176,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""name"": ""Throw"",
                     ""type"": ""Button"",
                     ""id"": ""e31e4715-29c6-4d9f-b958-bb29b0ac175c"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -185,7 +185,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""name"": ""OffWall"",
                     ""type"": ""Button"",
                     ""id"": ""b5d2d613-ece4-400e-9f1b-e83d6c87dc27"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -557,6 +557,17 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""2c020c83-0b47-45d6-b269-20e8db2ad004"",
                     ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenWristMonitor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8f107007-9eb7-417a-8ac3-be0451eff164"",
+                    ""path"": ""<Gamepad>/dpad/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
