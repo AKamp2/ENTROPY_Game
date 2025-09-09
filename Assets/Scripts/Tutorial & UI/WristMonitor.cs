@@ -26,6 +26,7 @@ public class WristMonitor : MonoBehaviour
     public float duration;
     Vector3 currentPosition;
 
+    [SerializeField] private GameObject[] _displayTexts;
     [SerializeField] ObjectiveUpdate objectiveUpdator;
 
     
@@ -165,6 +166,14 @@ public class WristMonitor : MonoBehaviour
         {
             completedObjectives.Add(mainObjectives[0]);
             mainObjectives.Remove(mainObjectives[0]);
+        }
+    }
+
+    public void SwitchDisplay(int displayIndex)
+    {
+        for(int i = 0; i < _displayTexts.Length; i++)
+        {
+            _displayTexts[i].SetActive(i== displayIndex);
         }
     }
 }
