@@ -133,12 +133,8 @@ public class ZeroGravity : MonoBehaviour
     [Header("== Swinging Settings==")]
     [SerializeField]
     private bool swinging = false;
-    [SerializeField]
-    private bool jointCreated = false;
     private Vector3 swingPoint; //stores the bar transform when calculating swings
     private SpringJoint joint;
-    [SerializeField]
-    private ConfigurableJoint newJoint;
     [SerializeField]
     private float grabDrag = .99f;
     [SerializeField]
@@ -362,7 +358,7 @@ public class ZeroGravity : MonoBehaviour
         Application.targetFrameRate = 120;  // match this with your build target frame rate.
 
         // give player default permissions
-        jointCreated = false;
+
         //initial player booleans set if in tutorial mode
         if (tutorialMode)
         {
@@ -583,6 +579,21 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This method will be used to create logic to automatically roll the player to be parralel or perpindicular
+    /// to the bar depending on approach when grabbing
+    /// 
+    /// too difficult to implement rn
+    /// </summary>
+    //private void rotateOnGrab(Transform bar)
+    //{
+    //    //establish z rotation values
+    //    //curent z rotation
+
+    //    //make the grab automatically rotate the camera until it goes vertical
+    //    cam.transform.rotation = Quaternion.RotateTowards()
+    //}
+
     public void StopRollingQuickly()
     {
         // Immediately stop applying input-based roll
@@ -788,10 +799,123 @@ public class ZeroGravity : MonoBehaviour
         if (isGrabbing && bar != null)
         {
             PropelOffBar();
-            NewSwing(bar);
+            Swing(bar);
             uiManager.UpdateGrabberPosition(bar);
         }
     }
+
+    /// <summary>
+    /// IK arms start
+    /// </summary>
+    //private void GetBarGrabbers()
+    //{
+    //    grabHolder = grabbedBar.parent.Find("Grab");
+    //    initGrabRotation = new Quaternion[2];
+    //    initGrabPosition = new Vector3[2];
+    //    initUpVector = new Vector3[2];
+
+    //    for (int i = 0; i < grabHolder.childCount; i++)
+    //    {
+    //        Transform grab = grabHolder.GetChild(i);
+    //        initGrabRotation[i] = grab.rotation;
+    //        initGrabPosition[i] = grab.position;
+    //        initUpVector[i] = grab.up;
+    //    }
+    //}
+
+    //private void MoveArmsToBar()
+    //{
+    //    if (grabHolder != null)
+    //    {
+    //        //Debug.Log(hands[0].gameObject);
+    //        hands[0].data.target = grabHolder.GetChild(0).transform;
+    //        hands[1].data.target = grabHolder.GetChild(1).transform;
+
+    //        rigBuilder.Build();
+    //        animator.Rebind();
+    //    }
+    //}
+
+    //public void MoveHandsTo(Transform left, Transform right)
+    //{
+    //    if (left == null)
+    //        hands[0].data.target = defaultHandPosition[0];
+    //    else
+    //        hands[0].data.target = left;
+
+    //    if (right == null)
+    //        hands[1].data.target = defaultHandPosition[1];
+    //    else
+    //        hands[1].data.target = right;
+
+
+    //    rigBuilder.Build();
+    //    animator.Rebind();
+    //}
+
+    //private void ResetBarGrabbers()
+    //{
+    //    if (grabHolder != null)
+    //    {
+    //        for (int i = 0; i < grabHolder.childCount; i++)
+    //        {
+    //            Transform grab = grabHolder.GetChild(i).transform;
+
+    //            //Debug.Log(i + " + " + initGrabRotation[i]);
+    //            grab.rotation = initGrabRotation[i];
+    //            grab.position = initGrabPosition[i];
+    //            grab.up = initUpVector[i];
+    //        }
+
+    //        hands[0].data.target = defaultHandPosition[0];
+    //        hands[1].data.target = defaultHandPosition[1];
+
+    //        rigBuilder.Build();
+    //        animator.Rebind();
+
+    //        initGrabRotation = null;
+    //        initGrabPosition = null;
+    //        initUpVector = null;
+    //        grabHolder = null;
+    //    }
+
+
+    //}
+
+    //private void AdjustBarGrabbers()
+    //{
+    //    Transform grabCollider = grabbedBar.parent.Find("Grabbable");
+
+
+
+    //    float roll = cam.transform.localEulerAngles.z;
+    //    if (roll > 180f) roll -= 360f;
+
+    //    // calculate angle around bar to the player
+    //    Vector3 toTarget = cam.transform.position - grabCollider.position;
+    //    Vector3 projected = Vector3.ProjectOnPlane(toTarget, grabCollider.up);
+    //    float angle = Vector3.SignedAngle(grabCollider.forward, projected, grabCollider.up);
+
+    //    //Debug.Log(roll);
+
+    //    for (int i = 0; i < grabHolder.childCount; i++)
+    //    {
+    //        Transform grab = grabHolder.GetChild(i).transform;
+
+    //        // zero out transform for uniform translation
+    //        grab.rotation = initGrabRotation[i];
+    //        grab.position = initGrabPosition[i];
+
+    //        grab.RotateAround(grabCollider.position, grabCollider.up, angle);
+
+    //        //grab.position = initGrabPosition[i];
+    //        Quaternion rollRotation = Quaternion.AngleAxis(roll, grab.up);
+    //        grab.rotation = rollRotation * grab.rotation;
+
+    //    }
+
+
+    //}
 
     public void GrabBar()
     {
@@ -817,14 +941,12 @@ public class ZeroGravity : MonoBehaviour
 
     public void NewSwing(Transform bar)
     {
-        if (isGrabbing && bar != null)
+        if(isGrabbing && bar != null)
         {
-            swingPoint = bar.transform.position;
-            Debug.Log("swingpoint" +  swingPoint);
-            Debug.Log("player pos" + rb.position);
+            swingPoint = bar.position;
 
             //ensure we don't have a joint created yet for swinging
-            if (this.gameObject.GetComponent<ConfigurableJoint>() != null && jointCreated == false) 
+            if(this.gameObject.GetComponent<ConfigurableJoint>() == null)
             {
                 //create the joint
                 this.gameObject.AddComponent<ConfigurableJoint>();
@@ -832,18 +954,70 @@ public class ZeroGravity : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// This method stops the swinging by destroying the pringjoint and setting the swingpoint back to zero
-    /// </summary>
-    private void StopSwing()
+    public void NewPullToBar(float multiplier, Transform bar)
     {
-        //Debug.Log("no swingaling");
-        //swingPoint = Vector3.zero;
-        //newJoint.anchor = Vector3.zero;
-        //newJoint.connectedAnchor = Vector3.zero;
-        //Destroy(newJoint);
-        jointCreated = false;
-        swinging = false;
+        //Debug.Log(bar.gameObject.name);
+        //Debug.Log(rb.linearVelocity.magnitude);
+        //Debug.Log(bar.gameObject.name);
+        //initially set the velocity to 0 so the momentum doesn't carry through from propel
+
+        if (useManualPullIn && !isPullingIn)
+            return;
+
+        //if the joint is a long distance between the player and the bar
+        if (joint.maxDistance >= joint.minDistance)
+        {
+            //decrease the length of the joint scaled by a multiplier to determine how fast this happens
+            joint.maxDistance -= 0.1f * multiplier;
+            //lessen the spring force of the joint scaled by a multiplier to determine how fast this happens
+            joint.spring -= 0.1f * multiplier;
+        }
+
+        //increment down the linear and angular velocities so the player slows down
+        if (rb.linearVelocity.magnitude >= zeroGWalkSpeed)
+        {
+            //decrease the velocity
+            rb.linearVelocity *= grabDrag;
+        }
+        //if the linear velocity magnitude is below 3  
+        else if (rb.linearVelocity.magnitude < zeroGWalkSpeed)
+        {
+            //create a target Transform to pull to
+            Transform target = null;
+            //iterate through the children 
+            foreach (Transform child in bar)
+            {
+                //find the child that is the GrabTarget
+                if (child.gameObject.name == "GrabTarget")
+                {
+                    //save this child as the target
+                    target = child;
+                }
+            }
+            //begin moving the player to the target point
+            //var step = multiplier * Time.deltaTime;
+            //rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
+
+            //if the position of the player and the target are about equal
+            if (Vector3.Distance(rb.transform.position, target.position) < .1f)
+            {
+                //Debug.Log("They are touching :)");
+                //begin the swing ability
+                Swing(bar);
+                return;
+            }
+            else
+            {
+                //create a direction vector to pull the player to the bar point
+                Vector3 pullDirection = target.position - rb.transform.position;
+                Vector3 normalizedpulldirection = pullDirection.normalized;
+                rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
+
+            }
+            //Debug.Log(target.gameObject.name);
+        }
+
+        //Debug.Log("linear velocity: " + rb.linearVelocity.magnitude);
     }
 
     /// <summary>
@@ -1026,6 +1200,17 @@ public class ZeroGravity : MonoBehaviour
             prevJustGrabbed = justGrabbed;
             grabSwingTimeStamp = 0f;
         }
+    }
+
+    /// <summary>
+    /// This method stops the swinging by destroying the pringjoint and setting the swingpoint back to zero
+    /// </summary>
+    private void StopSwing()
+    {
+        //Debug.Log("no swingaling");
+        swingPoint = Vector3.zero;
+        Destroy(joint);
+        swinging = false;
     }
 
 
