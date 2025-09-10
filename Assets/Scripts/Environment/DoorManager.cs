@@ -76,4 +76,10 @@ public class DoorManager : MonoBehaviour
         
     }
 
+    // backs up door states for saving
+    public void StoreDoorStates()
+    {
+        // store a copy of the checkpoint data in the global save manager
+        GlobalSaveManager.Instance.AddDoors((DoorScript[])doors.Clone());
+    }
 }

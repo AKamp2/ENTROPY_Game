@@ -154,7 +154,10 @@ public class DoorScript : MonoBehaviour
     public States DoorState
     {
         get { return states; }
-        set { states = value; }
+        set {
+            states = value;
+            doorManager.StoreDoorStates();
+        }
     }
 
     public bool HasPermissionLevel

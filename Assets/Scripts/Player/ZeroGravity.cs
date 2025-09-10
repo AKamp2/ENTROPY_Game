@@ -1608,13 +1608,13 @@ public class ZeroGravity : MonoBehaviour
     }
     #endregion
 
-    // this function gets a PlayerData object which will make saving easier
+    // gets a PlayerData object which will make saving easier
     public PlayerData GetPlayerData()
     {
         return new PlayerData(playerHealth, numStims, canGrab, canPropel, canPushOff, hasUsedStim, canRoll);
     }
 
-    // this function loads PlayerData object which will makes restoring saves easier
+    // loads PlayerData object which will makes restoring saves easier
     public void LoadPlayerData(PlayerData playerData)
     {
         playerHealth = playerData.Health;

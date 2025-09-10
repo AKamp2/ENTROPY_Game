@@ -28,5 +28,12 @@ public class CheckpointManager : MonoBehaviour
             _currentIndex++;
             checkpoints[_currentIndex].Initialize(playerZeroG, true);
         }
+        StoreCheckpointStates();
+    }
+    // backs up checkpoint states for saving
+    void StoreCheckpointStates()
+    {
+        // store a copy of the checkpoint data in the global save manager
+        GlobalSaveManager.Instance.AddCheckpoints(new List<Checkpoint>(checkpoints));
     }
 }
