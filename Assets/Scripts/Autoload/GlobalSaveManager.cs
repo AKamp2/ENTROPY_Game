@@ -5,7 +5,7 @@ using System.Collections.Generic;
 // this is the file the will handle saving and loading
 public class GlobalSaveManager : MonoBehaviour
 {
-    public static GlobalSaveManager instance { get; private set; }
+    public static GlobalSaveManager Instance { get; private set; }
     int mapIndex;
     private PlayerData playerData;
     private List<Checkpoint> checkpoints;
@@ -14,12 +14,12 @@ public class GlobalSaveManager : MonoBehaviour
     private void Awake()
     {
         // Ensure that there is only one GlobalSaveManager
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
         } else
         {
-            instance = this;
+            Instance = this;
         }
     }
     public void AddPlayerData()
