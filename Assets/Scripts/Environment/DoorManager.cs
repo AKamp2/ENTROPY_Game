@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -47,6 +48,12 @@ public class DoorManager : MonoBehaviour
     void Start()
     {
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
+
+        // when loading from save, overwrite the doors
+        if (GlobalSaveManager.Instance.LoadFromSave)
+        {
+            LoadDoorStates((DoorScript[])GlobalSaveManager.Instance.Data.Doors.Clone());
+        }
     }
 
     // Update is called once per frame
@@ -80,6 +87,12 @@ public class DoorManager : MonoBehaviour
     public void StoreDoorStates()
     {
         // store a copy of the checkpoint data in the global save manager
-        GlobalSaveManager.Instance.AddDoors((DoorScript[])doors.Clone());
+        GlobalSaveManager.Instance.Data.Doors = (DoorScript[])doors.Clone();
+    }
+
+    // called when loading a save
+    public void LoadDoorStates(DoorScript[] _doors)
+    {
+        doors = _doors;
     }
 }

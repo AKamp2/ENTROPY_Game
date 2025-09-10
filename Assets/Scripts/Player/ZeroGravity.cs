@@ -402,6 +402,12 @@ public class ZeroGravity : MonoBehaviour
             grabDrag = 0.1f;
             jointSpringForce = 5.5f;
         }
+
+        // when loading from save, overwrite the player data
+        if (GlobalSaveManager.Instance.LoadFromSave)
+        {
+            LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
+        }
     }
 
     // Update is called once per frame
@@ -1608,13 +1614,21 @@ public class ZeroGravity : MonoBehaviour
     }
     #endregion
 
-    // gets a PlayerData object which will make saving easier
-    public PlayerData GetPlayerData()
+    // backs up player data for saving
+    public void StorePlayerData()
     {
-        return new PlayerData(playerHealth, numStims, canGrab, canPropel, canPushOff, hasUsedStim, canRoll);
+        GlobalSaveManager.Instance.Data.PlayerData = new PlayerData(
+            playerHealth, 
+            numStims, 
+            canGrab, 
+            canPropel, 
+            canPushOff, 
+            hasUsedStim, 
+            canRoll
+            );
     }
 
-    // loads PlayerData object which will makes restoring saves easier
+    // called when loading a save
     public void LoadPlayerData(PlayerData playerData)
     {
         playerHealth = playerData.Health;
