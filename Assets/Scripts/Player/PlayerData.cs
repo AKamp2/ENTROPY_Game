@@ -2,19 +2,19 @@ using UnityEngine;
 // Stores the player's data for use in saving and loading
 public struct PlayerData
 {
-    int health;
+    private int health;
     public int Health { get { return health; } }
-    int stims;
+    private int stims;
     public int Stims { get { return stims; } }
-    bool canGrab;
+    private bool canGrab;
     public bool CanGrab { get { return canGrab; } }
-    bool canPropel;
+    private bool canPropel;
     public bool CanPropel { get { return canPropel; } }
-    bool canPushoff;
+    private bool canPushoff;
     public bool CanPushoff { get { return canPushoff; } }
-    bool hasUsedStim;
+    private bool hasUsedStim;
     public bool HasUsedStim {  get { return hasUsedStim; } }
-    bool canRoll;
+    private bool canRoll;
     public bool CanRoll { get { return canRoll; } }
     public PlayerData(
         int _health, 
