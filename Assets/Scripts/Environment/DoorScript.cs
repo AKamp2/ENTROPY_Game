@@ -444,7 +444,10 @@ public class DoorScript : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// Set the state of a door
+    /// </summary>
+    /// <param name="state"></param>
     public void SetState(States state)
     {
         States previousState = this.states;
