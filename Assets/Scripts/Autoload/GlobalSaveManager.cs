@@ -26,6 +26,7 @@ public class GlobalSaveManager : MonoBehaviour
         } else
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
