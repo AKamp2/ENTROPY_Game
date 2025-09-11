@@ -1,8 +1,6 @@
 using UnityEngine;
-using System.Collections.Generic;
 using System.IO;
 using System;
-using System.Collections;
 
 // this contains info about the game, such as the current level and its state
 // this is the file the will handle saving and loading
@@ -20,6 +18,7 @@ public class GlobalSaveManager : MonoBehaviour
     }
     private void Awake()
     {
+        Debug.Log("Save script initialized on load!");
         // Ensure that there is only one GlobalSaveManager
         if (Instance != null && Instance != this)
         {
