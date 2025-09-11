@@ -31,7 +31,12 @@ public class StimEvent : MonoBehaviour
         
     }
 
-    public IEnumerator StartStimTutorial()
+    public void StartStimEvent()
+    {
+        StartCoroutine(StimTutorial());
+    }
+
+    public IEnumerator StimTutorial()
     {
         manager.StartDialogueSequence(5, 0.5f);
 

@@ -134,14 +134,14 @@ public class TutorialManager : MonoBehaviour
                     CompleteStep();
                     playerController.TotalRotation = 0;
                 }
-                else if (isUpsideDownLook && !playerController.HasRolled)
-                {
-                    if (!hasPlayedRollFailure)
-                    {
-                        StartCoroutine(dialogueManager.PlayFailureDialogue(1));
-                        hasPlayedRollFailure = true;
-                    }
-                }
+                //else if (isUpsideDownLook && !playerController.HasRolled)
+                //{
+                //    if (!hasPlayedRollFailure)
+                //    {
+                //        StartCoroutine(dialogueManager.PlayFailureDialogue(1));
+                //        hasPlayedRollFailure = true;
+                //    }
+                //}
             }
             else if (currentStep == 3)
             {
