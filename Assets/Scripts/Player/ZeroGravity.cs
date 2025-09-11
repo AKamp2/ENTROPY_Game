@@ -1624,6 +1624,8 @@ public class ZeroGravity : MonoBehaviour
     public void StorePlayerData()
     {
         GlobalSaveManager.Instance.Data.PlayerData = new PlayerData(
+            transform.position,
+            transform.rotation,
             playerHealth, 
             numStims, 
             canGrab, 
@@ -1637,6 +1639,8 @@ public class ZeroGravity : MonoBehaviour
     // called when loading a save
     public void LoadPlayerData(PlayerData playerData)
     {
+        transform.position = playerData.Position;
+        transform.rotation = playerData.Rotation;
         playerHealth = playerData.Health;
         numStims = playerData.Stims;
         canGrab = playerData.CanGrab;

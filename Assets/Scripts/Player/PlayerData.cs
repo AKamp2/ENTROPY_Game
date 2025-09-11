@@ -2,6 +2,10 @@ using UnityEngine;
 // Stores the player's data for use in saving and loading
 public struct PlayerData
 {
+    private Vector3 position;
+    public Vector3 Position { get { return position; } }
+    private Quaternion rotation;
+    public Quaternion Rotation { get { return rotation; } }
     private int health;
     public int Health { get { return health; } }
     private int stims;
@@ -17,6 +21,8 @@ public struct PlayerData
     private bool canRoll;
     public bool CanRoll { get { return canRoll; } }
     public PlayerData(
+        Vector3 _position,
+        Quaternion _rotation,
         int _health, 
         int _stims, 
         bool _canGrab, 
@@ -26,6 +32,8 @@ public struct PlayerData
         bool _canRoll
         )
     {
+        position = _position;
+        rotation = _rotation;
         health = _health;
         stims = _stims;
         canGrab = _canGrab;
