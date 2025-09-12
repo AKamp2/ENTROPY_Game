@@ -353,6 +353,15 @@ public class ZeroGravity : MonoBehaviour
 
     #endregion
 
+    private void Awake()
+    {
+        // when loading from save, overwrite the player data
+        if (GlobalSaveManager.Instance.LoadFromSave)
+        {
+            LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -402,12 +411,6 @@ public class ZeroGravity : MonoBehaviour
             pullDrag = 0.9f;
             grabDrag = 0.1f;
             jointSpringForce = 5.5f;
-        }
-
-        // when loading from save, overwrite the player data
-        if (GlobalSaveManager.Instance.LoadFromSave)
-        {
-            LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
         }
     }
 
@@ -1628,11 +1631,8 @@ public class ZeroGravity : MonoBehaviour
             transform.rotation,
             playerHealth, 
             numStims, 
-            canGrab, 
-            canPropel, 
-            canPushOff, 
-            hasUsedStim, 
-            canRoll
+            hasUsedStim,
+            tutorialManager.inTutorial
             );
     }
 
@@ -1643,10 +1643,21 @@ public class ZeroGravity : MonoBehaviour
         transform.rotation = playerData.Rotation;
         playerHealth = playerData.Health;
         numStims = playerData.Stims;
-        canGrab = playerData.CanGrab;
-        canPropel = playerData.CanPropel;
-        canPushOff = playerData.CanPushoff;
         hasUsedStim = playerData.HasUsedStim;
-        canRoll = playerData.CanRoll;
+        // reset all actions
+        if (playerData.InTutorial)
+        {
+            tutorialManager.RestartTutorial();
+        }
+        else
+        {
+            // get rid of the tutorial
+            tutorialMode = false;
+            canGrab = true;
+            canMove = true;
+            canPropel = true;
+            canRoll = true;
+            canPushOff = true;
+        }
     }
 }

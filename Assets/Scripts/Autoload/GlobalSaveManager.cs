@@ -49,7 +49,7 @@ public class GlobalSaveManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Debug.Log(e);
         }
         return data;
     }
@@ -57,6 +57,8 @@ public class GlobalSaveManager : MonoBehaviour
     public void CreateSaveFile()
     {
         string json = JsonUtility.ToJson(Data);
+        Debug.Log("this is the Save Data as a string:");
+        Debug.Log(json);
         string path = Application.dataPath;
         SaveTextToFile(path, FILENAME, json);
     }
@@ -70,7 +72,7 @@ public class GlobalSaveManager : MonoBehaviour
 
         path = Path.Join(path, fileName);
 
-        Console.WriteLine(path);
+        Debug.Log(path);
 
         try
         {
@@ -78,7 +80,7 @@ public class GlobalSaveManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Debug.Log(e);
         }
     }
 }

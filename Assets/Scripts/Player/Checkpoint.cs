@@ -2,12 +2,16 @@ using UnityEngine;
 using System;
 
 [RequireComponent(typeof(Collider))]
+[Serializable]
 public class Checkpoint : MonoBehaviour
 {
+    [SerializeField]
     public GameObject respawnPoint;            // where the player should respawn
+    [SerializeField]
     public event Action<Checkpoint> OnReached; // fired when this checkpoint is hit
-
+    [SerializeField]
     Collider _col;
+    [SerializeField]
     ZeroGravity _zeroG;                       // cached player component
 
     void Awake()

@@ -52,7 +52,7 @@ public class DoorManager : MonoBehaviour
         // when loading from save, overwrite the doors
         if (GlobalSaveManager.Instance.LoadFromSave)
         {
-            LoadDoorStates((DoorScript[])GlobalSaveManager.Instance.Data.Doors.Clone());
+            // LoadDoorStates((DoorScript[])GlobalSaveManager.Instance.Data.Doors.Clone());
         }
     }
 
@@ -87,7 +87,7 @@ public class DoorManager : MonoBehaviour
     public void StoreDoorStates()
     {
         // store a copy of the checkpoint data in the global save manager
-        GlobalSaveManager.Instance.Data.Doors = (DoorScript[])doors.Clone();
+        // GlobalSaveManager.Instance.Data.Doors = (DoorScript[])doors.Clone();
     }
 
     // called when loading a save

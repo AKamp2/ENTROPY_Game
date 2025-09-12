@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class CheckpointManager : MonoBehaviour
 {
     [Tooltip("Ordered list of your checkpoints in scene")]
+    [SerializeField]
     public List<Checkpoint> checkpoints;
     public ZeroGravity playerZeroG;    // drag your player’s ZeroGravity component here
 
@@ -35,6 +36,7 @@ public class CheckpointManager : MonoBehaviour
             checkpoints[_currentIndex].Initialize(playerZeroG, true);
         }
         StoreCheckpointStates();
+        playerZeroG.StorePlayerData();
         // save the game at checkpoints
         GlobalSaveManager.Instance.CreateSaveFile();
     }
@@ -42,7 +44,7 @@ public class CheckpointManager : MonoBehaviour
     public void StoreCheckpointStates()
     {
         // store a copy of the checkpoint data in the global save manager
-        GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
+        // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
     }
 
     // called when loading a save
