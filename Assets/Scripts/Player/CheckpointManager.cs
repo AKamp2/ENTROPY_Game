@@ -19,11 +19,10 @@ public class CheckpointManager : MonoBehaviour
             cp.OnReached += HandleCheckpointReached;
             cp.Initialize(playerZeroG, i == 0);
         }
-
         // when loading from save, overwrite the checkpoints
         if (GlobalSaveManager.Instance.LoadFromSave)
         {
-            LoadCheckpointStates(new List<Checkpoint>(GlobalSaveManager.Instance.Data.Checkpoints));
+            LoadCheckpointStates((bool[])GlobalSaveManager.Instance.Data.CheckpointStates.Clone());
         }
     }
 
@@ -45,11 +44,20 @@ public class CheckpointManager : MonoBehaviour
     {
         // store a copy of the checkpoint data in the global save manager
         // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
+        bool[] _checkPointStates = new bool[checkpoints.Count];
+        for (int i = 0; i < checkpoints.Count; i++)
+        {
+            _checkPointStates[i] = checkpoints[i].Col.enabled;
+        }
+        GlobalSaveManager.Instance.Data.CheckpointStates = (bool[])_checkPointStates.Clone();
     }
 
     // called when loading a save
-    public void LoadCheckpointStates(List<Checkpoint> _checkpoints)
+    public void LoadCheckpointStates(bool[] _checkpointStates)
     {
-        checkpoints = _checkpoints;
+        for (int i = 0; i < checkpoints.Count; i++)
+        {
+            checkpoints[i].Col.enabled = _checkpointStates[i];
+        }
     }
 }

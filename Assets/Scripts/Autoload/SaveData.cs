@@ -15,11 +15,11 @@ public struct SaveData
         set { playerData = value; }
     }
     [SerializeField]
-    private List<Checkpoint> checkpoints;
-    public List<Checkpoint> Checkpoints
+    private bool[] checkpointStates;
+    public bool[] CheckpointStates
     {
-        get { return checkpoints; }
-        set { checkpoints = value; }
+        get { return checkpointStates; }
+        set { checkpointStates = value; }
     }
     //private DoorScript[] doors;
     //public DoorScript[] Doors
