@@ -1624,10 +1624,10 @@ public class ZeroGravity : MonoBehaviour
     #endregion
 
     // backs up player data for saving
-    public void StorePlayerData()
+    public void StorePlayerData(Vector3 _position) // takes the checkpoints respawn point
     {
         GlobalSaveManager.Instance.Data.PlayerData = new PlayerData(
-            transform.position,
+            _position,
             transform.rotation,
             playerHealth, 
             numStims, 
