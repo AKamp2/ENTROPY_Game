@@ -84,11 +84,6 @@ public class TutorialManager : MonoBehaviour
 
         if (playerController.TutorialMode == true)
         {
-            if(doorToOpen != null)
-            {
-                //doorToOpen.SetState(DoorScript.States.Locked);
-            }
-
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
         }
