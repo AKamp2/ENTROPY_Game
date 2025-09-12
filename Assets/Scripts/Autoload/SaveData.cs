@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine; 
 
+// Used by the GlobalSaveManager to store all the data that will go in the save files
 [Serializable]
 public struct SaveData
 {
@@ -21,10 +22,11 @@ public struct SaveData
         get { return checkpointStates; }
         set { checkpointStates = value; }
     }
-    //private DoorScript[] doors;
-    //public DoorScript[] Doors
-    //{
-    //    get { return doors; }
-    //    set { doors = value; }
-    //}
+    [SerializeField]
+    private DoorScript.States[] doorStates;
+    public DoorScript.States[] DoorStates
+    {
+        get { return doorStates; }
+        set { doorStates = value; }
+    }
 }

@@ -22,7 +22,7 @@ public class CheckpointManager : MonoBehaviour
         // when loading from save, overwrite the checkpoints
         if (GlobalSaveManager.Instance.LoadFromSave)
         {
-            LoadCheckpointStates((bool[])GlobalSaveManager.Instance.Data.CheckpointStates.Clone());
+            LoadCheckpointStates(GlobalSaveManager.Instance.Data.CheckpointStates);
         }
     }
 
@@ -49,7 +49,7 @@ public class CheckpointManager : MonoBehaviour
         {
             _checkPointStates[i] = checkpoints[i].Col.enabled;
         }
-        GlobalSaveManager.Instance.Data.CheckpointStates = (bool[])_checkPointStates.Clone();
+        GlobalSaveManager.Instance.Data.CheckpointStates = _checkPointStates;
     }
 
     // called when loading a save

@@ -5,10 +5,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Jobs;
 using UnityEngine.Rendering.Universal;
-
 public class DoorScript : MonoBehaviour
 {
-
+    [Serializable]
     public enum States
     {
         Locked,
@@ -156,6 +155,7 @@ public class DoorScript : MonoBehaviour
         get { return states; }
         set {
             states = value;
+            // track door updates for saving purposes
             doorManager.StoreDoorStates();
         }
     }
@@ -304,7 +304,7 @@ public class DoorScript : MonoBehaviour
         startAudioSource.clip = doorOpenStart;
         startAudioSource.Play();
 
-        states = States.Opening;
+        DoorState = States.Opening;
         SetButtonColor(greenBase, greenEmis);
         decal.material = doorManager.UnlockedMaterial;
 
@@ -314,7 +314,7 @@ public class DoorScript : MonoBehaviour
 
         yield return MoveDoor(closedPos, openPos, openDuration, () =>
         {
-            states = States.Open;
+            DoorState = States.Open;
             //sinTime = 0f;
         });
 
@@ -331,7 +331,7 @@ public class DoorScript : MonoBehaviour
         startAudioSource.clip = doorCloseStart;
         startAudioSource.Play();
 
-        states = States.Closing;
+        DoorState = States.Closing;
         SetButtonColor(greenBase, greenEmis);
         decal.material = doorManager.UnlockedMaterial;
         isClosing = true;
@@ -342,7 +342,7 @@ public class DoorScript : MonoBehaviour
 
         yield return MoveDoor(openPos, closedPos, closeDuration, () =>
         {
-            states = States.Closed;
+            DoorState = States.Closed;
             //sinTime = 0f;
             isClosing = false;
         });
@@ -454,7 +454,7 @@ public class DoorScript : MonoBehaviour
     public void SetState(States state)
     {
         States previousState = this.states;
-        this.states = state;
+        this.DoorState = state;
 
         if (state == States.Closed || state == States.Open)
         {
@@ -514,7 +514,7 @@ public class DoorScript : MonoBehaviour
     {
         StartCoroutine(CloseDoor());
         yield return new WaitUntil(() => states == States.Closed);
-        states = States.Locked;
+        DoorState = States.Locked;
     }
 
     private void DialogueEnd(int sequenceIndex)
@@ -531,20 +531,20 @@ public class DoorScript : MonoBehaviour
     {
         if (states == States.Locked)
         {
-            states = States.Opening;
+            DoorState = States.Opening;
         }
     }
 
     public void LockDoor()
     {
-        states = States.Locked;
+        DoorState = States.Locked;
     }
 
     public void UnlockDoor()
     {
         if (states == States.Locked)
         {
-            states = States.Closed;
+            DoorState = States.Closed;
             UseDoor();
         }
     }
