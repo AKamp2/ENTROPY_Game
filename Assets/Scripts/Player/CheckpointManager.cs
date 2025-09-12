@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class CheckpointManager : MonoBehaviour
 {
     [Tooltip("Ordered list of your checkpoints in scene")]
+    [SerializeField]
     public List<Checkpoint> checkpoints;
     public ZeroGravity playerZeroG;    // drag your player’s ZeroGravity component here
 
@@ -18,6 +19,11 @@ public class CheckpointManager : MonoBehaviour
             cp.OnReached += HandleCheckpointReached;
             cp.Initialize(playerZeroG, i == 0);
         }
+        // when loading from save, overwrite the checkpoints
+        if (GlobalSaveManager.Instance.LoadFromSave)
+        {
+            LoadCheckpointStates(GlobalSaveManager.Instance.Data.CheckpointStates);
+        }
     }
 
     void HandleCheckpointReached(Checkpoint reached)
@@ -27,6 +33,32 @@ public class CheckpointManager : MonoBehaviour
         {
             _currentIndex++;
             checkpoints[_currentIndex].Initialize(playerZeroG, true);
+        }
+        StoreCheckpointStates();
+        // store the Player's data to the save manager, passing in the position of this checkpoint
+        playerZeroG.StorePlayerData(reached.respawnPoint.transform.position);
+        // save the game at checkpoints
+        GlobalSaveManager.Instance.CreateSaveFile();
+    }
+    // backs up checkpoint states for saving
+    public void StoreCheckpointStates()
+    {
+        // store a copy of the checkpoint data in the global save manager
+        // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
+        bool[] _checkPointStates = new bool[checkpoints.Count];
+        for (int i = 0; i < checkpoints.Count; i++)
+        {
+            _checkPointStates[i] = checkpoints[i].Col.enabled;
+        }
+        GlobalSaveManager.Instance.Data.CheckpointStates = _checkPointStates;
+    }
+
+    // called when loading a save
+    public void LoadCheckpointStates(bool[] _checkpointStates)
+    {
+        for (int i = 0; i < checkpoints.Count; i++)
+        {
+            checkpoints[i].Col.enabled = _checkpointStates[i];
         }
     }
 }
