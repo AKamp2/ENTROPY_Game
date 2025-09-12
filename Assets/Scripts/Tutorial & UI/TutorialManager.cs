@@ -486,6 +486,10 @@ public class TutorialManager : MonoBehaviour
         {
             FadeOut(propelCanvasGroup);
         }
+        if (rollProgressBar.gameObject.activeSelf == true)
+        {
+            rollProgressBar.gameObject.SetActive(false);
+        }
     }
 
     private void UpdateRollProgress()
