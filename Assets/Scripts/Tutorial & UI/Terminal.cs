@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-using UnityEngine.Events;
 
 public class Terminal : MonoBehaviour
 {
@@ -9,47 +8,30 @@ public class Terminal : MonoBehaviour
     private GameObject playerObj;
     [SerializeField] TerminalScreen terminalScreenScript;
     [SerializeField] GameObject terminalScreenObj;
-    [SerializeField] GameObject ALANScreen;
     [SerializeField] GameObject targetTransform;
     public bool isLookedAt = false;
     public bool isActivated = false;
+    public bool isUploadHidden = false;
     [SerializeField] TerminalPopup popup;
-    [SerializeField] TerminalDisabled disabled;
-    private Coroutine disabledRoutine;
-    public bool isUploadComplete = false;
-
-    //this is we can assign different actions to be called by our terminals
-    //assign a method from a script in the inspector
-    [Header("Events")]
-    public UnityEvent onUploadComplete;
-
     private void Start()
     {
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
-        if(isActivated == false)
-        {
-            disabled.StartFlashing();
-        }
     }
     
     private void Update()
     {
-        if (popup.isUploaded && !isUploadComplete)
+        if (popup.isUploaded && !isUploadHidden)
         {
-            isUploadComplete = true;
+            isUploadHidden = true;
             playerScript.PlayerCutSceneHandler(false);
-            //terminalScreenObj.SetActive(false);
-            ALANScreen.SetActive(true);
-
-            onUploadComplete?.Invoke();
+            terminalScreenObj.SetActive(false);
         }
     }
 
     public void Activation()
     {
         isActivated = true;
-        disabled.StopFlashing();
         playerScript.PlayerCutSceneHandler(true);
         terminalScreenObj.SetActive(true);
         terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());

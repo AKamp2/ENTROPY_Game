@@ -13,10 +13,8 @@ public class TerminalScreen : MonoBehaviour
 
     [SerializeField] TerminalPopup popup; 
 
-    //do a typewriter effect for the upload text in the terminal
     public IEnumerator TypeText()
     {
-        terminalText.gameObject.SetActive(true);
         foreach (char c in fullText)
         {
             currentText += c;

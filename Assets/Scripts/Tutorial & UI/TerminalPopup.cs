@@ -10,7 +10,7 @@ public class TerminalPopup : MonoBehaviour
     [SerializeField] GameObject screenBlur;
     public float uploadDuration = 3f;
     [SerializeField] Slider progressFill;
-    [SerializeField] GameObject terminalText;
+
     private float currentTime = 0f;
     private bool isUploading = false;
     public bool isUploaded = false;
@@ -18,7 +18,6 @@ public class TerminalPopup : MonoBehaviour
     {
         screenBlur.SetActive(true);
         gameObject.SetActive(true);
-        
         currentTime = 0f;
         isUploading = true;
         progressFill.value = 0f;
@@ -60,13 +59,7 @@ public class TerminalPopup : MonoBehaviour
         progressFill.value = 1f;
         uploadText.text = "UPLOADING... 100%";
         uploadCompleteText.SetActive(true);
-
-        yield return new WaitForSeconds(1f);
         isUploaded = true;
-
-        terminalText.SetActive(false);
-        gameObject.SetActive(false);
-        
     }
 
    

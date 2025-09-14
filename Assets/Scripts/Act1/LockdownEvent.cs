@@ -248,7 +248,6 @@ public class LockdownEvent : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        //Handle lockdown lever
         if (canPull && isActive)
         {
             audioManager.PlayButtonClick();
@@ -266,7 +265,6 @@ public class LockdownEvent : MonoBehaviour
             
         }
 
-        //Handle wrist monitor pickup
         if (canGrab && IsGrabbable)
         {
             player.AccessPermissions[0] = true;

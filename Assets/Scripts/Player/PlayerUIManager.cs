@@ -371,10 +371,6 @@ public class PlayerUIManager : MonoBehaviour
                     stim.CanRefill = false;
                 }
             }
-            if(terminalManager.CurrentTerminal != null)
-            {
-                terminalManager.CurrentTerminal = null;
-            }
             
         }
 
@@ -562,7 +558,7 @@ public class PlayerUIManager : MonoBehaviour
             
             if (terminal != null)
             {
-                terminalManager.CurrentTerminal = terminal;
+                terminalManager.GetCurrentTerminal(terminal);
                 if (terminal.isActivated)
                 {
                     inputIndicator.sprite = null;
