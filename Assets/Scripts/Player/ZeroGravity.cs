@@ -728,6 +728,7 @@ public class ZeroGravity : MonoBehaviour
 
     private void DetectClosingDoorTakeDamageAndBounce()
     {
+        if (isDead) return;
         float detectionRadius = boundingSphere.radius + 0.1f; // slightly larger for early detection
         Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.DoorLayer);
 
@@ -792,11 +793,8 @@ public class ZeroGravity : MonoBehaviour
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
             playerAudio.PlayFatalBounce(impactPoint);
 
-            if (!isDead)
-            {
-                //decrease the player health after they have collided with the closing door
-                isDead = true;
-            }
+            //decrease the player health after they have collided with the closing door
+            isDead = true;
         }
     }
 
