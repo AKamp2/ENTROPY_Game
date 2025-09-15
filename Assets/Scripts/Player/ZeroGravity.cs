@@ -227,6 +227,11 @@ public class ZeroGravity : MonoBehaviour
 
     private float totalRotation;
 
+    // these will prevent rapid door collisions by providing a delay
+    private int maxDoorCollisionCooldownFrames = 10;
+
+    private int doorCollisionCooldownFrames = 0;
+
     #region properties
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -437,7 +442,13 @@ public class ZeroGravity : MonoBehaviour
             //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
             //take damage from door closing on the player
-            DetectClosingDoorTakeDamageAndBounce();
+            if (doorCollisionCooldownFrames <= 0)
+            {
+                DetectClosingDoorTakeDamageAndBounce();
+            } else
+            {
+                doorCollisionCooldownFrames -= 1;
+            }
             //manage the cooldowns  
             //HurtCoolDown();
             JustHitCoolDown();
@@ -728,7 +739,6 @@ public class ZeroGravity : MonoBehaviour
 
     private void DetectClosingDoorTakeDamageAndBounce()
     {
-        if (isDead) return;
         float detectionRadius = boundingSphere.radius + 0.1f; // slightly larger for early detection
         Collider[] hitDoors = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.DoorLayer);
 
@@ -794,7 +804,10 @@ public class ZeroGravity : MonoBehaviour
             playerAudio.PlayFatalBounce(impactPoint);
 
             //decrease the player health after they have collided with the closing door
-            isDead = true;
+            if (!isDead) isDead = true;
+
+            //set door cooldown so the collisions do not spam
+            doorCollisionCooldownFrames = maxDoorCollisionCooldownFrames;
         }
     }
 
