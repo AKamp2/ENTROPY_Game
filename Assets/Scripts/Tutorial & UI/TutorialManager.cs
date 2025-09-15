@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class TutorialManager : MonoBehaviour
 {
@@ -30,7 +31,10 @@ public class TutorialManager : MonoBehaviour
     public CanvasGroup rollQCanvasGroup;
     public CanvasGroup rollECanvasGroup;
     public CanvasGroup enterCanvasGroup;
-    
+
+    [SerializeField] private Slider rollProgressBar;
+    [SerializeField] private float requiredRotation = 180f; // how much roll needed
+
     public float fadeDuration = 1f;
 
     float timer = 10f;
@@ -40,12 +44,14 @@ public class TutorialManager : MonoBehaviour
     private bool rollPanelHidden = false;
     private bool pushOffPanelHidden = false;
 
+
     //intended tutorial abilities
     private bool canGrab = true;
     private bool canRoll = true;
     private bool canPushOff = true;
     private bool canThrow = true;
     private bool canPropel = true;
+    private float playerGrabRange;
 
     private float initialRollZ;
 
@@ -74,14 +80,10 @@ public class TutorialManager : MonoBehaviour
         wristMonitor = FindFirstObjectByType<WristMonitor>();
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
         pickupObject = ZeroGPlayer.GetComponent<PickupScript>();
+        playerGrabRange = playerController.GrabRange;
 
         if (playerController.TutorialMode == true)
         {
-            if(doorToOpen != null)
-            {
-                //doorToOpen.SetState(DoorScript.States.Locked);
-            }
-
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
         }
@@ -116,16 +118,19 @@ public class TutorialManager : MonoBehaviour
             else if (currentStep == 2)
             {
 
-                float currentZ = playerController.cam.transform.eulerAngles.z;
+                UpdateRollProgress();
+                //float currentZ = playerController.cam.transform.eulerAngles.z;
                 //Debug.Log(currentZ);
 
                 // Compute delta roll from initial orientation
-                float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
+                //float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
-                bool isUpsideDownLook = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
-                bool isUpsideDown = playerController.TotalRotation <= -330;
+                //bool isUpsideDownLook = Mathf.Abs(delta) >= 170f && Mathf.Abs(delta) <= 190f;
+                //Debug.Log("Tutorial Detected Rotation " + playerController.TotalRotation);
+                bool isUpsideDown = playerController.TotalRotation >= requiredRotation;
 
-                if (isUpsideDown && playerController.HasRolled)
+                //Debug.Log("Has rolled? "+ playerController.HasRolled);
+                if (isUpsideDown)
                 {
                     //Debug.Log("Player rolled upside down");
                     playerController.StopRollingQuickly();
@@ -133,6 +138,7 @@ public class TutorialManager : MonoBehaviour
                     FadeOut(rollQCanvasGroup);
                     CompleteStep();
                     playerController.TotalRotation = 0;
+                    rollProgressBar.gameObject.SetActive(false); // hide when done
                 }
                 else if (isUpsideDownLook && !playerController.HasRolled)
                 {
@@ -145,12 +151,13 @@ public class TutorialManager : MonoBehaviour
             }
             else if (currentStep == 3)
             {
+                UpdateRollProgress();
                 //float currentZ = playerController.cam.transform.eulerAngles.z;
 
                 //float delta = Mathf.DeltaAngle(initialRollZ, currentZ);
 
                 //bool isUpright = Mathf.Abs(delta) <= 10f; // close to original orientation
-                bool isUpright = playerController.TotalRotation >= 330;
+                bool isUpright = playerController.TotalRotation <= requiredRotation;
 
                 if (isUpright)
                 {
@@ -160,6 +167,7 @@ public class TutorialManager : MonoBehaviour
                     FadeOut(rollECanvasGroup);
                     CompleteStep();
                     playerController.TotalRotation = 0;
+                    rollProgressBar.gameObject.SetActive(false); // hide when done
                 }
             }
             
@@ -178,6 +186,7 @@ public class TutorialManager : MonoBehaviour
     private IEnumerator StartTutorial()
     {
         SetPlayerAbilities(false, false, false, false, false);
+        playerController.GrabRange = 1f;
         inTutorial = true;
         yield return new WaitForSeconds(1f);
         dialogueAudio.PlayJingle();
@@ -212,7 +221,12 @@ public class TutorialManager : MonoBehaviour
             case 2:
                 // Step 2: Roll 180 degrees upside down
                 //Debug.Log("Tutorial 2: Roll upside down");
-                
+                if (!rollProgressBar.gameObject.activeSelf)
+                {
+                    rollProgressBar.gameObject.SetActive(true);
+                    rollProgressBar.value = 0f; // reset to empty immediately
+                }
+                    
                 stepComplete = false;
                 isWaitingForAction = true;
                 SetPlayerAbilities(true, false, false, true, false); // grab and roll only
@@ -224,10 +238,15 @@ public class TutorialManager : MonoBehaviour
             case 3:
                 // Step 3: Roll back upright
                 //Debug.Log("Tutorial 3: Roll upright");
-                
+                if (!rollProgressBar.gameObject.activeSelf)
+                {
+                    rollProgressBar.gameObject.SetActive(true);
+                    rollProgressBar.value = 0f; // reset to empty immediately
+                }
+                requiredRotation = -180f;
                 stepComplete = false;
                 isWaitingForAction = true;
-                SetPlayerAbilities(true, false, false, true, false); //grab, push off, roll
+                SetPlayerAbilities(true, false, false, true, false); // grab and roll only
                 initialRollZ = playerController.cam.transform.eulerAngles.z;
                 FadeIn(rollECanvasGroup);
                 
@@ -238,6 +257,7 @@ public class TutorialManager : MonoBehaviour
                 //Debug.Log("Tutorial 4: Propel and grab another bar");
                 stepComplete = false;
                 isWaitingForAction = true;
+                playerController.GrabRange = playerGrabRange;
                 SetPlayerAbilities(true, true, true, true, true); // Enable all
                 FadeIn(propelCanvasGroup);
                 break;
@@ -323,6 +343,7 @@ public class TutorialManager : MonoBehaviour
         inTutorial = false;
         isWaitingForAction = false;
         playerController.TutorialMode = false;
+        playerController.GrabRange = playerGrabRange;
         if(doorToOpen!=null)
         {
             if(doorToOpen.DoorState != DoorScript.States.Open)
@@ -465,9 +486,32 @@ public class TutorialManager : MonoBehaviour
         {
             FadeOut(propelCanvasGroup);
         }
+        if (rollProgressBar.gameObject.activeSelf == true)
+        {
+            rollProgressBar.gameObject.SetActive(false);
+        }
     }
 
-    
+    private void UpdateRollProgress()
+    {
+        float progress = 0f;
+
+        // Rolling right (positive TotalRotation)
+        if (requiredRotation > 0)
+        {
+            progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
+        }
+        // Rolling left (negative TotalRotation)
+        else if (requiredRotation < 0)
+        {
+            progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
+        }
+        // else progress = 0
+
+        rollProgressBar.value = progress;
+    }
+
+
 }
 
 

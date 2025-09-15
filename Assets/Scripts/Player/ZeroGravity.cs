@@ -566,7 +566,9 @@ public class ZeroGravity : MonoBehaviour
             }
             if (tutorialManager.inTutorial)
             {
-                totalRotation += rotationZ;
+                // inside RotateCam, after applying roll
+                float deltaRoll = currentRollSpeed * Time.deltaTime;
+                totalRotation += deltaRoll;
                 if (totalRotation > 360)
                 {
                     totalRotation = 0;
@@ -1122,6 +1124,12 @@ public class ZeroGravity : MonoBehaviour
 
         if (useManualPullIn && !isPullingIn)
             return;
+
+        //safeguard so that the player can't pull in and then release in the tutorial mode before they are able to propel
+        if(tutorialMode && !canPropel)
+        {
+            return;
+        }
 
         //if the joint is a long distance between the player and the bar
         if (joint.maxDistance >= joint.minDistance)
