@@ -359,6 +359,12 @@ public class ZeroGravity : MonoBehaviour
         if (GlobalSaveManager.Instance.LoadFromSave)
         {
             LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
+        } else
+        {
+            //set the player health
+            playerHealth = 3;
+            //make sure there are no stims in teh plaeyr inventory
+            numStims = 0;
         }
     }
 
@@ -400,11 +406,6 @@ public class ZeroGravity : MonoBehaviour
         Cursor.visible = false;
         rb.useGravity = false;
         cam = Camera.main;
-
-        //set the player health
-        playerHealth = 3;
-        //make sure there are no stims in teh plaeyr inventory
-        numStims = 0;
 
         if(useManualPullIn)
         {
