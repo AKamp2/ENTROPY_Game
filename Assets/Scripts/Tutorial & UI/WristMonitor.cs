@@ -26,6 +26,7 @@ public class WristMonitor : MonoBehaviour
     public float duration;
     Vector3 currentPosition;
 
+    [SerializeField] private GameObject[] _displayTexts;
     [SerializeField] ObjectiveUpdate objectiveUpdator;
 
     
@@ -60,11 +61,11 @@ public class WristMonitor : MonoBehaviour
     private void Start()
     {
         mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Empty", "<size=16><color=orange>Current Objective: </size></color><size=14>\nwaiting for objective</size>\n", "<size=12><color=orange>Sub Objective: </color>\n</size>", false));
-        mainObjectives.Add(new Objective("Medbay", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Medbay</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Dining Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Dining Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Reconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Server Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Server Room</size> \n", "<size=12><color=orange>Sub Objective: </color></size>\n  <size=10>Override Manual Lockdown</size>", false));
-        mainObjectives.Add(new Objective("Facilities Room", "<size=16><color=orange>Current Objective: </size></color><size=14>\n  Reach the Facilities Room</size> \n", "", false));
+        mainObjectives.Add(new Objective("Empty", "<size=14><color=orange>Current Objective: </size></color><size=12>\nwaiting for objective</size>\n", "<size=10><color=orange>Sub Objective: </color>\n</size>", false));
+        mainObjectives.Add(new Objective("Medbay", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Medbay</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Reconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Dining Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Dining Room</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Reconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Server Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Server Room</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Override Manual Lockdown</size>", false));
+        mainObjectives.Add(new Objective("Facilities Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Facilities Room</size> \n", "", false));
         if (targetRectTransform == null) {
             Debug.LogError("TargetRectTransform not assigned");
             return;
@@ -165,6 +166,14 @@ public class WristMonitor : MonoBehaviour
         {
             completedObjectives.Add(mainObjectives[0]);
             mainObjectives.Remove(mainObjectives[0]);
+        }
+    }
+
+    public void SwitchDisplay(int displayIndex)
+    {
+        for(int i = 0; i < _displayTexts.Length; i++)
+        {
+            _displayTexts[i].SetActive(i== displayIndex);
         }
     }
 }
