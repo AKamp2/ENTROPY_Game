@@ -228,7 +228,7 @@ public class ZeroGravity : MonoBehaviour
     private float totalRotation;
 
     // these will prevent rapid door collisions by providing a delay
-    private int maxDoorCollisionCooldownFrames = 10;
+    private int maxDoorCollisionCooldownFrames = 30;
 
     private int doorCollisionCooldownFrames = 0;
 
