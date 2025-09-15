@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.InputSystem;
 using UnityEngine.ProBuilder;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI.Table;
 
@@ -351,6 +352,15 @@ public class ZeroGravity : MonoBehaviour
     public bool IsGrabbing => isGrabbing;
 
     #endregion
+
+    private void Awake()
+    {
+        // when loading from save, overwrite the player data
+        if (GlobalSaveManager.Instance.LoadFromSave)
+        {
+            LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -1472,50 +1482,55 @@ public class ZeroGravity : MonoBehaviour
 
     public void Respawn(GameObject? respawnOverride = null)
     {
-        GameObject targetLoc = respawnOverride ?? respawnLoc;
+        // replacing this logic with save loading
+        //GameObject targetLoc = respawnOverride ?? respawnLoc;
 
-        if(enemyManager != null)
-        {
-            enemyManager.ResetAliens();
-        }
-        
-        transform.position = targetLoc.transform.position;
-        cam.transform.rotation = targetLoc.transform.rotation;
-        isDead = false;
-        if(hasUsedStim)
-        {
-            playerHealth = maxHealth;
-        }
-        else
-        {
-            playerHealth = 3;
-        }
-        
-        
-        //stop rolling
-        rotationZ = 0;
-        currentRollSpeed = 0;
+        //if(enemyManager != null)
+        //{
+        //    enemyManager.ResetAliens();
+        //}
 
-        //reset all actions
-        if(tutorialManager.inTutorial)
-        {
-            tutorialManager.RestartTutorial();
-        }
-        else
-        {
-            canGrab = true;
-            canMove = true;
-            canPropel = true;
-            canRoll = true;
-            canPushOff = true;
-        }
+        //transform.position = targetLoc.transform.position;
+        //cam.transform.rotation = targetLoc.transform.rotation;
+        //isDead = false;
+        //if(hasUsedStim)
+        //{
+        //    playerHealth = maxHealth;
+        //}
+        //else
+        //{
+        //    playerHealth = 3;
+        //}
 
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
-            rb.angularVelocity = Vector3.zero;
-        }
+
+        ////stop rolling
+        //rotationZ = 0;
+        //currentRollSpeed = 0;
+
+        ////reset all actions
+        //if(tutorialManager.inTutorial)
+        //{
+        //    tutorialManager.RestartTutorial();
+        //}
+        //else
+        //{
+        //    canGrab = true;
+        //    canMove = true;
+        //    canPropel = true;
+        //    canRoll = true;
+        //    canPushOff = true;
+        //}
+
+        //Rigidbody rb = GetComponent<Rigidbody>();
+        //if (rb != null)
+        //{
+        //    rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
+        //    rb.angularVelocity = Vector3.zero;
+        //}
+        GlobalSaveManager.Instance.LoadSaveFile();
+        GlobalSaveManager.Instance.LoadFromSave = true;
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentSceneName);
     }
 
     private IEnumerator UseStim()
@@ -1615,4 +1630,42 @@ public class ZeroGravity : MonoBehaviour
         }
     }
     #endregion
+
+    // backs up player data for saving
+    public void StorePlayerData(Vector3 _position) // takes the checkpoints respawn point
+    {
+        GlobalSaveManager.Instance.Data.PlayerData = new PlayerData(
+            _position,
+            transform.rotation,
+            playerHealth, 
+            numStims, 
+            hasUsedStim,
+            tutorialManager.inTutorial
+            );
+    }
+
+    // called when loading a save
+    public void LoadPlayerData(PlayerData playerData)
+    {
+        transform.position = playerData.Position;
+        transform.rotation = playerData.Rotation;
+        playerHealth = playerData.Health;
+        numStims = playerData.Stims;
+        hasUsedStim = playerData.HasUsedStim;
+        // reset all actions
+        if (playerData.InTutorial)
+        {
+            tutorialManager.RestartTutorial();
+        }
+        else
+        {
+            // get rid of the tutorial
+            tutorialMode = false;
+            canGrab = true;
+            canMove = true;
+            canPropel = true;
+            canRoll = true;
+            canPushOff = true;
+        }
+    }
 }
