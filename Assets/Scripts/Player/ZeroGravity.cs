@@ -351,6 +351,11 @@ public class ZeroGravity : MonoBehaviour
     // getter for isGrabbing
     public bool IsGrabbing => isGrabbing;
 
+    // pull in force - replace with equation
+    private float pullInForce = 10f;
+    // pull forward force - replace with equation
+    private float pullForwardForce = 5f;
+
     #endregion
 
     private void Awake()
@@ -1044,13 +1049,26 @@ public class ZeroGravity : MonoBehaviour
             //Debug.Log("swingaling");
             swingPoint = bar.position;
 
+            // constrain the players location to the grab range
+            float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+            Vector3 directionToRung = (swingPoint - cam.transform.position).normalized;
+            if (distanceFromPoint > grabRange)
+            {
+                // move the player by the difference of their arm and grab range
+                transform.position = swingPoint + -directionToRung * grabRange;
+            }
+            // pull in force
+            rb.AddForce(directionToRung * pullInForce);
+            // pull forward force
+            rb.AddForce(cam.transform.forward * pullForwardForce);
+
             //ensure that the player isn't alr swinging on another bar
             if (this.gameObject.GetComponent<SpringJoint>() == null)
             {
                 joint = this.gameObject.AddComponent<SpringJoint>();
                 joint.autoConfigureConnectedAnchor = false;
                 joint.connectedAnchor = swingPoint;
-                float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
+                
 
                 //disable the collision with bar when grabbing
                 joint.enableCollision = false;
@@ -1214,7 +1232,7 @@ public class ZeroGravity : MonoBehaviour
         if(Time.time > grabSwingTimeStamp && bar != null)
         {
             justGrabbed = false;
-            swinging = false;
+            // swinging = false;
             prevJustGrabbed = justGrabbed;
             grabSwingTimeStamp = 0f;
         }
