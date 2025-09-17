@@ -95,7 +95,7 @@ public class TutorialManager : MonoBehaviour
         // Skip tutorial with Enter
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
-            if (!tutorialSkipped)
+            if (!tutorialSkipped && inTutorial)
             {
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
@@ -466,23 +466,25 @@ public class TutorialManager : MonoBehaviour
 
     private void HideAllPanels()
     {
-        if(enterCanvasGroup.alpha == 1)
+        StopAllCoroutines();
+
+        if(enterCanvasGroup.alpha != 0)
         {
             FadeOut(enterCanvasGroup);
         }
-        if(rollQCanvasGroup.alpha == 1)
+        if(rollQCanvasGroup.alpha != 0)
         {
             FadeOut(rollQCanvasGroup);
         }
-        if (rollECanvasGroup.alpha == 1)
+        if (rollECanvasGroup.alpha != 0)
         {
             FadeOut(rollECanvasGroup);
         }
-        if (grabCanvasGroup.alpha == 1)
+        if (grabCanvasGroup.alpha != 0)
         {
             FadeOut(grabCanvasGroup);
         }
-        if (propelCanvasGroup.alpha == 1)
+        if (propelCanvasGroup.alpha != 0)
         {
             FadeOut(propelCanvasGroup);
         }
