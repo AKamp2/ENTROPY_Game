@@ -21,6 +21,12 @@ public class WristMonitor : MonoBehaviour
     [SerializeField] Slider healthSlider;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
     [SerializeField] GameObject wristMonitor;
+    // checks the wrist monitor object and manipulates the state of having the wrist monitor accordingly
+    public bool HasWristMonitor
+    {
+        get { return !wristMonitor.activeSelf; }
+        set {  wristMonitor.SetActive(!value); }
+    }
     [SerializeField] TextMeshProUGUI stimText;
     public List<Objective> mainObjectives = new List<Objective>();
     public List<Objective> completedObjectives = new List<Objective>();

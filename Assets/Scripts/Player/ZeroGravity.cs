@@ -1647,7 +1647,7 @@ public class ZeroGravity : MonoBehaviour
             hasUsedStim,
             tutorialManager.inTutorial,
             (bool[])accessPermissions.Clone(),
-            true,
+            wristMonitor.HasWristMonitor,
             wristMonitor.IsActive,
             new List<WristMonitor.Objective>(wristMonitor.mainObjectives),
             new List<WristMonitor.Objective>(wristMonitor.completedObjectives)
@@ -1679,6 +1679,7 @@ public class ZeroGravity : MonoBehaviour
         }
         // set wrist monitor data
         accessPermissions = (bool[])playerData.AccessPermissions.Clone();
+        wristMonitor.HasWristMonitor = playerData.HasWristMonitor;
         wristMonitor.IsActive = playerData.ShowingWristMonitor;
         wristMonitor.mainObjectives = new List<WristMonitor.Objective>(playerData.MainObjectives);
         wristMonitor.completedObjectives = new List<WristMonitor.Objective>(playerData.CompletedObjectives);
