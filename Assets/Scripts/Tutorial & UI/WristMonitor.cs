@@ -6,11 +6,17 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class WristMonitor : MonoBehaviour
 {
     // Variables
     bool isActive = false;
+    public bool IsActive
+    {
+        get { return isActive; }
+        set { isActive = value; }
+    }
     [SerializeField] ZeroGravity player;
     [SerializeField] Slider healthSlider;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
@@ -39,6 +45,7 @@ public class WristMonitor : MonoBehaviour
     /// <summary>
     /// Public class used to display vital information to the player of how they must proceed
     /// </summary>
+    [Serializable]
     public class Objective
     {
         public Objective(string objectiveName, string objectiveDescription, string subObjective, bool isCompleted)

@@ -75,6 +75,10 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private bool[] accessPermissions = new bool[3];
 
+    // Give the player a reference to the wrist monitor for saving
+    [SerializeField]
+    private WristMonitor wristMonitor;
+
     [Header("== Player Movement Settings ==")]
     [SerializeField]
     private float rollTorque = 250.0f;
@@ -1641,7 +1645,12 @@ public class ZeroGravity : MonoBehaviour
             playerHealth, 
             numStims, 
             hasUsedStim,
-            tutorialManager.inTutorial
+            tutorialManager.inTutorial,
+            (bool[])accessPermissions.Clone(),
+            true,
+            wristMonitor.IsActive,
+            new List<WristMonitor.Objective>(wristMonitor.mainObjectives),
+            new List<WristMonitor.Objective>(wristMonitor.completedObjectives)
             );
     }
 
@@ -1668,5 +1677,10 @@ public class ZeroGravity : MonoBehaviour
             canRoll = true;
             canPushOff = true;
         }
+        // set wrist monitor data
+        accessPermissions = (bool[])playerData.AccessPermissions.Clone();
+        wristMonitor.IsActive = playerData.ShowingWristMonitor;
+        wristMonitor.mainObjectives = new List<WristMonitor.Objective>(playerData.MainObjectives);
+        wristMonitor.completedObjectives = new List<WristMonitor.Objective>(playerData.CompletedObjectives);
     }
 }
