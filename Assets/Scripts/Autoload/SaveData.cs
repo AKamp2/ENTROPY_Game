@@ -4,7 +4,7 @@ using UnityEngine;
 
 // Used by the GlobalSaveManager to store all the data that will go in the save files
 [Serializable]
-public struct SaveData
+public class SaveData
 {
     // the data that will be saved
     //int mapIndex;

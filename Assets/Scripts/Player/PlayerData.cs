@@ -4,7 +4,7 @@ using UnityEngine;
 using static WristMonitor;
 // Stores the player's data for use in saving and loading
 [Serializable]
-public struct PlayerData
+public class PlayerData
 {
     [SerializeField]
     private Vector3 position;
