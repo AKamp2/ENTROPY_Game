@@ -113,6 +113,8 @@ public class ZeroGravity : MonoBehaviour
     //Propel off bar 
     [SerializeField]
     private float propelThrust = 50000f;
+    [SerializeField]
+    private float snapToBarAngle = 20f; // degrees
 
     [Header("== Push Off Wall Settings ==")]
     [SerializeField]
@@ -1048,19 +1050,26 @@ public class ZeroGravity : MonoBehaviour
         {
             //Debug.Log("swingaling");
             swingPoint = bar.position;
-
-            // constrain the players location to the grab range
+            // Snap to bar when the player is looking at the bar, otherwise swing
             float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
             Vector3 directionToRung = (swingPoint - cam.transform.position).normalized;
-            if (distanceFromPoint > grabRange)
+            if (Mathf.Abs(Vector3.Angle(directionToRung, cam.transform.forward)) < snapToBarAngle)
             {
-                // move the player by the difference of their arm and grab range
-                transform.position = swingPoint + -directionToRung * grabRange;
+                swinging = false;
             }
-            // pull in force
-            rb.AddForce(directionToRung * pullInForce);
-            // pull forward force
-            rb.AddForce(cam.transform.forward * pullForwardForce);
+            if (swinging)
+            {
+                // constrain the players location to the grab range ////
+                if (distanceFromPoint > grabRange)
+                {
+                    // move the player by the difference of their arm and grab range
+                    transform.position = swingPoint + -directionToRung * grabRange;
+                }
+                // pull in force
+                rb.AddForce(directionToRung * pullInForce);
+                // pull forward force
+                rb.AddForce(cam.transform.forward * pullForwardForce);
+            }
 
             //ensure that the player isn't alr swinging on another bar
             if (this.gameObject.GetComponent<SpringJoint>() == null)
@@ -1232,7 +1241,7 @@ public class ZeroGravity : MonoBehaviour
         if(Time.time > grabSwingTimeStamp && bar != null)
         {
             justGrabbed = false;
-            // swinging = false;
+            // swinging = false;////
             prevJustGrabbed = justGrabbed;
             grabSwingTimeStamp = 0f;
         }
