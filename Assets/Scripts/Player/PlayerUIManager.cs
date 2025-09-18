@@ -143,6 +143,11 @@ public class PlayerUIManager : MonoBehaviour
         set { progressBar = value; }
     }
 
+    public bool CanPushOffNow
+    {
+        get { return InputIndicator.sprite == SpaceIndicator; }
+    }
+
     public Sprite CrosshairIcon { get { return crosshairIcon; } }
 
     public Sprite WASDIndicator { get { return wasdIndicator; } }
@@ -464,8 +469,6 @@ public class PlayerUIManager : MonoBehaviour
             }
             else
             {
-                // unset potential wall as the player no longer has a potential wall to push off of
-                player.PotentialWall = null;
                 HidePushIndicator();
             }
         }
@@ -790,8 +793,6 @@ public class PlayerUIManager : MonoBehaviour
                     //        inputIndicator.color = new Color(0f, 0f, 0f, 0f);
                     //    }
                     //}
-                    // unset potential wall as the player no longer has a potential wall to push off of
-                    player.PotentialWall = null;
                     HidePushIndicator();
                 }
                 //if the z position of the grabber is off screen
@@ -866,8 +867,6 @@ public class PlayerUIManager : MonoBehaviour
                         }
 
                         //grabber.transform.localRotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
-                        // unset potential wall as the player no longer has a potential wall to push off of
-                        player.PotentialWall = null;
                         HidePushIndicator();
                     }
                 }
