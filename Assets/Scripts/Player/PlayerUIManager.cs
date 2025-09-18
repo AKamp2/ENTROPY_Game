@@ -208,6 +208,9 @@ public class PlayerUIManager : MonoBehaviour
     void Update()
     {
         HandleHealthUI();
+        //search for bars and other stuff in the raycast
+        HandleRaycastUI();
+        grabberRectTransform = grabber.GetComponent<RectTransform>();
         if (!player.IsGrabbing)
         {
             //if there are no bars in the raycast 
@@ -223,9 +226,6 @@ public class PlayerUIManager : MonoBehaviour
                 HideGrabber();
             }
         }
-        //search for bars and other stuff in the raycast
-        HandleRaycastUI();
-        grabberRectTransform = grabber.GetComponent<RectTransform>();
     }
 
     /// <summary>
@@ -260,9 +260,22 @@ public class PlayerUIManager : MonoBehaviour
             {
                 Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
                 string tag = null;
-
+                //check for ray collision with barier's first to ensure that ray's can't go past walls 
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
+                {
+                    tag = hit.transform.tag;
+                    if (tag == "Barrier")
+                    {
+                        //ensure we arent continuously updating wall detections. we only need one
+                        if (wallHit == null)
+                        {
+                            //store the barrier as a fallback if we don't get a bar on screen
+                            wallHit = hit;
+                        }
+                    }
+                }
                 // if raycast hits a bar
-                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer) && !player.IsGrabbing)
+                else if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     //if the ray hits a grabbable object
@@ -275,6 +288,7 @@ public class PlayerUIManager : MonoBehaviour
                         float distanceToCenter = Vector2.Distance(hitScreenPoint, screenCenter);
                         if (distanceToCenter < bestBarHitDistance)
                         {
+                            Debug.DrawRay(ray.origin, ray.direction, Color.yellow);
                             barHit = hit;
                             bestBarHitDistance = distanceToCenter;
                         }
@@ -303,19 +317,6 @@ public class PlayerUIManager : MonoBehaviour
                                 interactableHit = hit;
                                 bestInteractableHitDistance = distanceToCenter;
                             }
-                        }
-                    }
-                }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
-                {
-                    tag = hit.transform.tag;
-                    if (tag == "Barrier")
-                    {
-                        //ensure we arent continuously updating wall detections. we only need one
-                        if (wallHit == null)
-                        {
-                            //store the barrier as a fallback if we don't get a bar on screen
-                            wallHit = hit;
                         }
                     }
                 }
@@ -646,9 +647,10 @@ public class PlayerUIManager : MonoBehaviour
     /// <returns></returns>
     public Transform UpdateClosestBarInView()
     {
-        //Debug.Log("updatedclosestw executed");
-        //check for all nearby bars to the player
+        //Debug.Log("updatedclosest executed");
+        //check for all nearby bars and barriers to the player
         Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, barLayer);
+        //Collider[] nearbyBarriers = Physics.OverlapSphere(transform.position, player.GrabRange, barrierLayer);
         Collider[] nearbyObjects;
 
         // Only track floating objects if able to pick up object
@@ -663,6 +665,22 @@ public class PlayerUIManager : MonoBehaviour
 
         // merge bar and object arrays
         Collider[] totalNearby = nearbyBars.Concat(nearbyObjects).ToArray();
+        //totalNearby = totalNearby.Concat(nearbyBarriers).ToArray();
+
+        ////debug so we can see where bars are detected compared to barriers
+        //for(int i = 0; i < totalNearby.Length; i++)
+        //{
+        //    if(i == 0)
+        //    {
+        //        Debug.Log("Start>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        //    }
+        //    Debug.Log("object: " + totalNearby[i].tag);
+
+        //    if (i == totalNearby.Length - 1)
+        //    {
+        //        Debug.Log("End>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        //    }
+        //}
 
         //initialize a transform for the closest bar and distance to that bar
         Transform closestObject = null;
@@ -674,20 +692,43 @@ public class PlayerUIManager : MonoBehaviour
             //set specifications for the viewport
             Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
 
-            //check if the bar is in the viewport and in front of the player
+            //check if the object is in the viewport and in front of the player
             if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
             {
-                float distanceToBar = Vector3.Distance(transform.position, obj.transform.position);
-                if (distanceToBar < closestDistance)
+                //calculate the distance from the player to the object in the scene
+                float distanceToObject = Vector3.Distance(player.transform.position, obj.transform.position);
+                //if the distance calculated is less than the previous found lowest distance object
+                if (distanceToObject < closestDistance)
                 {
-                    closestDistance = distanceToBar;
+                    //lets first confirm a barrier is not in the way using a raycast
+                    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    //create a ray as a final check to confirm that a barrier is not in the way of the this object being picked up
+                    Ray ray = player.cam.ScreenPointToRay(new Vector3(viewportPoint.x, viewportPoint.y, 0));
+                    Debug.DrawRay(ray.origin, ray.direction * player.GrabRange, Color.yellow);
+                    RaycastHit hit;
+
+                    if (Physics.Raycast(ray, out hit, distanceToObject, barrierLayer))
+                    {
+                        Debug.Log("barrier in the way bozo");
+                        //exit this one and don't store it
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    }
+
+                    //we store this closest distance
+                    closestDistance = distanceToObject;
                     closestObject = obj.transform;
                 }
             }
         }
+
         //the closest object is not null and the player is not currently grabbing
         if (closestObject != null && !player.IsGrabbing)
         {
+            //if (closestObject.gameObject.CompareTag("Barrier"))
+            //{
+            //    barInPeripheral = false;
+            //    return closestObject;
+            //}
             // ensure closest object is a bar
             if (closestObject.gameObject.CompareTag("Grabbable"))
             {
@@ -705,7 +746,7 @@ public class PlayerUIManager : MonoBehaviour
                 return closestObject;
             }
         }
-        if (!floatingObjInRaycast)
+        if (closestObject == null || !floatingObjInRaycast)
         {
             HideGrabber();
         }
@@ -908,30 +949,30 @@ public class PlayerUIManager : MonoBehaviour
         inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
     }
 
-    void OnDrawGizmos()
-    {
-        // Visualize the crosshair padding as a box in front of the camera
-        if (player.cam != null && crosshairRectTransform != null)
-        {
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshairRectTransform.position);
+    //void OnDrawGizmos()
+    //{
+    //    // Visualize the crosshair padding as a box in front of the camera
+    //    if (player.cam != null && crosshairRectTransform != null)
+    //    {
+    //        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, crosshairRectTransform.position);
 
-            // Define padded bounds
-            float screenWidth = Screen.width;
-            float screenHeight = Screen.height;
-            Vector2 paddedMin = new Vector2(screenPoint.x - player.GrabPadding, screenPoint.y - player.GrabPadding);
-            Vector2 paddedMax = new Vector2(screenPoint.x + player.GrabPadding, screenPoint.y + player.GrabPadding);
+    //        // Define padded bounds
+    //        float screenWidth = Screen.width;
+    //        float screenHeight = Screen.height;
+    //        Vector2 paddedMin = new Vector2(screenPoint.x - player.GrabPadding, screenPoint.y - player.GrabPadding);
+    //        Vector2 paddedMax = new Vector2(screenPoint.x + player.GrabPadding, screenPoint.y + player.GrabPadding);
 
-            // Draw a box at the grab range with padding
-            Gizmos.color = Color.green;
-            for (float x = paddedMin.x; x <= paddedMax.x; x += player.GrabPadding / 4f)
-            {
-                for (float y = paddedMin.y; y <= paddedMax.y; y += player.GrabPadding / 4f)
-                {
-                    Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
-                    Gizmos.DrawRay(ray.origin, ray.direction * player.GrabRange);
-                }
-            }
-        }
-    }
+    //        // Draw a box at the grab range with padding
+    //        Gizmos.color = Color.green;
+    //        for (float x = paddedMin.x; x <= paddedMax.x; x += player.GrabPadding / 4f)
+    //        {
+    //            for (float y = paddedMin.y; y <= paddedMax.y; y += player.GrabPadding / 4f)
+    //            {
+    //                Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
+    //                Gizmos.DrawRay(ray.origin, ray.direction * player.GrabRange);
+    //            }
+    //        }
+    //    }
+    //}
 
 }
