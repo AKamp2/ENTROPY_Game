@@ -54,21 +54,41 @@ public class WristMonitor : MonoBehaviour
     [Serializable]
     public class Objective
     {
-        public Objective(string objectiveName, string objectiveDescription, string subObjective, bool isCompleted)
+        public Objective(string _objectiveName, string _objectiveDescription, string _subObjective, bool _isCompleted)
         {
-            ObjectiveName = objectiveName;
-            ObjectiveDescription = objectiveDescription;
-            SubObjective = subObjective;
-            IsCompleted = isCompleted;
+            objectiveName = _objectiveName;
+            objectiveDescription = _objectiveDescription;
+            subObjective = _subObjective;
+            isCompleted = _isCompleted;
         }
         [SerializeField]
-        public string ObjectiveName;
+        private string objectiveName;
+        public string ObjectiveName
+        {
+            get { return objectiveName; }
+            set { objectiveName = value; }
+        }
         [SerializeField]
-        public string ObjectiveDescription;
+        private string objectiveDescription;
+        public string ObjectiveDescription
+        {
+            get { return objectiveDescription; }
+            set { objectiveDescription = value; }
+        }
         [SerializeField]
-        public string SubObjective;
+        private string subObjective;
+        public string SubObjective
+        {
+            get { return subObjective; }
+            set { subObjective = value; }
+        }
         [SerializeField]
-        public bool IsCompleted;
+        private bool isCompleted;
+        public bool IsCompleted
+        {
+            get { return isCompleted; }
+            set { isCompleted = value; }
+        }
     }
 
     /// <summary>
