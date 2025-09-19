@@ -198,6 +198,15 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleFastPull"",
+                    ""type"": ""Button"",
+                    ""id"": ""e7531f7d-ef36-4ca5-be4a-925054055ad3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -585,6 +594,17 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
                     ""action"": ""Stim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1116865d-b0a6-4850-90e3-3024d45b733d"",
+                    ""path"": ""<Keyboard>/period"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleFastPull"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -729,6 +749,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         m_PlayerControls_Throw = m_PlayerControls.FindAction("Throw", throwIfNotFound: true);
         m_PlayerControls_OffWall = m_PlayerControls.FindAction("OffWall", throwIfNotFound: true);
         m_PlayerControls_OpenWristMonitor = m_PlayerControls.FindAction("OpenWristMonitor", throwIfNotFound: true);
+        m_PlayerControls_ToggleFastPull = m_PlayerControls.FindAction("ToggleFastPull", throwIfNotFound: true);
         // Dialogue
         m_Dialogue = asset.FindActionMap("Dialogue", throwIfNotFound: true);
         m_Dialogue_ContinueDialogue = m_Dialogue.FindAction("ContinueDialogue", throwIfNotFound: true);
@@ -835,6 +856,7 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerControls_Throw;
     private readonly InputAction m_PlayerControls_OffWall;
     private readonly InputAction m_PlayerControls_OpenWristMonitor;
+    private readonly InputAction m_PlayerControls_ToggleFastPull;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerControls".
     /// </summary>
@@ -894,6 +916,10 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerControls/OpenWristMonitor".
         /// </summary>
         public InputAction @OpenWristMonitor => m_Wrapper.m_PlayerControls_OpenWristMonitor;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerControls/ToggleFastPull".
+        /// </summary>
+        public InputAction @ToggleFastPull => m_Wrapper.m_PlayerControls_ToggleFastPull;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -956,6 +982,9 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
             @OpenWristMonitor.started += instance.OnOpenWristMonitor;
             @OpenWristMonitor.performed += instance.OnOpenWristMonitor;
             @OpenWristMonitor.canceled += instance.OnOpenWristMonitor;
+            @ToggleFastPull.started += instance.OnToggleFastPull;
+            @ToggleFastPull.performed += instance.OnToggleFastPull;
+            @ToggleFastPull.canceled += instance.OnToggleFastPull;
         }
 
         /// <summary>
@@ -1003,6 +1032,9 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
             @OpenWristMonitor.started -= instance.OnOpenWristMonitor;
             @OpenWristMonitor.performed -= instance.OnOpenWristMonitor;
             @OpenWristMonitor.canceled -= instance.OnOpenWristMonitor;
+            @ToggleFastPull.started -= instance.OnToggleFastPull;
+            @ToggleFastPull.performed -= instance.OnToggleFastPull;
+            @ToggleFastPull.canceled -= instance.OnToggleFastPull;
         }
 
         /// <summary>
@@ -1437,6 +1469,13 @@ public partial class @PlayerController: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenWristMonitor(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleFastPull" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleFastPull(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Dialogue" which allows adding and removing callbacks.

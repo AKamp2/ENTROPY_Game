@@ -166,6 +166,8 @@ public class ZeroGravity : MonoBehaviour
     private float maxVelocityForGrip = 20f;
     [SerializeField]
     private float maxVelocityForPull = 10f;
+    [SerializeField]
+    private bool fastPull = false;
 
     [Header("== UI Settings ==")]
     [SerializeField]
@@ -1075,7 +1077,13 @@ public class ZeroGravity : MonoBehaviour
                 //swing cooldown
                 if (!useManualPullIn)
                 {
-                    SwingCoolDown(bar);
+                    if (fastPull)
+                    {
+                        swinging = false;
+                    } else
+                    {
+                        SwingCoolDown(bar);
+                    }
                 }
             }
             if (swinging)
@@ -1681,6 +1689,11 @@ public class ZeroGravity : MonoBehaviour
         {
             UseStimCharge();
         }
+    }
+
+    public void ToggleFastPull(InputAction.CallbackContext context)
+    {
+        fastPull = !fastPull;
     }
     #endregion
 
