@@ -114,7 +114,7 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float propelThrust = 50000f;
     [SerializeField]
-    private float snapToBarAngle = 10f; // degrees
+    private float snapToBarAngle = 15f; // degrees
 
     [Header("== Push Off Wall Settings ==")]
     [SerializeField]
