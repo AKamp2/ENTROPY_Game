@@ -229,6 +229,11 @@ public class ZeroGravity : MonoBehaviour
 
     private float totalRotation;
 
+    // these will prevent rapid door collisions by providing a delay
+    private int maxDoorCollisionCooldownFrames = 30;
+
+    private int doorCollisionCooldownFrames = 0;
+
     #region properties
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -366,6 +371,12 @@ public class ZeroGravity : MonoBehaviour
         if (GlobalSaveManager.Instance.LoadFromSave)
         {
             LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
+        } else
+        {
+            //set the player health
+            playerHealth = 3;
+            //make sure there are no stims in teh plaeyr inventory
+            numStims = 0;
         }
     }
 
@@ -408,11 +419,6 @@ public class ZeroGravity : MonoBehaviour
         rb.useGravity = false;
         cam = Camera.main;
 
-        //set the player health
-        playerHealth = 3;
-        //make sure there are no stims in teh plaeyr inventory
-        numStims = 0;
-
         if(useManualPullIn)
         {
             pullDrag = 0.9f;
@@ -444,7 +450,13 @@ public class ZeroGravity : MonoBehaviour
             //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
             //take damage from door closing on the player
-            DetectClosingDoorTakeDamageAndBounce();
+            if (doorCollisionCooldownFrames <= 0)
+            {
+                DetectClosingDoorTakeDamageAndBounce();
+            } else
+            {
+                doorCollisionCooldownFrames -= 1;
+            }
             //manage the cooldowns  
             //HurtCoolDown();
             JustHitCoolDown();
@@ -799,11 +811,11 @@ public class ZeroGravity : MonoBehaviour
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
             playerAudio.PlayFatalBounce(impactPoint);
 
-            if (!isDead)
-            {
-                //decrease the player health after they have collided with the closing door
-                isDead = true;
-            }
+            //decrease the player health after they have collided with the closing door
+            if (!isDead) isDead = true;
+
+            //set door cooldown so the collisions do not spam
+            doorCollisionCooldownFrames = maxDoorCollisionCooldownFrames;
         }
     }
 
@@ -1622,7 +1634,7 @@ public class ZeroGravity : MonoBehaviour
             }
         }
         
-        if (context.performed && potentialWall != null)
+        if (context.performed && potentialWall != null && uiManager.CanPushOffNow)
         {
             //Debug.Log("space pressed");
             PropelOffWall();
