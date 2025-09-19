@@ -161,6 +161,11 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float swingCoolDownSlowest = 1f;
 
+    // Max velocities for pulling and swinging
+    [SerializeField]
+    private float maxVelocityForGrip = 20f;
+    [SerializeField]
+    private float maxVelocityForPull = 10f;
 
     [Header("== UI Settings ==")]
     [SerializeField]
@@ -1075,11 +1080,21 @@ public class ZeroGravity : MonoBehaviour
             }
             if (swinging)
             {
-                // constrain the players location to the grab range ////
+                // the player is past their grab range, we are either gonna break off or hold on
                 if (distanceFromPoint > grabRange)
                 {
-                    // move the player by the difference of their arm and grab range
-                    transform.position = swingPoint + -directionToRung * grabRange;
+                    // constrain the players location to the grab range IF the player has the strength to do so
+                    if (rb.linearVelocity.magnitude < maxVelocityForGrip)
+                    {
+                        // move the player by the difference of their arm and grab range
+                        transform.position = swingPoint + -directionToRung * grabRange;
+                    } else
+                    {
+                        isGrabbing = false;
+                        // break off drag should be equal to the grip strength
+                        rb.linearVelocity -= rb.linearVelocity.normalized * grabRange;
+                        return;
+                    }
                 }
                 // pull in force
                 rb.AddForce(directionToRung * pullInForce);
@@ -1117,12 +1132,12 @@ public class ZeroGravity : MonoBehaviour
             joint.damper = jointDamperForce;
             joint.massScale = jointMassScale;
 
-            //if the player is not swinging
+            //if the player is not swinging introduce pull drag
             if (!swinging)
             {
                 rb.linearVelocity *= pullDrag;
-                //pull to the bar
-                if (!useManualPullIn || isPullingIn)
+                // if the player is not moving too fast to pull in, then pull to the bar
+                if ((!useManualPullIn || isPullingIn) && rb.linearVelocity.magnitude < maxVelocityForPull)
                 {
                     PullToBar(pullToBarMod, bar);
                 }
