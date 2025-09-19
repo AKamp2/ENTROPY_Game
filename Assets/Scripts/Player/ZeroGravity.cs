@@ -114,7 +114,7 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float propelThrust = 50000f;
     [SerializeField]
-    private float snapToBarAngle = 20f; // degrees
+    private float snapToBarAngle = 10f; // degrees
 
     [Header("== Push Off Wall Settings ==")]
     [SerializeField]
@@ -1067,7 +1067,11 @@ public class ZeroGravity : MonoBehaviour
             Vector3 directionToRung = (swingPoint - cam.transform.position).normalized;
             if (Mathf.Abs(Vector3.Angle(directionToRung, cam.transform.forward)) < snapToBarAngle)
             {
-                swinging = false;
+                //swing cooldown
+                if (!useManualPullIn)
+                {
+                    SwingCoolDown(bar);
+                }
             }
             if (swinging)
             {
@@ -1124,11 +1128,6 @@ public class ZeroGravity : MonoBehaviour
                 }
 
                 return;
-            }
-            //swing cooldown
-            if (!useManualPullIn)
-            {
-                SwingCoolDown(bar);
             }
 
             //ensure that the player will bounce off the wall
@@ -1253,7 +1252,7 @@ public class ZeroGravity : MonoBehaviour
         if(Time.time > grabSwingTimeStamp && bar != null)
         {
             justGrabbed = false;
-            // swinging = false;////
+            swinging = false;
             prevJustGrabbed = justGrabbed;
             grabSwingTimeStamp = 0f;
         }
