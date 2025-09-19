@@ -1611,7 +1611,7 @@ public class ZeroGravity : MonoBehaviour
             }
         }
         
-        if (context.performed && potentialWall != null)
+        if (context.performed && potentialWall != null && uiManager.CanPushOffNow)
         {
             //Debug.Log("space pressed");
             PropelOffWall();
