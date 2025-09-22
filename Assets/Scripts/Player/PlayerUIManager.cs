@@ -269,9 +269,8 @@ public class PlayerUIManager : MonoBehaviour
                 // if raycast hits a bar
                 if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer | barLayer) && !player.IsGrabbing)
                 {
-                    tag = hit.transform.tag;
                     //if the ray hits a grabbable object
-                    if (tag == "Grabbable")
+                    if (hit.transform.CompareTag("Grabbable") || hit.transform.parent.CompareTag("Grabbable"))
                     {
                         //Debug.Log("hit bar");
                         //create a vector for the position of the bar on the screen
@@ -672,18 +671,17 @@ public class PlayerUIManager : MonoBehaviour
         //initialize a transform for the closest bar and distance to that bar
         Transform closestObject = null;
         float closestDistance = Mathf.Infinity;
-
+        // this will be for checking the data of a barrier that may be hit between the player and the grabbable
+        RaycastHit hit;
         //check through each bar in our array
         foreach (Collider obj in totalNearby)
         {
             // we are going to skip objects that are blocked by an obstacle
             float distanceToObj = (obj.transform.position - transform.position).magnitude;
             Vector3 directionToObj = (obj.transform.position - transform.position).normalized;
-            if (
-                Physics.Raycast(transform.position, directionToObj, distanceToObj, barrierLayer)
-                )
+            if (Physics.Raycast(transform.position, directionToObj, out hit, distanceToObj, barrierLayer))
             {
-                continue;
+                if (!hit.transform.parent.CompareTag("Grabbable")) continue;
             }
 
             //set specifications for the viewport
