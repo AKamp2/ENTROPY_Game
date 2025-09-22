@@ -267,7 +267,7 @@ public class PlayerUIManager : MonoBehaviour
                 string tag = null;
 
                 // if raycast hits a bar
-                if (Physics.Raycast(ray, out hit, player.GrabRange, doorLayer | barLayer) && !player.IsGrabbing)
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer | barLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     //if the ray hits a grabbable object
@@ -680,7 +680,7 @@ public class PlayerUIManager : MonoBehaviour
             float distanceToObj = (obj.transform.position - transform.position).magnitude;
             Vector3 directionToObj = (obj.transform.position - transform.position).normalized;
             if (
-                Physics.Raycast(transform.position, directionToObj, distanceToObj, doorLayer)
+                Physics.Raycast(transform.position, directionToObj, distanceToObj, barrierLayer)
                 )
             {
                 continue;
