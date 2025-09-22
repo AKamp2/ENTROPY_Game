@@ -416,7 +416,9 @@ public class DoorScript : MonoBehaviour
 
     public IEnumerator HandleDoorStuck()
     {
-        yield return new WaitUntil(() => isShortBreakOver);
+        yield return new WaitUntil(() => isShortBreakOver == true);
+
+        yield return new WaitForSeconds(1f);
 
         endAudioSource.clip = doorStuck;
         endAudioSource.Play();

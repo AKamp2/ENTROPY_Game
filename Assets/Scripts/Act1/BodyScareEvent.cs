@@ -45,7 +45,7 @@ public class BodyScareEvent : MonoBehaviour
 
         bodyDoor.SetState(DoorScript.States.JoltOpen);
 
-
+        
 
         //put any body movement Logic here;
 
@@ -56,8 +56,7 @@ public class BodyScareEvent : MonoBehaviour
         body.transform.position = bodyPos.transform.position;
         bodyRb.isKinematic = false;
 
-        
-        bodyRb.AddForce(new Vector3(0f, -1f, 0f) * 2f, ForceMode.Impulse);
+        //bodyRb.AddForce(new Vector3(0f, -1f, 0f) * .5f, ForceMode.Impulse);
 
         //foreach (Rigidbody rb in bodyRb.GetComponentsInChildren<Rigidbody>())
         //{
