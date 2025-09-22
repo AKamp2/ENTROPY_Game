@@ -37,18 +37,33 @@ public class BodyScareEvent : MonoBehaviour
     public IEnumerator PlayBodyScare()
     {
 
-        body.transform.position = bodyPos.transform.position;
-        body.transform.rotation = bodyPos.transform.rotation;
+        
+        
 
         //bodyRb.AddForce(new Vector3(-.5f, -1, 0) * 30f, ForceMode.Impulse);
+        
 
         bodyDoor.SetState(DoorScript.States.JoltOpen);
+
+        
 
         //put any body movement Logic here;
 
 
-        yield return new WaitUntil(() => bodyDoor.showingBody);
+        yield return new WaitUntil(() => bodyDoor.aboutToJolt == true);
 
+        body.SetActive(true);
+        body.transform.position = bodyPos.transform.position;
+        bodyRb.isKinematic = false;
+
+        //bodyRb.AddForce(new Vector3(0f, -1f, 0f) * .5f, ForceMode.Impulse);
+
+        //foreach (Rigidbody rb in bodyRb.GetComponentsInChildren<Rigidbody>())
+        //{
+        //    rb.AddForce(new Vector3(0f, -1f, 0f) * 5f, ForceMode.Impulse);
+        //}
+
+        //yield return new WaitUntil(() => bodyDoor.showingBody);
         audioManager.playBodyStinger();
 
         foreach(DoorScript door in doorsToUnlock)
