@@ -102,7 +102,6 @@ public class DoorScript : MonoBehaviour
     private bool isShortBreakOver = false;
 
     public bool showingBody = false;
-    public bool aboutToJolt = false;
 
     [Header ("Sound Effects")]
     [SerializeField]
@@ -226,7 +225,6 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
-            StartCoroutine(HandleBrokenDoorShort());
         }
 
         foreach(Sparks spark in sparks)
@@ -416,9 +414,7 @@ public class DoorScript : MonoBehaviour
 
     public IEnumerator HandleDoorStuck()
     {
-        yield return new WaitUntil(() => isShortBreakOver == true);
-
-        yield return new WaitForSeconds(1f);
+        yield return new WaitUntil(() => isShortBreakOver);
 
         endAudioSource.clip = doorStuck;
         endAudioSource.Play();
@@ -441,7 +437,7 @@ public class DoorScript : MonoBehaviour
         startAudioSource.clip = doorBrokenJolt;
         startAudioSource.Play();
 
-        aboutToJolt = true;
+
 
         yield return MoveDoor(doorPart.position, bodyPos, 0.2f, null);
 

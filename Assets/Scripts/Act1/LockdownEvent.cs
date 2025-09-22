@@ -34,8 +34,6 @@ public class LockdownEvent : MonoBehaviour
     private DoorScript brokenDoor;
     [SerializeField]
     private DoorScript bodyDoor;
-    [SerializeField]
-    private DoorScript escapeDoor;
 
     private DialogueManager dialogueManager;
 
@@ -351,7 +349,6 @@ public class LockdownEvent : MonoBehaviour
         //Open doors in the doors to open array, this is the dining hall to facilities door.
 
         OpenDoors();
-        escapeDoor.SetState(DoorScript.States.Open);
         audioManager.FadeServers(true);
         ambientController.Progress();
         
