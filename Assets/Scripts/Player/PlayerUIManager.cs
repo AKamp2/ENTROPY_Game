@@ -267,7 +267,7 @@ public class PlayerUIManager : MonoBehaviour
                 string tag = null;
 
                 // if raycast hits a bar
-                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer) && !player.IsGrabbing)
+                if (Physics.Raycast(ray, out hit, player.GrabRange, doorLayer | barLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     //if the ray hits a grabbable object
@@ -676,6 +676,16 @@ public class PlayerUIManager : MonoBehaviour
         //check through each bar in our array
         foreach (Collider obj in totalNearby)
         {
+            // we are going to skip objects that are blocked by an obstacle
+            float distanceToObj = (obj.transform.position - transform.position).magnitude;
+            Vector3 directionToObj = (obj.transform.position - transform.position).normalized;
+            if (
+                Physics.Raycast(transform.position, directionToObj, distanceToObj, doorLayer)
+                )
+            {
+                continue;
+            }
+
             //set specifications for the viewport
             Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
 
