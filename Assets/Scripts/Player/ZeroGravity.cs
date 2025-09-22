@@ -365,11 +365,6 @@ public class ZeroGravity : MonoBehaviour
     // getter for isGrabbing
     public bool IsGrabbing => isGrabbing;
 
-    // pull in force - replace with equation
-    private float pullInForce = 10f;
-    // pull forward force - replace with equation
-    private float pullForwardForce = 5f;
-
     #endregion
 
     private void Awake()
@@ -1104,10 +1099,6 @@ public class ZeroGravity : MonoBehaviour
                         return;
                     }
                 }
-                // pull in force
-                rb.AddForce(directionToRung * pullInForce);
-                // pull forward force
-                rb.AddForce(cam.transform.forward * pullForwardForce);
             }
 
             //ensure that the player isn't alr swinging on another bar
