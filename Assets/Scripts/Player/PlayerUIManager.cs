@@ -143,6 +143,11 @@ public class PlayerUIManager : MonoBehaviour
         set { progressBar = value; }
     }
 
+    public bool CanPushOffNow
+    {
+        get { return InputIndicator.sprite == SpaceIndicator; }
+    }
+
     public Sprite CrosshairIcon { get { return crosshairIcon; } }
 
     public Sprite WASDIndicator { get { return wasdIndicator; } }
@@ -788,7 +793,6 @@ public class PlayerUIManager : MonoBehaviour
                     //        inputIndicator.color = new Color(0f, 0f, 0f, 0f);
                     //    }
                     //}
-
                     HidePushIndicator();
                 }
                 //if the z position of the grabber is off screen
