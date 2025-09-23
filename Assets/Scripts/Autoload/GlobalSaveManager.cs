@@ -32,7 +32,7 @@ public class GlobalSaveManager : MonoBehaviour
 
     public void LoadSaveFile()
     {
-        string path = Application.dataPath;
+        string path = Application.persistentDataPath;
         string loadedData = LoadTextFromFile(path, FILENAME);
         Data = JsonUtility.FromJson<SaveData>(loadedData);
     }
@@ -59,7 +59,7 @@ public class GlobalSaveManager : MonoBehaviour
         string json = JsonUtility.ToJson(Data);
         Debug.Log("this is the Save Data as a string:");
         Debug.Log(json);
-        string path = Application.dataPath;
+        string path = Application.persistentDataPath;
         SaveTextToFile(path, FILENAME, json);
     }
 

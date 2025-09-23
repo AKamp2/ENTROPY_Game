@@ -6,15 +6,27 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class WristMonitor : MonoBehaviour
 {
     // Variables
     bool isActive = false;
+    public bool IsActive
+    {
+        get { return isActive; }
+        set { isActive = value; }
+    }
     [SerializeField] ZeroGravity player;
     [SerializeField] Slider healthSlider;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
     [SerializeField] GameObject wristMonitor;
+    // checks the wrist monitor object and manipulates the state of having the wrist monitor accordingly
+    public bool HasWristMonitor
+    {
+        get { return !wristMonitor.activeSelf; }
+        set {  wristMonitor.SetActive(!value); }
+    }
     [SerializeField] TextMeshProUGUI stimText;
     public List<Objective> mainObjectives = new List<Objective>();
     public List<Objective> completedObjectives = new List<Objective>();
@@ -39,20 +51,44 @@ public class WristMonitor : MonoBehaviour
     /// <summary>
     /// Public class used to display vital information to the player of how they must proceed
     /// </summary>
+    [Serializable]
     public class Objective
     {
-        public Objective(string objectiveName, string objectiveDescription, string subObjective, bool isCompleted)
+        public Objective(string _objectiveName, string _objectiveDescription, string _subObjective, bool _isCompleted)
         {
-            ObjectiveName = objectiveName;
-            ObjectiveDescription = objectiveDescription;
-            SubObjective = subObjective;
-            IsCompleted = isCompleted;
+            objectiveName = _objectiveName;
+            objectiveDescription = _objectiveDescription;
+            subObjective = _subObjective;
+            isCompleted = _isCompleted;
         }
-
-        public string ObjectiveName { get; set; }
-        public string ObjectiveDescription { get; set; }
-        public string SubObjective { get; set; }
-        public bool IsCompleted { get; set; }
+        [SerializeField]
+        private string objectiveName;
+        public string ObjectiveName
+        {
+            get { return objectiveName; }
+            set { objectiveName = value; }
+        }
+        [SerializeField]
+        private string objectiveDescription;
+        public string ObjectiveDescription
+        {
+            get { return objectiveDescription; }
+            set { objectiveDescription = value; }
+        }
+        [SerializeField]
+        private string subObjective;
+        public string SubObjective
+        {
+            get { return subObjective; }
+            set { subObjective = value; }
+        }
+        [SerializeField]
+        private bool isCompleted;
+        public bool IsCompleted
+        {
+            get { return isCompleted; }
+            set { isCompleted = value; }
+        }
     }
 
     /// <summary>
