@@ -120,6 +120,9 @@ public class ZeroGravity : MonoBehaviour
     private float propelThrust = 50000f;
     [SerializeField]
     private float snapToBarAngle = 15f; // degrees
+    // add a bit of extra range beyond the viewport
+    [SerializeField]
+    private float peripheralRange = 0.3f;
 
     [Header("== Push Off Wall Settings ==")]
     [SerializeField]
@@ -360,7 +363,10 @@ public class ZeroGravity : MonoBehaviour
         set { grabRange = value; }
 
     }
-
+    public float PeripheralRange
+    {
+        get { return peripheralRange; }
+    }
     public bool[] AccessPermissions
     {
         get { return accessPermissions; }

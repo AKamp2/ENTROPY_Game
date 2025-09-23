@@ -680,7 +680,11 @@ public class PlayerUIManager : MonoBehaviour
             Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
 
             //check if the bar is in the viewport and in front of the player
-            if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
+            if (viewportPoint.z > 0 && 
+                viewportPoint.x >= 0 - player.PeripheralRange && 
+                viewportPoint.x <= 1 + player.PeripheralRange && 
+                viewportPoint.y >= 0  - player.PeripheralRange && 
+                viewportPoint.y <= 1 + player.PeripheralRange)
             {
                 float distanceToBar = Vector3.Distance(transform.position, obj.transform.position);
                 if (distanceToBar < closestDistance)
