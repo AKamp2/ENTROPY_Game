@@ -110,7 +110,7 @@ public class ZeroGravity : MonoBehaviour
     private Transform potentialGrabbedBar = null; //tracks a potential grabbable bar that the player looks at
     private Transform grabbedBar; //stores the bar the player is currently grabbing
     [SerializeField]
-    private float grabRange = 3f; // Range within which the player can grab bars
+    private float grabRange = 2f; // Range within which the player can grab bars
     [SerializeField]
     private float minGrabRange = 1f;
     [SerializeField]
