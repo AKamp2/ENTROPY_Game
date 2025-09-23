@@ -10,6 +10,7 @@ using UnityEngine.ProBuilder;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI.Table;
+using Unity.Mathematics;
 
 public class ZeroGravity : MonoBehaviour
 {
@@ -1071,7 +1072,9 @@ public class ZeroGravity : MonoBehaviour
             // Snap to bar when the player is looking at the bar, otherwise swing
             float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
             Vector3 directionToRung = (swingPoint - cam.transform.position).normalized;
-            if (Mathf.Abs(Vector3.Angle(directionToRung, cam.transform.forward)) < snapToBarAngle)
+            // as the player gets closer to the bar, the angle will get more generous to reflect that
+            float closeUpAngleAdjustment = math.remap(distanceFromPoint, 0, GrabRange, 5, 0);
+            if (Mathf.Abs(Vector3.Angle(directionToRung, cam.transform.forward)) < snapToBarAngle + closeUpAngleAdjustment) 
             {
                 //swing cooldown
                 if (!useManualPullIn)
