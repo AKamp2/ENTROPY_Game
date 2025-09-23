@@ -1697,6 +1697,7 @@ public class ZeroGravity : MonoBehaviour
 
     public void ToggleFastPull(InputAction.CallbackContext context)
     {
+        //rb.AddForce(cam.transform.forward * 100);
         fastPull = !fastPull;
     }
     #endregion
