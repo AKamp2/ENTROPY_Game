@@ -170,11 +170,8 @@ public class ZeroGravity : MonoBehaviour
     private float swingCoolDownSlowest = 1f;
 
     // Max velocities for pulling and swinging
-    [SerializeField]
-    private float maxVelocityForGrip = 20f;
-    [SerializeField]
-    private float maxVelocityForPull = 10f;
-    [SerializeField]
+    private float maxVelocityForGrip = 2f;
+    private float maxVelocityForPull = 1f;
     private bool fastPull = false;
 
     [Header("== UI Settings ==")]
@@ -1094,23 +1091,21 @@ public class ZeroGravity : MonoBehaviour
                     }
                 }
             }
-            if (swinging)
+            // the player is past their grab range, we are either gonna break off or hold on
+            if (distanceFromPoint > grabRange)
             {
-                // the player is past their grab range, we are either gonna break off or hold on
-                if (distanceFromPoint > grabRange)
+                // constrain the players location to the grab range IF the player has the strength to do so
+                if (rb.linearVelocity.magnitude < maxVelocityForGrip)
                 {
-                    // constrain the players location to the grab range IF the player has the strength to do so
-                    if (rb.linearVelocity.magnitude < maxVelocityForGrip)
-                    {
-                        // move the player by the difference of their arm and grab range
-                        transform.position = swingPoint + -directionToRung * grabRange;
-                    } else
-                    {
-                        isGrabbing = false;
-                        // break off drag should be equal to the grip strength
-                        rb.linearVelocity -= rb.linearVelocity.normalized * grabRange;
-                        return;
-                    }
+                    // move the player by the difference of their arm and grab range
+                    transform.position = swingPoint + -directionToRung * grabRange;
+                } else
+                {
+                    // Debug.Log(rb.linearVelocity.magnitude + " is greater than " + maxVelocityForGrip);
+                    // break off drag should be equal to the grip strength
+                    rb.linearVelocity -= rb.linearVelocity.normalized * maxVelocityForGrip;
+                    ReleaseBar();
+                    return;
                 }
             }
 
@@ -1697,7 +1692,7 @@ public class ZeroGravity : MonoBehaviour
 
     public void ToggleFastPull(InputAction.CallbackContext context)
     {
-        //rb.AddForce(cam.transform.forward * 100);
+        rb.AddForce(cam.transform.forward * 1000);
         fastPull = !fastPull;
     }
     #endregion
