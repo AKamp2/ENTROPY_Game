@@ -172,7 +172,6 @@ public class ZeroGravity : MonoBehaviour
     // Max velocities for pulling and swinging
     private float maxVelocityForGrip = 2f;
     private float maxVelocityForPull = 1f;
-    private bool fastPull = false;
 
     [Header("== UI Settings ==")]
     [SerializeField]
@@ -1082,13 +1081,7 @@ public class ZeroGravity : MonoBehaviour
                 //swing cooldown
                 if (!useManualPullIn)
                 {
-                    if (fastPull)
-                    {
-                        swinging = false;
-                    } else
-                    {
-                        SwingCoolDown(bar);
-                    }
+                     SwingCoolDown(bar);
                 }
             }
             // the player is past their grab range, we are either gonna break off or hold on
@@ -1693,7 +1686,6 @@ public class ZeroGravity : MonoBehaviour
     public void ToggleFastPull(InputAction.CallbackContext context)
     {
         rb.AddForce(cam.transform.forward * 1000);
-        fastPull = !fastPull;
     }
     #endregion
 
