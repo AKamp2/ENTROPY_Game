@@ -133,7 +133,7 @@ RectTransform:
   - {fileID: 4159395603444050203}
   - {fileID: 4433960666362916598}
   - {fileID: 6094941122152819190}
-  - {fileID: 3653693382498053832}
+  - {fileID: 216657107937108080}
   m_Father: {fileID: 8322364765078723476}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3250,7 +3250,7 @@ MonoBehaviour:
     m_ActionName: 'PlayerControls/OffWall[/Keyboard/space]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3152483933603697073}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: WristMonitor, Assembly-CSharp
         m_MethodName: ToggleWristMonitor
         m_Mode: 0
@@ -3280,6 +3280,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 914b9b86-2ce3-42ce-b210-0babaeefa53a
     m_ActionName: 'PlayerControls/Stim[/Keyboard/x]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e7531f7d-ef36-4ca5-be4a-925054055ad3
+    m_ActionName: 'PlayerControls/ToggleFastPull[/Keyboard/period]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: PlayerControls
@@ -3313,6 +3317,7 @@ MonoBehaviour:
   hurtCoolDown: 3.5
   highDangerCoolDown: 5
   accessPermissions: 000000
+  wristMonitor: {fileID: 0}
   rollTorque: 100
   maxRollSpeed: 30
   rollAcceleration: 70
@@ -3320,10 +3325,12 @@ MonoBehaviour:
   rollFrictionGrab: 100
   rollFrictionNoGrab: 20
   bounceAcc: 2
-  grabRange: 1.3
+  grabRange: 0.95
   minGrabRange: 0.3
   grabPadding: 100
   propelThrust: 1.5
+  snapToBarAngle: 15
+  peripheralRange: 0.3
   propelOffWallThrust: 60
   pushSpeed: 1
   dangerSpeed: 4
@@ -3402,6 +3409,8 @@ MonoBehaviour:
   pickupScript: {fileID: 3526291143942320977}
   doorManager: {fileID: 0}
   lockdownEvent: {fileID: 0}
+  stimDispenserContainer: {fileID: 0}
+  terminalManager: {fileID: 0}
   cameraFade: {fileID: 705350375140657713}
   grabUIText: {fileID: 612120712067059680}
   characterPivot: {fileID: 5013918201525809107}
@@ -3410,6 +3419,7 @@ MonoBehaviour:
   inputIndicator: {fileID: 8752219356357627238}
   inputIndicatorThrow: {fileID: 3467114837555304568}
   healthIndicator: {fileID: 4500354511308238836}
+  progressBar: {fileID: 0}
   openHand: {fileID: 21300000, guid: 251f3cc6568a7c84fb817f58b9c4bfd4, type: 3}
   closedHand: {fileID: 21300000, guid: cc728fc8e36e23946891b57c9ecc206b, type: 3}
   crosshairIcon: {fileID: 21300000, guid: b60a01f58b47a9d489f948e506f4108e, type: 3}
@@ -3419,6 +3429,7 @@ MonoBehaviour:
   leftClickIndicator: {fileID: 21300000, guid: 7ff48a3a41f8f764da9dd7a7dde9bcee, type: 3}
   keyFIndicator: {fileID: 21300000, guid: a55869ad25581e542b318d90e13870e7, type: 3}
   dangerIndicator: {fileID: 21300000, guid: f83452b52d9a22944ae3a14d5022674a, type: 3}
+  midDangerIndicator: {fileID: 0}
   highDangerIndicator: {fileID: 21300000, guid: cf2557a8769f302409badd1eb96e6400, type: 3}
   barLayer:
     serializedVersion: 2
@@ -3550,10 +3561,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSourcePrefab: {fileID: 3349211292582800795, guid: cdfd8fa27c128f84aa71ca7c4e791ccc, type: 3}
+  playerAudioSource: {fileID: 0}
   audioContainer: {fileID: 0}
   softBounce: {fileID: 8300000, guid: ce86434780446e949a847be2503ca92f, type: 3}
   hardBounce: {fileID: 8300000, guid: fd9dcfe4d42a14b3a8001dd6a87d9afb, type: 3}
   fatalBounce: {fileID: 8300000, guid: 8b6191293c778854585b4763f47a74e6, type: 3}
+  useStim: {fileID: 0}
   playerGroup: {fileID: 1529270391070815761, guid: 720f457489e44c440b5082c1b507453e, type: 2}
 --- !u!1 &5180634225553877587
 GameObject:
@@ -4581,6 +4594,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeCanvasGroup: {fileID: 3060076270677809567}
   defaultFadeDuration: 3
+  startFadedOut: 1
 --- !u!1 &7016581603138599901
 GameObject:
   m_ObjectHideFlags: 0
@@ -5922,6 +5936,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9142698867061301854}
     m_Modifications:
+    - target: {fileID: 734337709000137002, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 734337709000137002, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 734337709000137002, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 734337709000137002, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 797149037846390056, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 797149037846390056, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5744961493459051501, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -6010,6 +6048,22 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6072569774224462964, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6072569774224462964, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6072569774224462964, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6072569774224462964, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6246894695901977748, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
       propertyPath: player
       value: 
@@ -6022,28 +6076,29 @@ PrefabInstance:
       propertyPath: targetPosition.y
       value: 110
       objectReference: {fileID: 0}
-    - target: {fileID: 6246894695901977748, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
-      propertyPath: targetRectTransform
-      value: 
-      objectReference: {fileID: 3653693382498053832}
+    - target: {fileID: 7234129707272153626, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7234129707272153626, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7234129707272153626, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7234129707272153626, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
---- !u!114 &3152483933603697073 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6246894695901977748, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
-  m_PrefabInstance: {fileID: 9011336509698166053}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17da56e82c615684482489c1f38fd3c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!224 &3653693382498053832 stripped
+--- !u!224 &216657107937108080 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5744961493459051501, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
+  m_CorrespondingSourceObject: {fileID: 9083490734538419541, guid: da347b6c05a654443be115ef5f3e19a5, type: 3}
   m_PrefabInstance: {fileID: 9011336509698166053}
   m_PrefabAsset: {fileID: 0}
