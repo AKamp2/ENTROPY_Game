@@ -1087,16 +1087,22 @@ public class ZeroGravity : MonoBehaviour
             // the player is past their grab range, we are either gonna break off or hold on
             if (distanceFromPoint > grabRange)
             {
+                // Apply pendulum trig
+                // Calculate tension - parallel to the pendulum
+                Vector3 tension = Vector3.Project(rb.linearVelocity, directionToRung);
                 // constrain the players location to the grab range IF the player has the strength to do so
-                if (rb.linearVelocity.magnitude < maxVelocityForGrip)
+                if (tension.magnitude < maxVelocityForGrip)
                 {
                     // move the player by the difference of their arm and grab range
                     transform.position = swingPoint + -directionToRung * grabRange;
+                    // subtract the tension from the linear velocity to calculate the netForce
+                    // This is the part of the linear velocity that is perpendicular to the pendulum
+                    rb.linearVelocity -= tension;
                 } else
                 {
-                    // Debug.Log(rb.linearVelocity.magnitude + " is greater than " + maxVelocityForGrip);
+                    // Debug.Log(tension.magnitude + " is greater than " + maxVelocityForGrip);
                     // break off drag should be equal to the grip strength
-                    rb.linearVelocity -= rb.linearVelocity.normalized * maxVelocityForGrip;
+                    rb.linearVelocity -= tension.normalized * maxVelocityForGrip;
                     ReleaseBar();
                     return;
                 }
