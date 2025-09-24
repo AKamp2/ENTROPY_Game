@@ -75,6 +75,10 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private bool[] accessPermissions = new bool[3];
 
+    // Give the player a reference to the wrist monitor for saving
+    [SerializeField]
+    private WristMonitor wristMonitor;
+
     [Header("== Player Movement Settings ==")]
     [SerializeField]
     private float rollTorque = 250.0f;
@@ -226,6 +230,11 @@ public class ZeroGravity : MonoBehaviour
     private bool hasUsedStim = false;
 
     private float totalRotation;
+
+    // these will prevent rapid door collisions by providing a delay
+    private int maxDoorCollisionCooldownFrames = 30;
+
+    private int doorCollisionCooldownFrames = 0;
 
     #region properties
     //Properties
@@ -438,7 +447,13 @@ public class ZeroGravity : MonoBehaviour
             //allow the player to bounce off the barriers
             DetectBarrierAndBounce();
             //take damage from door closing on the player
-            DetectClosingDoorTakeDamageAndBounce();
+            if (doorCollisionCooldownFrames <= 0)
+            {
+                DetectClosingDoorTakeDamageAndBounce();
+            } else
+            {
+                doorCollisionCooldownFrames -= 1;
+            }
             //manage the cooldowns  
             //HurtCoolDown();
             JustHitCoolDown();
@@ -793,11 +808,11 @@ public class ZeroGravity : MonoBehaviour
             rb.AddForce(propelDirection, ForceMode.VelocityChange);
             playerAudio.PlayFatalBounce(impactPoint);
 
-            if (!isDead)
-            {
-                //decrease the player health after they have collided with the closing door
-                isDead = true;
-            }
+            //decrease the player health after they have collided with the closing door
+            if (!isDead) isDead = true;
+
+            //set door cooldown so the collisions do not spam
+            doorCollisionCooldownFrames = maxDoorCollisionCooldownFrames;
         }
     }
 
@@ -1596,7 +1611,7 @@ public class ZeroGravity : MonoBehaviour
             }
         }
         
-        if (context.performed && potentialWall != null)
+        if (context.performed && potentialWall != null && uiManager.CanPushOffNow)
         {
             //Debug.Log("space pressed");
             PropelOffWall();
@@ -1641,7 +1656,12 @@ public class ZeroGravity : MonoBehaviour
             playerHealth, 
             numStims, 
             hasUsedStim,
-            tutorialManager.inTutorial
+            tutorialManager.inTutorial,
+            (bool[])accessPermissions.Clone(),
+            wristMonitor.HasWristMonitor,
+            wristMonitor.IsActive,
+            new List<WristMonitor.Objective>(wristMonitor.mainObjectives),
+            new List<WristMonitor.Objective>(wristMonitor.completedObjectives)
             );
     }
 
@@ -1668,5 +1688,11 @@ public class ZeroGravity : MonoBehaviour
             canRoll = true;
             canPushOff = true;
         }
+        // set wrist monitor data
+        accessPermissions = (bool[])playerData.AccessPermissions.Clone();
+        wristMonitor.HasWristMonitor = playerData.HasWristMonitor;
+        wristMonitor.IsActive = playerData.ShowingWristMonitor;
+        wristMonitor.mainObjectives = new List<WristMonitor.Objective>(playerData.MainObjectives);
+        wristMonitor.completedObjectives = new List<WristMonitor.Objective>(playerData.CompletedObjectives);
     }
 }
