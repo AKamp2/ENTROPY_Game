@@ -37,6 +37,7 @@ public class MainMenu : MonoBehaviour
     public void Options()
     {
         optionsMenu.SetActive(true);
+        this.gameObject.SetActive(false);
         settingsMenu.SetUp();
         if (volume.profile.TryGet<LensDistortion>(out LensDistortion distortion))
         {
@@ -56,6 +57,7 @@ public class MainMenu : MonoBehaviour
         else
         {
             optionsMenu.SetActive(false);
+            this.gameObject.SetActive(true);
         }
     }
     public void ExitOptions()
@@ -65,6 +67,7 @@ public class MainMenu : MonoBehaviour
             distortion.active = true;
         }
         optionsMenu.SetActive(false);
+        this.gameObject.SetActive(true);
     }
     public void QuitGame()
     {
