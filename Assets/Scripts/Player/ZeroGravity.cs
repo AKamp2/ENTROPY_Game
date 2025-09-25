@@ -659,15 +659,15 @@ public class ZeroGravity : MonoBehaviour
         float detectionRadius = boundingSphere.radius + .01f; // Slightly larger for early detection
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius, uiManager.BarrierLayer);
 
-        //if the player is grabbing on a bar and going slower than walking speed
-        if(!useManualPullIn)
-        {
-            if (isGrabbing && rb.linearVelocity.magnitude < zeroGWalkSpeed)
-            {
-                //ignore bouncing
-                return;
-            }
-        }
+        ////if the player is grabbing on a bar and going slower than walking speed
+        //if(!useManualPullIn)
+        //{
+        //    if (isGrabbing && rb.linearVelocity.magnitude < zeroGWalkSpeed)
+        //    {
+        //        //ignore bouncing
+        //        return;
+        //    }
+        //}
 
         //Debug.Log(hitColliders.Length);
 
