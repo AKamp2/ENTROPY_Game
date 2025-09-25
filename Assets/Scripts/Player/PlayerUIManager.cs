@@ -311,10 +311,9 @@ public class PlayerUIManager : MonoBehaviour
 
 
                 }
-
                 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 //will need to create a raycast for the floating objects seperate of this one, something to go back and fix
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
+                if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
                 {
                     tag = hit.transform.tag;
                     //Debug.Log(tag);
@@ -338,7 +337,7 @@ public class PlayerUIManager : MonoBehaviour
                         }
                     }
                 }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     if (tag == "Barrier")
