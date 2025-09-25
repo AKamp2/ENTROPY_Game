@@ -13,20 +13,31 @@ public class VentScript : MonoBehaviour
     [SerializeField] private ParticleSystem ps;
     [SerializeField] private AudioSource ventAudio;
     [SerializeField] private float ventVolume;
+    [SerializeField] private bool ventActive;
 
     private float timer;
     private bool isActive = true;
 
     private HashSet<Rigidbody> affectedRigidbodies = new HashSet<Rigidbody>();
 
+    public bool VentActive
+    {
+        get { return ventActive; }
+        set { ventActive = value; }
+    }
+
     void Start()
     {
         // Start with offset timer
         timer = activeTimeDuration - timeOffset;
 
-        if (ps != null) ps.Play();
-        if (ventAudio != null) ventAudio.Play();
-        if (bc != null) bc.enabled = true;
+        if(ventActive)
+        {
+            if (ps != null) ps.Play();
+            if (ventAudio != null) ventAudio.Play();
+            if (bc != null) bc.enabled = true;
+        }
+        
         ventVolume = ventAudio.volume;
 
         
@@ -34,32 +45,46 @@ public class VentScript : MonoBehaviour
 
     void Update()
     {
-        if (useTimers)
+        if(ventActive)
         {
-            timer -= Time.deltaTime;
-
-            if (timer <= 0)
+            if (useTimers)
             {
-                isActive = !isActive;
-                bc.enabled = isActive;
+                timer -= Time.deltaTime;
 
-                if (isActive)
+                if (timer <= 0)
                 {
-                    StartCoroutine(Fade(ventAudio, 0, 0.1f, true, ventVolume));
-                    ps?.Play();
-                    ventAudio?.Play();
-                    timer = activeTimeDuration;
-                }
-                else
-                {
-                    StartCoroutine(Fade(ventAudio, 0, 0.1f, false, ventVolume));
-                    ps?.Stop();
-                    ventAudio?.Stop();
-                    timer = inactiveTimeDuration;
-                    affectedRigidbodies.Clear(); // Stop affecting when disabled
+                    isActive = !isActive;
+                    bc.enabled = isActive;
+
+                    if (isActive)
+                    {
+                        StartCoroutine(Fade(ventAudio, 0, 0.1f, true, ventVolume));
+                        ps?.Play();
+                        ventAudio?.Play();
+                        timer = activeTimeDuration;
+                    }
+                    else
+                    {
+                        StartCoroutine(Fade(ventAudio, 0, 0.1f, false, ventVolume));
+                        ps?.Stop();
+                        ventAudio?.Stop();
+                        timer = inactiveTimeDuration;
+                        affectedRigidbodies.Clear(); // Stop affecting when disabled
+                    }
                 }
             }
         }
+        else
+        {
+            if(isActive)
+            {
+                isActive = false;
+                bc.enabled = isActive;
+                ps?.Stop();
+                ventAudio?.Stop();
+            }
+        }
+        
     }
 
     void FixedUpdate()
@@ -96,6 +121,38 @@ public class VentScript : MonoBehaviour
         {
             affectedRigidbodies.Remove(rb);
         }
+    }
+
+    /// <summary>
+    /// Immediately turns the vent on and makes it active.
+    /// </summary>
+    public void TurnOn()
+    {
+        ventActive = true;
+        isActive = true;
+
+        if (bc != null) bc.enabled = true;
+        if (ps != null && !ps.isPlaying) ps.Play();
+        if (ventAudio != null && !ventAudio.isPlaying)
+        {
+            ventAudio.volume = ventVolume; // restore volume
+            ventAudio.Play();
+        }
+    }
+
+    /// <summary>
+    /// Immediately turns the vent off and disables effects.
+    /// </summary>
+    public void TurnOff()
+    {
+        ventActive = false;
+        isActive = false;
+
+        if (bc != null) bc.enabled = false;
+        if (ps != null && ps.isPlaying) ps.Stop();
+        if (ventAudio != null && ventAudio.isPlaying) ventAudio.Stop();
+
+        affectedRigidbodies.Clear();
     }
 
     public IEnumerator Fade(AudioSource source, float timeBeforeFade, float fadeDuration, bool fadeIn, float originalVolume)
