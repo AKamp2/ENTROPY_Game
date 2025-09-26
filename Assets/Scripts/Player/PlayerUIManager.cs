@@ -311,7 +311,7 @@ public class PlayerUIManager : MonoBehaviour
                         }
                     }
                 }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     if (tag == "Barrier")
