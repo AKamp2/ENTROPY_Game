@@ -227,16 +227,23 @@ public class DialogueManager : MonoBehaviour
                 }
 
                 // Still advance tutorial if this dialogue was supposed to
-                if (currentDialogue.advancesTutorial )
+                if (currentDialogue.advancesTutorial)
                 {
                     //set the text to the last line in the set instead of wiping it
                     dialogueTextUI.text = currentDialogue.dialogueLines[currentDialogue.dialogueLines.Length - 1];
                     tutorialManager.ProgressTutorial();
+
                     yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
+
+                    if (currentDialogueIndex == currentSequence.dialogues.Length - 1)
+                    {
+                        yield break;
+                    }
                 }
 
                 if (currentDialogueIndex == currentSequence.dialogues.Length - 1)
                 {
+                    
                     //consider this dialogue finished, remove from the queue count
                     numDialoguesQueued--;
                     //don't fade out if there's another dialogue queued

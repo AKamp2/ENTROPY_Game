@@ -32,7 +32,7 @@ public class DialogueTrigger : MonoBehaviour
     {
         if(other == player)
         {
-            Debug.Log("player collided");
+            //Debug.Log("player collided");
             //ensure it only happens
             this.GetComponent<Collider>().enabled = false;
 
