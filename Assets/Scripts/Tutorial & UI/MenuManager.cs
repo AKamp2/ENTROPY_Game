@@ -22,6 +22,8 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private CameraFade cameraFade;
     public static bool playerDead = false;
 
+    [SerializeField] private GameObject dialogueCanvas;
+    [SerializeField] private GameObject tutorialCanvas;
     // Audio Manager
     [SerializeField] private AudioSource dialogue;
 
@@ -62,12 +64,16 @@ public class MenuManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             playerCanvas.SetActive(false);
+            dialogueCanvas.SetActive(false);
+            tutorialCanvas.SetActive(false);
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             playerCanvas.SetActive(true);
+            dialogueCanvas.SetActive(true);
+            tutorialCanvas.SetActive(true);
         }
     }
     public void Pause()
@@ -90,6 +96,7 @@ public class MenuManager : MonoBehaviour
     public void OptionsButton()
     {
         optionsMenu.SetActive(true);
+        pauseMenu.SetActive(false);
     }
 
     public void LastCheckpoint()
