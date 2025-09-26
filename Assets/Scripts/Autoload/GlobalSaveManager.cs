@@ -53,6 +53,10 @@ public class GlobalSaveManager : MonoBehaviour
         }
         return data;
     }
+    public static bool SaveFileExists()
+    {
+        return File.Exists(Path.Join(Application.persistentDataPath, FILENAME));
+    }
 
     public void CreateSaveFile()
     {
