@@ -21,7 +21,7 @@ public class AutomaticDoorTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("hitting");
+            //Debug.Log("hitting");
 
             ds.InRange = true;
 
