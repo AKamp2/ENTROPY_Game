@@ -206,8 +206,10 @@ public class TutorialManager : MonoBehaviour
 
     void RunTutorialStep()
     {
+        //Debug.Log("Current Step: " + currentStep);
         switch (currentStep)
         {
+            
             case 1:
                 // Step 1: Grab a bar
                 //Debug.Log("Tutorial 1: Grab bar");
@@ -263,7 +265,9 @@ public class TutorialManager : MonoBehaviour
                 break;
             case 5:
                 //Debug.Log("Tutorial Complete");
+                
                 EndTutorial();
+
                 break;
         }
     }
