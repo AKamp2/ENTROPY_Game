@@ -71,9 +71,9 @@ public class StimDispenser : MonoBehaviour
         playerObj = playerScript.gameObject;
         uiScript = playerObj.GetComponent<PlayerUIManager>();
         wristMonitor = FindFirstObjectByType<WristMonitor>();
-        Debug.Log(playerObj);
-        Debug.Log(playerScript);
-        Debug.Log(uiScript);
+        //Debug.Log(playerObj);
+        //Debug.Log(playerScript);
+        //Debug.Log(uiScript);
         progressBar = uiScript.ProgressBar;
     }
 
@@ -107,7 +107,7 @@ public class StimDispenser : MonoBehaviour
     {
         if (context.started && canRefill)
         {
-            Debug.Log("I'm interacting");
+            //Debug.Log("I'm interacting");
             StartRefill();
         }
         if (context.canceled)
@@ -144,7 +144,7 @@ public class StimDispenser : MonoBehaviour
     private void CompleteRefill()
     {
         // Replace this with logic to update wrist monitor and stim counts
-        Debug.Log("Stim refill complete!");
+        //Debug.Log("Stim refill complete!");
         audioSource.Play();
         playerScript.AddStimsToInv(3);
     }
