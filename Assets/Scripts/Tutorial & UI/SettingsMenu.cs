@@ -223,7 +223,7 @@ public class SettingsMenu : MonoBehaviour
         {
             player.cam.fieldOfView = Value+40;
         }
-        fovSliderText.text = (fovSlider.value/10).ToString();
+        fovSliderText.text = (fovSlider.value/10).ToString("N0");
         isChanged = true;
     }
     public void SetGamma(float Value)
@@ -237,7 +237,7 @@ public class SettingsMenu : MonoBehaviour
             }
 
         }
-        gammaSliderText.text = (gammaSlider.value/6).ToString("N0");
+        gammaSliderText.text = (gammaSlider.value*10).ToString("N0");
     }
     public void SetBloom(float Value)
     {
