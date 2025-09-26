@@ -221,9 +221,9 @@ public class SettingsMenu : MonoBehaviour
         fovSlider.value = Value;
         if (player != null)
         {
-            player.cam.fieldOfView = Value;
+            player.cam.fieldOfView = Value+40;
         }
-        fovSliderText.text = fovSlider.value.ToString();
+        fovSliderText.text = (fovSlider.value/10).ToString("N0");
         isChanged = true;
     }
     public void SetGamma(float Value)
@@ -246,7 +246,7 @@ public class SettingsMenu : MonoBehaviour
         {
             bloom.intensity.value = Value;
         }
-        bloomSliderText.text = (bloomSlider.value*10).ToString("N0");
+        bloomSliderText.text = (bloomSlider.value*2).ToString("N0");
         isChanged = true;
     }
 
@@ -288,7 +288,11 @@ public class SettingsMenu : MonoBehaviour
         }
         else
         {
-            menuManager.LastMenu();
+            if(menuManager != null)
+            {
+                menuManager.LastMenu();
+
+            }
         }
     }
     #endregion
@@ -357,8 +361,14 @@ public class SettingsMenu : MonoBehaviour
         resolutions = uniqueResolutions.ToArray();
         resolutionDropdown.value = resolutions.Length-1;
         foreach (var res in uniqueResolutions)
-            resOptions.Add(res.width + " x " + res.height);
-        
+            if(res.width < 1920)
+            {
+                continue;
+            }
+            else
+            {
+                resOptions.Add(res.width + " x " + res.height);
+            }
         resolutionDropdown.AddOptions(resOptions);
     }
     #endregion
@@ -403,7 +413,7 @@ public class SettingsMenu : MonoBehaviour
         SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
         SetRefreshRate(GetPrefs("refreshRate", 2));
         SetResolution(GetPrefs("resolution",resolutions.Length-1));
-        SetFOV(GetPrefsFloat("fovSlider", 112f));
+        SetFOV(GetPrefsFloat("fovSlider", 40f));
         SetGamma(GetPrefsFloat("gammaSlider", 0f));
         SetBloom(GetPrefsFloat("bloomSlider", 0f));
         ToggleSubtitles();

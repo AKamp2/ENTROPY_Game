@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -218,6 +218,7 @@ public class PlayerUIManager : MonoBehaviour
             //if there are no bars in the raycast 
             if (!BarInRaycast)
             {
+                //Debug.Log("NoBarInRaycast");
                 //then we search for closest bar in the peripheral
                 player.PotentialGrabbedBar = UpdateClosestBarInView();
             }
@@ -266,28 +267,53 @@ public class PlayerUIManager : MonoBehaviour
                 Ray ray = player.cam.ScreenPointToRay(new Vector3(x, y, 0));
                 string tag = null;
 
-                // if raycast hits a bar
-                if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer) && !player.IsGrabbing)
+                //don't do this if the player is grabbing
+                if(!player.IsGrabbing)
                 {
-                    tag = hit.transform.tag;
-                    //if the ray hits a grabbable object
-                    if (tag == "Grabbable")
+                    // 1. Raycast to detect a bar
+                    if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
                     {
-                        //Debug.Log("hit bar");
-                        //create a vector for the position of the bar on the screen
-                        Vector2 hitScreenPoint = player.cam.WorldToScreenPoint(hit.point);
-                        //calculate the distance from the center to that point
-                        float distanceToCenter = Vector2.Distance(hitScreenPoint, screenCenter);
-                        if (distanceToCenter < bestBarHitDistance)
+                        float distanceToBar = hit.distance;
+
+                        // 2. Check for barriers between player and bar
+                        RaycastHit[] barrierHits = Physics.RaycastAll(ray, distanceToBar, barrierLayer);
+                        float closestBarrierDistance = float.MaxValue;
+                        bool blocked = false;
+
+                        foreach (var barrierHit in barrierHits)
                         {
-                            barHit = hit;
-                            bestBarHitDistance = distanceToCenter;
+                            // Ignore barriers attached to bars
+                            if (barrierHit.transform.parent != null && barrierHit.transform.parent.CompareTag("Bar"))
+                                continue;
+
+                            // First real barrier blocks the bar
+                            if (barrierHit.distance < closestBarrierDistance)
+                            {
+                                closestBarrierDistance = barrierHit.distance;
+                                blocked = true;
+                                break; // stop checking further barriers
+                            }
+                        }
+
+                        if (!blocked)
+                        {
+                            // Bar is valid, no real barrier in the way
+                            Vector2 hitScreenPoint = player.cam.WorldToScreenPoint(hit.point);
+                            float distanceToCenter = Vector2.Distance(hitScreenPoint, screenCenter);
+
+                            if (distanceToCenter < bestBarHitDistance)
+                            {
+                                bestBarHitDistance = distanceToCenter;
+                                barHit = hit;
+                            }
                         }
                     }
+
+
                 }
                 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 //will need to create a raycast for the floating objects seperate of this one, something to go back and fix
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
+                if (Physics.Raycast(ray, out hit, player.GrabRange, raycastLayer))
                 {
                     tag = hit.transform.tag;
                     //Debug.Log(tag);
@@ -311,7 +337,7 @@ public class PlayerUIManager : MonoBehaviour
                         }
                     }
                 }
-                else if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
+                if (Physics.Raycast(ray, out hit, player.GrabRange, barrierLayer) && !player.IsGrabbing)
                 {
                     tag = hit.transform.tag;
                     if (tag == "Barrier")
@@ -651,10 +677,13 @@ public class PlayerUIManager : MonoBehaviour
     /// <returns></returns>
     public Transform UpdateClosestBarInView()
     {
-        //Debug.Log("updatedclosestw executed");
+        //Debug.Log("updated closest bar in view executed");
         //check for all nearby bars to the player
         Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, barLayer);
+        
         Collider[] nearbyObjects;
+
+        
 
         // Only track floating objects if able to pick up object
         if (pickupScript.CanPickUp && !pickupScript.HeldObject)
@@ -669,13 +698,35 @@ public class PlayerUIManager : MonoBehaviour
         // merge bar and object arrays
         Collider[] totalNearby = nearbyBars.Concat(nearbyObjects).ToArray();
 
+        //string allNames = string.Join(", ", nearbyBars.Select(c => c.name));
+        //Debug.Log("Total nearby: " + allNames);
+
+
         //initialize a transform for the closest bar and distance to that bar
         Transform closestObject = null;
         float closestDistance = Mathf.Infinity;
-
+        // this will be for checking the data of a barrier that may be hit between the player and the grabbable
+        RaycastHit hit;
         //check through each bar in our array
         foreach (Collider obj in totalNearby)
         {
+            // Skip barrier colliders
+            //if (obj.CompareTag("Barrier")) continue;
+
+            // we are going to skip objects that are blocked by an obstacle
+            float distanceToObj = (obj.transform.position - transform.position).magnitude;
+            Vector3 directionToObj = (obj.transform.position - transform.position).normalized;
+
+            // Raycast toward object to see if a barrier is in the way
+            
+            if (Physics.Raycast(transform.position, directionToObj, out hit, distanceToObj, barrierLayer))
+            {
+                if(hit.transform.parent == null || !hit.transform.parent.CompareTag("Bar"))
+                {
+                    continue;
+                }
+            }
+
             //set specifications for the viewport
             Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
 
@@ -701,6 +752,7 @@ public class PlayerUIManager : MonoBehaviour
                 if (player.PotentialGrabbedBar != closestObject)
                 {
                     //the potential bar is now this bar in view
+                    //Debug.Log(closestObject.name);
                     player.PotentialGrabbedBar = closestObject;
                     barInPeripheral = true;
                     //Debug.Log("update closest bar in view found a bar");              
