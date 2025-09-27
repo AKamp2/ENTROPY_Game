@@ -25,10 +25,6 @@ public class MainMenu : MonoBehaviour
         }
         // Set time scale to normal
         Time.timeScale = 1f;
-        //if(//GlobalSaveManager.Instance.Data.PlayerData. == 0)
-        //{
-            
-        //}
     }
     public void StartGame()
     {
@@ -38,14 +34,9 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("Level1New");
 
     }
-    public void LoadGame()
-    {
-        GlobalSaveManager.Instance.LoadFromSave = true;
-    }
     public void Options()
     {
         optionsMenu.SetActive(true);
-        this.gameObject.SetActive(false);
         settingsMenu.SetUp();
         if (volume.profile.TryGet<LensDistortion>(out LensDistortion distortion))
         {
@@ -54,19 +45,17 @@ public class MainMenu : MonoBehaviour
     }
     public void CloseOptions()
     {
-        
+        if (volume.profile.TryGet<LensDistortion>(out LensDistortion distortion))
+        {
+            distortion.active = true;
+        }
         if (settingsMenu.isChanged)
         {
             settingsMenu.OpenPopUp(confirmationPopUp);
         }
         else
         {
-            if (volume.profile.TryGet<LensDistortion>(out LensDistortion distortion))
-            {
-                distortion.active = true;
-            }
             optionsMenu.SetActive(false);
-            this.gameObject.SetActive(true);
         }
     }
     public void ExitOptions()
@@ -76,7 +65,6 @@ public class MainMenu : MonoBehaviour
             distortion.active = true;
         }
         optionsMenu.SetActive(false);
-        this.gameObject.SetActive(true);
     }
     public void QuitGame()
     {
