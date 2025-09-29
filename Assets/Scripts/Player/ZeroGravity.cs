@@ -962,6 +962,7 @@ public class ZeroGravity : MonoBehaviour
         isGrabbing = true;
         //set just grabbed to true to send to swing cool down
         justGrabbed = true;
+
         grabbedBar = potentialGrabbedBar;
 
         //// set up grab spots
@@ -1201,6 +1202,7 @@ public class ZeroGravity : MonoBehaviour
             //create a target Transform to pull to
             Transform target = null;
             //iterate through the children 
+            //Debug.Log(bar.name);
             foreach (Transform child in bar)
             {
                 //find the child that is the GrabTarget
@@ -1215,6 +1217,8 @@ public class ZeroGravity : MonoBehaviour
             //rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
 
             //if the position of the player and the target are about equal
+
+            //Debug.Log(target);
             if (Vector3.Distance(rb.transform.position, target.position) < .1f)
             {
                 //Debug.Log("They are touching :)");
