@@ -98,6 +98,10 @@ public class LockdownEvent : MonoBehaviour
 
     private bool tutorialMonitorFaded = false;
 
+    public GameObject alienBody;
+    public Animator alienAnimator;
+    public Light alienLight;
+
 
 
     public bool CanPull
@@ -318,9 +322,10 @@ public class LockdownEvent : MonoBehaviour
         StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, initialEmissionColor, 4f, 0, 6.5f, 0f));
         poweringDown = true;
         
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(12f);
 
-        audioManager.playAlienRunAway();
+        //audioManager.playAlienRunAway();
+        StartCoroutine(PlayAlienAnimation());
 
         yield return new WaitForSeconds(7f);
 
@@ -479,6 +484,35 @@ public class LockdownEvent : MonoBehaviour
             tutorialMonitorFaded = true;
             StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
         }
+    }
+
+    private IEnumerator PlayAlienAnimation()
+    {
+        alienBody.SetActive(true);
+        alienLight.intensity = 10f;
+
+        yield return new WaitForSeconds(0.3f);
+
+        alienLight.intensity = 0f;
+
+        alienAnimator.SetTrigger("PlayLockdown");
+
+        audioManager.playAlienRunAway();
+
+        yield return new WaitForSeconds(6.9f);
+
+        
+        alienBody.SetActive(false);
+        alienAnimator.SetTrigger("ReturnToIdle");
+
+        alienLight.intensity = 10f;
+
+        yield return new WaitForSeconds(0.1f);
+
+        alienLight.intensity = 0f;
+
+
+
     }
 
 }
