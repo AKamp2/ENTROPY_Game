@@ -29,4 +29,11 @@ public class SaveData
         get { return doorStates; }
         set { doorStates = value; }
     }
+    [SerializeField]
+    private bool[] terminalStates;
+    public bool[] TerminalStates
+    {
+        get { return terminalStates;}
+        set { terminalStates = value; }
+    }
 }

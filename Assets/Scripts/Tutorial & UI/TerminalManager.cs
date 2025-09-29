@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,16 @@ public class TerminalManager : MonoBehaviour
         get { return currentTerminal; }
         set { currentTerminal = value; }
     }
+    [SerializeField]
+    private List<Terminal> terminals;
+    private void Start()
+    {
+        // when loading from save, overwrite the terminals
+        if (GlobalSaveManager.Instance.LoadFromSave)
+        {
+            LoadTerminalStates(GlobalSaveManager.Instance.Data.TerminalStates);
+        }
+    }
 
     public void OnInteract(InputAction.CallbackContext context)
     {
@@ -20,8 +31,32 @@ public class TerminalManager : MonoBehaviour
             if (context.performed && currentTerminal.isLookedAt && !currentTerminal.isActivated)
             {
                 currentTerminal.Activation();
-                
+                StoreTerminalStates();
+                // store the Player's data to the save manager, passing in the position of this checkpoint
+                currentTerminal.PlayerScript.StorePlayerData(currentTerminal.TargetTransform.transform.position);
+                // save the game at checkpoints
+                GlobalSaveManager.Instance.CreateSaveFile();
             }
+        }
+    }
+
+    public void StoreTerminalStates()
+    {
+        // store a copy of the checkpoint data in the global save manager
+        // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
+        bool[] _terminalStates = new bool[terminals.Count];
+        for (int i = 0; i < terminals.Count; i++)
+        {
+            _terminalStates[i] = terminals[i].isActivated;
+        }
+        GlobalSaveManager.Instance.Data.TerminalStates = _terminalStates;
+    }
+
+    public void LoadTerminalStates(bool[] _terminalStates)
+    {
+        for (int i = 0; i < terminals.Count; i++)
+        {
+            if (_terminalStates[i]) terminals[i].SoftActivation();
         }
     }
 

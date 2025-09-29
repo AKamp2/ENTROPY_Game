@@ -6,11 +6,13 @@ using UnityEngine.Events;
 public class Terminal : MonoBehaviour
 {
     private ZeroGravity playerScript;
+    public ZeroGravity PlayerScript { get { return playerScript; } }
     private GameObject playerObj;
     [SerializeField] TerminalScreen terminalScreenScript;
     [SerializeField] GameObject terminalScreenObj;
     [SerializeField] GameObject ALANScreen;
     [SerializeField] GameObject targetTransform;
+    public GameObject TargetTransform { get { return targetTransform; } }
     public bool isLookedAt = false;
     public bool isActivated = false;
     [SerializeField] TerminalPopup popup;
@@ -54,6 +56,13 @@ public class Terminal : MonoBehaviour
         terminalScreenObj.SetActive(true);
         terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());
         StartCoroutine(LerpPosition(targetTransform.transform.position, 0.75f));
+    }
+    // for loading from save
+    public void SoftActivation()
+    {
+        isActivated = true;
+        disabled.StopFlashing();
+        terminalScreenObj.SetActive(true);
     }
 
     public IEnumerator LerpPosition(Vector3 destination, float duration)
