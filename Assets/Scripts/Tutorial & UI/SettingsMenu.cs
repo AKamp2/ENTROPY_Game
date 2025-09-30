@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using static UnityEngine.Rendering.DebugUI;
+using System.Diagnostics;
 
 public class SettingsMenu : MonoBehaviour 
 {
@@ -48,7 +49,7 @@ public class SettingsMenu : MonoBehaviour
     public TMP_Dropdown resolutionDropdown;
     public TMP_Dropdown refreshRateDropdown;
     [SerializeField] private TMP_Dropdown graphicsQuality;
-    [SerializeField] private Toggle fullscreenCheckbox;
+    [SerializeField] private TMP_Dropdown fullscreenDropdown;
 
     // Camera option initialization
     [Header("Camera Section")]
@@ -73,8 +74,8 @@ public class SettingsMenu : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
-        GetResolutions();
+        //Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        //GetResolutions();
         SetUp();
     }
 
@@ -85,7 +86,7 @@ public class SettingsMenu : MonoBehaviour
         // Makes sure menus are not open when starting 
         CloseMenus();
         graphicsQuality.value = GetPrefs("qualityLevel",5);
-        fullscreenCheckbox.isOn = GetPrefs("isFullscreen", 1) == 1;
+        //fullscreenCheckbox.isOn = GetPrefs("isFullscreen", 1) == 1;
         ResetValues();
         ApplyOptions();
     }
@@ -160,17 +161,22 @@ public class SettingsMenu : MonoBehaviour
         sensitivityYSliderText.text = Value.ToString();
         isChanged = true;
     }
-    public void SetFullscreen(bool isFullscreen)
+    public void SetFullscreen(int value)
     {
-        Screen.fullScreen = isFullscreen;
-        if (isFullscreen)
+        switch (value)
         {
-            SetPrefsInt("isFullscreen", 1);
+            case 0:
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            break;
+
+            case 1:
+                //Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                UnityEngine.Debug.Log("windowed mode selected");
+                Resolution resolution = Screen.currentResolution;
+                Screen.SetResolution(resolution.width, resolution.height, FullScreenMode.Windowed);
+            break;
         }
-        if (!isFullscreen)
-        {
-            SetPrefsInt("isFullscreen", 0);
-        }
+
     }
 
     public void SetGraphicsQuality(int qualityIndex)
@@ -179,21 +185,21 @@ public class SettingsMenu : MonoBehaviour
         SetPrefsInt("qualityLevel", qualityIndex);
     }
 
-    public void SetResolution(int resolutionIndex)
-    {
-        resolutionDropdown.value = resolutionIndex;
-        Resolution resolution = resolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, FullScreenMode.ExclusiveFullScreen, refresh);
-    }
+    //public void SetResolution(int resolutionIndex)
+    //{
+    //    resolutionDropdown.value = resolutionIndex;
+    //    Resolution resolution = resolutions[resolutionIndex];
+    //    Screen.SetResolution(resolution.width, resolution.height, FullScreenMode.ExclusiveFullScreen, refresh);
+    //}
 
     public void SetRefreshRate(int refreshRate)
     {
         refreshRateDropdown.value = refreshRate;
         refresh = new RefreshRate { numerator = (uint)commonHz[refreshRateDropdown.value], denominator = 1 };
         Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.ExclusiveFullScreen, refresh);
-        PopulateResolutionDropdown();
+        //PopulateResolutionDropdown();
     }
-
+    
     public void ToggleSubtitles()
     {
         if (dialogueText != null)
@@ -239,16 +245,16 @@ public class SettingsMenu : MonoBehaviour
         }
         gammaSliderText.text = (gammaSlider.value*10).ToString("N0");
     }
-    public void SetBloom(float Value)
-    {
-        bloomSlider.value = Value;
-        if (postProcessing!=null && postProcessing.profile.TryGet<Bloom>(out Bloom bloom))
-        {
-            bloom.intensity.value = Value;
-        }
-        bloomSliderText.text = (bloomSlider.value*2).ToString("N0");
-        isChanged = true;
-    }
+    //public void SetBloom(float Value)
+    //{
+    //    bloomSlider.value = Value;
+    //    if (postProcessing!=null && postProcessing.profile.TryGet<Bloom>(out Bloom bloom))
+    //    {
+    //        bloom.intensity.value = Value;
+    //    }
+    //    bloomSliderText.text = (bloomSlider.value*2).ToString("N0");
+    //    isChanged = true;
+    //}
 
     #endregion
     // Menu management
@@ -301,10 +307,12 @@ public class SettingsMenu : MonoBehaviour
     void SetPrefsInt(string keyName, int value)
     {
         PlayerPrefs.SetInt(keyName, value);
+        PlayerPrefs.Save();
     }
     void SetPrefsFloat(string keyName, float value)
     {
         PlayerPrefs.SetFloat(keyName, value);
+        PlayerPrefs.Save();
     }
     int GetPrefs(string keyName, int defaultValue)
     {
@@ -330,7 +338,7 @@ public class SettingsMenu : MonoBehaviour
     private void GetResolutions()
     {
         PopulateRefreshRateDropdown();
-        PopulateResolutionDropdown();
+        //PopulateResolutionDropdown();
     }
 
     void PopulateRefreshRateDropdown()
@@ -344,33 +352,33 @@ public class SettingsMenu : MonoBehaviour
         refreshRateDropdown.AddOptions(hzOptions);
     }
 
-    void PopulateResolutionDropdown()
-    {
-        resolutionDropdown.ClearOptions();
-        resolutions = Screen.resolutions;
+    //void PopulateResolutionDropdown()
+    //{
+    //    resolutionDropdown.ClearOptions();
+    //    resolutions = Screen.resolutions;
 
-        List<string> resOptions = new List<string>();
-        List<Resolution> uniqueResolutions = new List<Resolution>();
+    //    List<string> resOptions = new List<string>();
+    //    List<Resolution> uniqueResolutions = new List<Resolution>();
 
-        foreach (Resolution res in resolutions)
-        {
-            // Avoid duplicates
-            if (!uniqueResolutions.Exists(r => r.width == res.width && r.height == res.height))
-                uniqueResolutions.Add(res);
-        }
-        resolutions = uniqueResolutions.ToArray();
-        resolutionDropdown.value = resolutions.Length-1;
-        foreach (var res in uniqueResolutions)
-            if(res.width < 1920)
-            {
-                continue;
-            }
-            else
-            {
-                resOptions.Add(res.width + " x " + res.height);
-            }
-        resolutionDropdown.AddOptions(resOptions);
-    }
+    //    foreach (Resolution res in resolutions)
+    //    {
+    //        // Avoid duplicates
+    //        if (!uniqueResolutions.Exists(r => r.width == res.width && r.height == res.height))
+    //            uniqueResolutions.Add(res);
+    //    }
+    //    resolutions = uniqueResolutions.ToArray();
+    //    resolutionDropdown.value = resolutions.Length-1;
+    //    foreach (var res in uniqueResolutions)
+    //        if(res.width < 1920)
+    //        {
+    //            continue;
+    //        }
+    //        else
+    //        {
+    //            resOptions.Add(res.width + " x " + res.height);
+    //        }
+    //    resolutionDropdown.AddOptions(resOptions);
+    //}
     #endregion
     // Persistant options
     #region Preferences
@@ -386,10 +394,10 @@ public class SettingsMenu : MonoBehaviour
         SetPrefsInt("sensitivitySliderX", (int)sensitivitySliderX.value);
         SetPrefsInt("sensitivitySliderY", (int)sensitivitySliderY.value);
         SetPrefsInt("refreshRate", refreshRateDropdown.value);
-        SetPrefsInt("resolution", resolutionDropdown.value);
+        //SetPrefsInt("resolution", resolutionDropdown.value);
         SetPrefsFloat("fovSlider", fovSlider.value);
         SetPrefsFloat("gammaSlider", gammaSlider.value);
-        SetPrefsFloat("bloomSlider", bloomSlider.value);
+        //SetPrefsFloat("bloomSlider", bloomSlider.value);
         if (subtitleCheckbox.isOn)
         {
             SetPrefsInt("subtitleCheckbox", 1);
@@ -411,12 +419,21 @@ public class SettingsMenu : MonoBehaviour
         SetSensitivityY(GetPrefs("sensitivitySliderY", 40));
         SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
         SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
-        SetRefreshRate(GetPrefs("refreshRate", 2));
-        SetResolution(GetPrefs("resolution",resolutions.Length-1));
-        SetFOV(GetPrefsFloat("fovSlider", 40f));
+        SetRefreshRate(GetPrefs("refreshRate", refreshRateDropdown.options.Count-1));
+        //SetResolution(GetPrefs("resolution",resolutions.Length-1));
+        SetFOV(GetPrefsFloat("fovSlider", 80f));
         SetGamma(GetPrefsFloat("gammaSlider", 0f));
-        SetBloom(GetPrefsFloat("bloomSlider", 0f));
+        //SetBloom(GetPrefsFloat("bloomSlider", 0f));
         ToggleSubtitles();
+    }
+
+    /// <summary>
+    /// Deletes all the current player preferences and sets sliders back to defaults
+    /// </summary>
+    public void RestoreDefaults()
+    {
+        PlayerPrefs.DeleteAll();
+        ResetValues();
     }
     #endregion
     

@@ -16,6 +16,7 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
+        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
         // Ensure cursor is visible and locked
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
