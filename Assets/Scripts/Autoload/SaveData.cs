@@ -36,4 +36,18 @@ public class SaveData
         get { return terminalStates;}
         set { terminalStates = value; }
     }
+    [SerializeField]
+    private bool savedWithTerminal;
+    public bool SavedWithTerminal
+    {
+        get { return savedWithTerminal; }
+        set { savedWithTerminal = value; }
+    }
+    [SerializeField]
+    private int latestTerminalIndex = -1;
+    public int LatestTerminalIndex
+    {
+        get { return latestTerminalIndex; }
+        set { latestTerminalIndex = value; }
+    }
 }

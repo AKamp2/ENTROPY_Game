@@ -35,7 +35,7 @@ public class TerminalDisabled : MonoBehaviour
 
     public void StopFlashing()
     {
-        StopCoroutine(disabledRoutine);
+        if (disabledRoutine != null) StopCoroutine(disabledRoutine);
         disabledScreen.SetActive(false);
         screenLight.intensity = lightIntensity;
     }

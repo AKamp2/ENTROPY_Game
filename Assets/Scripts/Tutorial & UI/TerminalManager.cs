@@ -35,6 +35,7 @@ public class TerminalManager : MonoBehaviour
                 // store the Player's data to the save manager, passing in the position of this checkpoint
                 currentTerminal.PlayerScript.StorePlayerData(currentTerminal.TargetTransform.transform.position);
                 // save the game at checkpoints
+                GlobalSaveManager.Instance.Data.SavedWithTerminal = true;
                 GlobalSaveManager.Instance.CreateSaveFile();
             }
         }
@@ -48,15 +49,29 @@ public class TerminalManager : MonoBehaviour
         for (int i = 0; i < terminals.Count; i++)
         {
             _terminalStates[i] = terminals[i].isActivated;
+            // track the index of the current terminal for save loading
+            if (terminals[i] == CurrentTerminal) {
+                GlobalSaveManager.Instance.Data.LatestTerminalIndex = i;
+            }
         }
         GlobalSaveManager.Instance.Data.TerminalStates = _terminalStates;
     }
 
     public void LoadTerminalStates(bool[] _terminalStates)
     {
+        // activates all of the terminals, only the current terminal will play its cutscene
         for (int i = 0; i < terminals.Count; i++)
         {
-            if (_terminalStates[i]) terminals[i].SoftActivation();
+            if (_terminalStates[i])
+            {
+                if (GlobalSaveManager.Instance.Data.SavedWithTerminal && i == GlobalSaveManager.Instance.Data.LatestTerminalIndex)
+                {
+                    terminals[i].MediumActivation();
+                } else
+                {
+                    terminals[i].SoftActivation();
+                }
+            }
         }
     }
 

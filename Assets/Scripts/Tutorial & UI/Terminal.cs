@@ -58,11 +58,20 @@ public class Terminal : MonoBehaviour
         StartCoroutine(LerpPosition(targetTransform.transform.position, 0.75f));
     }
     // for loading from save
+    // starts the player at the terminal immediately after upload
+    public void MediumActivation()
+    {
+        isActivated = true;
+        disabled.StopFlashing();
+        ALANScreen.SetActive(true);
+        onUploadComplete?.Invoke();
+    }
+    // simply sets the terminal to active
     public void SoftActivation()
     {
         isActivated = true;
         disabled.StopFlashing();
-        terminalScreenObj.SetActive(true);
+        ALANScreen.SetActive(true);
     }
 
     public IEnumerator LerpPosition(Vector3 destination, float duration)
