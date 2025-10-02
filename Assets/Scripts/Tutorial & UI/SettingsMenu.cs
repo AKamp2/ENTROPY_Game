@@ -46,6 +46,7 @@ public class SettingsMenu : MonoBehaviour
     Resolution[] resolutions;
     private List<int> commonHz = new List<int> { 60, 75, 120, 144, 165 };
     RefreshRate refresh;
+    RefreshRate initialRefresh;
     public TMP_Dropdown resolutionDropdown;
     public TMP_Dropdown refreshRateDropdown;
     [SerializeField] private TMP_Dropdown graphicsQuality;
@@ -72,8 +73,9 @@ public class SettingsMenu : MonoBehaviour
     /// <summary> 
     /// Runs the setup method when the game object is enabled in the scene
     /// </summary>
-    private void OnEnable()
+    private void Start()
     {
+        initialRefresh = Screen.currentResolution.refreshRateRatio;
         //Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         //GetResolutions();
         SetUp();
@@ -192,11 +194,24 @@ public class SettingsMenu : MonoBehaviour
     //    Screen.SetResolution(resolution.width, resolution.height, FullScreenMode.ExclusiveFullScreen, refresh);
     //}
 
+    /// <summary>
+    /// Sets the desired refresh rate from the options. Default value is the screens initial setting
+    /// </summary>
+    /// <param name="refreshRate"></param>
     public void SetRefreshRate(int refreshRate)
     {
         refreshRateDropdown.value = refreshRate;
-        refresh = new RefreshRate { numerator = (uint)commonHz[refreshRateDropdown.value], denominator = 1 };
-        Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.ExclusiveFullScreen, refresh);
+        // If the player selects default then the initial screen resolution is restored
+        if (refreshRate == 0)
+        {
+            Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.FullScreenWindow, initialRefresh);
+            return;
+        }
+        else
+        {
+            refresh = new RefreshRate { numerator = (uint)commonHz[refreshRateDropdown.value], denominator = 1 };
+            Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.FullScreenWindow, refresh);
+        }
         //PopulateResolutionDropdown();
     }
     
@@ -419,7 +434,8 @@ public class SettingsMenu : MonoBehaviour
         SetSensitivityY(GetPrefs("sensitivitySliderY", 40));
         SetMusicVolume(GetPrefsFloat("musicSlider", 0.5f));
         SetMasterVolume(GetPrefsFloat("masterVolumeSlider", 1f));
-        SetRefreshRate(GetPrefs("refreshRate", refreshRateDropdown.options.Count-1));
+        SetRefreshRate(GetPrefs("refreshRate", 0));
+       
         //SetResolution(GetPrefs("resolution",resolutions.Length-1));
         SetFOV(GetPrefsFloat("fovSlider", 80f));
         SetGamma(GetPrefsFloat("gammaSlider", 0f));
