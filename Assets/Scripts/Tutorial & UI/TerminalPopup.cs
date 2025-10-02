@@ -6,6 +6,7 @@ using System.Collections;
 public class TerminalPopup : MonoBehaviour
 {
     public TMP_Text uploadText;
+    [SerializeField] GameObject popupObject;
     [SerializeField] GameObject uploadCompleteText;
     [SerializeField] GameObject screenBlur;
     public float uploadDuration = 3f;
@@ -17,7 +18,7 @@ public class TerminalPopup : MonoBehaviour
     public void StartUpload()
     {
         screenBlur.SetActive(true);
-        gameObject.SetActive(true);
+        popupObject.SetActive(true);
         
         currentTime = 0f;
         isUploading = true;
@@ -65,7 +66,7 @@ public class TerminalPopup : MonoBehaviour
         isUploaded = true;
 
         terminalText.SetActive(false);
-        gameObject.SetActive(false);
+        popupObject.SetActive(false);
         
     }
 

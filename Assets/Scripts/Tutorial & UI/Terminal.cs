@@ -18,7 +18,7 @@ public class Terminal : MonoBehaviour
     private Coroutine disabledRoutine;
     public bool isUploadComplete = false;
 
-    //this is we can assign different actions to be called by our terminals
+    //this is how we can assign different actions to be called by our terminals
     //assign a method from a script in the inspector
     [Header("Events")]
     public UnityEvent onUploadComplete;
@@ -27,12 +27,12 @@ public class Terminal : MonoBehaviour
     {
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
-        if(isActivated == false)
+        if (isActivated == false)
         {
             disabled.StartFlashing();
         }
     }
-    
+
     private void Update()
     {
         if (popup.isUploaded && !isUploadComplete)
@@ -69,5 +69,10 @@ public class Terminal : MonoBehaviour
         }
 
         playerObj.transform.position = destination; // Snap to final position
+    }
+
+    public void TurnOff()
+    {
+        
     }
 }
