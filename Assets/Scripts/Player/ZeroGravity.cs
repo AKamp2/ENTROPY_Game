@@ -1547,7 +1547,7 @@ public class ZeroGravity : MonoBehaviour
         //    rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
         //    rb.angularVelocity = Vector3.zero;
         //}
-        GlobalSaveManager.Instance.LoadSaveFile();
+        GlobalSaveManager.Instance.LoadTempSaveFile();
         GlobalSaveManager.Instance.LoadFromSave = true;
         string currentSceneName = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(currentSceneName);

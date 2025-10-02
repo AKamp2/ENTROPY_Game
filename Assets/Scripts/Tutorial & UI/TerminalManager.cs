@@ -36,7 +36,8 @@ public class TerminalManager : MonoBehaviour
                 currentTerminal.PlayerScript.StorePlayerData(currentTerminal.TargetTransform.transform.position);
                 // save the game at checkpoints
                 GlobalSaveManager.Instance.Data.SavedWithTerminal = true;
-                GlobalSaveManager.Instance.CreateSaveFile();
+                GlobalSaveManager.Instance.CreateTempSaveFile();
+                GlobalSaveManager.Instance.CreatePersistantSaveFile();
             }
         }
     }

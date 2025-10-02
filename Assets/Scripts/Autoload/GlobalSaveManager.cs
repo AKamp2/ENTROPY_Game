@@ -9,7 +9,8 @@ public class GlobalSaveManager : MonoBehaviour
     // reference to self
     public static GlobalSaveManager Instance { get; private set; }
     public SaveData Data;
-    static string FILENAME = "SaveData.json";
+    static string TEMP_SAVE_FILENAME = "TempSaveData.json";
+    static string SAVE_FILE_1 = "SaveData1.json";
     private bool loadFromSave = false;
     public bool LoadFromSave
     {
@@ -25,15 +26,24 @@ public class GlobalSaveManager : MonoBehaviour
             Destroy(this);
         } else
         {
+            // Overwrite temp file on game launch
+            LoadPersistantSaveFile();
+            // TODO: add check file exists
+            CreateTempSaveFile();
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
     }
-
-    public void LoadSaveFile()
+    public void LoadTempSaveFile()
     {
         string path = Application.persistentDataPath;
-        string loadedData = LoadTextFromFile(path, FILENAME);
+        string loadedData = LoadTextFromFile(path, TEMP_SAVE_FILENAME);
+        Data = JsonUtility.FromJson<SaveData>(loadedData);
+    }
+    public void LoadPersistantSaveFile()
+    {
+        string path = Application.persistentDataPath;
+        string loadedData = LoadTextFromFile(path, SAVE_FILE_1);
         Data = JsonUtility.FromJson<SaveData>(loadedData);
     }
 
@@ -54,13 +64,22 @@ public class GlobalSaveManager : MonoBehaviour
         return data;
     }
 
-    public void CreateSaveFile()
+    public void CreateTempSaveFile()
     {
         string json = JsonUtility.ToJson(Data);
         // Debug.Log("this is the Save Data as a string:");
         // Debug.Log(json);
         string path = Application.persistentDataPath;
-        SaveTextToFile(path, FILENAME, json);
+        SaveTextToFile(path, TEMP_SAVE_FILENAME, json);
+    }
+    // this is a save file that will be loaded when the game is loaded
+    public void CreatePersistantSaveFile()
+    {
+        string json = JsonUtility.ToJson(Data);
+        // Debug.Log("this is the Save Data as a string:");
+        // Debug.Log(json);
+        string path = Application.persistentDataPath;
+        SaveTextToFile(path, SAVE_FILE_1, json);
     }
 
     private void SaveTextToFile(string path, string fileName, string data)
