@@ -1660,7 +1660,6 @@ public class ZeroGravity : MonoBehaviour
             playerHealth, 
             numStims, 
             hasUsedStim,
-            tutorialManager.inTutorial,
             (bool[])accessPermissions.Clone(),
             wristMonitor.HasWristMonitor,
             wristMonitor.IsActive,
@@ -1678,20 +1677,12 @@ public class ZeroGravity : MonoBehaviour
         numStims = playerData.Stims;
         hasUsedStim = playerData.HasUsedStim;
         // reset all actions
-        if (playerData.InTutorial)
-        {
-            tutorialManager.RestartTutorial();
-        }
-        else
-        {
-            // get rid of the tutorial
-            tutorialMode = false;
-            canGrab = true;
-            canMove = true;
-            canPropel = true;
-            canRoll = true;
-            canPushOff = true;
-        }
+        tutorialMode = false;
+        canGrab = true;
+        canMove = true;
+        canPropel = true;
+        canRoll = true;
+        canPushOff = true;
         // set wrist monitor data
         accessPermissions = (bool[])playerData.AccessPermissions.Clone();
         wristMonitor.HasWristMonitor = playerData.HasWristMonitor;
