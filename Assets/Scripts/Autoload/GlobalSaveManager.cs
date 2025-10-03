@@ -28,6 +28,7 @@ public class GlobalSaveManager : MonoBehaviour
         {
             // Overwrite temp file on game launch
             OverwriteTempFile();
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
     }
@@ -38,7 +39,6 @@ public class GlobalSaveManager : MonoBehaviour
             LoadPersistantSaveFile();
             CreateTempSaveFile();
         }
-        Instance = this;
     }
     public static bool SaveFileExists()
     {
