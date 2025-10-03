@@ -38,7 +38,8 @@ public class CheckpointManager : MonoBehaviour
         // store the Player's data to the save manager, passing in the position of this checkpoint
         playerZeroG.StorePlayerData(reached.respawnPoint.transform.position);
         // save the game at checkpoints
-        GlobalSaveManager.Instance.CreateSaveFile();
+        GlobalSaveManager.Instance.Data.SavedWithTerminal = false;
+        GlobalSaveManager.Instance.CreateTempSaveFile();
     }
     // backs up checkpoint states for saving
     public void StoreCheckpointStates()
