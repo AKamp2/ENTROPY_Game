@@ -24,6 +24,7 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField] private GameObject dialogueCanvas;
     [SerializeField] private GameObject tutorialCanvas;
+
     // Audio Manager
     [SerializeField] private AudioSource dialogue;
 
@@ -34,10 +35,18 @@ public class MenuManager : MonoBehaviour
     // Set options
     [SerializeField] SettingsMenu SettingsMenu;
 
+    // Check pause condition
+    bool _isPaused;
+
+    // Camera effects
+    [SerializeField] private GameObject _UICamera;
+    private float _unscaledTime;
     public void Start()
     {
         activeMenus = new List<GameObject>();
         SettingsMenu.ApplyOptions();
+        _isPaused = false;
+        _UICamera.SetActive(false);
     }
     private void Update()
     {
@@ -48,7 +57,6 @@ public class MenuManager : MonoBehaviour
         if (activeMenus.Count == 0 && pauseMenu.activeInHierarchy)
         {
             activeMenus.Add(pauseMenu);
-            
         }
         if (player.IsDead)
         {
@@ -66,36 +74,45 @@ public class MenuManager : MonoBehaviour
             playerCanvas.SetActive(false);
             dialogueCanvas.SetActive(false);
             tutorialCanvas.SetActive(false);
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            playerCanvas.SetActive(true);
-            dialogueCanvas.SetActive(true);
-            tutorialCanvas.SetActive(true);
-        }
+            _unscaledTime += Time.unscaledTime/2400;
+            Shader.SetGlobalFloat("_UnscaledTime", _unscaledTime);
+        }   
     }
     public void Pause()
     {
-        if(activeMenus.Count == 0)
+        _isPaused = !_isPaused;
+        _UICamera.SetActive(true);
+        pauseMenu.SetActive(_isPaused);
+        if (_isPaused)
         {
-            pauseMenu.SetActive(true);
             Time.timeScale = 0;
             dialogue.Pause();
         }
+        else
+        {
+            Resume();
+        }
+        
     }
 
     public void Resume()
     {
-        Time.timeScale = 1;
+        _UICamera.SetActive(false);
         CloseMenus();
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        playerCanvas.SetActive(true);
+        dialogueCanvas.SetActive(true);
+        tutorialCanvas.SetActive(true);
+        Time.timeScale = 1;
         dialogue.UnPause();
+        _isPaused = false;
     }
 
     public void OptionsButton()
     {
         optionsMenu.SetActive(true);
+        activeMenus.Add(optionsMenu);
         pauseMenu.SetActive(false);
     }
 

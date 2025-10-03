@@ -437,7 +437,7 @@ public class SettingsMenu : MonoBehaviour
         SetRefreshRate(GetPrefs("refreshRate", 0));
        
         //SetResolution(GetPrefs("resolution",resolutions.Length-1));
-        SetFOV(GetPrefsFloat("fovSlider", 80f));
+        SetFOV(GetPrefsFloat("fovSlider", 50f));
         SetGamma(GetPrefsFloat("gammaSlider", 0f));
         //SetBloom(GetPrefsFloat("bloomSlider", 0f));
         ToggleSubtitles();

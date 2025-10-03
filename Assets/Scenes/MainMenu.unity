@@ -706,6 +706,7 @@ GameObject:
   - component: {fileID: 181302330}
   - component: {fileID: 181302329}
   - component: {fileID: 181302328}
+  - component: {fileID: 181302331}
   m_Layer: 5
   m_Name: MainMenuCanvas
   m_TagString: Untagged
@@ -797,6 +798,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &181302331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181302326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d44b17b22636de34789fa582895c8f55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &296374423 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4551922048533284635, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
@@ -2199,7 +2212,7 @@ PrefabInstance:
     - target: {fileID: 4473162415504288743, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 631683896}
+      objectReference: {fileID: 0}
     - target: {fileID: 6125442833777929006, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: postProcessing
       value: 
@@ -2207,7 +2220,7 @@ PrefabInstance:
     - target: {fileID: 7066890172053793882, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 631683896}
+      objectReference: {fileID: 0}
     - target: {fileID: 8275103607634385874, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_Camera
       value: 
@@ -2219,7 +2232,7 @@ PrefabInstance:
     - target: {fileID: 8877236415178157687, guid: 982bd77b1dbebc64d8619ad6aceb35c0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 631683896}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
