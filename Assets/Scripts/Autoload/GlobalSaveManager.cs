@@ -27,12 +27,22 @@ public class GlobalSaveManager : MonoBehaviour
         } else
         {
             // Overwrite temp file on game launch
-            LoadPersistantSaveFile();
-            // TODO: add check file exists
-            CreateTempSaveFile();
-            Instance = this;
+            OverwriteTempFile();
             DontDestroyOnLoad(gameObject);
         }
+    }
+    public void OverwriteTempFile()
+    {
+        if (SaveFileExists())
+        {
+            LoadPersistantSaveFile();
+            CreateTempSaveFile();
+        }
+        Instance = this;
+    }
+    public static bool SaveFileExists()
+    {
+        return File.Exists(Path.Join(Application.persistentDataPath, SAVE_FILE_1));
     }
     public void LoadTempSaveFile()
     {
