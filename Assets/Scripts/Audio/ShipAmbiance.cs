@@ -19,7 +19,7 @@ public class ShipAmbience : MonoBehaviour
     private bool isSourceAPlaying = true;
 
     // Call this manually when player spawns
-    public void StartAmbience()
+    public void Start()
     {
         if (sourceA != null)
         {
