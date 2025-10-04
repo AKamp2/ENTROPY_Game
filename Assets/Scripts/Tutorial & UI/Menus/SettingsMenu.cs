@@ -322,12 +322,10 @@ public class SettingsMenu : MonoBehaviour
     void SetPrefsInt(string keyName, int value)
     {
         PlayerPrefs.SetInt(keyName, value);
-        PlayerPrefs.Save();
     }
     void SetPrefsFloat(string keyName, float value)
     {
         PlayerPrefs.SetFloat(keyName, value);
-        PlayerPrefs.Save();
     }
     int GetPrefs(string keyName, int defaultValue)
     {
@@ -340,6 +338,7 @@ public class SettingsMenu : MonoBehaviour
     public void ApplyOptions()
     {
         SetAllPrefs();
+        PlayerPrefs.Save();
         isChanged = false;
     }
     public void SetSliderText(TextMeshProUGUI sliderText, Slider volumeSlider)
