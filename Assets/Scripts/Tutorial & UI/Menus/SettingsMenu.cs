@@ -209,12 +209,14 @@ public class SettingsMenu : MonoBehaviour
         if (refreshRate == 0)
         {
             Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.FullScreenWindow, initialRefresh);
+            SetFullscreen(fullscreenDropdown.value);
             return;
         }
         else
         {
             refresh = new RefreshRate { numerator = (uint)commonHz[refreshRateDropdown.value], denominator = 1 };
             Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.FullScreenWindow, refresh);
+            SetFullscreen(fullscreenDropdown.value);
         }
         //PopulateResolutionDropdown();
     }
