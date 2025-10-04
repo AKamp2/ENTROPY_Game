@@ -81,6 +81,10 @@ public class SettingsMenu : MonoBehaviour
         SetUp();
     }
 
+    private void OnEnable()
+    {
+        SetUp();
+    }
     // Setting methods
     #region Setters
     public void SetUp()
