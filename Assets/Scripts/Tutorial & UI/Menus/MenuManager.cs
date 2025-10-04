@@ -40,7 +40,7 @@ public class MenuManager : MonoBehaviour
 
     // Camera effects
     [SerializeField] private GameObject _UICamera;
-    private float _unscaledTime;
+    private float _unscaledTime = 1000;
     public void Start()
     {
         activeMenus = new List<GameObject>();
@@ -65,6 +65,7 @@ public class MenuManager : MonoBehaviour
         if (winScript.WinCondition && activeMenus.Count== 0)
         {
             activeMenus.Add(thanksMenu);
+            _UICamera.SetActive(true);
             thanksMenu.SetActive(true);
         }
         if (activeMenus.Count > 0)
@@ -74,12 +75,17 @@ public class MenuManager : MonoBehaviour
             playerCanvas.SetActive(false);
             dialogueCanvas.SetActive(false);
             tutorialCanvas.SetActive(false);
-            _unscaledTime += Time.unscaledTime/2400;
+            _unscaledTime += Time.unscaledTime;
+            if (_unscaledTime >= 2000)
+            {
+                _unscaledTime = 1000;
+            }
             Shader.SetGlobalFloat("_UnscaledTime", _unscaledTime);
         }   
     }
     public void Pause()
     {
+        _unscaledTime = 1000;
         _isPaused = !_isPaused;
         _UICamera.SetActive(true);
         pauseMenu.SetActive(_isPaused);
@@ -141,8 +147,10 @@ public class MenuManager : MonoBehaviour
     {
         //restrict the player from movement
         player.PlayerDead();
+        _UICamera.SetActive(true);
         //set the death menu to true.
         deathMenu.SetActive(true);
+
         dialogue.Pause();
     }
 

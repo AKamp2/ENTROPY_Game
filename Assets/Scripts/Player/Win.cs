@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Win : MonoBehaviour
 {
-    private bool winCondition = false;
+    public bool winCondition = false;
     [SerializeField]
     private DoorScript winDoor;
     private bool canWin = true;
