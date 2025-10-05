@@ -18,6 +18,9 @@ public class Terminal : MonoBehaviour
     private Coroutine disabledRoutine;
     public bool isUploadComplete = false;
 
+    public GameObject TerminalScreen { get { return terminalScreenObj; } }
+    public GameObject ALANScreenUI { set { ALANScreen = value; } }
+    public TerminalPopup MainScriptPopup { set { popup = value; } }
     //this is we can assign different actions to be called by our terminals
     //assign a method from a script in the inspector
     [Header("Events")]
@@ -35,7 +38,7 @@ public class Terminal : MonoBehaviour
     
     private void Update()
     {
-        if (popup.isUploaded && !isUploadComplete)
+        if (popup != null && popup.isUploaded && !isUploadComplete)
         {
             isUploadComplete = true;
             playerScript.PlayerCutSceneHandler(false);
@@ -51,7 +54,7 @@ public class Terminal : MonoBehaviour
         isActivated = true;
         disabled.StopFlashing();
         playerScript.PlayerCutSceneHandler(true);
-        terminalScreenObj.SetActive(true);
+        //terminalScreenObj.SetActive(true);
         terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());
         StartCoroutine(LerpPosition(targetTransform.transform.position, 0.75f));
     }

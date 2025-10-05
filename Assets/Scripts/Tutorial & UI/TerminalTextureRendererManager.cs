@@ -1,0 +1,75 @@
+using TMPro;
+using UnityEngine;
+
+public class TerminalTextureRendererManager : MonoBehaviour
+{
+    [SerializeField]
+    private GameObject terminalUIGroup;
+
+    [SerializeField]
+    private GameObject terminalUIPrefab;
+    [SerializeField]
+    private Material terminalBaseMaterial;
+
+
+    private int[] textureDensity = new int[] { 1024, 1024 };
+
+
+
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+   
+        foreach (Terminal terminal in this.GetComponentsInChildren<Terminal>())
+        {
+
+            // get the mesh renderer for the individual screen of the terminal
+            MeshRenderer uiMeshRenderer = terminal.TerminalScreen.GetComponent<MeshRenderer>();
+
+            // create a new instance of the UI exclusively for this terminal
+            GameObject uiInstance = Instantiate(terminalUIPrefab, terminalUIGroup.transform);
+
+            // create a new render texture for this terminal
+            RenderTexture rt = new RenderTexture(textureDensity[0], textureDensity[1], 24);
+
+            // hook up the camera in the UI prefab to the new render texture
+            Camera cam = uiInstance.GetComponentInChildren<Camera>();
+            cam.targetTexture = rt;
+
+            // clone the base material to make a new one and change the base texture
+            Material material = new Material(terminalBaseMaterial);
+            material.mainTexture = rt;
+
+            material.SetTexture("_EmissionMap", rt);
+
+            // set the material of the screen to the new material
+            uiMeshRenderer.material = material;
+
+            // Hook up all the instances items to the main terminal scripts
+            // This is very jank at the moment, consider coming back to this and make a formal reference script held by the prefab parent.
+            TerminalDisabled td = terminal.transform.GetComponent<TerminalDisabled>();
+            TerminalScreen ts = terminal.transform.GetComponent<TerminalScreen>();
+
+            Transform terminalScreenUI = uiInstance.transform.Find("TerminalScreenUI");
+
+            terminal.ALANScreenUI = terminalScreenUI.transform.Find("ALANConnected").gameObject;
+            terminal.MainScriptPopup = terminalScreenUI.transform.Find("UploadPopup").GetComponent<TerminalPopup>();
+
+            td.DisabledScreen = terminalScreenUI.transform.Find("NeedsConnection").gameObject;
+
+            ts.ScreenScriptPopup = terminalScreenUI.transform.Find("UploadPopup").GetComponent<TerminalPopup>();
+            ts.TerminalText = terminalScreenUI.transform.Find("ComputerTerminalText").GetComponent<TMP_Text>();
+
+
+
+
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}

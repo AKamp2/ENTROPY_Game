@@ -11,7 +11,10 @@ public class TerminalScreen : MonoBehaviour
     private string currentText = "";
     private bool isTyping = true;
 
-    [SerializeField] TerminalPopup popup; 
+    [SerializeField] TerminalPopup popup;
+
+    public TMP_Text TerminalText { set { terminalText = value ; } }
+    public TerminalPopup ScreenScriptPopup { set { popup = value; } }
 
     //do a typewriter effect for the upload text in the terminal
     public IEnumerator TypeText()
