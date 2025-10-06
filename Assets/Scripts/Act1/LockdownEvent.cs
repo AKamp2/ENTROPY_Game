@@ -102,6 +102,9 @@ public class LockdownEvent : MonoBehaviour
     public Animator alienAnimator;
     public Light alienLight;
 
+    [SerializeField] private ServerProgressBars serverProgress;
+    [SerializeField] private Terminal serverTerminal;
+    [SerializeField] private LockdownPanel lockdownPanel;
 
 
     public bool CanPull
@@ -147,7 +150,7 @@ public class LockdownEvent : MonoBehaviour
         // checks if player is currently hovering over lever
         canPull = false;
         // checks if system is able to be turned on
-        isActive = true;
+        isActive = false;
 
         canGrab = false;
         isGrabbable = true;
@@ -261,8 +264,7 @@ public class LockdownEvent : MonoBehaviour
             buttonLight.intensity = 0;
             // open the broken door first
             brokenDoor.SetState(DoorScript.States.Open);
-            lever.GetComponent<Renderer>().material = leverMaterial;
-
+            
             DoorTrigger.enabled = true;
             isActive = false;
 
@@ -319,17 +321,19 @@ public class LockdownEvent : MonoBehaviour
 
         audioManager.FadeServers(false);
         audioManager.playPowerCut();
+        serverProgress.Shutdown();
         StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, initialEmissionColor, 4f, 0, 6.5f, 0f));
         poweringDown = true;
         
-        yield return new WaitForSeconds(12f);
+        yield return new WaitForSeconds(13f);
 
         //audioManager.playAlienRunAway();
         StartCoroutine(PlayAlienAnimation());
 
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(4f);
 
         audioManager.playPowerOn();
+        serverProgress.Reboot();
         StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, endEmissionColor, 0, 4f, 4f, 2f));
         glitchLights = true;
         foreach(Light light in lights)
@@ -513,6 +517,14 @@ public class LockdownEvent : MonoBehaviour
 
 
 
+    }
+
+    public void TerminalActivated()
+    {
+        //change the lockdown panel and make it interactable
+        lockdownPanel.SwitchToDeactivate();
+        isActive = true;
+        dialogueManager.StartDialogueSequence(9, 0.5f);
     }
 
 }

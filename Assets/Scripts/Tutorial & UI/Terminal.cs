@@ -17,6 +17,14 @@ public class Terminal : MonoBehaviour
     [SerializeField] TerminalDisabled disabled;
     private Coroutine disabledRoutine;
     public bool isUploadComplete = false;
+    [SerializeField] private Light screenLight;
+    private float lightIntensity;
+
+    [Header("Screen Components")]
+    [SerializeField] private GameObject screenBacking;
+    [SerializeField] private Material offMaterial;
+    [SerializeField] private Material onMaterial;
+    [SerializeField] private GameObject offScreen;
 
     //this is how we can assign different actions to be called by our terminals
     //assign a method from a script in the inspector
@@ -27,10 +35,12 @@ public class Terminal : MonoBehaviour
     {
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
+        lightIntensity = screenLight.intensity;
         if (isActivated == false)
         {
             disabled.StartFlashing();
         }
+
     }
 
     private void Update()
@@ -71,8 +81,41 @@ public class Terminal : MonoBehaviour
         playerObj.transform.position = destination; // Snap to final position
     }
 
+    /// <summary>
+    /// Turns the terminal ON — changes material and hides the off screen overlay.
+    /// </summary>
+    public void TurnOn()
+    {
+        if (screenBacking != null && onMaterial != null)
+        {
+            Renderer renderer = screenBacking.GetComponent<Renderer>();
+            if (renderer != null)
+                renderer.material = onMaterial;
+        }
+
+        if (offScreen != null)
+            offScreen.SetActive(false);
+
+        screenLight.intensity = lightIntensity;
+
+  
+    }
+
+    /// <summary>
+    /// Turns the terminal OFF — changes material and shows the off screen overlay.
+    /// </summary>
     public void TurnOff()
     {
-        
+        if (screenBacking != null && offMaterial != null)
+        {
+            Renderer renderer = screenBacking.GetComponent<Renderer>();
+            if (renderer != null)
+                renderer.material = offMaterial;
+        }
+
+        if (offScreen != null)
+            offScreen.SetActive(true);
+
+        screenLight.intensity = 0;
     }
 }
