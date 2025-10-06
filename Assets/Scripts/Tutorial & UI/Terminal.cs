@@ -1,46 +1,49 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using System.Collections;
 using UnityEngine.Events;
+using System.Collections;
 
 public class Terminal : MonoBehaviour
 {
-    private ZeroGravity playerScript;
-    private GameObject playerObj;
-    [SerializeField] TerminalScreen terminalScreenScript;
-    [SerializeField] GameObject terminalScreenObj;
-    [SerializeField] GameObject ALANScreen;
-    [SerializeField] GameObject targetTransform;
+    [Header("References")]
+    [SerializeField] private TerminalScreen terminalScreenScript;
+    [SerializeField] private GameObject terminalScreenObj;
+    [SerializeField] private GameObject ALANScreen;
+    [SerializeField] private GameObject targetTransform;
+    [SerializeField] private TerminalPopup popup;
+    [SerializeField] private TerminalDisabled disabled;
+    [SerializeField] private TerminalAudioManager terminalAudio;
+
+    [Header("State")]
     public bool isLookedAt = false;
     public bool isActivated = false;
-    [SerializeField] TerminalPopup popup;
-    [SerializeField] TerminalDisabled disabled;
-    private Coroutine disabledRoutine;
     public bool isUploadComplete = false;
 
-    //this is we can assign different actions to be called by our terminals
-    //assign a method from a script in the inspector
     [Header("Events")]
     public UnityEvent onUploadComplete;
+
+    private GameObject playerObj;
+    private ZeroGravity playerScript;
 
     private void Start()
     {
         playerScript = FindFirstObjectByType<ZeroGravity>();
         playerObj = playerScript.gameObject;
-        if(isActivated == false)
-        {
+
+        if (!isActivated)
             disabled.StartFlashing();
-        }
     }
-    
+
     private void Update()
     {
-        if (popup.isUploaded && !isUploadComplete)
+        // Check when upload finishes in TerminalPopup
+        if (popup.IsUploaded && !isUploadComplete)
         {
             isUploadComplete = true;
             playerScript.PlayerCutSceneHandler(false);
-            //terminalScreenObj.SetActive(false);
             ALANScreen.SetActive(true);
+
+            // Play upload complete sound via TerminalAudioManager
+            terminalAudio?.PlayUploadCompleteSound();
 
             onUploadComplete?.Invoke();
         }
@@ -52,11 +55,18 @@ public class Terminal : MonoBehaviour
         disabled.StopFlashing();
         playerScript.PlayerCutSceneHandler(true);
         terminalScreenObj.SetActive(true);
+
+        // Play bootup sound via TerminalAudioManager
+        terminalAudio?.PlayBootupSound();
+
+        // Start typewriter effect on terminal screen
         terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());
+
+        // Move player smoothly to the terminal
         StartCoroutine(LerpPosition(targetTransform.transform.position, 0.75f));
     }
 
-    public IEnumerator LerpPosition(Vector3 destination, float duration)
+    private IEnumerator LerpPosition(Vector3 destination, float duration)
     {
         Vector3 start = playerObj.transform.position;
         float elapsed = 0f;
@@ -68,6 +78,8 @@ public class Terminal : MonoBehaviour
             yield return null;
         }
 
-        playerObj.transform.position = destination; // Snap to final position
+        playerObj.transform.position = destination;
     }
 }
+
+
