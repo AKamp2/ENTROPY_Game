@@ -35,6 +35,10 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Slider rollProgressBar;
     [SerializeField] private float requiredRotation = 180f; // how much roll needed
 
+    [Header("Hazard Alarm Audio")]
+    [SerializeField] private EnvironmentAudio environmentAudio;
+    [SerializeField] private float hazardFadeInDuration = 4f;
+
     public float fadeDuration = 1f;
 
     float timer = 10f;
@@ -363,8 +367,13 @@ public class TutorialManager : MonoBehaviour
         currentStep = 5;
 
         dialogueManager.StartDialogueSequence(1, 0.2f);
-    }
 
+        if (environmentAudio != null)
+        {
+            environmentAudio.FadeInHazardAlarms(hazardFadeInDuration);
+        }
+
+    }
     //checks to see if the tutorial step is complete
     public bool TutorialStepCompleted()
     {

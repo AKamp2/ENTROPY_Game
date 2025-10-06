@@ -38,6 +38,25 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!243 &-7160144534667947950
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: HazardLighting
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 3f0c88f315bae49428b431042b9e8840
+  m_Children: []
+  m_Volume: 4efc8676896ce024583ead9b5c5cf3bb
+  m_Pitch: 5fd6597ad02cf2e4e9b81fb43484eb71
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -3201681582637635941}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
 --- !u!244 &-6911875265743980245
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -248,6 +267,20 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!244 &-3201681582637635941
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 911ddab2581804d4d908553f7908ff8e
+  m_EffectName: Attenuation
+  m_MixLevel: 65aea79279338ca4f90465290341eb02
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-2917154790936396672
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -278,6 +311,7 @@ AudioMixerGroupController:
   - {fileID: -834658491458355101}
   - {fileID: -3624260088494141965}
   - {fileID: -5309928984895807470}
+  - {fileID: -7160144534667947950}
   m_Volume: f04f39fca61d7f64db791e19259d9f99
   m_Pitch: 65324ba777d374d4ab81c8f60b89a9e7
   m_Send: 00000000000000000000000000000000
@@ -375,6 +409,7 @@ AudioMixerController:
     - 20e0414110ce6c442b6459dd40698fd8
     - d53d763f5a0b74b4b845bc6d1c9eff67
     - 3b6f25d9288f31b45bb5fe51a1aed26f
+    - 3f0c88f315bae49428b431042b9e8840
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -434,6 +469,7 @@ AudioMixerSnapshotController:
     f1d8dd42a0e09c746a628fe44bcb8fef: -0.025776863
     4e2d437342fb6c341a1638129fbac2f4: -3.5090396
     93e6f9b47519ed4409b31babd648e4c4: 0
+    4efc8676896ce024583ead9b5c5cf3bb: -8.841784
     71ebd3e78afa67f4b8eea58aff4cfc1e: 0
     60eb10785847f984f93c6b8008982746: -0.002441872
     6d9589da8de2a05468a4c12cb226b3a8: -9.332112

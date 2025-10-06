@@ -1,64 +1,86 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
 using UnityEngine.Audio;
+using System.Collections;
 
 public class EnvironmentAudio : MonoBehaviour
 {
-
+    [Header("Doors")]
     public GameObject doorsContainer;
     private DoorScript[] doors;
-
-    [Header("SFX Clips")]
-    public AudioClip doorOpenClick;
-    public AudioClip doorMoving;
-    public AudioClip doorClosingClick;
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentGroup;
 
+    [Header("Hazard Lights")]
+    [SerializeField] private HazardLight[] hazardLights;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        doors = doorsContainer.GetComponentsInChildren<DoorScript>();
-        
-        foreach(DoorScript door in doors)
+        if (doorsContainer != null)
         {
-            door.startAudioSource.outputAudioMixerGroup = environmentGroup;
-            door.middleAudioSource.outputAudioMixerGroup = environmentGroup;
-            door.endAudioSource.outputAudioMixerGroup = environmentGroup;
-            door.audioManager = this;
+            doors = doorsContainer.GetComponentsInChildren<DoorScript>();
+            foreach (DoorScript door in doors)
+            {
+                if (door.startAudioSource != null)
+                    door.startAudioSource.outputAudioMixerGroup = environmentGroup;
+                if (door.middleAudioSource != null)
+                    door.middleAudioSource.outputAudioMixerGroup = environmentGroup;
+                if (door.endAudioSource != null)
+                    door.endAudioSource.outputAudioMixerGroup = environmentGroup;
+
+                door.audioManager = this;
+            }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void FadeInHazardAlarms(float fadeDuration)
     {
-        
+        foreach (var hazard in hazardLights)
+        {
+            if (hazard != null)
+            {
+                hazard.PlayAlarm();
+                StartCoroutine(FadeAudio(hazard, fadeDuration));
+            }
+        }
     }
 
-
-    /*
-    public void playDoorOpenAudio(float speed, DoorScript door)
+    private IEnumerator FadeAudio(HazardLight hazard, float duration)
     {
-        StartCoroutine(doorOpen(speed, door));
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            hazard.SetVolume(Mathf.Lerp(0f, 1f, elapsed / duration));
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        hazard.SetVolume(1f);
     }
-
-    
-    private IEnumerator doorOpen(float speed, DoorScript door)
-    {
-        AudioSource source = door.audioSource;
-        source.PlayOneShot(doorOpenClick);
-        source.clip = doorMoving;
-        source.pitch = 1f + (speed / 5f) * 0.3f;
-        source.Play();
-
-        yield return new WaitUntil(() => door.DoorState == DoorScript.States.Open);
-
-        source.Stop();
-        source.PlayOneShot(doorClosingClick);
-        
-    }
-    */
 }
+
+
+
+// Optional: methods to play door sounds if needed
+/*
+public void PlayDoorOpenAudio(float speed, DoorScript door)
+{
+    StartCoroutine(DoorOpenCoroutine(speed, door));
+}
+
+private IEnumerator DoorOpenCoroutine(float speed, DoorScript door)
+{
+    AudioSource source = door.audioSource;
+    source.PlayOneShot(doorOpenClick);
+    source.clip = doorMoving;
+    source.pitch = 1f + (speed / 5f) * 0.3f;
+    source.Play();
+
+    yield return new WaitUntil(() => door.DoorState == DoorScript.States.Open);
+
+    source.Stop();
+    source.PlayOneShot(doorClosingClick);
+}
+*/
+
