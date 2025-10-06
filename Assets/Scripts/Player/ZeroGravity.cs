@@ -99,6 +99,8 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float bounceAcc = 10f;
 
+    [Header("Audio")]
+    public BarAudioHandler barAudioHandler;
 
     [Header("== Grabbing Settings ==")]
     // Grabbing mechanic variables
@@ -953,6 +955,11 @@ public class ZeroGravity : MonoBehaviour
 
         grabbedBar = potentialGrabbedBar;
 
+        if (barAudioHandler != null)
+        {
+            barAudioHandler.PlayGrabSound();
+        }
+
         //// set up grab spots
         //if (useIK)
         //{
@@ -1271,6 +1278,10 @@ public class ZeroGravity : MonoBehaviour
         //    ResetBarGrabbers();
         //}
         
+        if (barAudioHandler != null)
+        {
+            barAudioHandler.PlayReleaseSound();
+        }
 
         //lock grabbed bar and change icon
         uiManager.ReleaseGrabber();
