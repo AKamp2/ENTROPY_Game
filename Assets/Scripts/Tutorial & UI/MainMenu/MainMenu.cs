@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject confirmationPopUp;
     [SerializeField] private GameObject optionsMenu;
     [SerializeField] private Volume volume;
-    
+    [SerializeField] private UIAudioManager uiAudio;
 
     private void Start()
     {
@@ -38,6 +38,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
+        uiAudio?.PlaySelectSound();
         // don't load from save, start a new game
         GlobalSaveManager.Instance.LoadFromSave = false;
         SceneManager.LoadScene("Level1New");
@@ -57,6 +58,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void Options()
     {
+        uiAudio?.PlaySelectSound();
         optionsMenu.SetActive(true);
         this.gameObject.SetActive(false);
         settingsMenu.SetUp();
@@ -71,6 +73,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void CloseOptions()
     {
+        uiAudio?.PlayBackSound();
         
         if (settingsMenu.isChanged)
         {
@@ -87,6 +90,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void ExitOptions()
     {
+        uiAudio?.PlayBackSound();
         if (volume.profile.TryGet<LensDistortion>(out LensDistortion distortion))
         {
             distortion.active = true;
