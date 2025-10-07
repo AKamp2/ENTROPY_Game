@@ -402,15 +402,6 @@ public class PlayerUIManager : MonoBehaviour
                     stim.CanRefill = false;
                 }
             }
-            if(lockdownEvent.CanGrab)
-            {
-                lockdownEvent.CanGrab = false;
-            }
-            
-            if(lockdownEvent.CanPull)
-            {
-                lockdownEvent.CanPull = false;
-            }
             if(terminalManager.CurrentTerminal != null)
             {
                 terminalManager.CurrentTerminal = null;

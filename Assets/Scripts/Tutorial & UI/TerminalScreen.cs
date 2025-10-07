@@ -15,32 +15,19 @@ public class TerminalScreen : MonoBehaviour
 
     public TMP_Text TerminalText { set { terminalText = value ; } }
     public TerminalPopup ScreenScriptPopup { set { popup = value; } }
-    [SerializeField] private AudioSource bootupSource;
-    [SerializeField] private TerminalAudioManager terminalAudio;
-
-    private void Start()
-    {
-        terminalAudio = FindFirstObjectByType<TerminalAudioManager>();
-    }
 
     //do a typewriter effect for the upload text in the terminal
     public IEnumerator TypeText()
     {
         terminalText.gameObject.SetActive(true);
-
-        // Start bootup audio
-        terminalAudio?.PlayBootupSound(bootupSource);
-
         foreach (char c in fullText)
         {
             currentText += c;
             terminalText.text = currentText + "<color=#00C3EB>|</color>"; // blinking green cursor
             yield return new WaitForSeconds(typeDelay);
         }
-        
-        isTyping = false;
-        terminalAudio.FadeOutBootup(bootupSource);
 
+        isTyping = false;
         popup.StartUpload();
 
     }
