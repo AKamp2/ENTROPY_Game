@@ -23,6 +23,9 @@ public class TerminalTextureRendererManager : MonoBehaviour
    
         foreach (Terminal terminal in this.GetComponentsInChildren<Terminal>())
         {
+            // hard coding avoiding overwriting the server terminals screen material...
+            // eventually can come back to this and use a special prefab instance instead
+            if (terminal.gameObject.name == "TerminalServer") continue;
 
             // get the mesh renderer for the individual screen of the terminal
             MeshRenderer uiMeshRenderer = terminal.TerminalScreen.GetComponent<MeshRenderer>();
@@ -45,6 +48,7 @@ public class TerminalTextureRendererManager : MonoBehaviour
 
             // set the material of the screen to the new material
             uiMeshRenderer.material = material;
+            terminal.OnMaterial = material;
 
             // Hook up all the instances items to the main terminal scripts
             // uiReferences script acts as a way to easily find important references.
@@ -52,14 +56,20 @@ public class TerminalTextureRendererManager : MonoBehaviour
 
             TerminalDisabled td = terminal.transform.GetComponent<TerminalDisabled>();
             TerminalScreen ts = terminal.transform.GetComponent<TerminalScreen>();
+            TerminalPopup tp = terminal.transform.GetComponent<TerminalPopup>();
 
             terminal.ALANScreenUI = uiReferences.ALANConnected;
-            terminal.MainScriptPopup = uiReferences.UploadPopup;
 
             td.DisabledScreen = uiReferences.NeedsConnection;
-
-            ts.ScreenScriptPopup = uiReferences.UploadPopup;
+      
             ts.TerminalText = uiReferences.ComputerTerminalText;
+
+            tp.UploadText = uiReferences.UploadText;
+            tp.PopupObject = uiReferences.UploadPopup;
+            tp.UploadCompleteText = uiReferences.UploadCompleteText;
+            tp.ScreenBlur = uiReferences.ScreenBlur;
+            tp.TerminalText = uiReferences.ComputerTerminalText.gameObject;
+
 
 
 
