@@ -30,6 +30,7 @@ public class TerminalPopup : MonoBehaviour
     public GameObject ScreenBlur { set { screenBlur = value; } }
     public GameObject TerminalText { set { terminalText = value; } }
     public TMP_Text UploadText { set { uploadText = value; } }
+    public Slider ProgressFill { set { progressFill = value; } }
 
 
     private void Start()
