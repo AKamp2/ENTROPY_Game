@@ -47,19 +47,19 @@ public class TerminalTextureRendererManager : MonoBehaviour
             uiMeshRenderer.material = material;
 
             // Hook up all the instances items to the main terminal scripts
-            // This is very jank at the moment, consider coming back to this and make a formal reference script held by the prefab parent.
+            // uiReferences script acts as a way to easily find important references.
+            TerminalScreenUIReferences uiReferences = uiInstance.GetComponentInChildren<TerminalScreenUIReferences>();
+
             TerminalDisabled td = terminal.transform.GetComponent<TerminalDisabled>();
             TerminalScreen ts = terminal.transform.GetComponent<TerminalScreen>();
 
-            Transform terminalScreenUI = uiInstance.transform.Find("TerminalScreenUI");
+            terminal.ALANScreenUI = uiReferences.ALANConnected;
+            terminal.MainScriptPopup = uiReferences.UploadPopup;
 
-            terminal.ALANScreenUI = terminalScreenUI.transform.Find("ALANConnected").gameObject;
-            terminal.MainScriptPopup = terminalScreenUI.transform.Find("UploadPopup").GetComponent<TerminalPopup>();
+            td.DisabledScreen = uiReferences.NeedsConnection;
 
-            td.DisabledScreen = terminalScreenUI.transform.Find("NeedsConnection").gameObject;
-
-            ts.ScreenScriptPopup = terminalScreenUI.transform.Find("UploadPopup").GetComponent<TerminalPopup>();
-            ts.TerminalText = terminalScreenUI.transform.Find("ComputerTerminalText").GetComponent<TMP_Text>();
+            ts.ScreenScriptPopup = uiReferences.UploadPopup;
+            ts.TerminalText = uiReferences.ComputerTerminalText;
 
 
 

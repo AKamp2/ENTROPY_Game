@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3836980174969186717}
+  - component: {fileID: 968795864708375058}
   m_Layer: 0
   m_Name: TerminalUI
   m_TagString: Untagged
@@ -33,6 +34,22 @@ Transform:
   - {fileID: 4779446389442069651}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &968795864708375058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 218888475094314275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 475dbb80fc7b78b4b9f559b167e8f803, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ALANConnected: {fileID: 8123434021311754016}
+  UploadPopup: {fileID: 2105596305008706394}
+  NeedsConnection: {fileID: 7866601685161924586}
+  ComputerTerminalText: {fileID: 137577412192878700}
 --- !u!1 &2137504450221474587
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,8 +410,40 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9eaa482636994c43be87d2fb87cb570, type: 3}
+--- !u!114 &137577412192878700 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5065781882903425688, guid: a9eaa482636994c43be87d2fb87cb570, type: 3}
+  m_PrefabInstance: {fileID: 5162673444366496500}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2105596305008706394 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6529397626262385070, guid: a9eaa482636994c43be87d2fb87cb570, type: 3}
+  m_PrefabInstance: {fileID: 5162673444366496500}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 283342cf995a34b4ea1c3caf63601e3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4779446389442069651 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 428265337502922343, guid: a9eaa482636994c43be87d2fb87cb570, type: 3}
+  m_PrefabInstance: {fileID: 5162673444366496500}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7866601685161924586 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3066468285888226590, guid: a9eaa482636994c43be87d2fb87cb570, type: 3}
+  m_PrefabInstance: {fileID: 5162673444366496500}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8123434021311754016 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3970411352841952724, guid: a9eaa482636994c43be87d2fb87cb570, type: 3}
   m_PrefabInstance: {fileID: 5162673444366496500}
   m_PrefabAsset: {fileID: 0}
