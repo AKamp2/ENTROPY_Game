@@ -7,34 +7,43 @@ public class TerminalPopup : MonoBehaviour
 {
     [Header("UI Elements")]
     public TMP_Text uploadText;
-    [SerializeField] private GameObject uploadCompleteText;
-    [SerializeField] private GameObject screenBlur;
-    [SerializeField] private Slider progressFill;
-    [SerializeField] private GameObject terminalText;
+    [SerializeField] GameObject popupObject;
+    [SerializeField] GameObject uploadCompleteText;
+    [SerializeField] GameObject screenBlur;
+    public float uploadDuration = 3f;
+    [SerializeField] Slider progressFill;
+    [SerializeField] GameObject terminalText;
+    private float currentTime = 0f;
+    private bool isUploading = false;
+    private bool isUploaded = false;
+    public bool IsUploaded => isUploaded;
 
     [Header("Audio")]
     [SerializeField] private TerminalAudioManager terminalAudio;
 
-    [Header("Settings")]
-    public float uploadDuration = 3f;
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource bootupSource;
+    [SerializeField] private AudioSource completeSource;
 
-    private bool isUploaded = false;
-    public bool IsUploaded => isUploaded;
 
+    private void Start()
+    {
+        terminalAudio = FindFirstObjectByType<TerminalAudioManager>();
+    }
     /// <summary>
     /// Start the upload sequence with progress bar and audio
     /// </summary>
     public void StartUpload()
     {
         screenBlur.SetActive(true);
-        gameObject.SetActive(true);
+        popupObject.SetActive(true);
+        
+        currentTime = 0f;
+        isUploading = true;
         progressFill.value = 0f;
         uploadText.text = "UPLOADING... 0%";
         uploadCompleteText.SetActive(false);
         isUploaded = false;
-
-        // Start bootup audio
-        terminalAudio?.PlayBootupSound();
 
         StartCoroutine(UploadProgress());
     }
@@ -52,11 +61,7 @@ public class TerminalPopup : MonoBehaviour
             progressFill.value = progress;
             uploadText.text = $"UPLOADING... {(int)(progress * 100)}%";
 
-            // Fade out bootup as progress reaches 100%
-            if (terminalAudio != null && terminalAudio.bootupSource != null)
-            {
-                terminalAudio.bootupSource.volume = Mathf.Lerp(1f, 0f, progress);
-            }
+            
 
             yield return null;
         }
@@ -65,20 +70,19 @@ public class TerminalPopup : MonoBehaviour
         progressFill.value = 1f;
         uploadText.text = "UPLOADING... 100%";
 
-        // Stop bootup completely
-        terminalAudio?.bootupSource?.Stop();
 
         // Show upload complete UI
         uploadCompleteText.SetActive(true);
 
         // Play upload complete sound once
-        terminalAudio?.PlayUploadCompleteSound();
+        terminalAudio?.PlayUploadCompleteSound(completeSource);
 
         yield return new WaitForSeconds(1f);
         isUploaded = true;
 
         terminalText.SetActive(false);
-        gameObject.SetActive(false);
+        popupObject.SetActive(false);
+        
     }
 }
 
