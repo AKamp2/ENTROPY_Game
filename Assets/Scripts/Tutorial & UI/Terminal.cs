@@ -20,11 +20,15 @@ public class Terminal : MonoBehaviour
     [SerializeField] private Light screenLight;
     private float lightIntensity;
 
+    //this is we can assign different actions to be called by our terminals
     [Header("Screen Components")]
-    [SerializeField] private GameObject screenBacking;
     [SerializeField] private Material offMaterial;
     [SerializeField] private Material onMaterial;
-    [SerializeField] private GameObject offScreen;
+
+    public GameObject TerminalScreen { get { return terminalScreenObj; } }
+    public GameObject ALANScreenUI { set { ALANScreen = value; } }
+    public TerminalPopup MainScriptPopup { set { popup = value; } }
+    public Material OnMaterial { set { onMaterial = value; } }
 
     //this is how we can assign different actions to be called by our terminals
     //assign a method from a script in the inspector
@@ -54,8 +58,7 @@ public class Terminal : MonoBehaviour
 
     private void Update()
     {
-        // Check when upload finishes in TerminalPopup
-        if (popup.IsUploaded && !isUploadComplete)
+        if (popup != null && popup.IsUploaded && !isUploadComplete)
         {
             isUploadComplete = true;
             playerScript.PlayerCutSceneHandler(false);
@@ -73,7 +76,7 @@ public class Terminal : MonoBehaviour
         isActivated = true;
         disabled.StopFlashing();
         playerScript.PlayerCutSceneHandler(true);
-        terminalScreenObj.SetActive(true);
+        //terminalScreenObj.SetActive(true);
 
         // Play bootup sound via TerminalAudioManager
         terminalAudio?.PlayBootupSound(bootupSource);
@@ -105,15 +108,14 @@ public class Terminal : MonoBehaviour
     /// </summary>
     public void TurnOn()
     {
-        if (screenBacking != null && onMaterial != null)
+        if (terminalScreenObj != null && onMaterial != null)
         {
-            Renderer renderer = screenBacking.GetComponent<Renderer>();
+            MeshRenderer renderer = terminalScreenObj.GetComponent<MeshRenderer>();
             if (renderer != null)
                 renderer.material = onMaterial;
-        }
 
-        if (offScreen != null)
-            offScreen.SetActive(false);
+
+        }
 
         screenLight.intensity = lightIntensity;
 
@@ -125,15 +127,12 @@ public class Terminal : MonoBehaviour
     /// </summary>
     public void TurnOff()
     {
-        if (screenBacking != null && offMaterial != null)
+        if (terminalScreenObj != null && offMaterial != null)
         {
-            Renderer renderer = screenBacking.GetComponent<Renderer>();
+            MeshRenderer renderer = terminalScreenObj.GetComponent<MeshRenderer>();
             if (renderer != null)
                 renderer.material = offMaterial;
         }
-
-        if (offScreen != null)
-            offScreen.SetActive(true);
 
         screenLight.intensity = 0;
     }

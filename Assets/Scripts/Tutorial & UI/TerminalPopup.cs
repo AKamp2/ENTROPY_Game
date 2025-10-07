@@ -25,6 +25,13 @@ public class TerminalPopup : MonoBehaviour
     [SerializeField] private AudioSource bootupSource;
     [SerializeField] private AudioSource completeSource;
 
+    public GameObject PopupObject { set { popupObject = value; } }
+    public GameObject UploadCompleteText { set { uploadCompleteText = value; } }
+    public GameObject ScreenBlur { set { screenBlur = value; } }
+    public GameObject TerminalText { set { terminalText = value; } }
+    public TMP_Text UploadText { set { uploadText = value; } }
+    public Slider ProgressFill { set { progressFill = value; } }
+
 
     private void Start()
     {

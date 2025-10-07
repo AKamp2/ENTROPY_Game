@@ -14,7 +14,7 @@ public class TerminalDisabled : MonoBehaviour
         get { return isDisabled; }
         set { isDisabled = value; }
     }
-
+    public GameObject DisabledScreen { set { disabledScreen = value; } }   
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -53,6 +53,8 @@ public class TerminalDisabled : MonoBehaviour
             yield return new WaitForSeconds(1f);
 
             //Debug.LogError("Screen Enabled");
+            // now waits till screens are instanced - noah
+            if (disabledScreen == null) continue;
             disabledScreen.SetActive(true);
             screenLight.intensity = lightIntensity;
 

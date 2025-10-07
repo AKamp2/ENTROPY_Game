@@ -11,10 +11,12 @@ public class TerminalScreen : MonoBehaviour
     private string currentText = "";
     private bool isTyping = true;
 
+    [SerializeField] TerminalPopup popup;
+
+    public TMP_Text TerminalText { set { terminalText = value ; } }
+    public TerminalPopup ScreenScriptPopup { set { popup = value; } }
     [SerializeField] private AudioSource bootupSource;
     [SerializeField] private TerminalAudioManager terminalAudio;
-
-    [SerializeField] TerminalPopup popup;
 
     private void Start()
     {
