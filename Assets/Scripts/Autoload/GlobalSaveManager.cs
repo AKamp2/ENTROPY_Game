@@ -18,7 +18,7 @@ public class GlobalSaveManager : MonoBehaviour
     }
     private void Awake()
     {
-        Debug.Log("Save script initialized on load!");
+        // Debug.Log("Save script initialized on load!");
         // Ensure that there is only one GlobalSaveManager
         if (Instance != null && Instance != this)
         {
@@ -57,8 +57,8 @@ public class GlobalSaveManager : MonoBehaviour
     public void CreateSaveFile()
     {
         string json = JsonUtility.ToJson(Data);
-        Debug.Log("this is the Save Data as a string:");
-        Debug.Log(json);
+        // Debug.Log("this is the Save Data as a string:");
+        // Debug.Log(json);
         string path = Application.persistentDataPath;
         SaveTextToFile(path, FILENAME, json);
     }
@@ -72,7 +72,7 @@ public class GlobalSaveManager : MonoBehaviour
 
         path = Path.Join(path, fileName);
 
-        Debug.Log(path);
+        // Debug.Log(path);
 
         try
         {
