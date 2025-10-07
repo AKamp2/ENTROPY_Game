@@ -7,50 +7,50 @@ public class TerminalAudioManager : MonoBehaviour
     public AudioClip bootupClip;
     public AudioClip uploadCompleteClip;
 
-    [Header("Audio Sources")]
-    public AudioSource bootupSource;            // For bootup sound
-    public AudioSource uploadCompleteSource;    // For upload complete sound
+    //[Header("Audio Sources")]
+    //public AudioSource bootupSource;            // For bootup sound
+    //public AudioSource uploadCompleteSource;    // For upload complete sound
 
     private Coroutine fadeCoroutine;
 
     /// <summary>
     /// Play the bootup sound with optional fade-in
     /// </summary>
-    public void PlayBootupSound(float fadeInDuration = 3f)
+    public void PlayBootupSound(AudioSource source, float fadeInDuration = 3f)
     {
-        if (bootupSource == null || bootupClip == null) return;
+        if (source == null || bootupClip == null) return;
 
-        bootupSource.clip = bootupClip;
-        bootupSource.loop = false;
-        bootupSource.volume = 0f;
-        bootupSource.Play();
+        source.clip = bootupClip;
+        source.loop = false;
+        source.volume = 0f;
+        source.Play();
 
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
-        fadeCoroutine = StartCoroutine(FadeAudio(bootupSource, 0f, 1f, fadeInDuration));
+        fadeCoroutine = StartCoroutine(FadeAudio(source, 0f, 1f, fadeInDuration));
     }
 
     /// <summary>
     /// Stop or fade out the bootup sound
     /// </summary>
-    public void FadeOutBootup(float fadeOutDuration = 0.5f)
+    public void FadeOutBootup(AudioSource source, float fadeOutDuration = .1f)
     {
-        if (bootupSource == null) return;
+        if (source == null) return;
 
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
-        fadeCoroutine = StartCoroutine(FadeAudio(bootupSource, bootupSource.volume, 0f, fadeOutDuration, stopAfterFade: true));
+        fadeCoroutine = StartCoroutine(FadeAudio(source, source.volume, 0f, fadeOutDuration, stopAfterFade: true));
     }
 
     /// <summary>
     /// Play the upload complete sound
     /// </summary>
-    public void PlayUploadCompleteSound()
+    public void PlayUploadCompleteSound(AudioSource source)
     {
-        if (uploadCompleteSource == null || uploadCompleteClip == null) return;
+        if (source == null || uploadCompleteClip == null) return;
 
-        uploadCompleteSource.clip = uploadCompleteClip;
-        uploadCompleteSource.loop = false;
-        uploadCompleteSource.volume = 1f;
-        uploadCompleteSource.Play();
+        source.clip = uploadCompleteClip;
+        source.loop = false;
+        source.volume = 1f;
+        source.Play();
     }
 
     /// <summary>

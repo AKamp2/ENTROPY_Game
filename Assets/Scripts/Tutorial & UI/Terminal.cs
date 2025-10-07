@@ -34,9 +34,15 @@ public class Terminal : MonoBehaviour
     private GameObject playerObj;
     private ZeroGravity playerScript;
 
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource bootupSource;
+    [SerializeField] private AudioSource completeSource;
+
     private void Start()
     {
         playerScript = FindFirstObjectByType<ZeroGravity>();
+        terminalAudio = FindFirstObjectByType<TerminalAudioManager>();
+
         playerObj = playerScript.gameObject;
         lightIntensity = screenLight.intensity;
         if (isActivated == false)
@@ -56,7 +62,7 @@ public class Terminal : MonoBehaviour
             ALANScreen.SetActive(true);
 
             // Play upload complete sound via TerminalAudioManager
-            terminalAudio?.PlayUploadCompleteSound();
+            //terminalAudio?.PlayUploadCompleteSound(completeSource);
 
             onUploadComplete?.Invoke();
         }
@@ -70,7 +76,7 @@ public class Terminal : MonoBehaviour
         terminalScreenObj.SetActive(true);
 
         // Play bootup sound via TerminalAudioManager
-        terminalAudio?.PlayBootupSound();
+        terminalAudio?.PlayBootupSound(bootupSource);
 
         // Start typewriter effect on terminal screen
         terminalScreenScript.StartCoroutine(terminalScreenScript.TypeText());

@@ -17,8 +17,8 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private BoxCollider cuttingOutTrigger;
 
-    [SerializeField]
-    private GameObject lever;
+    //[SerializeField]
+    //private GameObject lever;
     [SerializeField]
     private Light buttonLight;
     [SerializeField]
