@@ -117,7 +117,7 @@ public class ZeroGravity : MonoBehaviour
     private float grabPadding = 50f;
     //Propel off bar 
     [SerializeField]
-    private float propelThrust = 50000f;
+    private float propelThrust = 0.1f;
     [SerializeField]
     private float snapToBarAngle = 15f; // degrees
     // add a bit of extra range beyond the viewport
@@ -172,6 +172,7 @@ public class ZeroGravity : MonoBehaviour
     // Max velocities for pulling and swinging
     private float maxVelocityForGrip = 2f;
     private float maxVelocityForPull = 1f;
+    private float maxVelocityForPush = 1f;
 
     [Header("== UI Settings ==")]
     [SerializeField]
@@ -1498,13 +1499,13 @@ public class ZeroGravity : MonoBehaviour
                 Vector3 propelDirection = Vector3.zero;
 
                 //set the player velocity to half to ensure the momentum doesn't influence the propel
-                rb.linearVelocity *= 0.5f;
+                //rb.linearVelocity *= 0.5f;
 
                 //if W or S are pressed
                 if (isThrusting)
                 {
                     //release the bar and calculate the vector to propel based on the forward look
-                    ReleaseBar();
+                    //ReleaseBar();
                     propelDirection += cam.transform.forward * thrust1D * propelThrust;
                     //Debug.Log("Propelled forward or back");
                 }
@@ -1512,16 +1513,16 @@ public class ZeroGravity : MonoBehaviour
                 else if (isStrafing)
                 {
                     //release the bar and calculate the vector to propel based on the right look
-                    ReleaseBar();
+                    //ReleaseBar();
                     propelDirection += cam.transform.right * strafe1D * propelThrust;
                     //Debug.Log("Propelled right or left");
                 }
                 //add the propel force to the rigid body
-                rb.linearVelocity *= .5f;
-                rb.AddForce(propelDirection * initialVelocityMagnitude, ForceMode.VelocityChange);
+                //rb.linearVelocity *= .5f;
+                rb.AddForce(propelDirection.normalized*10f);
                 
                 // Set the flag to false since keys are now pressed
-                movementKeysReleased = false;
+                //movementKeysReleased = false;
             }
             // Update the flag if no movement keys are pressed
             else if (!isThrusting && !isStrafing)
