@@ -24,14 +24,14 @@ public class ShipAmbience : MonoBehaviour
         if (sourceA != null)
         {
             sourceA.clip = backgroundNoise;
-            sourceA.loop = false;
+            sourceA.loop = true;
             sourceA.volume = 0f;
         }
 
         if (sourceB != null)
         {
             sourceB.clip = backgroundNoise;
-            sourceB.loop = false;
+            sourceB.loop = true;
             sourceB.volume = 0f;
         }
 
@@ -40,7 +40,7 @@ public class ShipAmbience : MonoBehaviour
         StartCoroutine(FadeInRoutine(sourceA, fadeInDuration));
 
         // Begin coroutines
-        StartCoroutine(LoopWithCrossfade());
+        //StartCoroutine(LoopWithCrossfade());
         StartCoroutine(PlayRandomCreaks());
     }
 
@@ -56,7 +56,7 @@ public class ShipAmbience : MonoBehaviour
         source.volume = 1f;
     }
 
-    private IEnumerator LoopWithCrossfade()
+/*    private IEnumerator LoopWithCrossfade()
     {
         while (true)
         {
@@ -85,7 +85,7 @@ public class ShipAmbience : MonoBehaviour
             current.Stop();
             isSourceAPlaying = !isSourceAPlaying;
         }
-    }
+    }*/
 
     private IEnumerator PlayRandomCreaks()
     {
