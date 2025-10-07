@@ -117,7 +117,7 @@ public class ZeroGravity : MonoBehaviour
     private float grabPadding = 50f;
     //Propel off bar 
     [SerializeField]
-    private float propelThrust = 0.1f;
+    private float propelThrust = 100f;
     [SerializeField]
     private float snapToBarAngle = 15f; // degrees
     // add a bit of extra range beyond the viewport
@@ -172,7 +172,7 @@ public class ZeroGravity : MonoBehaviour
     // Max velocities for pulling and swinging
     private float maxVelocityForGrip = 2f;
     private float maxVelocityForPull = 1f;
-    private float maxVelocityForPush = 1f;
+    private float maxVelocityForPush = 1.5f;
 
     [Header("== UI Settings ==")]
     [SerializeField]
@@ -1519,7 +1519,7 @@ public class ZeroGravity : MonoBehaviour
                 }
                 //add the propel force to the rigid body
                 //rb.linearVelocity *= .5f;
-                rb.AddForce(propelDirection.normalized*10f);
+                if (rb.linearVelocity.magnitude < maxVelocityForPush) rb.AddForce(propelDirection);
                 
                 // Set the flag to false since keys are now pressed
                 //movementKeysReleased = false;
