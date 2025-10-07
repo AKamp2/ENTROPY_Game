@@ -69,7 +69,6 @@ public class TerminalTextureRendererManager : MonoBehaviour
             tp.UploadCompleteText = uiReferences.UploadCompleteText;
             tp.ScreenBlur = uiReferences.ScreenBlur;
             tp.TerminalText = uiReferences.ComputerTerminalText.gameObject;
-            tp.ProgressFill = uiReferences.ProgressFill;
 
 
 

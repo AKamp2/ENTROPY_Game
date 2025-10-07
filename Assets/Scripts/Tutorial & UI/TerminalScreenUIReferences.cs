@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TerminalScreenUIReferences : MonoBehaviour
 {
@@ -12,7 +11,6 @@ public class TerminalScreenUIReferences : MonoBehaviour
     public TMP_Text UploadText;
     public GameObject UploadCompleteText;
     public TMP_Text ComputerTerminalText;
-    public Slider ProgressFill;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
