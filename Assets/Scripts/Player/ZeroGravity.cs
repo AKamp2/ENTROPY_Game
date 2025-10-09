@@ -1033,38 +1033,37 @@ public class ZeroGravity : MonoBehaviour
         else if (rb.linearVelocity.magnitude < zeroGWalkSpeed)
         {
             //create a target Transform to pull to
-            Transform target = null;
             //iterate through the children 
             foreach (Transform child in bar.transform)
             {
                 //find the child that is the GrabTarget
                 if (child.gameObject.name == "GrabTarget")
                 {
+                    // this will only call once as bars only have 1 grab target, therefor it is safe and efficient to do physics here
                     //save this child as the target
-                    target = child;
+                    Vector3 target = new Vector3(child.position.x, child.position.y, child.position.z);
+                    // align the target to the grab position
+                    // first I will calculate the difference in the bars position and the current grab position
+                    Vector3 grabOffset = currentGrabPosition - bar.transform.position;
+                    // then I will add the grab offset to the target
+                    target += grabOffset;
+                    //if the position of the player and the target are about equal
+                    if (Vector3.Distance(rb.transform.position, target) < .1f)
+                    {
+                        //Debug.Log("They are touching :)");
+                        //begin the swing ability
+                        Swing(bar);
+                        return;
+                    }
+                    else
+                    {
+                        //create a direction vector to pull the player to the bar point
+                        Vector3 pullDirection = target - rb.transform.position;
+                        Vector3 normalizedpulldirection = pullDirection.normalized;
+                        rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
+                    }
                 }
             }
-            //begin moving the player to the target point
-            //var step = multiplier * Time.deltaTime;
-            //rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
-
-            //if the position of the player and the target are about equal
-            if (Vector3.Distance(rb.transform.position, target.transform.position) < .1f)
-            {
-                //Debug.Log("They are touching :)");
-                //begin the swing ability
-                Swing(bar);
-                return;
-            }
-            else
-            {
-                //create a direction vector to pull the player to the bar point
-                Vector3 pullDirection = target.transform.position - rb.transform.position;
-                Vector3 normalizedpulldirection = pullDirection.normalized;
-                rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
-
-            }
-            //Debug.Log(target.gameObject.name);
         }
 
         //Debug.Log("linear velocity: " + rb.linearVelocity.magnitude);
@@ -1208,8 +1207,6 @@ public class ZeroGravity : MonoBehaviour
         //if the linear velocity magnitude is below 3  
         else if (rb.linearVelocity.magnitude < zeroGWalkSpeed)
         {
-            //create a target Transform to pull to
-            Transform target = null;
             //iterate through the children 
             //Debug.Log(bar.name);
             foreach (Transform child in bar)
@@ -1217,32 +1214,31 @@ public class ZeroGravity : MonoBehaviour
                 //find the child that is the GrabTarget
                 if(child.gameObject.name == "GrabTarget")
                 {
+                    // this will only call once as bars only have 1 grab target, therefor it is safe and efficient to do physics here
                     //save this child as the target
-                    target = child;
+                    Vector3 target = new Vector3(child.position.x, child.position.y, child.position.z);
+                    // align the target to the grab position
+                    // first I will calculate the difference in the bars position and the current grab position
+                    Vector3 grabOffset = currentGrabPosition - bar.transform.position;
+                    // then I will add the grab offset to the target
+                    target += grabOffset;
+                    //if the position of the player and the target are about equal
+                    if (Vector3.Distance(rb.transform.position, target) < .1f)
+                    {
+                        //Debug.Log("They are touching :)");
+                        rb.linearVelocity = Vector3.zero;
+                        return;
+                    }
+                    else
+                    {
+                        //create a direction vector to pull the player to the bar
+                        Vector3 pullDirection = target - rb.transform.position;
+                        Vector3 normalizedpulldirection = pullDirection.normalized;
+                        rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
+
+                    }
                 }
             }
-            //begin moving the player to the target point
-            //var step = multiplier * Time.deltaTime;
-            //rb.transform.position = Vector3.MoveTowards(rb.transform.position, target.position, step);
-
-            //if the position of the player and the target are about equal
-
-            //Debug.Log(target);
-            if (Vector3.Distance(rb.transform.position, target.transform.position) < .1f)
-            {
-                //Debug.Log("They are touching :)");
-                rb.linearVelocity = Vector3.zero;
-                return;
-            }
-            else
-            {
-                //create a direction vector to pull the player to the bar
-                Vector3 pullDirection = target.transform.position - rb.transform.position;
-                Vector3 normalizedpulldirection = pullDirection.normalized;
-                rb.AddForce(normalizedpulldirection * multiplier, ForceMode.VelocityChange);
-
-            }
-            //Debug.Log(target.gameObject.name);
         }
 
         //Debug.Log("linear velocity: " + rb.linearVelocity.magnitude);
