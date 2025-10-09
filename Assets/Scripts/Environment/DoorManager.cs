@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.ProBuilder.Shapes;
 
 public class DoorManager : MonoBehaviour
 {
@@ -11,6 +14,8 @@ public class DoorManager : MonoBehaviour
     ZeroGravity player;
     [SerializeField]
     private DoorScript[] doors;
+    [SerializeField]
+    private List<DoorScript> doorsInRange;
 
     public GameObject DoorUI = null;
 
@@ -22,6 +27,8 @@ public class DoorManager : MonoBehaviour
     Material lockedMaterial;
     [SerializeField]
     Material brokenMaterial;
+
+    private float hologramTime = 1.0f;
 
     public GameObject CurrentSelectedDoor
     {
@@ -35,8 +42,8 @@ public class DoorManager : MonoBehaviour
     }
 
     public Material LockedMaterial
-    { 
-        get { return lockedMaterial; } 
+    {
+        get { return lockedMaterial; }
     }
 
     public Material WarningMaterial
@@ -48,6 +55,7 @@ public class DoorManager : MonoBehaviour
     void Start()
     {
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
+        doorsInRange = new List<DoorScript>();
 
         // when loading from save, overwrite the doors
         if (GlobalSaveManager.Instance.LoadFromSave)
@@ -59,12 +67,12 @@ public class DoorManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        ScanDoors();
     }
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        
+
         if (currentSelectedDoor)
         {
             DoorScript ds = currentSelectedDoor.GetComponent<DoorScript>();
@@ -78,9 +86,9 @@ public class DoorManager : MonoBehaviour
                 currentSelectedDoor.GetComponent<DoorScript>().UseDoor();
             }
 
-                
+
         }
-        
+
     }
 
     // backs up door states for saving
@@ -103,4 +111,61 @@ public class DoorManager : MonoBehaviour
             doors[i].SetState(_doorStates[i]);
         }
     }
+
+    private void ScanDoors()
+    {
+        Collider[] doorParts = Physics.OverlapSphere(player.transform.position, 5.0f, LayerMask.GetMask("Door"));
+        List<DoorScript> nearDoors = new List<DoorScript>();
+
+        // adds new doors in range
+        foreach (Collider collider in doorParts)
+        {
+
+            DoorScript door = collider.transform.parent.GetComponentInParent<DoorScript>();
+            nearDoors.Add(door);
+
+            if (!doorsInRange.Contains(door))
+            {
+                MeshRenderer[] mr = collider.transform.parent.GetComponentsInChildren<MeshRenderer>();
+
+
+                doorsInRange.Add(door);
+
+                if (door.hologramGroup != null)
+                {
+                    // only activate if door is closed
+                    if (door.DoorState == DoorScript.States.Closed)
+                    {
+                        StartCoroutine(door.HologramFade(0.0f));
+                    }
+                    
+                }
+                
+
+            }
+
+
+        }
+
+        //clean out doors not in range
+        for (int i = 0; i < doorsInRange.Count; i++)
+        {
+            {
+                if (!nearDoors.Contains(doorsInRange[i]))
+                {
+                    if (doorsInRange[i].hologramGroup != null)
+                    {
+                        StartCoroutine(doorsInRange[i].HologramFade(1.0f));
+                    }
+                    
+                    doorsInRange.Remove(doorsInRange[i]);
+                  
+                    i--;
+                }
+            }
+
+        }
+    }
+
+    
 }
