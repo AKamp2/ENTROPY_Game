@@ -993,7 +993,7 @@ public class ZeroGravity : MonoBehaviour
     {
         if(isGrabbing && bar != null)
         {
-            swingPoint = bar.position;
+            swingPoint = currentGrabPosition;
 
             //ensure we don't have a joint created yet for swinging
             if(this.gameObject.GetComponent<ConfigurableJoint>() == null)
@@ -1079,7 +1079,7 @@ public class ZeroGravity : MonoBehaviour
         if (isGrabbing && bar != null)
         {
             //Debug.Log("swingaling");
-            swingPoint = bar.transform.position;
+            swingPoint = currentGrabPosition;
             // Snap to bar when the player is looking at the bar, otherwise swing
             float distanceFromPoint = Vector3.Distance(cam.transform.position, swingPoint);
             Vector3 directionToRung = (swingPoint - cam.transform.position).normalized;

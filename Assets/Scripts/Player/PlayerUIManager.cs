@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using NUnit.Framework;
+using UnityEngine.InputSystem.LowLevel;
 
 public class PlayerUIManager : MonoBehaviour
 {
@@ -792,10 +793,20 @@ public class PlayerUIManager : MonoBehaviour
                     // we need to calculate the point of the bar that is the closest to where the player is looking
                     // to do this first I will calculate the distance of the bar from the player
                     float distanceFromBar = Vector3.Distance(bar.transform.position, transform.position);
-                    // now I will find the point that is that distance away from the player's forward
-                    Vector3 focusPoint = player.cam.transform.position + player.cam.transform.forward * distanceFromBar;
-                    // finally, I will set the grab point to the closest point on the bar to that focus point
-                    player.CurrentGrabPosition = bar.ClosestPoint(focusPoint);
+                    // I will use a for loop here to incase the focus point is out of grab range
+                    for (float r = distanceFromBar; r > 0; r -= 0.01f)
+                    {
+                        // now I will find the point that is the distance of the bar away from the player's forward
+                        Vector3 focusPoint = player.cam.transform.position + player.cam.transform.forward * distanceFromBar;
+                        // finally, I will test the grab point to the closest point on the bar to that focus point
+                        Vector3 potentialGrabPosition = bar.ClosestPoint(focusPoint);
+                        if (Vector3.Distance(player.transform.position, potentialGrabPosition) < player.GrabRange)
+                        {
+                            player.CurrentGrabPosition = potentialGrabPosition;
+                            // now that the point has been found, I will quit the loop
+                            break;
+                        }
+                    }
                 }
                 //set the position of the bar as a screen point
                 Vector3 screenPoint = player.cam.WorldToScreenPoint(player.CurrentGrabPosition);
