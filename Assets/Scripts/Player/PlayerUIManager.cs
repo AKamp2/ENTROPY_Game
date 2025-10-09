@@ -788,7 +788,13 @@ public class PlayerUIManager : MonoBehaviour
             {
                 //Debug.Log("updateGrabberexecuted");
                 //set the position of the bar as a screen point
-                Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.ClosestPoint(transform.position));
+                // we need to calculate the point of the bar that is the closest to where the player is looking
+                // to do this first I will calculate the distance of the bar from the player
+                float distanceFromBar = Vector3.Distance(bar.transform.position, transform.position);
+                // now I will find the point that is that distance away from the player's forward
+                Vector3 focusPoint = player.cam.transform.position + player.cam.transform.forward * distanceFromBar;
+                // finally, I will set the screen point to the closest point on the bar to that focus point
+                Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.ClosestPoint(focusPoint));
 
                 //ensure the grabber is on the screen
                 if (screenPoint.z > 0 &&
