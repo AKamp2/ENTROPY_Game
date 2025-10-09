@@ -775,7 +775,7 @@ public class PlayerUIManager : MonoBehaviour
     }
 
     // this method will update the grabber icon's position based on the nearest grabbable object
-    public void UpdateGrabberPosition(Transform bar)
+    public void UpdateGrabberPosition(Collider bar)
     {
         if (bar == null)
         {
@@ -788,7 +788,7 @@ public class PlayerUIManager : MonoBehaviour
             {
                 //Debug.Log("updateGrabberexecuted");
                 //set the position of the bar as a screen point
-                Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.transform.position);
+                Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.ClosestPoint(transform.position));
 
                 //ensure the grabber is on the screen
                 if (screenPoint.z > 0 &&

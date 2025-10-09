@@ -450,11 +450,11 @@ public class ZeroGravity : MonoBehaviour
                 //handle the grab movement
                 if (isGrabbing)
                 {
-                    HandleGrabMovement(grabbedBar.transform);
+                    HandleGrabMovement(grabbedBar);
                 }
                 else if (!isGrabbing)
                 {
-                    if (potentialGrabbedBar != null) uiManager.UpdateGrabberPosition(potentialGrabbedBar.transform);
+                    if (potentialGrabbedBar != null) uiManager.UpdateGrabberPosition(potentialGrabbedBar);
                 }
             }
             //allow the player to bounce off the barriers
@@ -834,13 +834,13 @@ public class ZeroGravity : MonoBehaviour
     /// </summary>
     /// <param name="horizontalAxisPos"></param>
     /// <param name="verticalAxisPos"></param>
-    private void HandleGrabMovement(Transform bar)
+    private void HandleGrabMovement(Collider bar)
     {
         //Propel off bar logic
         if (isGrabbing && bar != null)
         {
             PropelOffBar();
-            Swing(bar);
+            Swing(bar.transform);
             uiManager.UpdateGrabberPosition(bar);
         }
     }
