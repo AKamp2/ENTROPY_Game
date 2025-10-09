@@ -715,8 +715,8 @@ public class PlayerUIManager : MonoBehaviour
             //if (obj.CompareTag("Barrier")) continue;
 
             // we are going to skip objects that are blocked by an obstacle
-            float distanceToObj = (obj.transform.position - transform.position).magnitude;
-            Vector3 directionToObj = (obj.transform.position - transform.position).normalized;
+            float distanceToObj = (obj.ClosestPoint(transform.position) - transform.position).magnitude;
+            Vector3 directionToObj = (obj.ClosestPoint(transform.position) - transform.position).normalized;
 
             // Raycast toward object to see if a barrier is in the way
             
@@ -729,7 +729,7 @@ public class PlayerUIManager : MonoBehaviour
             }
 
             //set specifications for the viewport
-            Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
+            Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.ClosestPoint(transform.position));
 
             //check if the bar is in the viewport and in front of the player
             if (viewportPoint.z > 0 && 
@@ -738,7 +738,7 @@ public class PlayerUIManager : MonoBehaviour
                 viewportPoint.y >= 0  - player.PeripheralRange && 
                 viewportPoint.y <= 1 + player.PeripheralRange)
             {
-                float distanceToBar = Vector3.Distance(transform.position, obj.transform.position);
+                float distanceToBar = Vector3.Distance(transform.position, obj.ClosestPoint(transform.position));
                 if (distanceToBar < closestDistance)
                 {
                     closestDistance = distanceToBar;
