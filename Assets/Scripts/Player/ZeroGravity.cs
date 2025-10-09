@@ -109,6 +109,8 @@ public class ZeroGravity : MonoBehaviour
 
     private Collider potentialGrabbedBar = null; //tracks a potential grabbable bar that the player looks at
     private Collider grabbedBar; //stores the bar the player is currently grabbing
+    // the position of the current bar where the player is grabbing
+    private Vector3 currentGrabPosition;
     [SerializeField]
     private float grabRange = 2f; // Range within which the player can grab bars
     [SerializeField]
@@ -265,6 +267,12 @@ public class ZeroGravity : MonoBehaviour
     {
         get { return potentialGrabbedBar; }
         set { potentialGrabbedBar = value; }
+    }
+
+    public Vector3 CurrentGrabPosition
+    {
+        get { return currentGrabPosition; }
+        set { currentGrabPosition = value; }
     }
 
     public Transform PotentialWall
