@@ -487,7 +487,7 @@ public class ZeroGravity : MonoBehaviour
             canGrab = false;
             canPushOff = false;
             canPropel = false;
-            canRoll = false;
+            //canRoll = false;
             uiManager.Crosshair.sprite = null;
             uiManager.Crosshair.color = new Color(0f, 0f, 0f, 0f);
         }

@@ -14,14 +14,19 @@ public class StimDispenser : MonoBehaviour
 
     [SerializeField]
     private Light spotlight;
+    [SerializeField]
+    private Light screenlight;
 
     [SerializeField]
-    private DecalProjector decal;
+    private Material screenMaterial;
 
-    [SerializeField]
-    private Material glowingDecal;
-    [SerializeField]
-    private Material unlitDecal;
+    private float activeScreenLightIntensity = 0.05f;
+    private float inactiveScreenLightIntensity = 0.005f;
+
+    private Color activeScreen = new Color(1, 1, 1, 1) * 1.5f;
+    private Color inactiveScreen = new Color(0.03f, 0.03f, 0.03f, 1);
+
+
 
     private GameObject playerObj;
     private ZeroGravity playerScript;
@@ -56,14 +61,19 @@ public class StimDispenser : MonoBehaviour
     void Start()
     {
         lightIntensity = spotlight.intensity;
-        if(isUsable)
+
+        if (isUsable)
         {
-            decal.material = glowingDecal;
+            
+            screenMaterial.SetColor("_EmissionColor", activeScreen);
+            screenlight.intensity = activeScreenLightIntensity;
             spotlight.intensity = lightIntensity;
         }
         else
         {
-            decal.material = unlitDecal;
+
+            screenMaterial.SetColor("_EmissionColor", inactiveScreen);
+            screenlight.intensity = inactiveScreenLightIntensity;
             spotlight.intensity = 0f;
         }
 
@@ -152,15 +162,18 @@ public class StimDispenser : MonoBehaviour
     public void ToggleUsability(bool isUsable)
     {
         this.isUsable = isUsable;
+        Color baseEmission = screenMaterial.GetColor("_EmissionColor");
 
-        if(isUsable)
+        if (isUsable)
         {
-            decal.material = glowingDecal;
+            screenMaterial.SetColor("_EmissionColor", activeScreen);
+            screenlight.intensity = activeScreenLightIntensity;
             spotlight.intensity = lightIntensity;
         }
         else
         {
-            decal.material = unlitDecal;
+            screenMaterial.SetColor("_EmissionColor", inactiveScreen);
+            screenlight.intensity = inactiveScreenLightIntensity;
             spotlight.intensity = 0f;
         }
     }
