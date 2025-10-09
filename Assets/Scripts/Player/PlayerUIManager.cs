@@ -432,7 +432,7 @@ public class PlayerUIManager : MonoBehaviour
     {
         //Debug.Log("raycast called");
         barInRaycast = true;
-        player.PotentialGrabbedBar = hit.Value.transform;
+        player.PotentialGrabbedBar = hit.Value.collider;
 
     }
 
@@ -675,7 +675,7 @@ public class PlayerUIManager : MonoBehaviour
     /// one singular update grabber position call per frame
     /// </summary>
     /// <returns></returns>
-    public Transform UpdateClosestBarInView()
+    public Collider UpdateClosestBarInView()
     {
         //Debug.Log("updated closest bar in view executed");
         //check for all nearby bars to the player
@@ -703,7 +703,7 @@ public class PlayerUIManager : MonoBehaviour
 
 
         //initialize a transform for the closest bar and distance to that bar
-        Transform closestObject = null;
+        Collider closestObject = null;
         float closestDistance = Mathf.Infinity;
         // this will be for checking the data of a barrier that may be hit between the player and the grabbable
         RaycastHit hit;
@@ -741,7 +741,7 @@ public class PlayerUIManager : MonoBehaviour
                 if (distanceToBar < closestDistance)
                 {
                     closestDistance = distanceToBar;
-                    closestObject = obj.transform;
+                    closestObject = obj;
                 }
             }
         }
@@ -788,7 +788,7 @@ public class PlayerUIManager : MonoBehaviour
             {
                 //Debug.Log("updateGrabberexecuted");
                 //set the position of the bar as a screen point
-                Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.position);
+                Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.transform.position);
 
                 //ensure the grabber is on the screen
                 if (screenPoint.z > 0 &&
