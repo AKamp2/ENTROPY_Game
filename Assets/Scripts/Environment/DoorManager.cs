@@ -28,6 +28,19 @@ public class DoorManager : MonoBehaviour
     [SerializeField]
     Material brokenMaterial;
 
+    [SerializeField]
+    public Texture2D lockedTexture;
+    [SerializeField]
+    public Color lockedColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+    [SerializeField]
+    public Texture2D unlockedTexture;
+    [SerializeField]
+    public Color unlockedColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+    [SerializeField]
+    public Texture2D warningTexture;
+    [SerializeField]
+    public Color warningColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+
     public GameObject CurrentSelectedDoor
     {
         get { return currentSelectedDoor; }
@@ -54,6 +67,8 @@ public class DoorManager : MonoBehaviour
     {
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
         doorsInRange = new List<DoorScript>();
+
+        Debug.Log(lockedColor);
 
         // when loading from save, overwrite the doors
         if (GlobalSaveManager.Instance.LoadFromSave)
@@ -131,6 +146,7 @@ public class DoorManager : MonoBehaviour
 
                 if (door.hologramGroup != null)
                 {
+                    // fade on
                     door.StartFade(0.0f, door.lightOn, 1.5f);
 
                 }

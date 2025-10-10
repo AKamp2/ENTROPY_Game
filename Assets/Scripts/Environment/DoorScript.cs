@@ -206,6 +206,7 @@ public class DoorScript : MonoBehaviour
 
         //default unlock
         decal.material = doorManager.UnlockedMaterial;
+        UnlockHologram();
 
         if (states == States.Open)
         {
@@ -224,6 +225,7 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleBrokenDoorLoop());
         }
 
@@ -232,6 +234,7 @@ public class DoorScript : MonoBehaviour
             doorPart.position = closedPos;
             SetButtonColor(redBase, redEmis);
             decal.material = doorManager.LockedMaterial;
+            LockHologram();
         }
 
         if (states == States.BrokenShort)
@@ -477,6 +480,7 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(greenBase, greenEmis);
             decal.material = doorManager.UnlockedMaterial;
+            UnlockHologram();
 
             if (state == States.Open)
             {
@@ -500,11 +504,13 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleBrokenDoorLoop());
         }
         else if (state == States.Locked)
         {
             SetButtonColor(redBase, redEmis);
+            LockHologram();
             decal.material = doorManager.LockedMaterial;
 
             if (previousState != States.Locked && previousState != States.Closed)
@@ -517,12 +523,14 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleBrokenDoorShort());
         }
         else if (state == States.JoltOpen)
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleDoorStuck());
         }
     }
@@ -702,7 +710,32 @@ public class DoorScript : MonoBehaviour
         }
     }
 
+    private void LockHologram()
+    {
+        foreach (MeshRenderer renderer in hologramGroup)
+        {
+            renderer.material.SetTexture("_StatusIcon", doorManager.lockedTexture);
+            renderer.material.SetColor("_IconColor", doorManager.lockedColor);
+        }
+    }
 
+    private void UnlockHologram()
+    {
+        foreach (MeshRenderer renderer in hologramGroup)
+        {
+            renderer.material.SetTexture("_StatusIcon", doorManager.unlockedTexture);
+            renderer.material.SetColor("_IconColor", doorManager.unlockedColor);
+        }
+    }
+
+    private void BrokenHologram()
+    {
+        foreach (MeshRenderer renderer in hologramGroup)
+        {
+            renderer.material.SetTexture("_StatusIcon", doorManager.warningTexture);
+            renderer.material.SetColor("_IconColor", doorManager.warningColor);
+        }
+    }
 
 
 
