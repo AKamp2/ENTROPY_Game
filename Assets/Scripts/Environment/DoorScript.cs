@@ -587,7 +587,7 @@ public class DoorScript : MonoBehaviour
 
     private void AutomaticDoor()
     {
-        if (inRange)
+        if (states != States.Locked && states != States.Broken && inRange)
         {
             if (states != States.Open && states != States.Opening)
             {
@@ -670,7 +670,7 @@ public class DoorScript : MonoBehaviour
 
             fadeRoutine = StartCoroutine(HologramFade(alphaValue, lightIntensity, fadeSpeed));
 
-            // semi hard coded way to set hologram being turned on or off. There should never really be a time where the alpha isnt 1 or 0.
+            // semi hard coded way to set hologram being turned on or off. There should never be a time where the alpha isnt 1 or 0.
             if (alphaValue == 1.0f) hologramActive = false;
             else if (alphaValue == 0.0f) hologramActive = true;
         }

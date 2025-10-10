@@ -68,8 +68,6 @@ public class DoorManager : MonoBehaviour
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
         doorsInRange = new List<DoorScript>();
 
-        Debug.Log(lockedColor);
-
         // when loading from save, overwrite the doors
         if (GlobalSaveManager.Instance.LoadFromSave)
         {
@@ -141,11 +139,11 @@ public class DoorManager : MonoBehaviour
             {
                 MeshRenderer[] mr = collider.transform.parent.GetComponentsInChildren<MeshRenderer>();
 
-
                 doorsInRange.Add(door);
 
-                if (door.hologramGroup != null)
+                if (door.hologramGroup.Length != 0)
                 {
+                    Debug.Log("fade on");
                     // fade on
                     door.StartFade(0.0f, door.lightOn, 1.5f);
 
