@@ -28,8 +28,6 @@ public class DoorManager : MonoBehaviour
     [SerializeField]
     Material brokenMaterial;
 
-    private float hologramTime = 1.0f;
-
     public GameObject CurrentSelectedDoor
     {
         get { return currentSelectedDoor; }
@@ -133,12 +131,8 @@ public class DoorManager : MonoBehaviour
 
                 if (door.hologramGroup != null)
                 {
-                    // only activate if door is closed
-                    if (door.DoorState == DoorScript.States.Closed)
-                    {
-                        StartCoroutine(door.HologramFade(0.0f));
-                    }
-                    
+                    door.StartFade(0.0f, door.lightOn, 1.5f);
+
                 }
                 
 
@@ -153,18 +147,27 @@ public class DoorManager : MonoBehaviour
             {
                 if (!nearDoors.Contains(doorsInRange[i]))
                 {
-                    if (doorsInRange[i].hologramGroup != null)
+                    //fade out doors no longer in range. checks for if the hologram is already deactivated from being open
+                    if (doorsInRange[i].hologramGroup != null && doorsInRange[i].hologramActive == true)
                     {
-                        StartCoroutine(doorsInRange[i].HologramFade(1.0f));
+                        doorsInRange[i].StartFade(1.0f, doorsInRange[i].lightOff, 1.5f);
                     }
                     
                     doorsInRange.Remove(doorsInRange[i]);
-                  
                     i--;
                 }
             }
 
         }
+    }
+
+    public bool DoorInRange(DoorScript door)
+    {
+
+        if (doorsInRange.Contains(door)) return true;
+
+        return false;
+
     }
 
     

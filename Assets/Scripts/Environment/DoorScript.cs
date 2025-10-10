@@ -109,9 +109,11 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     public MeshRenderer[] hologramGroup;
     [SerializeField]
-    private Coroutine fadeRoutine;
-    [SerializeField]
-    private bool isVisible = false;
+    public Coroutine fadeRoutine;
+    public bool hologramActive = false;
+    public float lightOff = 0.001f;
+    public float lightOn = 0.015f;
+
 
     [Header("Sound Effects")]
     [SerializeField]
@@ -582,6 +584,7 @@ public class DoorScript : MonoBehaviour
             if (states != States.Open && states != States.Opening)
             {
                 UseDoor();
+                StartFade(1.0f, lightOff, 0.5f);
             }
 
         }
@@ -590,6 +593,13 @@ public class DoorScript : MonoBehaviour
             if (states != States.Closed && states != States.Closed)
             {
                 UseDoor();
+
+                // only reactive door hologram if still in range
+                if (doorManager.DoorInRange(this))
+                {
+                    StartFade(0.0f, lightOn, 0.5f);
+                }
+                
             }
         }
     }
@@ -640,8 +650,26 @@ public class DoorScript : MonoBehaviour
         }
     }
 
+    public void StartFade(float alphaValue, float lightIntensity, float fadeSpeed)
+    {
+        if (hologramGroup != null)
+        {
+            // stops coroutine if one is running already
+            if (fadeRoutine != null)
+            {
+                StopCoroutine(fadeRoutine);
+            }
 
-    public IEnumerator HologramFade(float alphaValue)
+            fadeRoutine = StartCoroutine(HologramFade(alphaValue, lightIntensity, fadeSpeed));
+
+            // semi hard coded way to set hologram being turned on or off. There should never really be a time where the alpha isnt 1 or 0.
+            if (alphaValue == 1.0f) hologramActive = false;
+            else if (alphaValue == 0.0f) hologramActive = true;
+        }
+        
+    }
+
+    private IEnumerator HologramFade(float alphaValue, float lightIntensity, float fadeSpeed)
     {
 
         foreach (MeshRenderer renderer in hologramGroup)
@@ -651,15 +679,25 @@ public class DoorScript : MonoBehaviour
 
             float startVal = renderer.material.GetFloat("_Fade");
 
-            while (time <= 2.0f)
-            {
-                float lerp = Mathf.Lerp(startVal, alphaValue, Mathf.Clamp01(time / 2.0f));
+            Light light = renderer.transform.GetComponentInChildren<Light>();
+            float startIntensity = light.intensity;
 
+            while (time <= fadeSpeed)
+            {
+                // material lerp
+                float lerp = Mathf.Lerp(startVal, alphaValue, Mathf.Clamp01(time / fadeSpeed));
                 renderer.material.SetFloat("_Fade", lerp);
+
+
+                // light lerp
+                float lightLerp = Mathf.Lerp(startIntensity, lightIntensity, Mathf.Clamp01(time / fadeSpeed));
+                light.intensity = lightLerp;
 
                 time += Time.deltaTime;
                 yield return null;
             }
+
+            renderer.material.SetFloat("_Fade", alphaValue);
 
         }
     }
