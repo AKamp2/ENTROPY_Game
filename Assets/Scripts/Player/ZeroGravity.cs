@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI.Table;
 
-public class ZeroGravity : MonoBehaviour
+public class ZeroGravity : MonoBehaviour, ISavable
 {
     [Header("== Player Elements ==")]
     [SerializeField]
@@ -236,6 +236,9 @@ public class ZeroGravity : MonoBehaviour
 
     private int doorCollisionCooldownFrames = 0;
 
+    // for storing the respawn information
+    public PlayerData playerData;
+
     #region properties
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -364,17 +367,10 @@ public class ZeroGravity : MonoBehaviour
 
     private void Awake()
     {
-        // when loading from save, overwrite the player data
-        if (GlobalSaveManager.Instance.LoadFromSave)
-        {
-            LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
-        } else
-        {
-            //set the player health
-            playerHealth = 3;
-            //make sure there are no stims in teh plaeyr inventory
-            numStims = 0;
-        }
+        //set the player health
+        playerHealth = 3;
+        //make sure there are no stims in teh plaeyr inventory
+        numStims = 0;
     }
 
     // Start is called before the first frame update
@@ -1654,7 +1650,7 @@ public class ZeroGravity : MonoBehaviour
     // backs up player data for saving
     public void StorePlayerData(Vector3 _position) // takes the checkpoints respawn point
     {
-        GlobalSaveManager.Instance.Data.PlayerData = new PlayerData(
+        playerData = new PlayerData(
             _position,
             transform.rotation,
             playerHealth, 
@@ -1670,7 +1666,7 @@ public class ZeroGravity : MonoBehaviour
     }
 
     // called when loading a save
-    public void LoadPlayerData(PlayerData playerData)
+    private void LoadPlayerData()
     {
         transform.position = playerData.Position;
         transform.rotation = playerData.Rotation;
@@ -1698,5 +1694,19 @@ public class ZeroGravity : MonoBehaviour
         wristMonitor.IsActive = playerData.ShowingWristMonitor;
         wristMonitor.mainObjectives = new List<WristMonitor.Objective>(playerData.MainObjectives);
         wristMonitor.completedObjectives = new List<WristMonitor.Objective>(playerData.CompletedObjectives);
+    }
+
+    public void LoadSaveFile(string fileName)
+    {
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        playerData = JsonUtility.FromJson<PlayerData>(loadedData);
+    }
+
+    public void CreateSaveFile(string fileName)
+    {
+        string json = JsonUtility.ToJson(playerData);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
 }
