@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface ISavable
+public interface ISaveable
 {
     static string TEMP_SAVE_FILENAME = "TempSaveData.json";
     static string SAVE_FILE_1 = "SaveData1.json";

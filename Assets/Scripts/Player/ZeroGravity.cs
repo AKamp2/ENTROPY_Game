@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI.Table;
 
-public class ZeroGravity : MonoBehaviour, ISavable
+public class ZeroGravity : MonoBehaviour, ISaveable
 {
     [Header("== Player Elements ==")]
     [SerializeField]
