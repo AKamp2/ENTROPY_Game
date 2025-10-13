@@ -28,6 +28,8 @@ public class DoorManager : MonoBehaviour
     [SerializeField]
     Material brokenMaterial;
 
+    [Header("Hologram Variables")]
+
     [SerializeField]
     public Texture2D lockedTexture;
     [SerializeField]

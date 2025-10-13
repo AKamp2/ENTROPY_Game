@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Jobs;
+using UnityEngine.ProBuilder;
 using UnityEngine.Rendering.Universal;
 public class DoorScript : MonoBehaviour
 {
@@ -107,6 +108,8 @@ public class DoorScript : MonoBehaviour
 
     [Header("Hologram")]
     [SerializeField]
+    private Texture2D[] textLabels;
+    [SerializeField]
     public MeshRenderer[] hologramGroup;
     [SerializeField]
     public Coroutine fadeRoutine;
@@ -207,6 +210,7 @@ public class DoorScript : MonoBehaviour
         //default unlock
         decal.material = doorManager.UnlockedMaterial;
         UnlockHologram();
+        ApplyTextSign();
 
         if (states == States.Open)
         {
@@ -380,6 +384,7 @@ public class DoorScript : MonoBehaviour
             startAudioSource.Play();
 
             // Wait for door to fully open
+            StartFade(1.0f, lightOff, 0.1f);
             yield return MoveDoor(closedPos, openPos, brokenOpenDuration, null);
 
 
@@ -391,8 +396,13 @@ public class DoorScript : MonoBehaviour
             middleAudioSource.Play();
 
             isClosing = true;
+
+            //hologram will be turned on while closing, best solution for now
+            StartFade(0.0f, lightOn, 0.5f);
+
             // Wait for door to fully close
             yield return MoveDoor(openPos, closedPos, brokenCloseDuration, () => isClosing = false);
+           
         }
     }
 
@@ -587,29 +597,34 @@ public class DoorScript : MonoBehaviour
 
     private void AutomaticDoor()
     {
-        if (states != States.Locked && states != States.Broken && inRange)
+        if (states != States.Locked && states != States.Broken)
         {
-            if (states != States.Open && states != States.Opening)
+            if (inRange)
             {
-                UseDoor();
-                StartFade(1.0f, lightOff, 0.5f);
-            }
-
-        }
-        else
-        {
-            if (states != States.Closed && states != States.Closed)
-            {
-                UseDoor();
-
-                // only reactive door hologram if still in range
-                if (doorManager.DoorInRange(this))
+                if (states != States.Open && states != States.Opening)
                 {
-                    StartFade(0.0f, lightOn, 0.5f);
+                    UseDoor();
+                    Debug.Log("fade off");
+                    StartFade(1.0f, lightOff, 0.5f);
                 }
-                
+
+            }
+            else
+            {
+                if (states != States.Closed && states != States.Closed)
+                {
+                    UseDoor();
+
+                    // only reactive door hologram if still in range
+                    if (doorManager.DoorInRange(this))
+                    {
+                        StartFade(0.0f, lightOn, 0.5f);
+                    }
+
+                }
             }
         }
+        
     }
 
     private void SetButtonColor(Color baseColor, Color emisColor)
@@ -677,36 +692,99 @@ public class DoorScript : MonoBehaviour
         
     }
 
+    //private IEnumerator HologramFade(float alphaValue, float lightIntensity, float fadeSpeed)
+    //{
+
+
+    //    foreach (MeshRenderer renderer in hologramGroup)
+    //    {
+
+    //        float time = 0.0f;
+
+    //        float startVal = renderer.material.GetFloat("_Fade");
+
+    //        Light light = renderer.transform.GetComponentInChildren<Light>();
+    //        float startIntensity = light.intensity;
+
+    //        while (time <= fadeSpeed)
+    //        {
+    //            // material lerp
+    //            float lerp = Mathf.Lerp(startVal, alphaValue, Mathf.Clamp01(time / fadeSpeed));
+    //            renderer.material.SetFloat("_Fade", lerp);
+
+
+    //            // light lerp
+    //            float lightLerp = Mathf.Lerp(startIntensity, lightIntensity, Mathf.Clamp01(time / fadeSpeed));
+    //            light.intensity = lightLerp;
+
+    //            time += Time.deltaTime;
+    //            yield return null;
+    //        }
+
+    //        renderer.material.SetFloat("_Fade", alphaValue);
+
+    //    }
+    //}
+
     private IEnumerator HologramFade(float alphaValue, float lightIntensity, float fadeSpeed)
     {
 
-        foreach (MeshRenderer renderer in hologramGroup)
+        float time = 0.0f;
+
+        // assume all holograms start from same values
+        float startVal = hologramGroup[0].material.GetFloat("_Fade");
+        float startIntensity = hologramGroup[0].transform.GetComponentInChildren<Light>().intensity;
+
+        // cache lights so we don�t call GetComponent every frame
+        Light[] lights = new Light[hologramGroup.Length];
+        for (int i = 0; i < hologramGroup.Length; i++)
+            lights[i] = hologramGroup[i].transform.GetComponentInChildren<Light>();
+
+
+        while (time <= fadeSpeed)
         {
 
-            float time = 0.0f;
+            // material lerp
+            float shaderFade = Mathf.Lerp(startVal, alphaValue, Mathf.Clamp01(time / fadeSpeed));
+            // light lerp
+            float lightFade = Mathf.Lerp(startIntensity, lightIntensity, Mathf.Clamp01(time / fadeSpeed));
 
-            float startVal = renderer.material.GetFloat("_Fade");
 
-            Light light = renderer.transform.GetComponentInChildren<Light>();
-            float startIntensity = light.intensity;
-
-            while (time <= fadeSpeed)
+            foreach (MeshRenderer renderer in hologramGroup)
             {
-                // material lerp
-                float lerp = Mathf.Lerp(startVal, alphaValue, Mathf.Clamp01(time / fadeSpeed));
-                renderer.material.SetFloat("_Fade", lerp);
-
-
-                // light lerp
-                float lightLerp = Mathf.Lerp(startIntensity, lightIntensity, Mathf.Clamp01(time / fadeSpeed));
-                light.intensity = lightLerp;
-
-                time += Time.deltaTime;
-                yield return null;
+                renderer.material.SetFloat("_Fade", shaderFade);
             }
 
+            foreach (Light light in lights)
+            {
+                light.intensity = lightFade;
+            }
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        // finalize values
+        foreach (MeshRenderer renderer in hologramGroup)
             renderer.material.SetFloat("_Fade", alphaValue);
 
+        foreach (Light light in lights)
+            light.intensity = lightIntensity;
+
+    }
+
+
+    private void ApplyTextSign()
+    {
+        if (hologramGroup != null && hologramGroup.Length != 0) 
+        {
+            for (int i = 0; i < hologramGroup.Length; i++)
+            {
+                if (hologramGroup[i].material.GetTexture("_LabelText") != textLabels[i])
+                {
+                    hologramGroup[i].material.SetTexture("_LabelText", textLabels[i]);
+                }
+            }
         }
     }
 
