@@ -8,27 +8,38 @@ using System.Linq;
 public static class GlobalSaveManager
 {
     public static bool loadFromSave = false;
-    public static void SaveGame()
+    public static void SaveGame(bool permanent)
     {
         ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
         foreach (var saveable in saveables)
         {
-            string fileName = GenerateFileName(saveable);
-            saveable.CreateSaveFile(fileName);
+            // permanent save file
+            if (permanent) saveable.CreateSaveFile(GenerateFileName(saveable, true));
+            // temporary save file - always make one of these
+            saveable.CreateSaveFile(GenerateFileName(saveable, false));
         }
     }
-    public static void LoadGame()
+    public static void LoadGame(bool permanent)
     {
         ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
         foreach (var saveable in saveables)
         {
-            string fileName = GenerateFileName(saveable);
-            saveable.LoadSaveFile(fileName);
+            // permanent save file
+            if (permanent)
+            {
+                saveable.LoadSaveFile(GenerateFileName(saveable, true));
+            }
+            // temporary save file
+            else
+            {
+                saveable.LoadSaveFile(GenerateFileName(saveable, false));
+            }
         }
     }
-    private static string GenerateFileName(ISaveable saveable)
+    private static string GenerateFileName(ISaveable saveable, bool temp)
     {
         string typeName = saveable.GetType().Name;
+        if (temp) return $"{typeName}_Temp.json";
         return $"{typeName}_Save.json";
     }
     public static void SaveTextToFile(string path, string fileName, string data)
