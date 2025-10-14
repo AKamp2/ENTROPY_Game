@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class TerminalManager : MonoBehaviour
+public class TerminalManager : MonoBehaviour, ISaveable
 {
 
     private Terminal currentTerminal;
@@ -14,15 +14,8 @@ public class TerminalManager : MonoBehaviour
     }
     [SerializeField]
     private List<Terminal> terminals;
-    private void Start()
-    {
-        // when loading from save, overwrite the terminals
-        if (GlobalSaveManager.Instance.LoadFromSave)
-        {
-            LoadTerminalStates(GlobalSaveManager.Instance.Data.TerminalStates);
-        }
-    }
-
+    // for save
+    private int latestTerminalIndex = -1;
     public void OnInteract(InputAction.CallbackContext context)
     {
         
@@ -31,18 +24,40 @@ public class TerminalManager : MonoBehaviour
             if (context.performed && currentTerminal.isLookedAt && !currentTerminal.isActivated)
             {
                 currentTerminal.Activation();
-                StoreTerminalStates();
-                // store the Player's data to the save manager, passing in the position of this checkpoint
+                // store a copy of the Player's data, passing in the position of this checkpoint
                 currentTerminal.PlayerScript.StorePlayerData(currentTerminal.TargetTransform.transform.position);
                 // save the game at checkpoints
-                GlobalSaveManager.Instance.Data.SavedWithTerminal = true;
-                GlobalSaveManager.Instance.CreateTempSaveFile();
-                GlobalSaveManager.Instance.CreatePersistantSaveFile();
+                //GlobalSaveManager.Instance.Data.SavedWithTerminal = true;
+                //GlobalSaveManager.Instance.CreateTempSaveFile();
+                //GlobalSaveManager.Instance.CreatePersistantSaveFile();
+                GlobalSaveManager.SaveGame(true);
             }
         }
     }
 
-    public void StoreTerminalStates()
+    public void LoadSaveFile(string fileName)
+    {
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        bool[] _terminalStates = JsonUtility.FromJson<bool[]>(loadedData);
+        // activates all of the terminals, only the current terminal will play its cutscene
+        for (int i = 0; i < terminals.Count; i++)
+        {
+            if (_terminalStates[i])
+            {
+                if (GlobalSaveManager.SavedWithTerminal && i == latestTerminalIndex)
+                {
+                    terminals[i].MediumActivation();
+                }
+                else
+                {
+                    terminals[i].SoftActivation();
+                }
+            }
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
     {
         // store a copy of the checkpoint data in the global save manager
         // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
@@ -51,29 +66,15 @@ public class TerminalManager : MonoBehaviour
         {
             _terminalStates[i] = terminals[i].isActivated;
             // track the index of the current terminal for save loading
-            if (terminals[i] == CurrentTerminal) {
-                GlobalSaveManager.Instance.Data.LatestTerminalIndex = i;
-            }
-        }
-        GlobalSaveManager.Instance.Data.TerminalStates = _terminalStates;
-    }
-
-    public void LoadTerminalStates(bool[] _terminalStates)
-    {
-        // activates all of the terminals, only the current terminal will play its cutscene
-        for (int i = 0; i < terminals.Count; i++)
-        {
-            if (_terminalStates[i])
+            if (terminals[i] == CurrentTerminal)
             {
-                if (GlobalSaveManager.Instance.Data.SavedWithTerminal && i == GlobalSaveManager.Instance.Data.LatestTerminalIndex)
-                {
-                    terminals[i].MediumActivation();
-                } else
-                {
-                    terminals[i].SoftActivation();
-                }
+                latestTerminalIndex = i;
             }
         }
+        string json = JsonUtility.ToJson(_terminalStates);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
+        GlobalSaveManager.SavedWithTerminal = true;
     }
 
     //What you can do is move the onInteract into this script so that you don't have to give the player input an OnInteract for every single terminal in the game.

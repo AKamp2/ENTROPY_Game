@@ -7,7 +7,8 @@ using System.Linq;
 // this is the file the will handle saving and loading
 public static class GlobalSaveManager
 {
-    public static bool loadFromSave = false;
+    public static bool LoadFromSave = false;
+    public static bool SavedWithTerminal = false;
     public static void SaveGame(bool permanent)
     {
         ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
@@ -36,11 +37,11 @@ public static class GlobalSaveManager
             }
         }
     }
-    private static string GenerateFileName(ISaveable saveable, bool temp)
+    private static string GenerateFileName(ISaveable saveable, bool permanent)
     {
         string typeName = saveable.GetType().Name;
-        if (temp) return $"{typeName}_Temp.json";
-        return $"{typeName}_Save.json";
+        if (permanent) return $"{typeName}_Save.json";
+        return $"{typeName}_Temp.json";
     }
     public static void SaveTextToFile(string path, string fileName, string data)
     {

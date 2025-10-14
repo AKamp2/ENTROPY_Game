@@ -1701,6 +1701,7 @@ public class ZeroGravity : MonoBehaviour, ISaveable
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
         playerData = JsonUtility.FromJson<PlayerData>(loadedData);
+        LoadPlayerData();
     }
 
     public void CreateSaveFile(string fileName)
