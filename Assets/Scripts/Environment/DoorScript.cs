@@ -156,8 +156,6 @@ public class DoorScript : MonoBehaviour
         get { return states; }
         set {
             states = value;
-            // track door updates for saving purposes
-            doorManager.StoreDoorStates();
         }
     }
 
