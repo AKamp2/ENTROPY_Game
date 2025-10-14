@@ -82,8 +82,8 @@ public class DoorManager : MonoBehaviour, ISaveable
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        DoorScript.States[] _doorStates = JsonUtility.FromJson<DoorScript.States[]>(loadedData);
-        for (int i = 0; i < doors.Length; i++)
+        List<DoorScript.States> _doorStates = JsonUtility.FromJson<List<DoorScript.States>>(loadedData);
+        for (int i = 0; i < _doorStates.Count; i++)
         {
             doors[i].SetState(_doorStates[i]);
         }
@@ -92,10 +92,10 @@ public class DoorManager : MonoBehaviour, ISaveable
     public void CreateSaveFile(string fileName)
     {
         // store a copy of the checkpoint data in the global save manager
-        DoorScript.States[] _doorStates = new DoorScript.States[doors.Length];
-        for (int i = 0; i < doors.Length; i++)
+        List<DoorScript.States> _doorStates = new List<DoorScript.States>(doors.Length);
+        foreach (DoorScript _door in doors)
         {
-            _doorStates[i] = doors[i].DoorState;
+            _doorStates.Add(_door.DoorState);
         }
         // this will create a file backing up the data we give it
         string json = JsonUtility.ToJson(_doorStates);

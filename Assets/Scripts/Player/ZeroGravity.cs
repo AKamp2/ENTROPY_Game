@@ -1544,8 +1544,6 @@ public class ZeroGravity : MonoBehaviour, ISaveable
         //    rb.angularVelocity = Vector3.zero;
         //}
         GlobalSaveManager.LoadGame(false);
-        string currentSceneName = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene(currentSceneName);
     }
 
     private IEnumerator UseStim()

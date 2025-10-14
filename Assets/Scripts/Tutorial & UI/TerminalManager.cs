@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -41,9 +42,11 @@ public class TerminalManager : MonoBehaviour, ISaveable
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        bool[] _terminalStates = JsonUtility.FromJson<bool[]>(loadedData);
+        List<bool> _terminalStates = JsonUtility.FromJson<List<bool>>(loadedData);
+        Debug.Log(_terminalStates.Count);
+        Debug.Log(terminals.Count);
         // activates all of the terminals, only the current terminal will play its cutscene
-        for (int i = 0; i < terminals.Count; i++)
+        for (int i = 0; i < _terminalStates.Count; i++)
         {
             if (_terminalStates[i])
             {
@@ -63,10 +66,10 @@ public class TerminalManager : MonoBehaviour, ISaveable
     {
         // store a copy of the checkpoint data in the global save manager
         // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
-        bool[] _terminalStates = new bool[terminals.Count];
+        List<bool> _terminalStates = new List<bool>(terminals.Count);
         for (int i = 0; i < terminals.Count; i++)
         {
-            _terminalStates[i] = terminals[i].isActivated;
+            _terminalStates.Add(terminals[i].isActivated);
             // track the index of the current terminal for save loading
             if (terminals[i] == CurrentTerminal)
             {

@@ -41,8 +41,8 @@ public class CheckpointManager : MonoBehaviour, ISaveable
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        bool[] _checkpointStates = JsonUtility.FromJson<bool[]>(loadedData);
-        for (int i = 0; i < checkpoints.Count; i++)
+        List<bool> _checkpointStates = JsonUtility.FromJson<List<bool>>(loadedData);
+        for (int i = 0; i < _checkpointStates.Count; i++)
         {
             checkpoints[i].Col.enabled = _checkpointStates[i];
         }
@@ -52,10 +52,10 @@ public class CheckpointManager : MonoBehaviour, ISaveable
     {
         // store a copy of the checkpoint data in the global save manager
         // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
-        bool[] _checkPointStates = new bool[checkpoints.Count];
-        for (int i = 0; i < checkpoints.Count; i++)
+        List<bool> _checkPointStates = new List<bool>(checkpoints.Count);
+        foreach (Checkpoint _checkpoint in checkpoints)
         {
-            _checkPointStates[i] = checkpoints[i].Col.enabled;
+            _checkPointStates.Add(_checkpoint.Col.enabled);
         }
         // this will create a file backing up the data we give it
         string json = JsonUtility.ToJson(_checkPointStates);
