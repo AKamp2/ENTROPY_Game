@@ -30,6 +30,7 @@ public class TerminalManager : MonoBehaviour, ISaveable
                 //GlobalSaveManager.Instance.Data.SavedWithTerminal = true;
                 //GlobalSaveManager.Instance.CreateTempSaveFile();
                 //GlobalSaveManager.Instance.CreatePersistantSaveFile();
+                GlobalSaveManager.SavedWithTerminal = true;
                 GlobalSaveManager.SaveGame(true);
             }
         }
@@ -37,6 +38,7 @@ public class TerminalManager : MonoBehaviour, ISaveable
 
     public void LoadSaveFile(string fileName)
     {
+        // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
         bool[] _terminalStates = JsonUtility.FromJson<bool[]>(loadedData);
@@ -71,10 +73,10 @@ public class TerminalManager : MonoBehaviour, ISaveable
                 latestTerminalIndex = i;
             }
         }
+        // this will create a file backing up the data we give it
         string json = JsonUtility.ToJson(_terminalStates);
         string path = Application.persistentDataPath;
         GlobalSaveManager.SaveTextToFile(path, fileName, json);
-        GlobalSaveManager.SavedWithTerminal = true;
     }
 
     //What you can do is move the onInteract into this script so that you don't have to give the player input an OnInteract for every single terminal in the game.

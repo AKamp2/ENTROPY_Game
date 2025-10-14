@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class CheckpointManager : MonoBehaviour
+public class CheckpointManager : MonoBehaviour, ISaveable
 {
     [Tooltip("Ordered list of your checkpoints in scene")]
     [SerializeField]
@@ -19,11 +19,6 @@ public class CheckpointManager : MonoBehaviour
             cp.OnReached += HandleCheckpointReached;
             cp.Initialize(playerZeroG, i == 0);
         }
-        // when loading from save, overwrite the checkpoints
-        if (GlobalSaveManager.Instance.LoadFromSave)
-        {
-            LoadCheckpointStates(GlobalSaveManager.Instance.Data.CheckpointStates);
-        }
     }
 
     void HandleCheckpointReached(Checkpoint reached)
@@ -34,15 +29,26 @@ public class CheckpointManager : MonoBehaviour
             _currentIndex++;
             checkpoints[_currentIndex].Initialize(playerZeroG, true);
         }
-        StoreCheckpointStates();
         // store the Player's data to the save manager, passing in the position of this checkpoint
         playerZeroG.StorePlayerData(reached.respawnPoint.transform.position);
         // save the game at checkpoints
-        GlobalSaveManager.Instance.Data.SavedWithTerminal = false;
-        GlobalSaveManager.Instance.CreateTempSaveFile();
+        GlobalSaveManager.SavedWithTerminal = false;
+        GlobalSaveManager.SaveGame(false);
     }
-    // backs up checkpoint states for saving
-    public void StoreCheckpointStates()
+
+    public void LoadSaveFile(string fileName)
+    {
+        // this will load data from the file to a variable we will use to change this objects data
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        bool[] _checkpointStates = JsonUtility.FromJson<bool[]>(loadedData);
+        for (int i = 0; i < checkpoints.Count; i++)
+        {
+            checkpoints[i].Col.enabled = _checkpointStates[i];
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
     {
         // store a copy of the checkpoint data in the global save manager
         // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
@@ -51,15 +57,9 @@ public class CheckpointManager : MonoBehaviour
         {
             _checkPointStates[i] = checkpoints[i].Col.enabled;
         }
-        GlobalSaveManager.Instance.Data.CheckpointStates = _checkPointStates;
-    }
-
-    // called when loading a save
-    public void LoadCheckpointStates(bool[] _checkpointStates)
-    {
-        for (int i = 0; i < checkpoints.Count; i++)
-        {
-            checkpoints[i].Col.enabled = _checkpointStates[i];
-        }
+        // this will create a file backing up the data we give it
+        string json = JsonUtility.ToJson(_checkPointStates);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
 }

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DoorManager : MonoBehaviour
+public class DoorManager : MonoBehaviour, ISaveable
 {
 
     [SerializeField]
@@ -48,12 +48,6 @@ public class DoorManager : MonoBehaviour
     void Start()
     {
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
-
-        // when loading from save, overwrite the doors
-        if (GlobalSaveManager.Instance.LoadFromSave)
-        {
-            LoadDoorStates(GlobalSaveManager.Instance.Data.DoorStates);
-        }
     }
 
     // Update is called once per frame
@@ -83,8 +77,19 @@ public class DoorManager : MonoBehaviour
         
     }
 
-    // backs up door states for saving
-    public void StoreDoorStates()
+    public void LoadSaveFile(string fileName)
+    {
+        // this will load data from the file to a variable we will use to change this objects data
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        DoorScript.States[] _doorStates = JsonUtility.FromJson<DoorScript.States[]>(loadedData);
+        for (int i = 0; i < doors.Length; i++)
+        {
+            doors[i].SetState(_doorStates[i]);
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
     {
         // store a copy of the checkpoint data in the global save manager
         DoorScript.States[] _doorStates = new DoorScript.States[doors.Length];
@@ -92,15 +97,9 @@ public class DoorManager : MonoBehaviour
         {
             _doorStates[i] = doors[i].DoorState;
         }
-        GlobalSaveManager.Instance.Data.DoorStates = _doorStates;
-    }
-
-    // called when loading a save
-    public void LoadDoorStates(DoorScript.States[] _doorStates)
-    {
-        for (int i = 0; i < doors.Length; i++)
-        {
-            doors[i].SetState(_doorStates[i]);
-        }
+        // this will create a file backing up the data we give it
+        string json = JsonUtility.ToJson(_doorStates);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
 }
