@@ -29,8 +29,6 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("sample");
-        // don't load from save, start a new game
-        GlobalSaveManager.Instance.LoadFromSave = false;
         SceneManager.LoadScene("Level1New");
 
     }

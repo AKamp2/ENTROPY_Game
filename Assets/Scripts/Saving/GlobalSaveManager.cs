@@ -7,7 +7,6 @@ using System.Linq;
 // this is the file the will handle saving and loading
 public static class GlobalSaveManager
 {
-    public static bool LoadFromSave = false;
     public static bool SavedWithTerminal = false;
     public static void SaveGame(bool permanent)
     {
