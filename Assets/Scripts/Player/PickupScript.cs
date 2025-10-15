@@ -216,17 +216,10 @@ public class PickupScript : MonoBehaviour
             MoveObject();
             //zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
 
-            var itemAudioHandler = pickUpObj.GetComponent<ItemAudioHandler>();
-            if (itemAudioHandler != null)
-            {
-                itemAudioHandler.PlayPickUpSound();
-            }
+            AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
 
-
-            /*            AudioSource itemSource = pickUpObj.GetComponent<AudioSource>();
-
-                        if (itemAudioHandler != null && itemSource != null)
-                            itemAudioHandler.PlayPickUpSound(itemSource);*/
+            if (itemAudioHandler != null && itemSource != null)
+                itemAudioHandler.PlayPickUpSound(itemSource);
         }
     }
     void DropObject()
@@ -268,18 +261,11 @@ public class PickupScript : MonoBehaviour
         heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce, ForceMode.VelocityChange);
 
-        var itemAudioHandler = heldObj.GetComponent<ItemAudioHandler>();
-        if (itemAudioHandler != null)
-        {
-            itemAudioHandler.PlayThrowSound();
-        }
+        AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
 
+        if (itemAudioHandler != null && itemSource != null)
+            itemAudioHandler.PlayThrowSound(itemSource);
 
-        /*        AudioSource itemSource = heldObj.GetComponent<AudioSource>();
-
-                if (itemAudioHandler != null && itemSource != null)
-                    itemAudioHandler.PlayThrowSound(itemSource);
-        */
         heldObj = null;
         hasThrownObject = true;
         StartCoroutine(ResetThrowFlag());

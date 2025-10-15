@@ -16,7 +16,7 @@ public class BarAudioHandler : MonoBehaviour
 
     public void PlayGrabSound(AudioSource source)
     {
-        //Debug.Log(source);
+        Debug.Log(source);
         if (grabSounds.Length == 0 || source == null) return;
 
         int index = Random.Range(0, grabSounds.Length);
@@ -30,7 +30,7 @@ public class BarAudioHandler : MonoBehaviour
   
     public void PlayReleaseSound(AudioSource source)
     {
-        //Debug.Log(source);
+        Debug.Log(source);
         if (releaseSounds.Length == 0 || source == null) return;
 
         int index = Random.Range(0, releaseSounds.Length);

@@ -16,6 +16,10 @@ public class PlayerAudio : MonoBehaviour
     public AudioClip fatalBounce;
     public AudioClip useStim;
 
+    [Header("Item Interaction SFX")]
+    public AudioClip grabItem;
+    public AudioClip throwItem;
+
 
     public AudioMixerGroup playerGroup;
 
@@ -37,6 +41,20 @@ public class PlayerAudio : MonoBehaviour
     public void PlayUseStim()
     {
         playerAudioSource.clip = useStim;
+        playerAudioSource.Play();
+    }
+
+    public void PlayGrabItem()
+    {
+        if (grabItem == null) return;
+        playerAudioSource.clip = grabItem;
+        playerAudioSource.Play();
+    }
+
+    public void PlayThrowItem()
+    {
+        if (throwItem == null) return;
+        playerAudioSource.clip = throwItem;
         playerAudioSource.Play();
     }
 

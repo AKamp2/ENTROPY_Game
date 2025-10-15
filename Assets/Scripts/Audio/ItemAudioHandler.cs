@@ -3,65 +3,41 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class ItemAudioHandler : MonoBehaviour
 {
-    [Header("Audio Source")]
-    public AudioSource audioSource;
+    //[Header("Audio Source")]
+    //public AudioSource audioSource;
 
     [Header("Grab Sounds")]
-    public AudioClip pickUpSound;
+    public AudioClip[] pickupSounds;
 
     [Header("Throw Sounds")]
-    public AudioClip throwSound;
+    public AudioClip[] throwSounds;
 
-    public void PlayPickUpSound()
+/*    [Header("Impact Sounds")]
+    public AudioClip[] impactSounds;
+
+    [Tooltip("Minimum collision velocity to trigger an impact sound")]
+    public float impactThreshold = 1.5f;*/
+
+/*    private void Awake()
     {
-        if (audioSource == null || pickUpSound == null)
-        {
-            Debug.LogWarning($"{name}: Missing AudioSource or PickUp sound!");
-            return;
-        }
+        
+    }*/
 
-        audioSource.PlayOneShot(pickUpSound);
+    public void PlayPickUpSound(AudioSource source)
+    {
+        if (pickupSounds.Length == 0 || source == null) return;
+        int index = Random.Range(0, pickupSounds.Length);
+        source.pitch = Random.Range(0.95f, 1.05f);
+        source.PlayOneShot(pickupSounds[index]);
     }
 
-    public void PlayThrowSound()
+    public void PlayThrowSound(AudioSource source)
     {
-        if (audioSource == null || throwSound == null)
-        {
-            Debug.LogWarning($"{name}: Missing AudioSource or Throw sound!");
-            return;
-        }
-
-        audioSource.PlayOneShot(throwSound);
+        if (throwSounds.Length == 0 || source == null) return;
+        int index = Random.Range(0, throwSounds.Length);
+        source.pitch = Random.Range(0.95f, 1.05f);
+        source.PlayOneShot(throwSounds[index]);
     }
-
-    /*    [Header("Impact Sounds")]
-        public AudioClip[] impactSounds;
-
-        [Tooltip("Minimum collision velocity to trigger an impact sound")]
-        public float impactThreshold = 1.5f;*/
-
-    /*    private void Awake()
-        {
-
-        }*/
-
-    /*    public void PlayPickUpSound(AudioSource source)
-        {
-            Debug.Log(source);
-            if (pickupSounds.Length == 0 || source == null) return;
-            int index = Random.Range(0, pickupSounds.Length);
-            source.pitch = Random.Range(0.95f, 1.05f);
-            source.PlayOneShot(pickupSounds[index]);
-        }
-
-        public void PlayThrowSound(AudioSource source)
-        {
-            Debug.Log(source);
-            if (throwSounds.Length == 0 || source == null) return;
-            int index = Random.Range(0, throwSounds.Length);
-            source.pitch = Random.Range(0.95f, 1.05f);
-            source.PlayOneShot(throwSounds[index]);
-        }*/
 }
 
 /*private void OnCollisionEnter(Collision collision)
