@@ -57,7 +57,6 @@ public class TutorialManager : MonoBehaviour
 
     public DialogueAudio dialogueAudio;
     public AmbientController ambientController;
-    private WristMonitor wristMonitor;
 
     // rolling threshold (in degrees) beyond which we consider �upside down�
     [SerializeField] private float rollAngleThreshold = 150f;
@@ -77,7 +76,6 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
-        wristMonitor = FindFirstObjectByType<WristMonitor>();
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
         pickupObject = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
@@ -359,7 +357,6 @@ public class TutorialManager : MonoBehaviour
         //remove all tutorial panels
         HideAllPanels();
         ambientController.Progress();
-        wristMonitor.CompleteObjective();
         currentStep = 5;
 
         dialogueManager.StartDialogueSequence(1, 0.2f);
