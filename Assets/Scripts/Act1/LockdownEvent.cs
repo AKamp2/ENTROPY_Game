@@ -17,8 +17,8 @@ public class LockdownEvent : MonoBehaviour
     [SerializeField]
     private BoxCollider cuttingOutTrigger;
 
-    [SerializeField]
-    private GameObject lever;
+    //[SerializeField]
+    //private GameObject lever;
     [SerializeField]
     private Light buttonLight;
     [SerializeField]
@@ -86,8 +86,6 @@ public class LockdownEvent : MonoBehaviour
     private Vector3 gratePos;
     private Vector3 grateMovePos;
 
-    [SerializeField]
-    private CanvasGroup wristMonitorTutorial;
 
     [SerializeField]
     private GameObject serverObj;
@@ -96,8 +94,15 @@ public class LockdownEvent : MonoBehaviour
     private Material serverMaterialInstance;
     private Color initialEmissionColor;
 
-    private bool tutorialMonitorFaded = false;
 
+
+    public GameObject alienBody;
+    public Animator alienAnimator;
+    public Light alienLight;
+
+    [SerializeField] private ServerProgressBars serverProgress;
+    [SerializeField] private Terminal serverTerminal;
+    [SerializeField] private LockdownPanel lockdownPanel;
 
 
     public bool CanPull
@@ -111,16 +116,7 @@ public class LockdownEvent : MonoBehaviour
         get { return isActive; }
     }
 
-    public bool CanGrab
-    {
-        get { return canGrab; }
-        set { canGrab = value; }
-    }
 
-    public bool IsGrabbable
-    {
-        get { return isGrabbable; }
-    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -143,7 +139,7 @@ public class LockdownEvent : MonoBehaviour
         // checks if player is currently hovering over lever
         canPull = false;
         // checks if system is able to be turned on
-        isActive = true;
+        isActive = false;
 
         canGrab = false;
         isGrabbable = true;
@@ -257,8 +253,7 @@ public class LockdownEvent : MonoBehaviour
             buttonLight.intensity = 0;
             // open the broken door first
             brokenDoor.SetState(DoorScript.States.Open);
-            lever.GetComponent<Renderer>().material = leverMaterial;
-
+            
             DoorTrigger.enabled = true;
             isActive = false;
 
@@ -266,33 +261,6 @@ public class LockdownEvent : MonoBehaviour
             player.PlayerCutSceneHandler(true);
             StartCoroutine(PlayLockdownFX());
             
-        }
-
-        //Handle wrist monitor pickup
-        if (canGrab && IsGrabbable)
-        {
-            player.AccessPermissions[0] = true;
-
-            isGrabbable = false;
-
-            audioManager.playMonitorPickup();
-
-            wrist.SetActive(false);
-
-            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 0f, 1f));
-
-            StartCoroutine(FadeTutorialPanelTimer());
-
-            medDoor.SetState(DoorScript.States.Closed);
-
-            ambientController.Progress();
-
-            dialogueManager.StartDialogueSequence(6, 1f);
-
-            cuttingOutTrigger.enabled = true;
-
-            
-
         }
     }
 
@@ -315,16 +283,19 @@ public class LockdownEvent : MonoBehaviour
 
         audioManager.FadeServers(false);
         audioManager.playPowerCut();
+        serverProgress.Shutdown();
         StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, initialEmissionColor, 4f, 0, 6.5f, 0f));
         poweringDown = true;
         
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(13f);
 
-        audioManager.playAlienRunAway();
+        //audioManager.playAlienRunAway();
+        StartCoroutine(PlayAlienAnimation());
 
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(4f);
 
         audioManager.playPowerOn();
+        serverProgress.Reboot();
         StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, endEmissionColor, 0, 4f, 4f, 2f));
         glitchLights = true;
         foreach(Light light in lights)
@@ -444,15 +415,7 @@ public class LockdownEvent : MonoBehaviour
         mat.SetColor("_EmissionColor", toColor * toIntensity);
     }
 
-    public void FadeOutMonitorTutorial()
-    {
-        if(tutorialMonitorFaded == false)
-        {
-            tutorialMonitorFaded = true;
-            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
-        }
-        
-    }
+
 
     private IEnumerator MoveDoor(Vector3 fromPos, Vector3 toPos, float duration, System.Action onComplete)
     {
@@ -470,15 +433,43 @@ public class LockdownEvent : MonoBehaviour
         onComplete?.Invoke();
     }
 
-    private IEnumerator FadeTutorialPanelTimer()
+
+
+    private IEnumerator PlayAlienAnimation()
     {
-        yield return new WaitForSeconds(8f);
+        alienBody.SetActive(true);
+        alienLight.intensity = 10f;
+
+        yield return new WaitForSeconds(0.3f);
+
+        alienLight.intensity = 0f;
+
+        alienAnimator.SetTrigger("PlayLockdown");
+
+        audioManager.playAlienRunAway();
+
+        yield return new WaitForSeconds(6.9f);
+
         
-        if(tutorialMonitorFaded == false)
-        {
-            tutorialMonitorFaded = true;
-            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
-        }
+        alienBody.SetActive(false);
+        alienAnimator.SetTrigger("ReturnToIdle");
+
+        alienLight.intensity = 10f;
+
+        yield return new WaitForSeconds(0.1f);
+
+        alienLight.intensity = 0f;
+
+
+
+    }
+
+    public void TerminalActivated()
+    {
+        //change the lockdown panel and make it interactable
+        lockdownPanel.SwitchToDeactivate();
+        isActive = true;
+        dialogueManager.StartDialogueSequence(9, 0.5f);
     }
 
 }

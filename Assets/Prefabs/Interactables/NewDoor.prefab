@@ -245,7 +245,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5177809532436683618}
   - {fileID: 992391631665826655}
   - {fileID: 4197663900772843739}
   - {fileID: 8403974254282432250}
@@ -263,13 +262,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 079a258bccb901344ade2698a14ec3fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doorManager: {fileID: 0}
   dialogueComplete: 0
   states: 3
-  speed: 0.3
+  hasPermissionlevel: 0
+  level: 0
+  openDuration: 1.8
+  closeDuration: 2.3
+  brokenOpenDuration: 2.7
+  brokenCloseDuration: 1
+  brokenDoorPause: 2
   openSize: 7
+  shortReference: {fileID: 0}
+  midReference: {fileID: 0}
+  bodyOpenReference: {fileID: 0}
   isClosing: 0
   buttons: []
   doorPart: {fileID: 8403974254282432250}
+  doorTrigger: {fileID: 0}
+  decal: {fileID: 0}
+  showSparks: 0
+  startAudioSource: {fileID: 0}
+  middleAudioSource: {fileID: 0}
+  endAudioSource: {fileID: 0}
+  playDoorAlarm: 0
+  audioManager: {fileID: 0}
+  sparks: []
+  showingBody: 0
+  aboutToJolt: 0
+  doorOpenStart: {fileID: 0}
+  doorOpenMiddle: {fileID: 0}
+  doorOpenEnd: {fileID: 0}
+  doorCloseStart: {fileID: 0}
+  doorCloseMiddle: {fileID: 0}
+  doorCloseEnd: {fileID: 0}
+  doorBrokenStart: {fileID: 0}
+  doorBrokenEnd: {fileID: 0}
+  doorBrokenSlam: {fileID: 0}
+  doorBrokenSlamShort: {fileID: 0}
+  doorBrokenJolt: {fileID: 0}
+  doorStuck: {fileID: 0}
+  doorAlarm: {fileID: 0}
 --- !u!1 &1454654093960808319
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,65 +606,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &4968380210309749834
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 992391632138861328}
-    m_Modifications:
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 604517544386272658, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-      propertyPath: m_Name
-      value: SM_HallDoorFrame
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
---- !u!4 &5177809532436683618 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 227569410977744680, guid: 2ba7a7a3059b6144e820d2eb20dbe4a0, type: 3}
-  m_PrefabInstance: {fileID: 4968380210309749834}
-  m_PrefabAsset: {fileID: 0}
