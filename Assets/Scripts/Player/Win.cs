@@ -10,12 +10,18 @@ public class Win : MonoBehaviour
     private bool canWin = true;
     public CanvasGroup fadeCanvasGroup;
     public CanvasGroup thanksGroup;
+    private GameObject _uiCam;
 
     private void Start()
     {
         if (fadeCanvasGroup == null)
             Debug.LogError("fadeCanvasGroup is NOT assigned in the inspector!");
         winCondition = false;
+        _uiCam = GameObject.FindGameObjectWithTag("UICamera");
+        if(_uiCam == null)
+        {
+            print("NULL UI CAM");
+        }
     }
     public bool WinCondition
     {
@@ -28,6 +34,7 @@ public class Win : MonoBehaviour
         if (winDoor.DoorState == DoorScript.States.Open && canWin == true)
         {
             canWin = false;
+            _uiCam.SetActive(true);
             StartCoroutine(ShowWin());
         }
 
@@ -35,11 +42,11 @@ public class Win : MonoBehaviour
 
     private IEnumerator ShowWin()
     {
-        yield return StartCoroutine(FadeOut(fadeCanvasGroup, 3f));
+        yield return StartCoroutine(FadeOut(fadeCanvasGroup, 15f));
         //yield return new WaitForSeconds(1f);
         winCondition = true;
 
-        StartCoroutine(FadeOut(thanksGroup, 2f));
+        StartCoroutine(FadeOut(thanksGroup, 12f));
     }
 
     public IEnumerator FadeOut(CanvasGroup group, float duration)
