@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class CheckpointManager : MonoBehaviour, ISaveable
 {
@@ -36,15 +37,31 @@ public class CheckpointManager : MonoBehaviour, ISaveable
         GlobalSaveManager.SaveGame(false);
     }
 
+    // these are for serialization and will be created during the save
+    [Serializable]
+    public class CheckPointData
+    {
+        [SerializeField]
+        private List<bool> checkpointStates;
+        public List<bool> CheckpointStates
+        {
+            get { return checkpointStates; }
+        }
+        public CheckPointData(List<bool> _checkpointStates)
+        {
+            checkpointStates = _checkpointStates;
+        }
+    }
+
     public void LoadSaveFile(string fileName)
     {
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        List<bool> _checkpointStates = JsonUtility.FromJson<List<bool>>(loadedData);
-        for (int i = 0; i < _checkpointStates.Count; i++)
+        CheckPointData _checkpointData = JsonUtility.FromJson<CheckPointData>(loadedData);
+        for (int i = 0; i < _checkpointData.CheckpointStates.Count; i++)
         {
-            checkpoints[i].Col.enabled = _checkpointStates[i];
+            checkpoints[i].Col.enabled = _checkpointData.CheckpointStates[i];
         }
     }
 
@@ -52,13 +69,13 @@ public class CheckpointManager : MonoBehaviour, ISaveable
     {
         // store a copy of the checkpoint data in the global save manager
         // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
-        List<bool> _checkPointStates = new List<bool>(checkpoints.Count);
+        CheckPointData _checkpointData = new CheckPointData(new List<bool>());
         foreach (Checkpoint _checkpoint in checkpoints)
         {
-            _checkPointStates.Add(_checkpoint.Col.enabled);
+            _checkpointData.CheckpointStates.Add(_checkpoint.Col.enabled);
         }
         // this will create a file backing up the data we give it
-        string json = JsonUtility.ToJson(_checkPointStates);
+        string json = JsonUtility.ToJson(_checkpointData);
         string path = Application.persistentDataPath;
         GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
