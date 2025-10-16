@@ -36,19 +36,33 @@ public class TerminalManager : MonoBehaviour, ISaveable
             }
         }
     }
-
+    // these are for serialization and will be created during the save
+    [Serializable]
+    public class TerminalData
+    {
+        [SerializeField]
+        private List<bool> terminalStates;
+        public List<bool> TerminalStates
+        {
+            get { return terminalStates; }
+        }
+        public TerminalData(List<bool> _terminalStates)
+        {
+            terminalStates = _terminalStates;
+        }
+    }
     public void LoadSaveFile(string fileName)
     {
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        List<bool> _terminalStates = JsonUtility.FromJson<List<bool>>(loadedData);
-        Debug.Log(_terminalStates.Count);
+        TerminalData _terminalData = JsonUtility.FromJson<TerminalData>(loadedData);
+        Debug.Log(_terminalData.TerminalStates.Count);
         Debug.Log(terminals.Count);
         // activates all of the terminals, only the current terminal will play its cutscene
-        for (int i = 0; i < _terminalStates.Count; i++)
+        for (int i = 0; i < _terminalData.TerminalStates.Count; i++)
         {
-            if (_terminalStates[i])
+            if (_terminalData.TerminalStates[i])
             {
                 if (GlobalSaveManager.SavedWithTerminal && i == latestTerminalIndex)
                 {
@@ -66,10 +80,10 @@ public class TerminalManager : MonoBehaviour, ISaveable
     {
         // store a copy of the checkpoint data in the global save manager
         // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
-        List<bool> _terminalStates = new List<bool>(terminals.Count);
+        TerminalData _terminalData = new TerminalData(new List<bool>());
         for (int i = 0; i < terminals.Count; i++)
         {
-            _terminalStates.Add(terminals[i].isActivated);
+            _terminalData.TerminalStates.Add(terminals[i].isActivated);
             // track the index of the current terminal for save loading
             if (terminals[i] == CurrentTerminal)
             {
@@ -77,7 +91,7 @@ public class TerminalManager : MonoBehaviour, ISaveable
             }
         }
         // this will create a file backing up the data we give it
-        string json = JsonUtility.ToJson(_terminalStates);
+        string json = JsonUtility.ToJson(_terminalData);
         string path = Application.persistentDataPath;
         GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }

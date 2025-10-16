@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -76,29 +77,43 @@ public class DoorManager : MonoBehaviour, ISaveable
         }
         
     }
-
+    // these are for serialization and will be created during the save
+    [Serializable]
+    public class DoorData
+    {
+        [SerializeField]
+        private List<DoorScript.States> doorStates;
+        public List<DoorScript.States> DoorStates
+        {
+            get { return doorStates; }
+        }
+        public DoorData(List<DoorScript.States> _doorStates)
+        {
+            doorStates = _doorStates;
+        }
+    }
     public void LoadSaveFile(string fileName)
     {
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        List<DoorScript.States> _doorStates = JsonUtility.FromJson<List<DoorScript.States>>(loadedData);
-        for (int i = 0; i < _doorStates.Count; i++)
+        DoorData _doorData = JsonUtility.FromJson<DoorData>(loadedData);
+        for (int i = 0; i < _doorData.DoorStates.Count; i++)
         {
-            doors[i].SetState(_doorStates[i]);
+            doors[i].SetState(_doorData.DoorStates[i]);
         }
     }
 
     public void CreateSaveFile(string fileName)
     {
         // store a copy of the checkpoint data in the global save manager
-        List<DoorScript.States> _doorStates = new List<DoorScript.States>(doors.Length);
+        DoorData _doorData = new DoorData(new List<DoorScript.States>());
         foreach (DoorScript _door in doors)
         {
-            _doorStates.Add(_door.DoorState);
+            _doorData.DoorStates.Add(_door.DoorState);
         }
         // this will create a file backing up the data we give it
-        string json = JsonUtility.ToJson(_doorStates);
+        string json = JsonUtility.ToJson(_doorData);
         string path = Application.persistentDataPath;
         GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }

@@ -1699,6 +1699,9 @@ public class ZeroGravity : MonoBehaviour, ISaveable
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
         playerData = JsonUtility.FromJson<PlayerData>(loadedData);
         LoadPlayerData();
+        // stop the player from moving on respawn
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     public void CreateSaveFile(string fileName)
