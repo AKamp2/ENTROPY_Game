@@ -41,6 +41,11 @@ public class PickupScript : MonoBehaviour
     private Collider playerCollider;
     private GameObject current;
 
+    [SerializeField] private PlayerAudio playerAudio;
+
+    [Header("Audio")]
+    public ItemAudioHandler itemAudioHandler;
+
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
 
     private Color indicatorColor = new Color(1f, 1f, 1f, 0.5f);
@@ -203,10 +208,18 @@ public class PickupScript : MonoBehaviour
                 uiManager.InputIndicatorThrow.sprite = uiManager.LeftClickIndicator; 
                 uiManager.InputIndicatorThrow.color = new Color(1, 1, 1, 1);
                 //uiManager.InputIndicatorThrow.transform.position = zeroGPlayer.cam.WorldToScreenPoint(holdPos.GetChild(0).transform.position);
-            }  
+            }
+
+
+
 
             MoveObject();
             //zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
+
+            AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
+
+            if (itemAudioHandler != null && itemSource != null)
+                itemAudioHandler.PlayPickUpSound(itemSource);
         }
     }
     void DropObject()
@@ -247,6 +260,12 @@ public class PickupScript : MonoBehaviour
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce, ForceMode.VelocityChange);
+
+        AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
+
+        if (itemAudioHandler != null && itemSource != null)
+            itemAudioHandler.PlayThrowSound(itemSource);
+
         heldObj = null;
         hasThrownObject = true;
         StartCoroutine(ResetThrowFlag());
@@ -262,6 +281,9 @@ public class PickupScript : MonoBehaviour
             uiManager.InputIndicatorThrow.sprite = null;
             uiManager.InputIndicatorThrow.color = new Color(0, 0, 0, 0);
         }
+
+
+
 
         // initiate pick up cd
         canPickUp = false;

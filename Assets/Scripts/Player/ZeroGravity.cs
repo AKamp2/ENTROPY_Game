@@ -100,6 +100,8 @@ public class ZeroGravity : MonoBehaviour
     [SerializeField]
     private float bounceAcc = 10f;
 
+    [Header("Audio")]
+    public BarAudioHandler barAudioHandler;
 
     [Header("== Grabbing Settings ==")]
     // Grabbing mechanic variables
@@ -508,7 +510,7 @@ public class ZeroGravity : MonoBehaviour
             canGrab = false;
             canPushOff = false;
             canPropel = false;
-            canRoll = false;
+            //canRoll = false;
             uiManager.Crosshair.sprite = null;
             uiManager.Crosshair.color = new Color(0f, 0f, 0f, 0f);
         }
@@ -968,11 +970,32 @@ public class ZeroGravity : MonoBehaviour
 
     public void GrabBar()
     {
-        isGrabbing = true;
-        //set just grabbed to true to send to swing cool down
-        justGrabbed = true;
+        //Put lines 962-954 in if statement to only call if bar is ACTUALLY being grabbed
 
+        //isGrabbing = true;
+        //set just grabbed to true to send to swing cool down
+        //justGrabbed = true;
+
+        //Updated to only actually call if bar is being grabbed
+        if (potentialGrabbedBar == null || isGrabbing) 
+            return;
+        
+        isGrabbing = true;
+        justGrabbed = true;
         grabbedBar = potentialGrabbedBar;
+
+        Transform barParent = grabbedBar.transform.parent;
+        AudioSource barSource = barParent.GetComponentInChildren<AudioSource>();
+
+        if (barAudioHandler != null)
+        {
+            barAudioHandler.PlayGrabSound(barSource);
+        }
+      
+
+        //grabbedBar = potentialGrabbedBar;
+
+
 
         //// set up grab spots
         //if (useIK)
@@ -1306,11 +1329,20 @@ public class ZeroGravity : MonoBehaviour
         //stop swinging off the bar
         StopSwing();
 
+        if (!isGrabbing) 
+            return;
+
         //set isGrabbing to false
         isGrabbing = false;
         //set justgrabbed to false to send for the cool down to nullify
         justGrabbed = false;
+
+        Transform barParent = grabbedBar.transform.parent;
+        AudioSource barSource = barParent.GetComponentInChildren<AudioSource>();
+
         grabbedBar = null;
+
+        
 
         // no bar grabbed, so no more grab locations
         //IK STUFF
@@ -1319,6 +1351,10 @@ public class ZeroGravity : MonoBehaviour
         //    ResetBarGrabbers();
         //}
         
+        if (barAudioHandler != null)
+        {
+            barAudioHandler.PlayReleaseSound(barSource);
+        }
 
         //lock grabbed bar and change icon
         uiManager.ReleaseGrabber();

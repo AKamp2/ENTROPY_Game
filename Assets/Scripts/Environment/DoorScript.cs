@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Jobs;
+using UnityEngine.ProBuilder;
 using UnityEngine.Rendering.Universal;
 public class DoorScript : MonoBehaviour
 {
@@ -48,7 +49,7 @@ public class DoorScript : MonoBehaviour
 
     [SerializeField]
     private float brokenOpenDuration = 2.7f;
-    [SerializeField] 
+    [SerializeField]
     private float brokenCloseDuration = 1f;
     [SerializeField]
     private float brokenDoorPause = 2f;
@@ -62,7 +63,7 @@ public class DoorScript : MonoBehaviour
     private Vector3 midPos;
     private Vector3 bodyPos;
 
-    
+
     [SerializeField]
     private GameObject shortReference;
     [SerializeField]
@@ -81,6 +82,7 @@ public class DoorScript : MonoBehaviour
     private List<GameObject> buttons = new List<GameObject>();
     [SerializeField]
     private Transform doorPart;
+    
 
     private bool inRange = false;
     [SerializeField]
@@ -104,7 +106,19 @@ public class DoorScript : MonoBehaviour
     public bool showingBody = false;
     public bool aboutToJolt = false;
 
-    [Header ("Sound Effects")]
+    [Header("Hologram")]
+    [SerializeField]
+    private Texture2D[] textLabels;
+    [SerializeField]
+    public MeshRenderer[] hologramGroup;
+    [SerializeField]
+    public Coroutine fadeRoutine;
+    public bool hologramActive = false;
+    public float lightOff = 0.001f;
+    public float lightOn = 0.015f;
+
+
+    [Header("Sound Effects")]
     [SerializeField]
     private AudioClip doorOpenStart;
     [SerializeField]
@@ -132,7 +146,7 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     private AudioClip doorAlarm;
 
-    
+
 
     //private DialogueManager dialogueManager;
 
@@ -154,7 +168,8 @@ public class DoorScript : MonoBehaviour
     public States DoorState
     {
         get { return states; }
-        set {
+        set
+        {
             states = value;
             // track door updates for saving purposes
             doorManager.StoreDoorStates();
@@ -184,7 +199,7 @@ public class DoorScript : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    { 
+    {
         GetChildButtons();
 
         closedPos = doorPart.position;
@@ -194,6 +209,8 @@ public class DoorScript : MonoBehaviour
 
         //default unlock
         decal.material = doorManager.UnlockedMaterial;
+        UnlockHologram();
+        ApplyTextSign();
 
         if (states == States.Open)
         {
@@ -212,14 +229,16 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleBrokenDoorLoop());
         }
-        
+
         if (states == States.Locked)
         {
             doorPart.position = closedPos;
             SetButtonColor(redBase, redEmis);
             decal.material = doorManager.LockedMaterial;
+            LockHologram();
         }
 
         if (states == States.BrokenShort)
@@ -229,16 +248,16 @@ public class DoorScript : MonoBehaviour
             StartCoroutine(HandleBrokenDoorShort());
         }
 
-        foreach(Sparks spark in sparks)
+        foreach (Sparks spark in sparks)
         {
-            if(spark != null)
+            if (spark != null)
             {
                 spark.ToggleSparks(showSparks);
             }
-            
+
         }
 
-        if(midReference != null)
+        if (midReference != null)
         {
             midPos = midReference.transform.position;
         }
@@ -285,6 +304,7 @@ public class DoorScript : MonoBehaviour
         if (states == States.Open)
         {
             StartCoroutine(CloseDoor());
+
         }
         else if (states == States.Closed)
         {
@@ -294,7 +314,7 @@ public class DoorScript : MonoBehaviour
 
     private IEnumerator OpenDoor()
     {
-        if(playDoorAlarm)
+        if (playDoorAlarm)
         {
             endAudioSource.clip = doorAlarm;
             endAudioSource.Play();
@@ -364,6 +384,7 @@ public class DoorScript : MonoBehaviour
             startAudioSource.Play();
 
             // Wait for door to fully open
+            StartFade(1.0f, lightOff, 0.1f);
             yield return MoveDoor(closedPos, openPos, brokenOpenDuration, null);
 
 
@@ -375,8 +396,13 @@ public class DoorScript : MonoBehaviour
             middleAudioSource.Play();
 
             isClosing = true;
+
+            //hologram will be turned on while closing, best solution for now
+            StartFade(0.0f, lightOn, 0.5f);
+
             // Wait for door to fully close
             yield return MoveDoor(openPos, closedPos, brokenCloseDuration, () => isClosing = false);
+           
         }
     }
 
@@ -387,7 +413,7 @@ public class DoorScript : MonoBehaviour
             yield return new WaitForSeconds(brokenDoorPause);
 
             float waitTime = UnityEngine.Random.Range(0.2f, 0.4f);
-            
+
             // Play opening start sound
             startAudioSource.clip = doorBrokenStart;
             startAudioSource.Play();
@@ -408,7 +434,7 @@ public class DoorScript : MonoBehaviour
             // Wait for door to fully close
             yield return MoveDoor(midPos, closedPos, 0.2f, () => isClosing = false);
 
-            
+
         }
 
         isShortBreakOver = true;
@@ -429,14 +455,14 @@ public class DoorScript : MonoBehaviour
 
         StartCoroutine(HandleDoorJoltOpen());
 
-        
+
     }
 
     public IEnumerator HandleDoorJoltOpen()
     {
         //StartCoroutine(FadeOutAndStop(middleAudioSource, 0.1f));
 
-        
+
 
         startAudioSource.clip = doorBrokenJolt;
         startAudioSource.Play();
@@ -464,6 +490,7 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(greenBase, greenEmis);
             decal.material = doorManager.UnlockedMaterial;
+            UnlockHologram();
 
             if (state == States.Open)
             {
@@ -487,29 +514,33 @@ public class DoorScript : MonoBehaviour
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleBrokenDoorLoop());
         }
         else if (state == States.Locked)
         {
             SetButtonColor(redBase, redEmis);
+            LockHologram();
             decal.material = doorManager.LockedMaterial;
 
-            if(previousState != States.Locked && previousState != States.Closed)
+            if (previousState != States.Locked && previousState != States.Closed)
             {
                 StartCoroutine(CloseAndLock());
             }
-            
+
         }
-        else if(state == States.BrokenShort)
+        else if (state == States.BrokenShort)
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleBrokenDoorShort());
         }
-        else if(state == States.JoltOpen)
+        else if (state == States.JoltOpen)
         {
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
             StartCoroutine(HandleDoorStuck());
         }
     }
@@ -566,34 +597,47 @@ public class DoorScript : MonoBehaviour
 
     private void AutomaticDoor()
     {
-        if (inRange)
+        if (states != States.Locked && states != States.Broken)
         {
-            if (states != States.Open && states != States.Opening)
+            if (inRange)
             {
-                UseDoor();
-            }
+                if (states != States.Open && states != States.Opening)
+                {
+                    UseDoor();
+                    //Debug.Log("fade off");
+                    StartFade(1.0f, lightOff, 0.5f);
+                }
 
-        }
-        else
-        {
-            if (states != States.Closed && states != States.Closed)
+            }
+            else
             {
-                UseDoor();
+                if (states != States.Closed && states != States.Closed)
+                {
+                    UseDoor();
+
+                    // only reactive door hologram if still in range
+                    if (doorManager.DoorInRange(this))
+                    {
+                        StartFade(0.0f, lightOn, 0.5f);
+                    }
+
+                }
             }
         }
+        
     }
 
     private void SetButtonColor(Color baseColor, Color emisColor)
     {
-        foreach(GameObject button in buttons)
+        foreach (GameObject button in buttons)
         {
-            if(button != null)
+            if (button != null)
             {
                 Material m = button.GetComponent<Renderer>().material;
                 m.SetColor("_BaseColor", baseColor);
                 m.SetColor("_EmissionColor", emisColor);
             }
-            
+
         }
     }
 
@@ -625,11 +669,151 @@ public class DoorScript : MonoBehaviour
             {
                 spark.ToggleSparks(isActive);
             }
-            
+
         }
     }
 
-    
+    public void StartFade(float alphaValue, float lightIntensity, float fadeSpeed)
+    {
+        if (hologramGroup != null)
+        {
+            // stops coroutine if one is running already
+            if (fadeRoutine != null)
+            {
+                StopCoroutine(fadeRoutine);
+            }
+
+            fadeRoutine = StartCoroutine(HologramFade(alphaValue, lightIntensity, fadeSpeed));
+
+            // semi hard coded way to set hologram being turned on or off. There should never be a time where the alpha isnt 1 or 0.
+            if (alphaValue == 1.0f) hologramActive = false;
+            else if (alphaValue == 0.0f) hologramActive = true;
+        }
+        
+    }
+
+    //private IEnumerator HologramFade(float alphaValue, float lightIntensity, float fadeSpeed)
+    //{
+
+
+    //    foreach (MeshRenderer renderer in hologramGroup)
+    //    {
+
+    //        float time = 0.0f;
+
+    //        float startVal = renderer.material.GetFloat("_Fade");
+
+    //        Light light = renderer.transform.GetComponentInChildren<Light>();
+    //        float startIntensity = light.intensity;
+
+    //        while (time <= fadeSpeed)
+    //        {
+    //            // material lerp
+    //            float lerp = Mathf.Lerp(startVal, alphaValue, Mathf.Clamp01(time / fadeSpeed));
+    //            renderer.material.SetFloat("_Fade", lerp);
+
+
+    //            // light lerp
+    //            float lightLerp = Mathf.Lerp(startIntensity, lightIntensity, Mathf.Clamp01(time / fadeSpeed));
+    //            light.intensity = lightLerp;
+
+    //            time += Time.deltaTime;
+    //            yield return null;
+    //        }
+
+    //        renderer.material.SetFloat("_Fade", alphaValue);
+
+    //    }
+    //}
+
+    private IEnumerator HologramFade(float alphaValue, float lightIntensity, float fadeSpeed)
+    {
+
+        float time = 0.0f;
+
+        // assume all holograms start from same values
+        float startVal = hologramGroup[0].material.GetFloat("_Fade");
+        float startIntensity = hologramGroup[0].transform.GetComponentInChildren<Light>().intensity;
+
+        // cache lights so we don�t call GetComponent every frame
+        Light[] lights = new Light[hologramGroup.Length];
+        for (int i = 0; i < hologramGroup.Length; i++)
+            lights[i] = hologramGroup[i].transform.GetComponentInChildren<Light>();
+
+
+        while (time <= fadeSpeed)
+        {
+
+            // material lerp
+            float shaderFade = Mathf.Lerp(startVal, alphaValue, Mathf.Clamp01(time / fadeSpeed));
+            // light lerp
+            float lightFade = Mathf.Lerp(startIntensity, lightIntensity, Mathf.Clamp01(time / fadeSpeed));
+
+
+            foreach (MeshRenderer renderer in hologramGroup)
+            {
+                renderer.material.SetFloat("_Fade", shaderFade);
+            }
+
+            foreach (Light light in lights)
+            {
+                light.intensity = lightFade;
+            }
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        // finalize values
+        foreach (MeshRenderer renderer in hologramGroup)
+            renderer.material.SetFloat("_Fade", alphaValue);
+
+        foreach (Light light in lights)
+            light.intensity = lightIntensity;
+
+    }
+
+
+    private void ApplyTextSign()
+    {
+        if (hologramGroup != null && hologramGroup.Length != 0) 
+        {
+            for (int i = 0; i < hologramGroup.Length; i++)
+            {
+                if (hologramGroup[i].material.GetTexture("_LabelText") != textLabels[i])
+                {
+                    hologramGroup[i].material.SetTexture("_LabelText", textLabels[i]);
+                }
+            }
+        }
+    }
+
+    private void LockHologram()
+    {
+        foreach (MeshRenderer renderer in hologramGroup)
+        {
+            renderer.material.SetTexture("_StatusIcon", doorManager.lockedTexture);
+            renderer.material.SetColor("_IconColor", doorManager.lockedColor);
+        }
+    }
+
+    private void UnlockHologram()
+    {
+        foreach (MeshRenderer renderer in hologramGroup)
+        {
+            renderer.material.SetTexture("_StatusIcon", doorManager.unlockedTexture);
+            renderer.material.SetColor("_IconColor", doorManager.unlockedColor);
+        }
+    }
+
+    private void BrokenHologram()
+    {
+        foreach (MeshRenderer renderer in hologramGroup)
+        {
+            renderer.material.SetTexture("_StatusIcon", doorManager.warningTexture);
+            renderer.material.SetColor("_IconColor", doorManager.warningColor);
+        }
+    }
 
 
 
