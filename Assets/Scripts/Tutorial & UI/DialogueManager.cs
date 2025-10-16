@@ -31,6 +31,7 @@ public class DialogueManager : MonoBehaviour
     private int currentDialogueIndex = 0;
     private int currentSequenceIndex = -1;
     private bool isSkipping = false;
+    [SerializeField]
     private bool isDialogueActive = false;
     private bool tutorialSkipped = false;
     public bool SkipNextDialogue { get; set; } = false;
@@ -130,6 +131,11 @@ public class DialogueManager : MonoBehaviour
         if (tutorialSkipped && currentSequenceIndex == 0)
         {
             yield break;
+        }
+
+        if(isDialogueActive == true)
+        {
+            yield return new WaitUntil(() => isDialogueActive == false);
         }
 
         dialogueCanvas.enabled = true;
@@ -300,9 +306,10 @@ public class DialogueManager : MonoBehaviour
 
         // End dialogue
         numDialoguesQueued--;
+        isDialogueActive = false;
         yield return new WaitForSeconds(5f);
         
-        isDialogueActive = false;
+        
         OnDialogueEnd?.Invoke(currentSequenceIndex);
 
         if(numDialoguesQueued <= 0)
@@ -479,7 +486,7 @@ public class DialogueManager : MonoBehaviour
         currentSequenceIndex = sequenceIndex;
         currentDialogueIndex = 0;
         
-        isDialogueActive = true;
+        //isDialogueActive = true;
         StartCoroutine(DisplayDialogue());
     }
 

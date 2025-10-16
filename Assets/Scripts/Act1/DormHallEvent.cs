@@ -85,10 +85,18 @@ public class DormHallEvent : MonoBehaviour
 
     public void CompleteDormTerminal()
     {
-        medDoor.SetState(DoorScript.States.Closed);
-        dialogueManager.StartDialogueSequence(6, 1f);
+        StartCoroutine(TerminalComplete());
     }
 
+    private IEnumerator TerminalComplete()
+    {
+        medDoor.SetState(DoorScript.States.Closed);
+        dialogueManager.StartDialogueSequence(6, 1f);
+
+        yield return new WaitUntil(() => dialogueManager.IsDialogueActive == false);
+        wristMonitor.CompleteObjective();
+
+    }
     private IEnumerator FadeTutorialPanelTimer()
     {
         yield return new WaitForSeconds(8f);
