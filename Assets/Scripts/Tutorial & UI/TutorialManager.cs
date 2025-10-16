@@ -12,7 +12,7 @@ public class TutorialManager : MonoBehaviour
     public DialogueManager dialogueManager;
     public DoorScript doorToOpen;
     //public DoorScript endingDoor;
-    private PickupScript pickupObject;
+    private PickupScript pickupScript;
 
     //keep track when inside of the tutorial
     public bool inTutorial = false;
@@ -27,7 +27,8 @@ public class TutorialManager : MonoBehaviour
     public CanvasGroup grabCanvasGroup;
     public CanvasGroup propelCanvasGroup;
     //public CanvasGroup pushOffCanvasGroup;
-    //public CanvasGroup throwItemCanvasGroup;
+    public CanvasGroup pickUpItemCanvasGroup;
+    public CanvasGroup throwItemCanvasGroup;
     public CanvasGroup rollQCanvasGroup;
     public CanvasGroup rollECanvasGroup;
     public CanvasGroup enterCanvasGroup;
@@ -58,6 +59,9 @@ public class TutorialManager : MonoBehaviour
     public DialogueAudio dialogueAudio;
     public AmbientController ambientController;
 
+    private bool inItemGrabTutorial = false;
+    private bool detectedPickup = false;
+
     // rolling threshold (in degrees) beyond which we consider �upside down�
     [SerializeField] private float rollAngleThreshold = 150f;
 
@@ -77,7 +81,7 @@ public class TutorialManager : MonoBehaviour
     void Start()
     {
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
-        pickupObject = ZeroGPlayer.GetComponent<PickupScript>();
+        pickupScript = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
 
         if (playerController.TutorialMode == true)
@@ -177,6 +181,19 @@ public class TutorialManager : MonoBehaviour
                 SetPlayerAbilities(true, true, true, true, true);
                 StartCoroutine(WaitForSecondGrab());
 
+            }
+        }
+
+        if (inItemGrabTutorial)
+        {
+            if(pickupScript.HeldObject != null && !detectedPickup)
+            {
+                detectedPickup = true;
+                if(pickUpItemCanvasGroup.alpha > 0)
+                {
+                    FadeOut(pickUpItemCanvasGroup);
+                }
+                FadeIn(throwItemCanvasGroup);
             }
         }
     }
@@ -321,7 +338,7 @@ public class TutorialManager : MonoBehaviour
         playerController.CanPropel = canPropel;
         playerController.CanPushOff = canPushOff;
         playerController.CanRoll = canRoll;
-        pickupObject.CanPickUp = canThrow;
+        pickupScript.CanPickUp = canThrow;
 
         this.canGrab = canGrab;
         this.canPropel = canPropel;
@@ -336,7 +353,7 @@ public class TutorialManager : MonoBehaviour
         playerController.CanPropel = canPropel;
         playerController.CanPushOff = canPushOff;
         playerController.CanRoll = canRoll;
-        pickupObject.CanPickUp = canThrow;
+        pickupScript.CanPickUp = canThrow;
     }
 
     void EndTutorial()
@@ -514,7 +531,9 @@ public class TutorialManager : MonoBehaviour
         rollProgressBar.value = progress;
     }
 
-
+    //private IEnumerator StartGrabTutorial()
+    //{
+    //}
 }
 
 

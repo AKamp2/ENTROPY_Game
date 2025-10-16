@@ -43,6 +43,8 @@ public class PickupScript : MonoBehaviour
 
     [SerializeField] private PlayerAudio playerAudio;
 
+    [Header("Audio")]
+    public ItemAudioHandler itemAudioHandler;
 
     private bool hasThrownObject = false; //for tutorial section for detecting throwing
 
@@ -214,10 +216,10 @@ public class PickupScript : MonoBehaviour
             MoveObject();
             //zeroGPlayer.MoveHandsTo(holdPos.GetChild(0).transform, null);
 
-            if (playerAudio != null)
-            {
-                playerAudio.PlayGrabItem();
-            }
+            AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
+
+            if (itemAudioHandler != null && itemSource != null)
+                itemAudioHandler.PlayPickUpSound(itemSource);
         }
     }
     void DropObject()
@@ -259,10 +261,10 @@ public class PickupScript : MonoBehaviour
         heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce, ForceMode.VelocityChange);
 
-        if (playerAudio != null)
-        {
-            playerAudio.PlayThrowItem();
-        }
+        AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
+
+        if (itemAudioHandler != null && itemSource != null)
+            itemAudioHandler.PlayThrowSound(itemSource);
 
         heldObj = null;
         hasThrownObject = true;

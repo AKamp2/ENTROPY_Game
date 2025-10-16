@@ -86,8 +86,6 @@ public class LockdownEvent : MonoBehaviour
     private Vector3 gratePos;
     private Vector3 grateMovePos;
 
-    [SerializeField]
-    private CanvasGroup wristMonitorTutorial;
 
     [SerializeField]
     private GameObject serverObj;
@@ -96,7 +94,7 @@ public class LockdownEvent : MonoBehaviour
     private Material serverMaterialInstance;
     private Color initialEmissionColor;
 
-    private bool tutorialMonitorFaded = false;
+
 
     public GameObject alienBody;
     public Animator alienAnimator;
@@ -118,16 +116,7 @@ public class LockdownEvent : MonoBehaviour
         get { return isActive; }
     }
 
-    public bool CanGrab
-    {
-        get { return canGrab; }
-        set { canGrab = value; }
-    }
 
-    public bool IsGrabbable
-    {
-        get { return isGrabbable; }
-    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -272,33 +261,6 @@ public class LockdownEvent : MonoBehaviour
             player.PlayerCutSceneHandler(true);
             StartCoroutine(PlayLockdownFX());
             
-        }
-
-        //Handle wrist monitor pickup
-        if (canGrab && IsGrabbable)
-        {
-            player.AccessPermissions[0] = true;
-
-            isGrabbable = false;
-
-            audioManager.playMonitorPickup();
-
-            wrist.SetActive(false);
-
-            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 0f, 1f));
-
-            StartCoroutine(FadeTutorialPanelTimer());
-
-            medDoor.SetState(DoorScript.States.Closed);
-
-            ambientController.Progress();
-
-            dialogueManager.StartDialogueSequence(6, 1f);
-
-            cuttingOutTrigger.enabled = true;
-
-            
-
         }
     }
 
@@ -453,15 +415,7 @@ public class LockdownEvent : MonoBehaviour
         mat.SetColor("_EmissionColor", toColor * toIntensity);
     }
 
-    public void FadeOutMonitorTutorial()
-    {
-        if(tutorialMonitorFaded == false)
-        {
-            tutorialMonitorFaded = true;
-            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
-        }
-        
-    }
+
 
     private IEnumerator MoveDoor(Vector3 fromPos, Vector3 toPos, float duration, System.Action onComplete)
     {
@@ -479,16 +433,7 @@ public class LockdownEvent : MonoBehaviour
         onComplete?.Invoke();
     }
 
-    private IEnumerator FadeTutorialPanelTimer()
-    {
-        yield return new WaitForSeconds(8f);
-        
-        if(tutorialMonitorFaded == false)
-        {
-            tutorialMonitorFaded = true;
-            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
-        }
-    }
+
 
     private IEnumerator PlayAlienAnimation()
     {
