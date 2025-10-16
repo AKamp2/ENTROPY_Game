@@ -604,7 +604,7 @@ public class DoorScript : MonoBehaviour
                 if (states != States.Open && states != States.Opening)
                 {
                     UseDoor();
-                    Debug.Log("fade off");
+                    //Debug.Log("fade off");
                     StartFade(1.0f, lightOff, 0.5f);
                 }
 

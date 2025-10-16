@@ -45,7 +45,7 @@ public class WristMonitor : MonoBehaviour
 
     private bool tutorialShowing = true;
     [SerializeField]
-    private LockdownEvent lockdownScript;
+    private DormHallEvent dormHallScript;
 
 
     /// <summary>
@@ -124,10 +124,10 @@ public class WristMonitor : MonoBehaviour
             this.gameObject.SetActive(true);
             StartLerp();
 
-            if(tutorialShowing && lockdownScript != null)
+            if(tutorialShowing && dormHallScript != null)
             {
                 tutorialShowing = false;
-                lockdownScript.FadeOutMonitorTutorial();
+                dormHallScript.FadeOutMonitorTutorial();
             }
         }
         else if (context.canceled)

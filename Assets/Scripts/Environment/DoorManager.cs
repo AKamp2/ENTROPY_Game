@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.ProBuilder.Shapes;
@@ -145,7 +144,7 @@ public class DoorManager : MonoBehaviour
 
                 if (door.hologramGroup.Length != 0)
                 {
-                    Debug.Log("fade on");
+                    //Debug.Log("fade on");
                     // fade on
                     door.StartFade(0.0f, door.lightOn, 1.5f);
 
