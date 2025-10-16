@@ -74,7 +74,7 @@ public class AmbientController : MonoBehaviour
         nextMinLoop = startTime;
         
         running = true;
-        Debug.Log("AmbientStarted");
+        //Debug.Log("AmbientStarted");
     }
 
     void Update()
@@ -143,7 +143,7 @@ public class AmbientController : MonoBehaviour
                         int looperIndex = Array.IndexOf(layerLookup,5);
                         if (looperIndex == -1)
                         {
-                            Debug.Log("Somehow had no muted arp track to unmute");
+                            //Debug.Log("Somehow had no muted arp track to unmute");
                         }
                         else
                         {
@@ -157,11 +157,11 @@ public class AmbientController : MonoBehaviour
                         int looperIndex = Array.IndexOf(layerLookup,5);
                         if (looperIndex == -1)
                         {
-                            Debug.Log("Somehow had no arp track to fade out");
+                            //Debug.Log("Somehow had no arp track to fade out");
                         }
                         else
                         {
-                            Debug.Log("Fading out");
+                            //Debug.Log("Fading out");
                             loopers[looperIndex].FadeOut();
                         }
                         
@@ -231,7 +231,7 @@ public class AmbientController : MonoBehaviour
                 
                 if (endTimes[layerLookup[i]]-1.0f > nextEventTime) 
                 {
-                    Debug.Log("stopping early");
+                    //Debug.Log("stopping early");
                     loopers[i].StopAt(nextEventTime);
                 }
                 
