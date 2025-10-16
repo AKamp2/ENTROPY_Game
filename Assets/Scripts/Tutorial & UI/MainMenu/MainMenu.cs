@@ -47,7 +47,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
-        GlobalSaveManager.Instance.LoadFromSave = true;
+        GlobalSaveManager.LoadGame(true);
     }
 
     /// <summary>
