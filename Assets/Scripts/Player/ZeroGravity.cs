@@ -952,7 +952,6 @@ public class ZeroGravity : MonoBehaviour
         justGrabbed = true;
 
         grabbedBar = potentialGrabbedBar;
-
         //// set up grab spots
         //if (useIK)
         //{

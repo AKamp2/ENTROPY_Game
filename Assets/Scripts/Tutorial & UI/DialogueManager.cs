@@ -16,7 +16,8 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI dialogueTextUI;
     public AudioSource audioSource;
     public AudioClip fillerLineBeep;
-    public float typewriterSpeed = 0.08f;
+    private float typewriterSpeed = 0.08f;
+    public float defaultTextSpeed = 0.08f;
 
     public DialogueAudio dialogueAudio;
 
@@ -180,6 +181,10 @@ public class DialogueManager : MonoBehaviour
             if (currentDialogue.audioClip != null)
             {
                 typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.015f;
+            }
+            else
+            {
+                typewriterSpeed = defaultTextSpeed;
             }
 
             // Show lines

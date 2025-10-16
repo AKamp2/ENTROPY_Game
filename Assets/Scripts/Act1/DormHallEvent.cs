@@ -1,0 +1,128 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class DormHallEvent : MonoBehaviour
+{
+    [SerializeField]
+    private ZeroGravity player;
+
+    // wrist monitor
+    //whether or not player is within grab distance of the wrist monitor
+    private bool canGrab;
+    //can the wrist monitor be picked up yet?
+    private bool isGrabbable;
+    [SerializeField]
+    private WristMonitor wristMonitor;
+
+    [SerializeField]
+    private DoorScript medDoor;
+    public GameplayBeatAudio audioManager;
+
+    [SerializeField]
+    private CanvasGroup wristMonitorTutorial;
+
+    private bool tutorialMonitorFaded = false;
+
+    private DialogueManager dialogueManager;
+
+    public bool CanGrab
+    {
+        get { return canGrab; }
+        set { canGrab = value; }
+    }
+
+    public bool IsGrabbable
+    {
+        get { return isGrabbable; }
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        canGrab = false;
+        isGrabbable = true;
+
+        dialogueManager = FindFirstObjectByType<DialogueManager>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+
+        //Handle wrist monitor pickup
+        if (canGrab && isGrabbable)
+        {
+            player.AccessPermissions[0] = true;
+
+            isGrabbable = false;
+
+            audioManager.playMonitorPickup();
+
+            //wrist.SetActive(false);
+
+            wristMonitor.HasWristMonitor = true;
+
+            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 0f, 1f));
+
+            StartCoroutine(FadeTutorialPanelTimer());
+
+            //medDoor.SetState(DoorScript.States.Closed);
+
+            //ambientController.Progress();
+
+            //dialogueManager.StartDialogueSequence(6, 1f);
+
+            //cuttingOutTrigger.enabled = true;
+
+        }
+    }
+
+    public void CompleteDormTerminal()
+    {
+        medDoor.SetState(DoorScript.States.Closed);
+        dialogueManager.StartDialogueSequence(6, 1f);
+    }
+
+    private IEnumerator FadeTutorialPanelTimer()
+    {
+        yield return new WaitForSeconds(8f);
+
+        if (tutorialMonitorFaded == false)
+        {
+            tutorialMonitorFaded = true;
+            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
+        }
+    }
+
+    public void FadeOutMonitorTutorial()
+    {
+        if (tutorialMonitorFaded == false)
+        {
+            tutorialMonitorFaded = true;
+            StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 1f, 0f));
+        }
+
+    }
+
+    private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
+    {
+        float timeElapsed = 0f;
+        float fadeDuration = 1f;
+
+        while (timeElapsed < fadeDuration)
+        {
+            // Lerp alpha from start to end
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timeElapsed / fadeDuration);
+            timeElapsed += Time.deltaTime;
+            yield return null; // Wait until the next frame
+        }
+
+        canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+}
