@@ -1670,7 +1670,11 @@ public class ZeroGravity : MonoBehaviour
     {
         if (context.performed && potentialGrabbedBar != null)
         {
-            GrabBar();
+            if (canGrab)
+            {
+                GrabBar();
+            }
+            
         }
         else if (context.canceled)
         {
