@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.UI;
 using Random = UnityEngine.Random;
+using System.Collections;
+
+
 
 public struct Layer
 {
@@ -37,6 +40,18 @@ public class AmbientController : MonoBehaviour
     private int[] layerLookup  = new int[maxLayers]; // the index matching the looper index contains the currently playing track
     private bool running = false;
     private int currentProgressStep = 0; //individual steps through audio changes over the course of one progress level
+
+    [Header("Stinger Settings")]
+    [SerializeField] private AudioClip tutorialStingerClip;
+    [SerializeField] private AudioClip dormHallStingerClip;
+    [SerializeField] private AudioSource tutorialStingerSource;
+    [SerializeField] private AudioSource dormHallStingerSource;
+
+    public AudioClip TutorialStingerClip => tutorialStingerClip;
+    public AudioClip DormHallStingerClip => dormHallStingerClip;
+
+    private Coroutine currentTutorialFade;
+    private Coroutine currentDormFade;
 
     private void Awake()
     {
@@ -349,4 +364,151 @@ public class AmbientController : MonoBehaviour
             }
         }
     }
+
+    public void PlayStinger(AudioClip clip, bool loop = false, float fadeInDuration = 0f)
+    {
+        if (clip == null) return;
+
+        AudioSource targetSource = null;
+        Coroutine fadeCoroutine = null;
+        bool isTutorial = false;
+
+        if (clip == tutorialStingerClip && tutorialStingerSource != null)
+        {
+            targetSource = tutorialStingerSource;
+            fadeCoroutine = currentTutorialFade;
+            isTutorial = true;
+        }
+        else if (clip == dormHallStingerClip && dormHallStingerSource != null)
+        {
+            targetSource = dormHallStingerSource;
+            fadeCoroutine = currentDormFade;
+        }
+
+        if (targetSource == null) return;
+
+        // Stop any existing fade
+        if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
+
+        if (isTutorial && loop)
+        {
+            // Start looping coroutine with fade-in on each loop
+            if (currentTutorialFade != null) StopCoroutine(currentTutorialFade);
+            currentTutorialFade = StartCoroutine(LoopTutorialStinger(targetSource, clip, fadeInDuration));
+        }
+        else
+        {
+            // Normal playback (one-shot or dorm hall)
+            targetSource.clip = clip;
+            targetSource.loop = loop;
+            targetSource.volume = 0f;
+            targetSource.Play();
+
+            if (fadeInDuration > 0f)
+            {
+                if (isTutorial)
+                    currentTutorialFade = StartCoroutine(FadeAudioSource(targetSource, 0f, 1f, fadeInDuration));
+                else
+                    currentDormFade = StartCoroutine(FadeAudioSource(targetSource, 0f, 1f, fadeInDuration));
+            }
+            else
+            {
+                targetSource.volume = 1f;
+            }
+        }
+    }
+
+
+    public void StopStinger(AudioClip clip, float fadeOutDuration = 0f)
+    {
+        AudioSource targetSource = null;
+        Coroutine fadeCoroutine = null;
+
+        if (clip == tutorialStingerClip && tutorialStingerSource != null)
+        {
+            targetSource = tutorialStingerSource;
+            fadeCoroutine = currentTutorialFade;
+        }
+        else if (clip == dormHallStingerClip && dormHallStingerSource != null)
+        {
+            targetSource = dormHallStingerSource;
+            fadeCoroutine = currentDormFade;
+        }
+
+        if (targetSource == null || !targetSource.isPlaying)
+            return;
+
+        // Stop any fade-in currently happening
+        if (fadeCoroutine != null)
+        {
+            StopCoroutine(fadeCoroutine);
+        }
+
+        // Begin fade-out
+        if (fadeOutDuration > 0f)
+        {
+            if (clip == tutorialStingerClip)
+                currentTutorialFade = StartCoroutine(FadeAndStop(targetSource, fadeOutDuration));
+            else
+                currentDormFade = StartCoroutine(FadeAndStop(targetSource, fadeOutDuration));
+        }
+        else
+        {
+            targetSource.Stop();
+        }
+    }
+
+    private IEnumerator FadeAudioSource(AudioSource source, float from, float to, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            if (source == null) yield break;
+            source.volume = Mathf.Lerp(from, to, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        source.volume = to;
+    }
+
+    private IEnumerator FadeAndStop(AudioSource source, float duration)
+    {
+        float startVol = source.volume;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            if (source == null) yield break;
+            source.volume = Mathf.Lerp(startVol, 0f, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        source.volume = 0f;
+        source.Stop();
+    }
+
+    private IEnumerator LoopTutorialStinger(AudioSource source, AudioClip clip, float fadeInDuration)
+    {
+        while (true)
+        {
+            source.volume = 0f;
+            source.clip = clip;
+            source.loop = false; // we control looping manually
+            source.Play();
+
+            // Fade in
+            float elapsed = 0f;
+            while (elapsed < fadeInDuration)
+            {
+                source.volume = Mathf.Lerp(0f, 1f, elapsed / fadeInDuration);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            source.volume = 1f;
+
+            // Wait for clip to finish
+            yield return new WaitForSeconds(clip.length);
+        }
+    }
+
+
 }

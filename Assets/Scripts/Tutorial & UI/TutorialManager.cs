@@ -36,6 +36,10 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Slider rollProgressBar;
     [SerializeField] private float requiredRotation = 180f; // how much roll needed
 
+    [SerializeField] private AudioClip tutorialStingerClip;
+
+    public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
+
     public float fadeDuration = 1f;
 
     float timer = 10f;
@@ -104,6 +108,11 @@ public class TutorialManager : MonoBehaviour
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
                 FadeOut(enterCanvasGroup);
+                if (ambientController != null)
+                {
+                    ambientController.StopStinger(ambientController.TutorialStingerClip, 5f);
+
+                }
                 EndTutorial();
             }
             
@@ -206,7 +215,15 @@ public class TutorialManager : MonoBehaviour
         playerController.GrabRange = 1f;
         inTutorial = true;
         yield return new WaitForSeconds(1f);
-        dialogueAudio.PlayJingle();
+        //dialogueAudio.PlayJingle();
+
+        // Play looping tutorial stinger with fade-in
+        if (ambientController != null)
+        {
+            ambientController.PlayStinger(ambientController.TutorialStingerClip, loop: true, fadeInDuration: 8f);
+        }
+
+
         FadeIn(enterCanvasGroup);
         dialogueManager.StartDialogueSequence(0, 2f); // Ensure correct tutorial sequence index
 
@@ -372,6 +389,13 @@ public class TutorialManager : MonoBehaviour
                 doorToOpen.SetState(DoorScript.States.Open);
             }
         }
+
+        // Fade out tutorial stinger
+        if (ambientController != null)
+        {
+            ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 10f);
+        }
+
 
         //remove all tutorial panels
         HideAllPanels();
