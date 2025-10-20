@@ -1685,7 +1685,7 @@ public class ZeroGravity : MonoBehaviour, ISaveable
     {
         playerData = new PlayerData(
             _position,
-            transform.rotation,
+            cam.transform.rotation,
             playerHealth, 
             numStims, 
             hasUsedStim,
@@ -1702,7 +1702,7 @@ public class ZeroGravity : MonoBehaviour, ISaveable
     private void LoadPlayerData()
     {
         transform.position = playerData.Position;
-        transform.rotation = playerData.Rotation;
+        cam.transform.rotation = playerData.Rotation;
         playerHealth = playerData.Health;
         numStims = playerData.Stims;
         hasUsedStim = playerData.HasUsedStim;
