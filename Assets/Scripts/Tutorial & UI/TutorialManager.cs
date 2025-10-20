@@ -548,7 +548,7 @@ public class TutorialManager : MonoBehaviour
 
     public void ItemGrabTutorial()
     {
-        Debug.Log("Item Grab Tutorial Started");
+        //Debug.Log("Item Grab Tutorial Started");
         inItemGrabTutorial = true;
         StartCoroutine(StartGrabTutorial());
     }
