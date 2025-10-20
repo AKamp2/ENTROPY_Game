@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.XPath;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -47,7 +48,19 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
-        GlobalSaveManager.LoadGame(true);
+        StartCoroutine(LoadSceneFromSave("Level1New", true));
+    }
+    /// <summary>
+    /// overrides game data with save data after loading the scene
+    /// </summary>
+    IEnumerator LoadSceneFromSave(string pathName, bool permanent)
+    {
+        // load the new scene
+        AsyncOperation sceneStatus = SceneManager.LoadSceneAsync(pathName);
+        yield return new WaitUntil(() => sceneStatus.isDone);
+        // wait for 1 frame
+        yield return null;
+        GlobalSaveManager.LoadGame(permanent);
     }
 
     /// <summary>
