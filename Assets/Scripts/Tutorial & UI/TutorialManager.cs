@@ -58,7 +58,6 @@ public class TutorialManager : MonoBehaviour
 
     public DialogueAudio dialogueAudio;
     public AmbientController ambientController;
-    private WristMonitor wristMonitor;
 
     private bool inItemGrabTutorial = false;
     private bool detectedPickup = false;
@@ -81,7 +80,6 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
-        wristMonitor = FindFirstObjectByType<WristMonitor>();
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
         pickupScript = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
@@ -376,7 +374,6 @@ public class TutorialManager : MonoBehaviour
         //remove all tutorial panels
         HideAllPanels();
         ambientController.Progress();
-        wristMonitor.CompleteObjective();
         currentStep = 5;
 
         dialogueManager.StartDialogueSequence(1, 0.2f);
