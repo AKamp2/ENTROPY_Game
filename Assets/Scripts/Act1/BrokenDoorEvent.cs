@@ -6,6 +6,8 @@ public class BrokenDoorEvent : MonoBehaviour
     [SerializeField]
     DoorScript brokenDoor;
     [SerializeField]
+    LightManager lightManager;
+    [SerializeField]
     float delay = 0f;
     [SerializeField]
     private AudioSource brokenDoorAudio;
@@ -29,6 +31,9 @@ public class BrokenDoorEvent : MonoBehaviour
     public void StartBrokenDoorBeat()
     {
         StartCoroutine(BrokenDoorBeat());
+
+        //flicker lights
+        lightManager.FlickerLights(lightManager.diningLightGroup);
     }
 
     private IEnumerator BrokenDoorBeat()
