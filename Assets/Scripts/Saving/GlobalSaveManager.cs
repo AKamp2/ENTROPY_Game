@@ -20,14 +20,14 @@ public static class GlobalSaveManager
             saveable.CreateSaveFile(GenerateFileName(saveable, false));
         }
     }
-    public static void LoadGame(bool permanent)
-    {
-        ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
-        foreach (var saveable in saveables)
-        {
-            LoadSavable(saveable, permanent);
-        }
-    }
+    //public static void LoadGame(bool permanent)
+    //{
+    //    ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
+    //    foreach (var saveable in saveables)
+    //    {
+    //        LoadSavable(saveable, permanent);
+    //    }
+    //}
     public static void LoadSavable(ISaveable saveable, bool permanent)
     {
         // permanent save file
@@ -83,15 +83,19 @@ public static class GlobalSaveManager
         }
         return data;
     }
-    //void OverwriteTempFiles();
-    //{
-    //    if (SaveFileExists())
-    //    {
-    //        LoadPersistantSaveFile();
-    //        CreateTempSaveFile();
-    //    }
-    //}
-    //bool SaveFileExists(string fileName);
+    public static void OverwriteTempFiles()
+    {
+        ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
+        foreach (var saveable in saveables)
+        {
+            // load the text from the perm file and save it to the temp file
+            string tempFile = GenerateFileName(saveable, false);
+            string permFile = GenerateFileName(saveable, true);
+            string fileText = LoadTextFromFile(Application.persistentDataPath, permFile);
+            SaveTextToFile(Application.persistentDataPath, tempFile, fileText);
+        }
+    }
+    //public static bool SaveFileExists(string fileName)
     //{
     //    return File.Exists(Path.Join(Application.persistentDataPath, fileName));
     //}

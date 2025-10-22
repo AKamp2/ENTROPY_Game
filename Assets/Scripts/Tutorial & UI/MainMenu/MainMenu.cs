@@ -50,6 +50,7 @@ public class MainMenu : MonoBehaviour
     public void LoadGame()
     {
         uiAudio?.PlaySelectSound();
+        GlobalSaveManager.OverwriteTempFiles();
         GlobalSaveManager.LoadFromSave = true;
         SceneManager.LoadScene("Level1New");
     }
