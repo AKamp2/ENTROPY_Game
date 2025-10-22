@@ -84,7 +84,7 @@ public class TutorialManager : MonoBehaviour
         pickupScript = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
 
-        if (playerController.TutorialMode == true)
+        if (playerController.TutorialMode == true && !GlobalSaveManager.LoadFromSave)
         {
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
