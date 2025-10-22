@@ -30,8 +30,10 @@ public class MainMenu : MonoBehaviour
         Time.timeScale = 1f;
         //if(//GlobalSaveManager.Instance.Data.PlayerData. == 0)
         //{
-            
+
         //}
+        // TODO: setup the save files on boot:
+        // GlobalSaveManager.OverwriteTempFiles();
     }
 
     /// <summary>
@@ -50,7 +52,6 @@ public class MainMenu : MonoBehaviour
     public void LoadGame()
     {
         uiAudio?.PlaySelectSound();
-        GlobalSaveManager.OverwriteTempFiles();
         GlobalSaveManager.LoadFromSave = true;
         SceneManager.LoadScene("Level1New");
     }

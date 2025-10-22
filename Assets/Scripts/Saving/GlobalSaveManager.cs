@@ -83,6 +83,8 @@ public static class GlobalSaveManager
         }
         return data;
     }
+
+    // TODO:this is broken and needs to search for files NOT saveables
     public static void OverwriteTempFiles()
     {
         ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
