@@ -70,7 +70,7 @@ public class DoorManager : MonoBehaviour, ISaveable
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
         doorsInRange = new List<DoorScript>();
         // continue from save
-        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
     }
 
     // Update is called once per frame
@@ -119,10 +119,13 @@ public class DoorManager : MonoBehaviour, ISaveable
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        DoorData _doorData = JsonUtility.FromJson<DoorData>(loadedData);
-        for (int i = 0; i < _doorData.DoorStates.Count; i++)
+        if (loadedData != null && loadedData != "")
         {
-            doors[i].SetState(_doorData.DoorStates[i]);
+            DoorData _doorData = JsonUtility.FromJson<DoorData>(loadedData);
+            for (int i = 0; i < _doorData.DoorStates.Count; i++)
+            {
+                doors[i].SetState(_doorData.DoorStates[i]);
+            }
         }
     }
 

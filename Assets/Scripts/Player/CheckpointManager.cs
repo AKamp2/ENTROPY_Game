@@ -21,7 +21,7 @@ public class CheckpointManager : MonoBehaviour, ISaveable
             cp.Initialize(playerZeroG, i == 0);
         }
         // continue from save
-        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
     }
 
     void HandleCheckpointReached(Checkpoint reached)
@@ -60,10 +60,13 @@ public class CheckpointManager : MonoBehaviour, ISaveable
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        CheckPointData _checkpointData = JsonUtility.FromJson<CheckPointData>(loadedData);
-        for (int i = 0; i < _checkpointData.CheckpointStates.Count; i++)
+        if (loadedData != null && loadedData != "")
         {
-            checkpoints[i].Col.enabled = _checkpointData.CheckpointStates[i];
+            CheckPointData _checkpointData = JsonUtility.FromJson<CheckPointData>(loadedData);
+            for (int i = 0; i < _checkpointData.CheckpointStates.Count; i++)
+            {
+                checkpoints[i].Col.enabled = _checkpointData.CheckpointStates[i];
+            }
         }
     }
 

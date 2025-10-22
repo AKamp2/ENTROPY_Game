@@ -421,7 +421,7 @@ public class ZeroGravity : MonoBehaviour, ISaveable
             jointSpringForce = 5.5f;
         }
         // continue from save
-        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
     }
 
     // Update is called once per frame
@@ -1581,7 +1581,8 @@ public class ZeroGravity : MonoBehaviour, ISaveable
         //    rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
         //    rb.angularVelocity = Vector3.zero;
         //}
-        GlobalSaveManager.LoadGame(false);
+        GlobalSaveManager.LoadFromSave = true;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private IEnumerator UseStim()
@@ -1735,11 +1736,14 @@ public class ZeroGravity : MonoBehaviour, ISaveable
     {
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        playerData = JsonUtility.FromJson<PlayerData>(loadedData);
-        LoadPlayerData();
-        // stop the player from moving on respawn
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        if (loadedData != null && loadedData != "")
+        {
+            playerData = JsonUtility.FromJson<PlayerData>(loadedData);
+            LoadPlayerData();
+            // stop the player from moving on respawn
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     public void CreateSaveFile(string fileName)

@@ -20,7 +20,7 @@ public class TerminalManager : MonoBehaviour, ISaveable
     void Start()
     {
         // continue from save
-        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
     }
     public void OnInteract(InputAction.CallbackContext context)
     {
@@ -61,21 +61,22 @@ public class TerminalManager : MonoBehaviour, ISaveable
         // this will load data from the file to a variable we will use to change this objects data
         string path = Application.persistentDataPath;
         string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        TerminalData _terminalData = JsonUtility.FromJson<TerminalData>(loadedData);
-        Debug.Log(_terminalData.TerminalStates.Count);
-        Debug.Log(terminals.Count);
-        // activates all of the terminals, only the current terminal will play its cutscene
-        for (int i = 0; i < _terminalData.TerminalStates.Count; i++)
+        if (loadedData != null && loadedData != "")
         {
-            if (_terminalData.TerminalStates[i])
+            TerminalData _terminalData = JsonUtility.FromJson<TerminalData>(loadedData);
+            // activates all of the terminals, only the current terminal will play its cutscene
+            for (int i = 0; i < _terminalData.TerminalStates.Count; i++)
             {
-                if (GlobalSaveManager.SavedWithTerminal && i == latestTerminalIndex)
+                if (_terminalData.TerminalStates[i])
                 {
-                    terminals[i].MediumActivation();
-                }
-                else
-                {
-                    terminals[i].SoftActivation();
+                    if (GlobalSaveManager.SavedWithTerminal && i == latestTerminalIndex)
+                    {
+                        terminals[i].MediumActivation();
+                    }
+                    else
+                    {
+                        terminals[i].SoftActivation();
+                    }
                 }
             }
         }
