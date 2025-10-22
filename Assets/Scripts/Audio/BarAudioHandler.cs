@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using UnityEngine;
 
 public class BarAudioHandler : MonoBehaviour
@@ -20,7 +21,9 @@ public class BarAudioHandler : MonoBehaviour
         if (grabSounds.Length == 0 || source == null) return;
 
         int index = Random.Range(0, grabSounds.Length);
+        source.pitch = Random.Range(0.8f, 1.2f);
         source.PlayOneShot(grabSounds[index]);
+        source.pitch = 1;
     }
     
 
@@ -34,6 +37,7 @@ public class BarAudioHandler : MonoBehaviour
         if (releaseSounds.Length == 0 || source == null) return;
 
         int index = Random.Range(0, releaseSounds.Length);
+        source.pitch = Random.Range(0.8f, 1.2f);
         source.PlayOneShot(releaseSounds[index]);
     }
 }

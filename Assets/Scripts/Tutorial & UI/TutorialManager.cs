@@ -62,9 +62,9 @@ public class TutorialManager : MonoBehaviour
 
     public DialogueAudio dialogueAudio;
     public AmbientController ambientController;
-    private WristMonitor wristMonitor;
 
     private bool inItemGrabTutorial = false;
+    private bool inItemThrowTutorial = false;
     private bool detectedPickup = false;
 
     // rolling threshold (in degrees) beyond which we consider �upside down�
@@ -85,7 +85,6 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
-        wristMonitor = FindFirstObjectByType<WristMonitor>();
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
         pickupScript = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
@@ -200,11 +199,22 @@ public class TutorialManager : MonoBehaviour
             if(pickupScript.HeldObject != null && !detectedPickup)
             {
                 detectedPickup = true;
+                inItemGrabTutorial = false;
                 if(pickUpItemCanvasGroup.alpha > 0)
                 {
-                    FadeOut(pickUpItemCanvasGroup);
+                    pickUpItemCanvasGroup.alpha = 0;
                 }
                 FadeIn(throwItemCanvasGroup);
+                inItemThrowTutorial = true;
+            }
+        }
+
+        if(inItemThrowTutorial)
+        {
+            if (pickupScript.HeldObject == null)
+            {
+                FadeOut(throwItemCanvasGroup);
+                inItemThrowTutorial = false;
             }
         }
     }
@@ -400,7 +410,6 @@ public class TutorialManager : MonoBehaviour
         //remove all tutorial panels
         HideAllPanels();
         ambientController.Progress();
-        wristMonitor.CompleteObjective();
         currentStep = 5;
 
         dialogueManager.StartDialogueSequence(1, 0.2f);
@@ -558,9 +567,21 @@ public class TutorialManager : MonoBehaviour
         rollProgressBar.value = progress;
     }
 
-    //private IEnumerator StartGrabTutorial()
-    //{
-    //}
+    public void ItemGrabTutorial()
+    {
+        //Debug.Log("Item Grab Tutorial Started");
+        inItemGrabTutorial = true;
+        StartCoroutine(StartGrabTutorial());
+    }
+    private IEnumerator StartGrabTutorial()
+    {
+        FadeIn(pickUpItemCanvasGroup);
+        yield return new WaitForSeconds(7f);
+        if(pickUpItemCanvasGroup.alpha > 0)
+        {
+            FadeOut(pickUpItemCanvasGroup);
+        }
+    }
 }
 
 
