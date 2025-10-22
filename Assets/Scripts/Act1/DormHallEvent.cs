@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DormHallEvent : MonoBehaviour
+public class DormHallEvent : MonoBehaviour, ISaveable
 {
     [SerializeField]
     private ZeroGravity player;
@@ -44,6 +44,9 @@ public class DormHallEvent : MonoBehaviour
         isGrabbable = true;
 
         dialogueManager = FindFirstObjectByType<DialogueManager>();
+
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
     }
 
     // Update is called once per frame
@@ -132,5 +135,29 @@ public class DormHallEvent : MonoBehaviour
         }
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    public void LoadSaveFile(string fileName)
+    {
+        // this will load data from the file to a variable we will use to change this objects data
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        if (loadedData != null && loadedData != "")
+        {
+            if (loadedData == "False")
+            {
+                isGrabbable = false;
+            } else if (loadedData == "True")
+            {
+                isGrabbable = true;
+            }
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
+    {
+        // this will create a file backing up the data we give it
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, isGrabbable.ToString());
     }
 }
