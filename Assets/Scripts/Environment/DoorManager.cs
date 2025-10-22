@@ -135,7 +135,13 @@ public class DoorManager : MonoBehaviour, ISaveable
         DoorData _doorData = new DoorData(new List<DoorScript.States>());
         foreach (DoorScript _door in doors)
         {
-            _doorData.DoorStates.Add(_door.DoorState);
+            if (_door.DoorState == DoorScript.States.Opening)
+            {
+                _doorData.DoorStates.Add(DoorScript.States.Closed);
+            } else
+            {
+                _doorData.DoorStates.Add(_door.DoorState);
+            }
         }
         // this will create a file backing up the data we give it
         string json = JsonUtility.ToJson(_doorData);
