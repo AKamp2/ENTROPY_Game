@@ -7,6 +7,7 @@ using System.Linq;
 // this is the file the will handle saving and loading
 public static class GlobalSaveManager
 {
+    public static bool LoadFromSave = false;
     public static bool SavedWithTerminal = false;
     public static void SaveGame(bool permanent)
     {
@@ -24,16 +25,20 @@ public static class GlobalSaveManager
         ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
         foreach (var saveable in saveables)
         {
-            // permanent save file
-            if (permanent)
-            {
-                saveable.LoadSaveFile(GenerateFileName(saveable, true));
-            }
-            // temporary save file
-            else
-            {
-                saveable.LoadSaveFile(GenerateFileName(saveable, false));
-            }
+            LoadSavable(saveable, permanent);
+        }
+    }
+    public static void LoadSavable(ISaveable saveable, bool permanent)
+    {
+        // permanent save file
+        if (permanent)
+        {
+            saveable.LoadSaveFile(GenerateFileName(saveable, true));
+        }
+        // temporary save file
+        else
+        {
+            saveable.LoadSaveFile(GenerateFileName(saveable, false));
         }
     }
     private static string GenerateFileName(ISaveable saveable, bool permanent)

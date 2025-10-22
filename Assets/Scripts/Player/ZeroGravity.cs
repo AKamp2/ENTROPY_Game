@@ -420,6 +420,8 @@ public class ZeroGravity : MonoBehaviour, ISaveable
             grabDrag = 0.1f;
             jointSpringForce = 5.5f;
         }
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
     }
 
     // Update is called once per frame

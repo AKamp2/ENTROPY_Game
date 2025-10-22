@@ -20,6 +20,8 @@ public class CheckpointManager : MonoBehaviour, ISaveable
             cp.OnReached += HandleCheckpointReached;
             cp.Initialize(playerZeroG, i == 0);
         }
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
     }
 
     void HandleCheckpointReached(Checkpoint reached)

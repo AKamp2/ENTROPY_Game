@@ -17,6 +17,11 @@ public class TerminalManager : MonoBehaviour, ISaveable
     private List<Terminal> terminals;
     // for save
     private int latestTerminalIndex = -1;
+    void Start()
+    {
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
+    }
     public void OnInteract(InputAction.CallbackContext context)
     {
         

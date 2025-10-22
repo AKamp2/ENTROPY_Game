@@ -69,6 +69,8 @@ public class DoorManager : MonoBehaviour, ISaveable
     {
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
         doorsInRange = new List<DoorScript>();
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, true);
     }
 
     // Update is called once per frame

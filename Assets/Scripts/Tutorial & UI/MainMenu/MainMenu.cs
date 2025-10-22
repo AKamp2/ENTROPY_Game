@@ -40,6 +40,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         uiAudio?.PlaySelectSound();
+        GlobalSaveManager.LoadFromSave = false;
         SceneManager.LoadScene("Level1New");
     }
 
@@ -48,19 +49,9 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
-        StartCoroutine(LoadSceneFromSave("Level1New", true));
-    }
-    /// <summary>
-    /// overrides game data with save data after loading the scene
-    /// </summary>
-    IEnumerator LoadSceneFromSave(string pathName, bool permanent)
-    {
-        // load the new scene
-        AsyncOperation sceneStatus = SceneManager.LoadSceneAsync(pathName);
-        yield return new WaitUntil(() => sceneStatus.isDone);
-        // wait for 1 frame
-        yield return null;
-        GlobalSaveManager.LoadGame(permanent);
+        uiAudio?.PlaySelectSound();
+        GlobalSaveManager.LoadFromSave = true;
+        SceneManager.LoadScene("Level1New");
     }
 
     /// <summary>
