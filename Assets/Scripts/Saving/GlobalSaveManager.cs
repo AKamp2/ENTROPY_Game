@@ -83,11 +83,10 @@ public static class GlobalSaveManager
         }
         return data;
     }
-
-    // This function overwrites the temp files with the permanent save files
-    public static void OverwriteTempFiles()
+    // Deletes the temp files
+    public static void DeleteTempFiles()
     {
-        // First, we will delete all of the temp save files
+        // Delete all of the temp save files
         // The path where our save files are stored
         string path = Application.persistentDataPath;
         // Find all of the temporary save files
@@ -105,9 +104,15 @@ public static class GlobalSaveManager
                 Debug.LogWarning($"Failed to delete file: {file}\n{e.Message}");
             }
         }
-        // Then we will copy any permanent save files to temp save file paths
+    }
+    // This function overwrites the temp files with the permanent save files
+    public static void OverwriteTempFiles()
+    {
+        // Copy any permanent save files to temp save file paths
+        // The path where our save files are stored
+        string path = Application.persistentDataPath;
         // Find all of the permanent save files
-        files = Directory.GetFiles(path, "*Save*", SearchOption.AllDirectories);
+        string[] files = Directory.GetFiles(path, "*Save*", SearchOption.AllDirectories);
         int copiedCount = 0;
         foreach (string sourceFilePath in files)
         {

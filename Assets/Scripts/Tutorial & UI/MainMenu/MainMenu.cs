@@ -47,7 +47,7 @@ public class MainMenu : MonoBehaviour
     {
         uiAudio?.PlaySelectSound();
         GlobalSaveManager.LoadFromSave = false;
-        GlobalSaveManager.OverwriteTempFiles();
+        GlobalSaveManager.DeleteTempFiles();
         SceneManager.LoadScene("Level1New");
     }
 
@@ -60,6 +60,7 @@ public class MainMenu : MonoBehaviour
         {
             uiAudio?.PlaySelectSound();
             GlobalSaveManager.LoadFromSave = true;
+            GlobalSaveManager.DeleteTempFiles();
             GlobalSaveManager.OverwriteTempFiles();
             SceneManager.LoadScene("Level1New");
         } else
