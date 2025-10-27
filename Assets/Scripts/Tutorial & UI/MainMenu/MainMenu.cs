@@ -33,7 +33,6 @@ public class MainMenu : MonoBehaviour
 
         //}
         // TODO: setup the save files on boot:
-        // GlobalSaveManager.OverwriteTempFiles();
     }
 
     /// <summary>
@@ -43,6 +42,7 @@ public class MainMenu : MonoBehaviour
     {
         uiAudio?.PlaySelectSound();
         GlobalSaveManager.LoadFromSave = false;
+        GlobalSaveManager.OverwriteTempFiles();
         SceneManager.LoadScene("Level1New");
     }
 
@@ -53,6 +53,7 @@ public class MainMenu : MonoBehaviour
     {
         uiAudio?.PlaySelectSound();
         GlobalSaveManager.LoadFromSave = true;
+        GlobalSaveManager.OverwriteTempFiles();
         SceneManager.LoadScene("Level1New");
     }
 

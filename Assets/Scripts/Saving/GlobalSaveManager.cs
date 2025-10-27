@@ -84,21 +84,51 @@ public static class GlobalSaveManager
         return data;
     }
 
-    // TODO:this is broken and needs to search for files NOT saveables
+    // This function overwrites the temp files with the permanent save files
     public static void OverwriteTempFiles()
     {
-        ISaveable[] saveables = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>().ToArray();
-        foreach (var saveable in saveables)
+        // First, we will delete all of the temp save files
+        // The path where our save files are stored
+        string path = Application.persistentDataPath;
+        // Find all of the temporary save files
+        string[] files = Directory.GetFiles(path, "*Temp*", SearchOption.AllDirectories);
+        int deletedCount = 0;
+        foreach (string file in files)
         {
-            // load the text from the perm file and save it to the temp file
-            string tempFile = GenerateFileName(saveable, false);
-            string permFile = GenerateFileName(saveable, true);
-            string fileText = LoadTextFromFile(Application.persistentDataPath, permFile);
-            SaveTextToFile(Application.persistentDataPath, tempFile, fileText);
+            try
+            {
+                File.Delete(file);
+                deletedCount++;
+            }
+            catch (IOException e)
+            {
+                Debug.LogWarning($"Failed to delete file: {file}\n{e.Message}");
+            }
+        }
+        // Then we will copy any permanent save files to temp save file paths
+        // Find all of the permanent save files
+        files = Directory.GetFiles(path, "*Save*", SearchOption.AllDirectories);
+        int copiedCount = 0;
+        foreach (string sourceFilePath in files)
+        {
+            try
+            {
+                // Copy permanent save files to the temp save file paths
+                string directory = Path.GetDirectoryName(sourceFilePath);
+                string filename = Path.GetFileName(sourceFilePath);
+                string newFilename = filename.Replace("Save", "Temp");
+                string destinationFilePath = Path.Combine(directory, newFilename);
+                File.Copy(sourceFilePath, destinationFilePath, true);
+                copiedCount++;
+            }
+            catch (IOException e)
+            {
+                Debug.LogWarning($"Failed to copy file: {sourceFilePath}\n{e.Message}");
+            }
         }
     }
-    //public static bool SaveFileExists(string fileName)
-    //{
-    //    return File.Exists(Path.Join(Application.persistentDataPath, fileName));
-    //}
+    public static bool SaveFileExists(string fileName)
+    {
+        return File.Exists(Path.Join(Application.persistentDataPath, fileName));
+    }
 }
