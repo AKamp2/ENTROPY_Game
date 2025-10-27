@@ -26,6 +26,8 @@ public class DormHallEvent : MonoBehaviour, ISaveable
 
     private DialogueManager dialogueManager;
 
+    [SerializeField] private Light monitorLight;
+
     public bool CanGrab
     {
         get { return canGrab; }
@@ -44,9 +46,9 @@ public class DormHallEvent : MonoBehaviour, ISaveable
         isGrabbable = true;
 
         dialogueManager = FindFirstObjectByType<DialogueManager>();
-
         // continue from save
         if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
+        StartCoroutine(BlinkMonitor());
     }
 
     // Update is called once per frame
@@ -159,5 +161,17 @@ public class DormHallEvent : MonoBehaviour, ISaveable
         // this will create a file backing up the data we give it
         string path = Application.persistentDataPath;
         GlobalSaveManager.SaveTextToFile(path, fileName, isGrabbable.ToString());
+    }
+
+    private IEnumerator BlinkMonitor()
+    {
+        while (wristMonitor.HasWristMonitor == false)
+        {
+            monitorLight.enabled = true;
+            yield return new WaitForSeconds(0.5f);
+
+            monitorLight.enabled = false;
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 }

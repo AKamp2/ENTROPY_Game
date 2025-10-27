@@ -42,7 +42,7 @@ public class Win : MonoBehaviour
 
     private IEnumerator ShowWin()
     {
-        yield return StartCoroutine(FadeOut(fadeCanvasGroup, 15f));
+        yield return StartCoroutine(FadeOut(fadeCanvasGroup, 10f));
         //yield return new WaitForSeconds(1f);
         winCondition = true;
 

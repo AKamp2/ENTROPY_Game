@@ -262,6 +262,11 @@ public class ZeroGravity : MonoBehaviour, ISaveable
         set { potentialGrabbedBar = value; }
     }
 
+    public Transform GrabbedBar
+    {
+        get { return grabbedBar; }
+    }
+
     public Transform PotentialWall
     {
         get { return potentialWall; }
@@ -1668,7 +1673,11 @@ public class ZeroGravity : MonoBehaviour, ISaveable
     {
         if (context.performed && potentialGrabbedBar != null)
         {
-            GrabBar();
+            if (canGrab)
+            {
+                GrabBar();
+            }
+            
         }
         else if (context.canceled)
         {

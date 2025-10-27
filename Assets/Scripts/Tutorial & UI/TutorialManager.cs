@@ -36,6 +36,10 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Slider rollProgressBar;
     [SerializeField] private float requiredRotation = 180f; // how much roll needed
 
+    [SerializeField] private AudioClip tutorialStingerClip;
+
+    public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
+
     public float fadeDuration = 1f;
 
     float timer = 10f;
@@ -60,6 +64,7 @@ public class TutorialManager : MonoBehaviour
     public AmbientController ambientController;
 
     private bool inItemGrabTutorial = false;
+    private bool inItemThrowTutorial = false;
     private bool detectedPickup = false;
 
     // rolling threshold (in degrees) beyond which we consider �upside down�
@@ -102,6 +107,11 @@ public class TutorialManager : MonoBehaviour
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
                 FadeOut(enterCanvasGroup);
+                if (ambientController != null)
+                {
+                    ambientController.StopStinger(ambientController.TutorialStingerClip, 5f);
+
+                }
                 EndTutorial();
             }
             
@@ -189,11 +199,22 @@ public class TutorialManager : MonoBehaviour
             if(pickupScript.HeldObject != null && !detectedPickup)
             {
                 detectedPickup = true;
+                inItemGrabTutorial = false;
                 if(pickUpItemCanvasGroup.alpha > 0)
                 {
-                    FadeOut(pickUpItemCanvasGroup);
+                    pickUpItemCanvasGroup.alpha = 0;
                 }
                 FadeIn(throwItemCanvasGroup);
+                inItemThrowTutorial = true;
+            }
+        }
+
+        if(inItemThrowTutorial)
+        {
+            if (pickupScript.HeldObject == null)
+            {
+                FadeOut(throwItemCanvasGroup);
+                inItemThrowTutorial = false;
             }
         }
     }
@@ -204,7 +225,15 @@ public class TutorialManager : MonoBehaviour
         playerController.GrabRange = 1f;
         inTutorial = true;
         yield return new WaitForSeconds(1f);
-        dialogueAudio.PlayJingle();
+        //dialogueAudio.PlayJingle();
+
+        // Play looping tutorial stinger with fade-in
+        if (ambientController != null)
+        {
+            ambientController.PlayStinger(ambientController.TutorialStingerClip, loop: true, fadeInDuration: 8f);
+        }
+
+
         FadeIn(enterCanvasGroup);
         dialogueManager.StartDialogueSequence(0, 2f); // Ensure correct tutorial sequence index
 
@@ -371,6 +400,13 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
+        // Fade out tutorial stinger
+        if (ambientController != null)
+        {
+            ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 10f);
+        }
+
+
         //remove all tutorial panels
         HideAllPanels();
         ambientController.Progress();
@@ -519,21 +555,36 @@ public class TutorialManager : MonoBehaviour
         // Rolling right (positive TotalRotation)
         if (requiredRotation > 0)
         {
+            if (playerController.TotalRotation < 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // Rolling left (negative TotalRotation)
         else if (requiredRotation < 0)
         {
+            if (playerController.TotalRotation > 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // else progress = 0
 
+
         rollProgressBar.value = progress;
     }
 
-    //private IEnumerator StartGrabTutorial()
-    //{
-    //}
+    public void ItemGrabTutorial()
+    {
+        //Debug.Log("Item Grab Tutorial Started");
+        inItemGrabTutorial = true;
+        StartCoroutine(StartGrabTutorial());
+    }
+    private IEnumerator StartGrabTutorial()
+    {
+        FadeIn(pickUpItemCanvasGroup);
+        yield return new WaitForSeconds(7f);
+        if(pickUpItemCanvasGroup.alpha > 0)
+        {
+            FadeOut(pickUpItemCanvasGroup);
+        }
+    }
 }
 
 
