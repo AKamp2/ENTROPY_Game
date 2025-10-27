@@ -252,7 +252,7 @@ public class LockdownEvent : MonoBehaviour
             audioManager.PlayButtonClick();
             buttonLight.intensity = 0;
             // open the broken door first
-            brokenDoor.SetState(DoorScript.States.Open);
+            //brokenDoor.SetState(DoorScript.States.Open);
             
             DoorTrigger.enabled = true;
             isActive = false;
