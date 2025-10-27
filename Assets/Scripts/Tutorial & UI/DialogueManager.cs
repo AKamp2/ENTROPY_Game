@@ -2,90 +2,91 @@ using System;
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; } // Singleton instance
 
     // UI elements for dialogue display
+    [Header("Dialogue Data (keep these compatible with your existing types)")]
     public DialogueSequence[] dialogueSequences;
     public DialogueSequence failureDialogues;
+
+
+    [Header("UI")]
     public Canvas dialogueCanvas;
-    public CanvasGroup dialogueCanvasGroup;
+    public CanvasGroup dialogueCanvasGroup; // will be fetched in Awake if null
     public TextMeshProUGUI nameTextUI;
     public TextMeshProUGUI dialogueTextUI;
+
+    [Header("Audio / Typewriter")]
     public AudioSource audioSource;
     public AudioClip fillerLineBeep;
-    private float typewriterSpeed = 0.08f;
     public float defaultTextSpeed = 0.08f;
+    public DialogueAudio dialogueAudio; // kept for compatibility
 
-    public DialogueAudio dialogueAudio;
+    [Header("Fade / Timings")]
+    public float fadeDuration = 0.5f;
+    public float skipPauseDuration = 0.3f;
 
-    // Events for handling dialogue completion
-    public event Action<int> OnDialogueEnd;
-    private PlayerController playerController;
-    public GameObject player; // Reference to player GameObject
-    private ZeroGravity playerManager;
+    [Header("Tutorial / External")]
+    public TutorialManager tutorialManager;
+    public GameObject player;
+    public PlayerController playerController;
+    public ZeroGravity playerManager;
 
-    // Tracking dialogue progress
-    private int currentDialogueIndex = 0;
-    private int currentSequenceIndex = -1;
-    private bool isSkipping = false;
-    [SerializeField]
-    private bool isDialogueActive = false;
-    private bool tutorialSkipped = false;
-    public bool SkipNextDialogue { get; set; } = false;
+    [Header("SFX")]
+    public AudioSource sfxSource;
+    public AudioClip skipSfxClip;
 
-    private bool isDialogueSpeaking = false;
-    private bool isFailureSpeaking = false;
-    public bool isFailureTriggered = false;
-    private bool pauseMainDialogue = false;
+    // Public read-only state for external code compatibility
+    public bool IsDialogueActive => currentState == DialogueState.Playing || currentState == DialogueState.Paused;
+    public bool IsDialogueSpeaking => isLineTyping;
+    public bool IsFailureSpeaking => isPlayingFailureDialogue;
 
+    // Queue for requested sequences (preserves ordering)
+    public readonly Queue<int> sequenceQueue = new Queue<int>();
+
+    // Coroutine handles (tracked so we can stop them safely)
+    private Coroutine displayCoroutine = null;
+    private Coroutine fadeCoroutine = null;
+    private Coroutine typewriterCoroutine = null;
+
+    // Internal state
+    private enum DialogueState { Idle, Playing, Paused, Fading }
+    private DialogueState currentState = DialogueState.Idle;
+
+    private bool isLineTyping = false;
+    public bool isPlayingFailureDialogue = false;
     private bool playFillerBeep = false;
-    private bool justBeeped;
+    private bool justBeeped = false;
+    public bool skipRequested = false;
 
+    // Indices that mirror your existing logic
+    private int currentSequenceIndex = -1;
+    private int currentDialogueIndex = 0;
     private int currentFailureIndex = -1;
 
-    public TutorialManager tutorialManager;
+    // Counts how many StartDialogueSequence calls are outstanding (kept for inspector/readout compatibility)
+    public int numDialoguesQueued { get; private set; } = 0;
 
-    private float fadeDuration = 0.5f;
-
-    [Header("Skip Settings")]
-    public AudioSource sfxSource;         // assign in inspector
-    public AudioClip skipSfxClip;        
-    public float skipPauseDuration = 0.3f;
-    public int numDialoguesQueued = 0;
-
-    public bool IsDialogueActive => isDialogueActive; // Public access to dialogue state
-    public bool IsDialogueSpeaking => isDialogueSpeaking; // Optional public getter if needed elsewhere
-
-    public bool IsFailureSpeaking => isFailureSpeaking;
-
-    public int CurrentFailureIndex => currentFailureIndex;
-
-    public bool IsFailureTriggered
-    {
-        get { return isFailureTriggered; }
-        set { isFailureTriggered = value; }
-    }
-
-
-    public bool TutorialSkipped
-    {
-        get { return tutorialSkipped; }
-        set { tutorialSkipped = value; }
-    }
+    public event Action<int> OnDialogueEnd;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        if (dialogueCanvasGroup == null && dialogueCanvas != null)
+            dialogueCanvasGroup = dialogueCanvas.GetComponent<CanvasGroup>();
+
+        // ensure starting visual state
+        if (dialogueCanvas != null) dialogueCanvas.enabled = false;
+        if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 0f;
         playerController = new PlayerController();
+        ClearTextsImmediate();
     }
 
     private void OnEnable() => playerController.Dialogue.ContinueDialogue.Enable();
@@ -93,347 +94,349 @@ public class DialogueManager : MonoBehaviour
 
     private void Start()
     {
-        playerManager = player.GetComponent<ZeroGravity>(); // Get reference to player movement manager
-        dialogueCanvas.enabled = false; // Hide dialogue UI initially
-        dialogueCanvasGroup = dialogueCanvas.GetComponent<CanvasGroup>();
-        dialogueCanvasGroup.alpha = 0;
+        if (player != null) playerManager = player.GetComponent<ZeroGravity>();
+        // playerController can be wired in inspector; if not, don't assume new PlayerController()
     }
 
     private void Update()
     {
-        // Allow skipping dialogue only if the player can move (not in a puzzle)
-        if (playerManager.CanMove && playerController.Dialogue.ContinueDialogue.triggered)
+        // skip behavior: player presses continue to skip a line
+        if (playerController.Dialogue.ContinueDialogue.triggered)
         {
-            isSkipping = true;
+            // request a skip; handled inside the typewriter/display flow
+            skipRequested = true;
         }
-        
     }
 
-    /// <summary>
-    /// Starts a dialogue sequence based on the given index.
-    /// </summary>
+    #region Public API (kept shape similar to original)
+
+    /// <summary>Enqueue a dialogue sequence. It will play after previously enqueued sequences finish.</summary>
     public void StartDialogueSequence(int sequenceIndex, float delayTime)
     {
-        //Debug.Log("Starting Dialogue Sequence at index " + sequenceIndex);
-        if (sequenceIndex < dialogueSequences.Length)
+        //account for index out of range
+
+        if (sequenceIndex < 0 || sequenceIndex >= dialogueSequences.Length) return;
+        sequenceQueue.Enqueue(sequenceIndex);
+        numDialoguesQueued++;
+        // If idle, kick off the queue processor
+        if (currentState == DialogueState.Idle)
         {
-            pauseMainDialogue = false;
+            displayCoroutine = StartCoroutine(ProcessDialogueQueue());
+        }
+        // If already playing, the queued sequence will be handled in order
+    }
+
+    /// <summary>Play a failure dialogue immediately (pauses main flow cleanly).</summary>
+    public void StartFailureDialogue(int failureIndex)
+    {
+        // fire-and-forget the failure coroutine; it will pause and then resume
+        StartCoroutine(PlayFailureDialogueRoutine(failureIndex));
+    }
+
+    /// <summary>Force-stop everything and reset visual state. Use sparingly.</summary>
+    public void ForceStopAll(bool clearQueue = true)
+    {
+        // stop tracked coroutines
+        if (displayCoroutine != null) { StopCoroutine(displayCoroutine); displayCoroutine = null; }
+        if (typewriterCoroutine != null) { StopCoroutine(typewriterCoroutine); typewriterCoroutine = null; }
+        if (fadeCoroutine != null) { StopCoroutine(fadeCoroutine); fadeCoroutine = null; }
+
+        currentState = DialogueState.Idle;
+        isLineTyping = false;
+        isPlayingFailureDialogue = false;
+        skipRequested = false;
+        sequenceQueue.Clear();
+        if (clearQueue) numDialoguesQueued = 0;
+
+        if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
+        ClearTextsImmediate();
+        HideCanvasImmediate();
+    }
+
+    /// <summary>Restart the current sequence from its first dialogue.</summary>
+    public void RestartCurrentDialogue(float delayTime)
+    {
+        // Stop only the display routine and typewriter so fade isn't clobbered
+        if (displayCoroutine != null) { StopCoroutine(displayCoroutine); displayCoroutine = null; }
+        if (typewriterCoroutine != null) { StopCoroutine(typewriterCoroutine); typewriterCoroutine = null; }
+
+        isLineTyping = false;
+        isPlayingFailureDialogue = false;
+        skipRequested = false;
+
+        // Reset indices
+        currentDialogueIndex = 0;
+
+        // Re-queue the same sequence to play again
+        if (currentSequenceIndex >= 0 && currentSequenceIndex < dialogueSequences.Length)
+        {
+            sequenceQueue.Enqueue(currentSequenceIndex);
             numDialoguesQueued++;
-            StartCoroutine(DelayTime(delayTime, sequenceIndex));
+            if (currentState == DialogueState.Idle)
+                displayCoroutine = StartCoroutine(ProcessDialogueQueue(delayTime));
+        }
+        else
+        {
+            Debug.LogWarning("RestartCurrentDialogue: invalid currentSequenceIndex");
         }
     }
 
-    /// <summary>
-    /// Handles displaying dialogue one line at a time.
-    /// </summary>
-    private IEnumerator DisplayDialogue()
+    #endregion
+
+    #region Queue Processing & Display Flow
+
+    private IEnumerator ProcessDialogueQueue(float startDelay = 0f)
     {
-        if (tutorialSkipped && currentSequenceIndex == 0)
+        // Slight optional delay before starting the first queued sequence
+        if (startDelay > 0f) yield return new WaitForSeconds(startDelay);
+
+        while (sequenceQueue.Count > 0)
         {
-            yield break;
+            int seqIndex = sequenceQueue.Dequeue();
+            currentSequenceIndex = seqIndex;
+            numDialoguesQueued = Mathf.Max(0, numDialoguesQueued - 1);
+
+            // Play the sequence
+            yield return StartCoroutine(PlaySequenceRoutine(seqIndex));
+
+            // small heartbeat so other systems can catch up
+            yield return null;
         }
 
-        if(isDialogueActive == true)
+        // queue drained
+        displayCoroutine = null;
+        currentState = DialogueState.Idle;
+    }
+
+    private IEnumerator PlaySequenceRoutine(int sequenceIndex)
+    {
+        if (sequenceIndex < 0 || sequenceIndex >= dialogueSequences.Length) yield break;
+        DialogueSequence sequence = dialogueSequences[sequenceIndex];
+
+        // initialize indices
+        currentDialogueIndex = 0;
+
+        // Ensure canvas visible and cleared before starting
+        ClearDialogueTextBeforeShow();
+        ShowCanvasImmediate(); // enables canvas
+        yield return StartCoroutine(FadeCanvas(true));
+
+        currentState = DialogueState.Playing;
+
+        while (currentDialogueIndex < sequence.dialogues.Length)
         {
-            yield return new WaitUntil(() => isDialogueActive == false);
-        }
+            // If paused by a failure, wait here until failure finishes.
+            yield return new WaitWhile(() => currentState == DialogueState.Paused);
 
-        dialogueCanvas.enabled = true;
-        FadeIn();
-        isSkipping = false;
-        DialogueSequence currentSequence = dialogueSequences[currentSequenceIndex];
+            Dialogue d = sequence.dialogues[currentDialogueIndex];
 
-        while (currentDialogueIndex < currentSequence.dialogues.Length)
-        {
-            isDialogueActive = true;
-            // after the block, also wait if paused:
-            yield return new WaitUntil(() => !pauseMainDialogue);
-
-            Dialogue currentDialogue = currentSequence.dialogues[currentDialogueIndex];
-
-            //Debug.Log("Advances Tutorial? " + currentDialogue.advancesTutorial);
-
-            // Skip this dialogue if tutorial is skipped and this dialogue is marked to be skipped with the tutorial
-            if (tutorialSkipped && currentDialogue.skipWithTutorial && currentSequenceIndex == 0)
+            // skip if tutorial global skip and this dialogue wanted to be skipped
+            if (tutorialManager != null && tutorialManager.IsTutorialSkipped && d.skipWithTutorial && sequenceIndex == 0)
             {
                 currentDialogueIndex++;
                 continue;
             }
 
-            nameTextUI.text = currentDialogue.characterName;
-
-            // Play audio if available (one audio clip for multiple lines)
-            if (currentDialogue.audioClip != null)
+            // Set name and audio
+            if (nameTextUI != null) nameTextUI.text = d.characterName ?? "";
+            if (d.audioClip != null && audioSource != null)
             {
-                playFillerBeep = false;
-                audioSource.clip = currentDialogue.audioClip;
+                audioSource.clip = d.audioClip;
                 audioSource.Play();
+                playFillerBeep = false;
             }
             else
             {
                 playFillerBeep = true;
             }
 
-            isDialogueSpeaking = true; // <--- Dialogue is about to speak
-
-            //calculating dialogue speed
-            int totalLength = 0;
-            foreach (string line in currentDialogue.dialogueLines)
+            // compute typewriter speed
+            float typeSpeed = defaultTextSpeed;
+            if (d.audioClip != null && d.dialogueLines != null)
             {
-                totalLength += line.Length;
+                int totalLength = 0;
+                foreach (var l in d.dialogueLines) totalLength += l.Length;
+                if (totalLength > 0) typeSpeed = Mathf.Max(0.001f, d.audioClip.length / (float)totalLength - 0.01f);
             }
 
-            // Adjust speed if an audio clip is present
-            if (currentDialogue.audioClip != null)
+            // Show each line
+            foreach (string line in d.dialogueLines)
             {
-                typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.015f;
-            }
-            else
-            {
-                typewriterSpeed = defaultTextSpeed;
-            }
+                // honor pause caused externally
+                yield return new WaitWhile(() => currentState == DialogueState.Paused);
 
-            // Show lines
-            foreach (string line in currentDialogue.dialogueLines)
-            {
-                // before each line begins
-                yield return new WaitUntil(() => !pauseMainDialogue);
+                // Typewriter: tracked coroutine so we can stop or interrupt it
+                if (typewriterCoroutine != null) { StopCoroutine(typewriterCoroutine); typewriterCoroutine = null; }
+                typewriterCoroutine = StartCoroutine(TypewriterEffect(line, typeSpeed));
+                yield return typewriterCoroutine;
+                typewriterCoroutine = null;
 
-                yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
-
-                // Skip: break out of current dialogue block
-                if (isSkipping)
+                // If skip was requested during line, consume skip and break out to next dialogue
+                if (skipRequested)
                 {
-                    break;
-                }
+                    Debug.Log("Skip is being called");
+                    skipRequested = false;
+                    if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
 
-                yield return new WaitForSeconds(0.3f);
-            }
-
-
-            // Skip: clear audio, advance dialogue index, continue outer loop
-            if (isSkipping)
-            {
-                isSkipping = false;
-                isDialogueSpeaking = false;
-
-                if (audioSource.isPlaying)
-                {
-                    audioSource.Stop();
-                }
-                    
-
-                if (currentDialogue.advancesTutorial == false)
-                {
-                    dialogueTextUI.text = "";
-                }
-
-                
-
-                if (isFailureTriggered)
-                {
-                    isDialogueSpeaking = false;
-                    isFailureSpeaking = true;
-                    yield return new WaitUntil(() => !isFailureSpeaking);
-                }
-
-                // Still advance tutorial if this dialogue was supposed to
-                if (currentDialogue.advancesTutorial)
-                {
-                    //set the text to the last line in the set instead of wiping it
-                    dialogueTextUI.text = currentDialogue.dialogueLines[currentDialogue.dialogueLines.Length - 1];
-                    tutorialManager.ProgressTutorial();
-
-                    yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
-
-                    if (currentDialogueIndex == currentSequence.dialogues.Length - 1)
+                    if (d.advancesTutorial == false)
                     {
-                        yield break;
+                        dialogueTextUI.text = "";
                     }
                 }
 
-                if (currentDialogueIndex == currentSequence.dialogues.Length - 1)
-                {
-                    
-                    //consider this dialogue finished, remove from the queue count
-                    numDialoguesQueued--;
-                    //don't fade out if there's another dialogue queued
-                    if(numDialoguesQueued <= 0)
-                    {
-                        FadeOut();
-                    }
-                    
-                }
-
+                // small buffer between lines
                 yield return new WaitForSeconds(0.3f);
-
-                
-                currentDialogueIndex++;
-                continue;
             }
 
-
-
-            //Add delay between dialogues
-            // Wait until the audio clip finishes before moving to the next dialogue unless skipping
-            yield return new WaitUntil(() => !audioSource.isPlaying);
-            yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
-
-            isDialogueSpeaking = false;
-
-            if (isFailureTriggered)
+            // if d advances tutorial, call progress and wait for completion
+            if (d.advancesTutorial && tutorialManager != null)
             {
-                isFailureSpeaking = true;
-                yield return new WaitUntil(() => !isFailureSpeaking);
-            }
-
-
-            //advance tutorial if the dialogue is intended to.
-
-            if (currentDialogue.advancesTutorial)
-            {
-                Debug.Log("I am progressing the tutorial now");
                 tutorialManager.ProgressTutorial();
-                yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted()); // Ensure the tutorial step is completed before continuing
-
+                yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
             }
-            
+
+            // wait for dialogue clip to finish (if any) before continuing
+            if (audioSource != null && audioSource.clip != null)
+            {
+                yield return new WaitWhile(() => audioSource.isPlaying);
+            }
+
+            // small post-dialogue delay
+            yield return new WaitForSeconds(d.delayBetweenDialogues);
 
             currentDialogueIndex++;
-            isDialogueSpeaking = false; // <--- Dialogue finished
-
         }
 
-        // End dialogue
-        numDialoguesQueued--;
-        isDialogueActive = false;
-        yield return new WaitForSeconds(5f);
-        
-        
-        OnDialogueEnd?.Invoke(currentSequenceIndex);
+        // sequence finished
+        // give OnDialogueEnd event similar to original behavior
+        OnDialogueEndSafe(currentSequenceIndex);
 
-        if(numDialoguesQueued <= 0)
+        // fade out if no queued sequences are pending
+        if (sequenceQueue.Count <= 0)
         {
-            FadeOut();
-            yield return new WaitForSeconds(1f);
-            dialogueCanvas.enabled = false;
+            yield return StartCoroutine(FadeCanvas(false));
+            HideCanvasImmediate();
         }
-        
     }
 
-    public IEnumerator PlayFailureDialogue(int index)
+    #endregion
+
+    #region Failure Dialogue Handling
+
+    public IEnumerator PlayFailureDialogueRoutine(int index)
     {
-        // Wait until no dialogue is active
-        Debug.Log("Is dialogue Speaking?: " + isDialogueSpeaking);
-        yield return new WaitUntil(() => !isDialogueSpeaking);
+        if (failureDialogues == null || index < 0 || index >= failureDialogues.dialogues.Length) yield break;
 
-        if (isDialogueActive == false)
-        {
-            isDialogueActive = true;
-            dialogueCanvas.enabled = true;
-            FadeIn();
-        }
+        // Wait until any currently typing line finishes (so we don't cut mid-letter)
+        yield return new WaitUntil(() => !isLineTyping);
 
-        Debug.Log("Playing Failure Dialogue at index: " + index);
+        yield return new WaitUntil(() => isPlayingFailureDialogue == false);
 
-        // signal “failure” mode on
-        pauseMainDialogue = true;
-        isFailureSpeaking = true;
+        // Pause the main sequence without clearing its indices or state
+        DialogueState prevState = currentState;
+        currentState = DialogueState.Paused;
+        isPlayingFailureDialogue = true;
         currentFailureIndex = index;
 
-        Dialogue currentDialogue = failureDialogues.dialogues[index];
+        // ensure canvas is visible
+        ClearDialogueTextBeforeShow();
+        ShowCanvasImmediate();
+        yield return StartCoroutine(FadeCanvas(true));
 
-        nameTextUI.text = currentDialogue.characterName;
+        Dialogue d = failureDialogues.dialogues[index];
 
-        if (currentDialogue.audioClip != null)
+        if (nameTextUI != null) nameTextUI.text = d.characterName ?? "";
+        if (d.audioClip != null && audioSource != null)
         {
-            audioSource.clip = currentDialogue.audioClip;
+            audioSource.clip = d.audioClip;
             audioSource.Play();
+            playFillerBeep = false;
+        }
+        else
+        {
+            playFillerBeep = true;
         }
 
-        int totalLength = 0;
-        foreach (string line in currentDialogue.dialogueLines)
+        // compute typewriter speed for failure dialogue
+        float typeSpeed = defaultTextSpeed;
+        if (d.audioClip != null && d.dialogueLines != null)
         {
-            totalLength += line.Length;
+            int totalLength = 0;
+            foreach (var l in d.dialogueLines) totalLength += l.Length;
+            if (totalLength > 0) typeSpeed = Mathf.Max(0.001f, d.audioClip.length / (float)totalLength - 0.01f);
         }
 
-        if (currentDialogue.audioClip != null)
+        // play lines
+        foreach (string line in d.dialogueLines)
         {
-            typewriterSpeed = currentDialogue.audioClip.length / (float)totalLength - 0.01f;
-        }
+            if (typewriterCoroutine != null) { StopCoroutine(typewriterCoroutine); typewriterCoroutine = null; }
+            typewriterCoroutine = StartCoroutine(TypewriterEffect(line, typeSpeed));
+            yield return typewriterCoroutine;
+            typewriterCoroutine = null;
 
-        foreach (string line in currentDialogue.dialogueLines)
-        {
-            yield return StartCoroutine(TypewriterEffect(line, currentDialogue.audioClip, typewriterSpeed));
             yield return new WaitForSeconds(0.3f);
         }
 
-        yield return new WaitUntil(() => !audioSource.isPlaying);
-        yield return new WaitForSeconds(currentDialogue.delayBetweenDialogues);
+        // wait for audio & delay
+        if (audioSource != null && audioSource.clip != null) yield return new WaitWhile(() => audioSource.isPlaying);
+        yield return new WaitForSeconds(d.delayBetweenDialogues);
 
-        isFailureSpeaking = false;
-        isFailureTriggered = false;
-        pauseMainDialogue = false;
+        // failure-specific tutorial handling (keeps your original logic)
+        if (d.advancesTutorial && tutorialManager != null && !tutorialManager.TutorialStepCompleted())
+        {
+            tutorialManager.CompleteStep();
+            tutorialManager.ProgressTutorial();
+            // do not block here — original code didn't wait; keep same behavior
+        }
+
+        // optionally increment the main dialogue index if this failure wanted to skip the next
+        if (d.incrementsDialogue) currentDialogueIndex = Mathf.Min(currentDialogueIndex + 1, (dialogueSequences.Length > 0 && currentSequenceIndex >= 0 && currentSequenceIndex < dialogueSequences.Length) ? dialogueSequences[currentSequenceIndex].dialogues.Length : currentDialogueIndex);
+
+        // clear failure flags and resume
+        isPlayingFailureDialogue = false;
         currentFailureIndex = -1;
+        currentState = prevState == DialogueState.Playing ? DialogueState.Playing : DialogueState.Idle;
 
-        if (currentDialogue.advancesTutorial)
+        // If nothing is playing after the failure (no queued sequences), fade out and hide
+        if (currentState == DialogueState.Idle && sequenceQueue.Count == 0)
         {
-            Debug.Log("Current Failure Dialogue Advances Tutorial");
-            // Only progress if tutorial hasn't already been progressed
-            if (!tutorialManager.TutorialStepCompleted())
-            {
-                Debug.Log("I am progressing the tutorial now");
-                tutorialManager.CompleteStep(); // this sets isWaitingForAction = false
-                tutorialManager.ProgressTutorial();
-                //yield return new WaitUntil(() => tutorialManager.TutorialStepCompleted());
-            }
+            yield return StartCoroutine(FadeCanvas(false));
+            HideCanvasImmediate();
         }
-
-        if(currentDialogue.incrementsDialogue)
-        {
-            currentDialogueIndex++;
-        }
-
-        
-
-        //fade out and disable canvas again if this occured while no other dialogue is queued
-        if (!isDialogueActive)
-        {
-            FadeOut();
-            dialogueCanvas.enabled = false;
-        }
-       
-        
-
     }
 
-    /// <summary>
-    /// Displays text with a typewriter effect.
-    /// </summary>
-    private IEnumerator TypewriterEffect(string dialogueText, AudioClip audioClip, float typewriterSpeed)
+    #endregion
+
+    #region Typewriter & Helpers
+
+    private IEnumerator TypewriterEffect(string fullText, float charDelay)
     {
+        isLineTyping = true;
         dialogueTextUI.text = "";
-        isSkipping = false;  // reset skip flag for this line
 
-        foreach (char letter in dialogueText)
+        justBeeped = false;
+        
+
+        for (int i = 0; i < fullText.Length; i++)
         {
-            dialogueTextUI.text += letter;
+            // If a failure paused us mid-type, break (failure routine will handle resume / retype if desired)
+            if (currentState == DialogueState.Paused) break;
 
-            if(playFillerBeep)
+            dialogueTextUI.text += fullText[i];
+
+            if (playFillerBeep && fillerLineBeep != null && audioSource != null)
             {
-                if(justBeeped)
-                {
-                    justBeeped = false;
-                }
-                else
+                // alternate beep on characters to avoid spam
+                if (!justBeeped)
                 {
                     audioSource.PlayOneShot(fillerLineBeep);
                     justBeeped = true;
                 }
-                
+                else justBeeped = false;
             }
 
-            if (isSkipping)
+            // allow skipping the line
+            if (skipRequested)
             {
                 if (sfxSource && skipSfxClip)
                     sfxSource.PlayOneShot(skipSfxClip);
@@ -441,112 +444,108 @@ public class DialogueManager : MonoBehaviour
                 if (audioSource.isPlaying)
                     audioSource.Stop();
 
-                
+                isLineTyping = false;
                 yield break;
             }
 
-            yield return new WaitForSeconds(typewriterSpeed);
-        }
-    }
-
-    public void RestartCurrentDialogue(float delayTime)
-    {
-        StopAllCoroutines();
-
-        // Stop any audio
-        if (audioSource.isPlaying)
-            audioSource.Stop();
-
-        // Clear dialogue UI
-        nameTextUI.text = "";
-        dialogueTextUI.text = "";
-        isSkipping = false;
-        isDialogueSpeaking = false;
-        isFailureSpeaking = false;
-        isFailureTriggered = false;
-        pauseMainDialogue = false;
-
-        // Restart dialogue from first line of the current sequence
-        currentDialogueIndex = 0;
-
-        if (currentSequenceIndex >= 0 && currentSequenceIndex < dialogueSequences.Length)
-        {
-            StartCoroutine(DelayTime(delayTime, currentSequenceIndex));
-        }
-        else
-        {
-            Debug.LogWarning("Invalid currentSequenceIndex: " + currentSequenceIndex);
-        }
-    }
-
-
-    private IEnumerator DelayTime(float delayTime, int sequenceIndex)
-    {
-        yield return new WaitForSeconds(delayTime); // Wait for the specified time
-        currentSequenceIndex = sequenceIndex;
-        currentDialogueIndex = 0;
-        
-        //isDialogueActive = true;
-        StartCoroutine(DisplayDialogue());
-    }
-
-    // Fade in the UI element (make it visible)
-    public void FadeIn()
-    {
-        dialogueCanvas.enabled = true;
-        StartCoroutine(FadeCanvasGroup(dialogueCanvasGroup, dialogueCanvasGroup.alpha, 1f));
-    }
-
-    // Fade out the UI element (make it invisible)
-    public void FadeOut()
-    {
-        StartCoroutine(FadeCanvasGroup(dialogueCanvasGroup, dialogueCanvasGroup.alpha, 0f));
-    }
-
-    // Coroutine to fade the CanvasGroup over time
-    private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
-    {
-        float timeElapsed = 0f;
-
-        while (timeElapsed < fadeDuration)
-        {
-            // Lerp alpha from start to end
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timeElapsed / fadeDuration);
-            timeElapsed += Time.deltaTime;
-            yield return null; // Wait until the next frame
+            yield return new WaitForSeconds(charDelay);
         }
 
-        canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+        isLineTyping = false;
     }
 
+    /// <summary>
+    /// Immediately skip the tutorial dialogue sequence.
+    /// Stops all active tutorial dialogue, clears the queue, and fades out the canvas.
+    /// </summary>
     public void SkipTutorial()
     {
-        StopAllCoroutines();
-        audioSource.Stop();
-        if (sfxSource && skipSfxClip)
-            sfxSource.PlayOneShot(skipSfxClip);
-        tutorialSkipped = true;
-        numDialoguesQueued--;
-        isSkipping = true;
-        pauseMainDialogue = true;
-        dialogueTextUI.text = "";
-        isDialogueActive = false;
-        isDialogueSpeaking = false;
-        FadeOut();
+        if (sfxSource && skipSfxClip) sfxSource.PlayOneShot(skipSfxClip);
 
+        // Stop any active coroutines cleanly
+        ForceStopAll(clearQueue: true);
 
+        // Fade out the dialogue canvas visually (don’t rely on ForceStopAll hiding it instantly)
+        if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
+        fadeCoroutine = StartCoroutine(FadeCanvas(false));
+
+        //Debug.Log("Tutorial skipped by player.");
     }
 
-    public void IncrementDialogue()
+
+    private IEnumerator FadeCanvas(bool fadeIn)
     {
-        if (SkipNextDialogue)
+        // stop any existing fade
+        if (fadeCoroutine != null) { StopCoroutine(fadeCoroutine); fadeCoroutine = null; }
+        fadeCoroutine = StartCoroutine(FadeCanvasGroupRoutine(dialogueCanvasGroup, fadeIn ? 0f : dialogueCanvasGroup.alpha, fadeIn ? 1f : 0f, fadeDuration));
+        yield return fadeCoroutine;
+        fadeCoroutine = null;
+    }
+
+    private IEnumerator FadeCanvasGroupRoutine(CanvasGroup cg, float startAlpha, float endAlpha, float duration)
+    {
+        currentState = DialogueState.Fading;
+
+        float t = 0f;
+        // If startAlpha isn't current, sample current alpha so fades are smooth if interrupted
+        startAlpha = cg != null ? cg.alpha : startAlpha;
+
+        while (t < duration)
         {
-            SkipNextDialogue = false;
-            Debug.Log("Skipped normal dialogue due to failure");
-            return;
+            if (cg != null) cg.alpha = Mathf.Lerp(startAlpha, endAlpha, t / duration);
+            t += Time.deltaTime;
+            yield return null;
         }
 
-        currentDialogueIndex++;
-        //StartDialogueSequence(currentDialogueIndex); // Or however you start next line
+        if (cg != null) cg.alpha = endAlpha;
+
+        // Clear UI on fade-out to avoid flash next time
+        if (Mathf.Approximately(endAlpha, 0f))
+        {
+            ClearTextsImmediate();
+            HideCanvasImmediate();
+        }
+
+        // If there is a sequence active, move back to Playing; otherwise Idle
+        currentState = sequenceQueue.Count > 0 || displayCoroutine != null ? DialogueState.Playing : DialogueState.Idle;
     }
+
+    private void ClearDialogueTextBeforeShow()
+    {
+        // Clear immediately before fade-in so you don't see old text
+        if (dialogueTextUI != null) dialogueTextUI.text = "";
+        if (nameTextUI != null) nameTextUI.text = "";
+    }
+
+    private void ClearTextsImmediate()
+    {
+        if (dialogueTextUI != null) dialogueTextUI.text = "";
+        if (nameTextUI != null) nameTextUI.text = "";
+    }
+
+    private void ShowCanvasImmediate()
+    {
+        if (dialogueCanvas != null) dialogueCanvas.enabled = true;
+        if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 0f;
+    }
+
+    private void HideCanvasImmediate()
+    {
+        if (dialogueCanvas != null) dialogueCanvas.enabled = false;
+        if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 0f;
+    }
+
+    private void OnDialogueEndSafe(int sequenceIndex)
+    {
+        try
+        {
+            OnDialogueEnd?.Invoke(sequenceIndex);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning("OnDialogueEnd handler threw: " + e);
+        }
+    }
+
+    #endregion
 }

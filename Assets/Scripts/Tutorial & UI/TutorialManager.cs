@@ -71,6 +71,11 @@ public class TutorialManager : MonoBehaviour
     private float upsideDownTimer = 0f;
     private const float upsideDownDuration = 3f;
 
+    public bool IsTutorialSkipped
+    {
+        get { return tutorialSkipped; }
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -322,19 +327,19 @@ public class TutorialManager : MonoBehaviour
         {
             //Debug.Log("Player failed to grab in time");
 
-            if (dialogueManager.IsFailureTriggered)
+            if (dialogueManager.isPlayingFailureDialogue)
             {
-                yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
+                yield return new WaitUntil(() => !dialogueManager.isPlayingFailureDialogue);
             }
 
-            dialogueManager.IsFailureTriggered = true;
+            dialogueManager.isPlayingFailureDialogue = true;
 
-            dialogueManager.SkipNextDialogue = true; // <- Tell it to skip the success dialogue
-            StartCoroutine(dialogueManager.PlayFailureDialogue(0));
+            //dialogueManager.SkipNextDialogue = true; // <- Tell it to skip the success dialogue
+            StartCoroutine(dialogueManager.PlayFailureDialogueRoutine(0));
         }
 
         FadeOut(propelCanvasGroup);
-        yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
+        yield return new WaitUntil(() => !dialogueManager.isPlayingFailureDialogue);
         stepComplete = true;
         CompleteStep();
     }
@@ -473,9 +478,9 @@ public class TutorialManager : MonoBehaviour
         HideAllPanels();
 
         // Reset skip flags in DialogueManager
-        dialogueManager.SkipNextDialogue = false;
-        dialogueManager.IsFailureTriggered = false;
-        dialogueManager.TutorialSkipped = false;
+        //dialogueManager.SkipNextDialogue = false;
+        //dialogueManager.IsFailureTriggered = false;
+        //dialogueManager.TutorialSkipped = false;
 
         // Reactivate the tutorial door if it was opened
         if (doorToOpen != null)
@@ -484,6 +489,8 @@ public class TutorialManager : MonoBehaviour
         }
 
         // Restart dialogue from the beginning of the tutorial sequence
+        // Stop everything and clear queued dialogue
+        dialogueManager.ForceStopAll(clearQueue: true);
         dialogueManager.RestartCurrentDialogue(2f);
 
         // (Optional) Play intro jingle again
@@ -531,11 +538,13 @@ public class TutorialManager : MonoBehaviour
         // Rolling right (positive TotalRotation)
         if (requiredRotation > 0)
         {
+            if (playerController.TotalRotation < 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // Rolling left (negative TotalRotation)
         else if (requiredRotation < 0)
         {
+            if (playerController.TotalRotation > 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // else progress = 0
