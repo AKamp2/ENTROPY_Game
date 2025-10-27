@@ -32,7 +32,11 @@ public class MainMenu : MonoBehaviour
         //{
 
         //}
-        // TODO: setup the save files on boot:
+        // hide continue button
+        if (!GlobalSaveManager.SaveDataExists())
+        {
+            // ContinueButton.Hide()
+        }
     }
 
     /// <summary>

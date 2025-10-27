@@ -127,6 +127,24 @@ public static class GlobalSaveManager
             }
         }
     }
+    public static bool SaveDataExists()
+    {
+        // The path where our save files are stored
+        string path = Application.persistentDataPath;
+        // Find all of the temporary save files
+        string[] files = Directory.GetFiles(path, "*Save*", SearchOption.AllDirectories);
+        if (files.Length > 0) return true;
+        return false;
+    }
+    public static bool TempDataExists()
+    {
+        // The path where our save files are stored
+        string path = Application.persistentDataPath;
+        // Find all of the temporary save files
+        string[] files = Directory.GetFiles(path, "*Temp*", SearchOption.AllDirectories);
+        if (files.Length > 0) return true;
+        return false;
+    }
     public static bool SaveFileExists(string fileName)
     {
         return File.Exists(Path.Join(Application.persistentDataPath, fileName));

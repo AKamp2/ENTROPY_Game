@@ -1581,7 +1581,9 @@ public class ZeroGravity : MonoBehaviour, ISaveable
         //    rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
         //    rb.angularVelocity = Vector3.zero;
         //}
-        GlobalSaveManager.LoadFromSave = true;
+
+        // whether or not we load from save depends on whether temp data exists
+        GlobalSaveManager.LoadFromSave = GlobalSaveManager.TempDataExists();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
