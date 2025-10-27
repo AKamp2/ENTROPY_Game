@@ -15,6 +15,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject optionsMenu;
     [SerializeField] private Volume volume;
     [SerializeField] private UIAudioManager uiAudio;
+    private bool continueButtonEnabled = false;
 
     private void Start()
     {
@@ -32,10 +33,10 @@ public class MainMenu : MonoBehaviour
         //{
 
         //}
-        // hide continue button
-        if (!GlobalSaveManager.SaveDataExists())
+        // show continue button
+        if (GlobalSaveManager.SaveDataExists())
         {
-            // ContinueButton.Hide()
+            continueButtonEnabled = true;
         }
     }
 
@@ -55,10 +56,16 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
-        uiAudio?.PlaySelectSound();
-        GlobalSaveManager.LoadFromSave = true;
-        GlobalSaveManager.OverwriteTempFiles();
-        SceneManager.LoadScene("Level1New");
+        if (continueButtonEnabled)
+        {
+            uiAudio?.PlaySelectSound();
+            GlobalSaveManager.LoadFromSave = true;
+            GlobalSaveManager.OverwriteTempFiles();
+            SceneManager.LoadScene("Level1New");
+        } else
+        {
+            uiAudio?.PlayBackSound();
+        }
     }
 
     /// <summary>
