@@ -259,6 +259,11 @@ public class ZeroGravity : MonoBehaviour
         set { potentialGrabbedBar = value; }
     }
 
+    public Transform GrabbedBar
+    {
+        get { return grabbedBar; }
+    }
+
     public Transform PotentialWall
     {
         get { return potentialWall; }

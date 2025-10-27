@@ -815,6 +815,13 @@ public class DoorScript : MonoBehaviour
         }
     }
 
+    public IEnumerator PlayDoorAlarm(float duration)
+    {
+        endAudioSource.clip = doorAlarm;
+        endAudioSource.Play();
+        yield return new WaitForSeconds(duration);
+        StartCoroutine(FadeOutAndStop(endAudioSource, 0.3f));
+    }
 
 
 }

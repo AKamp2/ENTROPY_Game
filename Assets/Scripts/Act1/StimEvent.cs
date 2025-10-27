@@ -16,6 +16,9 @@ public class StimEvent : MonoBehaviour
     [SerializeField]
     private CanvasGroup stimUseCanvasGroup;
 
+    [SerializeField]
+    private WristMonitor wristMonitor;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -42,6 +45,8 @@ public class StimEvent : MonoBehaviour
 
         yield return new WaitForSeconds(6f);
         dispenser.ToggleUsability(true);
+        wristMonitor.CompleteObjective();
+
 
         yield return new WaitUntil(() => playerScript.NumStims == 3);
 
@@ -49,10 +54,13 @@ public class StimEvent : MonoBehaviour
 
         yield return new WaitUntil(() => playerScript.NumStims < 3);
 
+        wristMonitor.CompleteObjective();
         StartCoroutine(FadeCanvasGroup(stimUseCanvasGroup, 1f, 0f));
+        
 
         yield return new WaitForSeconds(2f);
 
+        yield return StartCoroutine(doorToOpen.PlayDoorAlarm(1.2f));
         doorToOpen.SetState(DoorScript.States.Closed);
 
 

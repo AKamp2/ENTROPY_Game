@@ -26,6 +26,8 @@ public class DormHallEvent : MonoBehaviour
 
     private DialogueManager dialogueManager;
 
+    [SerializeField] private Light monitorLight;
+
     public bool CanGrab
     {
         get { return canGrab; }
@@ -44,6 +46,7 @@ public class DormHallEvent : MonoBehaviour
         isGrabbable = true;
 
         dialogueManager = FindFirstObjectByType<DialogueManager>();
+        StartCoroutine(BlinkMonitor());
     }
 
     // Update is called once per frame
@@ -132,5 +135,17 @@ public class DormHallEvent : MonoBehaviour
         }
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    private IEnumerator BlinkMonitor()
+    {
+        while (wristMonitor.HasWristMonitor == false)
+        {
+            monitorLight.enabled = true;
+            yield return new WaitForSeconds(0.5f);
+
+            monitorLight.enabled = false;
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 }
