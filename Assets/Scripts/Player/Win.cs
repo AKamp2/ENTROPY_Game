@@ -7,7 +7,7 @@ public class Win : MonoBehaviour
     public bool winCondition = false;
     [SerializeField]
     private DoorScript winDoor;
-    private bool canWin = true;
+    public bool canWin = true;
     public CanvasGroup fadeCanvasGroup;
     public CanvasGroup thanksGroup;
     private GameObject _uiCam;
