@@ -25,7 +25,7 @@ public class TerminalTextureRendererManager : MonoBehaviour
         {
             // hard coding avoiding overwriting the server terminals screen material...
             // eventually can come back to this and use a special prefab instance instead
-            if (terminal.gameObject.name == "TerminalServer") continue;
+            if (terminal.gameObject.name == "TerminalServer" || terminal.gameObject.name == "TerminalDormHall") continue;
 
             // get the mesh renderer for the individual screen of the terminal
             MeshRenderer uiMeshRenderer = terminal.TerminalScreen.GetComponent<MeshRenderer>();
