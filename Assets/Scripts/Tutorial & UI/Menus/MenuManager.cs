@@ -76,7 +76,7 @@ public class MenuManager : MonoBehaviour
             dialogueCanvas.SetActive(false);
             tutorialCanvas.SetActive(false);
             _unscaledTime += Time.unscaledTime;
-            if (_unscaledTime >= 2000)
+            if (_unscaledTime >= 1200)
             {
                 _unscaledTime = 1000;
             }
