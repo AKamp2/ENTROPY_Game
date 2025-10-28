@@ -7,7 +7,7 @@ public class Win : MonoBehaviour
     public bool winCondition = false;
     [SerializeField]
     private DoorScript winDoor;
-    private bool canWin = true;
+    public bool canWin = true;
     public CanvasGroup fadeCanvasGroup;
     public CanvasGroup thanksGroup;
     private GameObject _uiCam;
@@ -42,7 +42,7 @@ public class Win : MonoBehaviour
 
     private IEnumerator ShowWin()
     {
-        yield return StartCoroutine(FadeOut(fadeCanvasGroup, 15f));
+        yield return StartCoroutine(FadeOut(fadeCanvasGroup, 10f));
         //yield return new WaitForSeconds(1f);
         winCondition = true;
 

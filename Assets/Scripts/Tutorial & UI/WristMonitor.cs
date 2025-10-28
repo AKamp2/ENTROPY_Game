@@ -97,9 +97,10 @@ public class WristMonitor : MonoBehaviour
     private void Start()
     {
         //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Empty", "<size=14><color=orange>Current Objective: </size></color><size=12>\nwaiting for objective</size>\n", "<size=10><color=orange>Sub Objective: </color>\n</size>", false));
+        mainObjectives.Add(new Objective("Empty", "<size=14><color=orange>Current Objective: </size></color><size=12>\nConnect ALAN to the nearest terminal</size>\n", "<size=10><color=orange>Sub Objective: </color>\n</size>", false));
         mainObjectives.Add(new Objective("Medbay", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Medbay</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Reconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Dining Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Dining Room</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Reconnect ALAN</size>", false));
+        mainObjectives.Add(new Objective("Dining Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\nRefill your stims</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Heal yourself</size>", false));
+        mainObjectives.Add(new Objective("Dining Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\nReach the Dining room</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8></size>", false));
         mainObjectives.Add(new Objective("Server Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Server Room</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Override Manual Lockdown</size>", false));
         mainObjectives.Add(new Objective("Facilities Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Facilities Room</size> \n", "", false));
         if (targetRectTransform == null) {
@@ -109,6 +110,7 @@ public class WristMonitor : MonoBehaviour
         startPosition = targetRectTransform.anchoredPosition3D;
         duration = 0f;
         //this.enabled = false;
+        
     }
 
 
@@ -212,5 +214,7 @@ public class WristMonitor : MonoBehaviour
             _displayTexts[i].SetActive(i== displayIndex);
         }
     }
+
+    
 }
 

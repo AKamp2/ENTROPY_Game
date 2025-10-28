@@ -555,14 +555,17 @@ public class TutorialManager : MonoBehaviour
         // Rolling right (positive TotalRotation)
         if (requiredRotation > 0)
         {
+            if (playerController.TotalRotation < 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // Rolling left (negative TotalRotation)
         else if (requiredRotation < 0)
         {
+            if (playerController.TotalRotation > 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // else progress = 0
+
 
         rollProgressBar.value = progress;
     }

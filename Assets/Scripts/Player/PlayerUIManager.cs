@@ -501,8 +501,12 @@ public class PlayerUIManager : MonoBehaviour
                     {
                         //grabUIText.text = "'SPACEBAR'";
                         //set the sprite for the space bar indicator
-                        inputIndicator.sprite = spaceIndicator;
-                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                        if(inputIndicator.sprite == null && grabUIText.text == "")
+                        {
+                            inputIndicator.sprite = spaceIndicator;
+                            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                        }
+                        
                     }
                 }
             }
