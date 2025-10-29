@@ -29,7 +29,7 @@ public class AirBreachTrigger : MonoBehaviour, ISaveable
         {
             GetComponent<Collider>().enabled = false;
             StartCoroutine(TriggerVents());
-
+            triggered = true;
         }
     }
 
