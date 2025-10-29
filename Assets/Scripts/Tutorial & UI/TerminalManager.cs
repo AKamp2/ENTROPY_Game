@@ -15,8 +15,6 @@ public class TerminalManager : MonoBehaviour, ISaveable
     }
     [SerializeField]
     private List<Terminal> terminals;
-    // for save
-    private int latestTerminalIndex = -1;
     void Start()
     {
         // continue from save
@@ -51,9 +49,17 @@ public class TerminalManager : MonoBehaviour, ISaveable
         {
             get { return terminalStates; }
         }
-        public TerminalData(List<bool> _terminalStates)
+        [SerializeField]
+        private int latestTerminalIndex;
+        public int LatestTerminalIndex
+        {
+            get { return latestTerminalIndex; }
+            set {  latestTerminalIndex = value; }
+        }
+        public TerminalData(List<bool> _terminalStates, int _latestTerminalIndex)
         {
             terminalStates = _terminalStates;
+            latestTerminalIndex = _latestTerminalIndex;
         }
     }
     public void LoadSaveFile(string fileName)
@@ -69,7 +75,7 @@ public class TerminalManager : MonoBehaviour, ISaveable
             {
                 if (_terminalData.TerminalStates[i])
                 {
-                    if (GlobalSaveManager.SavedWithTerminal && i == latestTerminalIndex)
+                    if (GlobalSaveManager.SavedWithTerminal && i == _terminalData.LatestTerminalIndex)
                     {
                         terminals[i].MediumActivation();
                     }
@@ -84,16 +90,15 @@ public class TerminalManager : MonoBehaviour, ISaveable
 
     public void CreateSaveFile(string fileName)
     {
-        // store a copy of the checkpoint data in the global save manager
-        // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
-        TerminalData _terminalData = new TerminalData(new List<bool>());
+        // store a copy of the terminal data in the global save manager
+        TerminalData _terminalData = new TerminalData(new List<bool>(), -1);
         for (int i = 0; i < terminals.Count; i++)
         {
             _terminalData.TerminalStates.Add(terminals[i].isActivated);
             // track the index of the current terminal for save loading
             if (terminals[i] == CurrentTerminal)
             {
-                latestTerminalIndex = i;
+                _terminalData.LatestTerminalIndex = i;
             }
         }
         // this will create a file backing up the data we give it
