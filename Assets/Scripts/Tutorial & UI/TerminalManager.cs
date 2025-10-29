@@ -1,7 +1,9 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class TerminalManager : MonoBehaviour
+public class TerminalManager : MonoBehaviour, ISaveable
 {
 
     private Terminal currentTerminal;
@@ -11,7 +13,15 @@ public class TerminalManager : MonoBehaviour
         get { return currentTerminal; }
         set { currentTerminal = value; }
     }
-
+    [SerializeField]
+    private List<Terminal> terminals;
+    // for save
+    private int latestTerminalIndex = -1;
+    void Start()
+    {
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
+    }
     public void OnInteract(InputAction.CallbackContext context)
     {
         
@@ -20,9 +30,76 @@ public class TerminalManager : MonoBehaviour
             if (context.performed && currentTerminal.isLookedAt && !currentTerminal.isActivated)
             {
                 currentTerminal.Activation();
-                
+                // store a copy of the Player's data, passing in the position of this checkpoint
+                currentTerminal.PlayerScript.StorePlayerData(currentTerminal.TargetTransform.transform.position);
+                // save the game at checkpoints
+                //GlobalSaveManager.Instance.Data.SavedWithTerminal = true;
+                //GlobalSaveManager.Instance.CreateTempSaveFile();
+                //GlobalSaveManager.Instance.CreatePersistantSaveFile();
+                GlobalSaveManager.SavedWithTerminal = true;
+                GlobalSaveManager.SaveGame(true);
             }
         }
+    }
+    // these are for serialization and will be created during the save
+    [Serializable]
+    public class TerminalData
+    {
+        [SerializeField]
+        private List<bool> terminalStates;
+        public List<bool> TerminalStates
+        {
+            get { return terminalStates; }
+        }
+        public TerminalData(List<bool> _terminalStates)
+        {
+            terminalStates = _terminalStates;
+        }
+    }
+    public void LoadSaveFile(string fileName)
+    {
+        // this will load data from the file to a variable we will use to change this objects data
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        if (loadedData != null && loadedData != "")
+        {
+            TerminalData _terminalData = JsonUtility.FromJson<TerminalData>(loadedData);
+            // activates all of the terminals, only the current terminal will play its cutscene
+            for (int i = 0; i < _terminalData.TerminalStates.Count; i++)
+            {
+                if (_terminalData.TerminalStates[i])
+                {
+                    if (GlobalSaveManager.SavedWithTerminal && i == latestTerminalIndex)
+                    {
+                        terminals[i].MediumActivation();
+                    }
+                    else
+                    {
+                        terminals[i].SoftActivation();
+                    }
+                }
+            }
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
+    {
+        // store a copy of the checkpoint data in the global save manager
+        // GlobalSaveManager.Instance.Data.Checkpoints = new List<Checkpoint>(checkpoints);
+        TerminalData _terminalData = new TerminalData(new List<bool>());
+        for (int i = 0; i < terminals.Count; i++)
+        {
+            _terminalData.TerminalStates.Add(terminals[i].isActivated);
+            // track the index of the current terminal for save loading
+            if (terminals[i] == CurrentTerminal)
+            {
+                latestTerminalIndex = i;
+            }
+        }
+        // this will create a file backing up the data we give it
+        string json = JsonUtility.ToJson(_terminalData);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
 
     //What you can do is move the onInteract into this script so that you don't have to give the player input an OnInteract for every single terminal in the game.
