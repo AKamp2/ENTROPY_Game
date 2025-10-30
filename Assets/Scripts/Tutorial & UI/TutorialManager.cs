@@ -17,11 +17,11 @@ public class TutorialManager : MonoBehaviour
     //keep track when inside of the tutorial
     public bool inTutorial = false;
 
-    private int currentStep = 0;
+    public int currentStep = 0;
     private bool isWaitingForAction = false;
     private Coroutine failureTimer;
     private bool tutorialSkipped = false;
-    private bool stepComplete = false;
+    public bool stepComplete = false;
 
     //tutorial canvas groups
     public CanvasGroup grabCanvasGroup;
@@ -66,6 +66,7 @@ public class TutorialManager : MonoBehaviour
     private bool inItemGrabTutorial = false;
     private bool inItemThrowTutorial = false;
     private bool detectedPickup = false;
+    private bool hasAttemptedSecondGrab = false;
 
     // rolling threshold (in degrees) beyond which we consider �upside down�
     [SerializeField] private float rollAngleThreshold = 150f;
@@ -74,6 +75,12 @@ public class TutorialManager : MonoBehaviour
     //timer for checking if player is upside down
     private float upsideDownTimer = 0f;
     private const float upsideDownDuration = 3f;
+
+    public bool IsTutorialSkipped
+    {
+        get { return tutorialSkipped; }
+    }
+
 
     private void Awake()
     {
@@ -121,7 +128,6 @@ public class TutorialManager : MonoBehaviour
         {
             if (currentStep == 1 && playerController.IsGrabbing)
             {
-                stepComplete = true;
                 FadeOut(grabCanvasGroup);
                 CompleteStep();
             }
@@ -146,7 +152,7 @@ public class TutorialManager : MonoBehaviour
                 {
                     //Debug.Log("Player rolled upside down");
                     playerController.StopRollingQuickly();
-                    stepComplete = true;
+                    
                     FadeOut(rollQCanvasGroup);
                     CompleteStep();
                     playerController.TotalRotation = 0;
@@ -175,7 +181,7 @@ public class TutorialManager : MonoBehaviour
                 {
                     //Debug.Log("Player rolled upright");
                     playerController.StopRollingQuickly();
-                    stepComplete = true;
+                    
                     FadeOut(rollECanvasGroup);
                     CompleteStep();
                     playerController.TotalRotation = 0;
@@ -183,10 +189,10 @@ public class TutorialManager : MonoBehaviour
                 }
             }
             
-            else if (currentStep == 4 && playerController.HasPropelled)
+            else if (currentStep == 4 && playerController.HasPropelled && hasAttemptedSecondGrab == false)
             {
                 //Debug.Log("Detected player propel");
-
+                hasAttemptedSecondGrab = true;
                 playerController.HasPropelled = false; // Reset to prevent multiple detections
                 SetPlayerAbilities(true, true, true, true, true);
                 StartCoroutine(WaitForSecondGrab());
@@ -316,48 +322,54 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    //IEnumerator for section 4. After the player has pushed off a bar, they need to grab another bar within 10 seconds to complete this challenge
+    //IEnumerator for section 4. After the player has pushed off a bar, they need to grab another bar within 6 seconds to complete this challenge
     private IEnumerator WaitForSecondGrab()
     {
+        //Debug.Log("Wait for second grab has been called");
         float timer = 0f;
         float maxTime = 6f;
         bool barGrabbed = false;
 
         while (timer < maxTime)
         {
+            //Debug.Log("While Loop is still playing");
             if (playerController.IsGrabbing)
             {
                 barGrabbed = true;
                 break;
             }
-
             timer += Time.deltaTime;
             yield return null;
         }
 
         if (!barGrabbed)
         {
-            //Debug.Log("Player failed to grab in time");
-
-            if (dialogueManager.IsFailureTriggered)
-            {
-                yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-            }
-
-            dialogueManager.IsFailureTriggered = true;
-
-            dialogueManager.SkipNextDialogue = true; // <- Tell it to skip the success dialogue
-            StartCoroutine(dialogueManager.PlayFailureDialogue(0));
+            // Player failed - play failure dialogue and WAIT for it to complete
+            // The failure dialogue will automatically:
+            // 1. Wait for current line to finish typing
+            // 2. Pause the main dialogue sequence
+            // 3. Play the failure dialogue (can be skipped)
+            // 4. Increment currentDialogueIndex to skip the success dialogue (if incrementsDialogue=true)
+            // 5. Resume the main sequence
+            FadeOut(propelCanvasGroup);
+            yield return StartCoroutine(dialogueManager.PlayFailureDialogueRoutine(0));
+        }
+        else
+        {
+            FadeOut(propelCanvasGroup);
+            // Step is now complete
+            
+            CompleteStep();
         }
 
-        FadeOut(propelCanvasGroup);
-        yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-        stepComplete = true;
-        CompleteStep();
+        
+
+        
     }
 
     public void CompleteStep()
     {
+        stepComplete = true;
         isWaitingForAction = false;
     }
 
@@ -387,6 +399,7 @@ public class TutorialManager : MonoBehaviour
 
     void EndTutorial()
     {
+        
         SetPlayerAbilities(true, true, true, true, true);
         inTutorial = false;
         isWaitingForAction = false;
@@ -401,15 +414,12 @@ public class TutorialManager : MonoBehaviour
         }
 
         // Fade out tutorial stinger
-        if (ambientController != null)
-        {
-            ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 10f);
-        }
+        ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 10f);
 
 
         //remove all tutorial panels
         HideAllPanels();
-        ambientController.Progress();
+        //ambientController.Progress();
         currentStep = 5;
 
         dialogueManager.StartDialogueSequence(1, 0.2f);
@@ -497,9 +507,9 @@ public class TutorialManager : MonoBehaviour
         HideAllPanels();
 
         // Reset skip flags in DialogueManager
-        dialogueManager.SkipNextDialogue = false;
-        dialogueManager.IsFailureTriggered = false;
-        dialogueManager.TutorialSkipped = false;
+        //dialogueManager.SkipNextDialogue = false;
+        //dialogueManager.IsFailureTriggered = false;
+        //dialogueManager.TutorialSkipped = false;
 
         // Reactivate the tutorial door if it was opened
         if (doorToOpen != null)
