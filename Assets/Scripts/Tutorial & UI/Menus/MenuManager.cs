@@ -75,11 +75,7 @@ public class MenuManager : MonoBehaviour
             playerCanvas.SetActive(false);
             dialogueCanvas.SetActive(false);
             tutorialCanvas.SetActive(false);
-            _unscaledTime += Time.unscaledTime;
-            if (_unscaledTime >= 2000)
-            {
-                _unscaledTime = 1000;
-            }
+            _unscaledTime += .01f;
             Shader.SetGlobalFloat("_UnscaledTime", _unscaledTime);
         }   
     }
