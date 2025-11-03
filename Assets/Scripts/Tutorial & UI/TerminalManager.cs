@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 public class TerminalManager : MonoBehaviour
 {
 
-    private Terminal currentTerminal;
+    public Terminal currentTerminal;
+    
     
     public Terminal CurrentTerminal
     {
