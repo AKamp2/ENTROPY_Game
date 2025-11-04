@@ -361,9 +361,6 @@ public class TutorialManager : MonoBehaviour
             
             CompleteStep();
         }
-
-        
-
         
     }
 

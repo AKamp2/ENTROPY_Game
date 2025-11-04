@@ -20,7 +20,7 @@ public class CheckpointManager : MonoBehaviour
             cp.Initialize(playerZeroG, i == 0);
         }
         // when loading from save, overwrite the checkpoints
-        if (GlobalSaveManager.Instance.LoadFromSave)
+        if (GlobalSaveManager.Instance != null && GlobalSaveManager.Instance.LoadFromSave)
         {
             LoadCheckpointStates(GlobalSaveManager.Instance.Data.CheckpointStates);
         }

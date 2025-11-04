@@ -372,7 +372,7 @@ public class ZeroGravity : MonoBehaviour
     private void Awake()
     {
         // when loading from save, overwrite the player data
-        if (GlobalSaveManager.Instance.LoadFromSave)
+        if (GlobalSaveManager.Instance != null && GlobalSaveManager.Instance.LoadFromSave)
         {
             LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
         } else

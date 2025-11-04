@@ -12,7 +12,7 @@ public class DoorManager : MonoBehaviour
     [SerializeField]
     ZeroGravity player;
     [SerializeField]
-    private DoorScript[] doors;
+    public List<DoorScript> doorList;
     [SerializeField]
     private List<DoorScript> doorsInRange;
 
@@ -66,11 +66,11 @@ public class DoorManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
+        doorList = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>().ToList();
         doorsInRange = new List<DoorScript>();
 
         // when loading from save, overwrite the doors
-        if (GlobalSaveManager.Instance.LoadFromSave)
+        if (GlobalSaveManager.Instance != null && GlobalSaveManager.Instance.LoadFromSave)
         {
             LoadDoorStates(GlobalSaveManager.Instance.Data.DoorStates);
         }
@@ -107,20 +107,25 @@ public class DoorManager : MonoBehaviour
     public void StoreDoorStates()
     {
         // store a copy of the checkpoint data in the global save manager
-        DoorScript.States[] _doorStates = new DoorScript.States[doors.Length];
-        for (int i = 0; i < doors.Length; i++)
+        DoorScript.States[] _doorStates = new DoorScript.States[doorList.Count];
+        for (int i = 0; i < doorList.Count; i++)
         {
-            _doorStates[i] = doors[i].DoorState;
+            _doorStates[i] = doorList[i].DoorState;
         }
-        GlobalSaveManager.Instance.Data.DoorStates = _doorStates;
+
+        if(GlobalSaveManager.Instance != null) 
+        {
+            GlobalSaveManager.Instance.Data.DoorStates = _doorStates;
+        }
+        
     }
 
     // called when loading a save
     public void LoadDoorStates(DoorScript.States[] _doorStates)
     {
-        for (int i = 0; i < doors.Length; i++)
+        for (int i = 0; i < doorList.Count; i++)
         {
-            doors[i].SetState(_doorStates[i]);
+            doorList[i].SetState(_doorStates[i]);
         }
     }
 

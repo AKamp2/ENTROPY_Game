@@ -406,16 +406,16 @@ public class PlayerUIManager : MonoBehaviour
                     stim.CanRefill = false;
                 }
             }
-            if(dormHallEvent.CanGrab)
+            if(dormHallEvent && dormHallEvent.CanGrab)
             {
                 dormHallEvent.CanGrab = false;
             }
             
-            if(lockdownEvent.CanPull)
+            if(lockdownEvent && lockdownEvent.CanPull)
             {
                 lockdownEvent.CanPull = false;
             }
-            if(terminalManager.CurrentTerminal != null)
+            if(terminalManager && terminalManager.CurrentTerminal != null)
             {
                 terminalManager.CurrentTerminal = null;
             }
