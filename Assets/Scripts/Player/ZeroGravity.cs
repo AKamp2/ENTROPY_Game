@@ -976,6 +976,8 @@ public class ZeroGravity : MonoBehaviour
         justGrabbed = true;
         grabbedBar = potentialGrabbedBar;
 
+        //Debug.Log(grabbedBar.name);
+
         Transform barParent = grabbedBar.transform.parent;
         AudioSource barSource = barParent.GetComponentInChildren<AudioSource>();
 
