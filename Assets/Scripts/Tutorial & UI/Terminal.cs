@@ -119,7 +119,6 @@ public class Terminal : MonoBehaviour
 
         screenLight.intensity = lightIntensity;
 
-  
     }
 
     /// <summary>

@@ -21,6 +21,8 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private LockdownEvent lockdownEvent;
     [SerializeField]
+    private DormHallEvent dormHallEvent;
+    [SerializeField]
     private GameObject stimDispenserContainer;
     private StimDispenser[] stimDispensers;
     private bool lookingAtStim;
@@ -30,6 +32,8 @@ public class PlayerUIManager : MonoBehaviour
     private bool floatingObjInRaycast;
     [SerializeField]
     TerminalManager terminalManager;
+    [SerializeField]
+    WristMonitor wristMonitor;
 
 
     [Header("== UI Canvas ==")]
@@ -402,9 +406,9 @@ public class PlayerUIManager : MonoBehaviour
                     stim.CanRefill = false;
                 }
             }
-            if(lockdownEvent.CanGrab)
+            if(dormHallEvent.CanGrab)
             {
-                lockdownEvent.CanGrab = false;
+                dormHallEvent.CanGrab = false;
             }
             
             if(lockdownEvent.CanPull)
@@ -497,8 +501,12 @@ public class PlayerUIManager : MonoBehaviour
                     {
                         //grabUIText.text = "'SPACEBAR'";
                         //set the sprite for the space bar indicator
-                        inputIndicator.sprite = spaceIndicator;
-                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                        if(inputIndicator.sprite == null && grabUIText.text == "")
+                        {
+                            inputIndicator.sprite = spaceIndicator;
+                            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                        }
+                        
                     }
                 }
             }
@@ -527,18 +535,18 @@ public class PlayerUIManager : MonoBehaviour
                 HideInteractables();
             }
         }
-        else if (hit.Value.transform.CompareTag("WristGrab") && lockdownEvent && lockdownEvent.IsGrabbable)
+        else if (hit.Value.transform.CompareTag("WristGrab") && dormHallEvent && dormHallEvent.IsGrabbable)
         {
-            if (lockdownEvent.IsGrabbable)
+            if (dormHallEvent.IsGrabbable)
             {
-                lockdownEvent.CanGrab = true;
+                dormHallEvent.CanGrab = true;
                 grabUIText.text = "Take wrist monitor";
                 inputIndicator.sprite = keyFIndicator;
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
-            else if(!lockdownEvent.IsGrabbable)
+            else if(!dormHallEvent.IsGrabbable)
             {
-                lockdownEvent.CanGrab = false;
+                dormHallEvent.CanGrab = false;
                 HideInteractables();
             }
         }
@@ -603,6 +611,13 @@ public class PlayerUIManager : MonoBehaviour
             if (terminal != null)
             {
                 terminalManager.CurrentTerminal = terminal;
+                if (!wristMonitor.HasWristMonitor)
+                {
+                    grabUIText.text = "Requires wrist monitor";
+                    inputIndicator.sprite = null;
+                    inputIndicator.color = new Color(0, 0, 0, 0);
+                    return;
+                }
                 if (terminal.isActivated)
                 {
                     inputIndicator.sprite = null;

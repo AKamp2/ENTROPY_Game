@@ -12,22 +12,23 @@ public class TutorialManager : MonoBehaviour
     public DialogueManager dialogueManager;
     public DoorScript doorToOpen;
     //public DoorScript endingDoor;
-    private PickupScript pickupObject;
+    private PickupScript pickupScript;
 
     //keep track when inside of the tutorial
     public bool inTutorial = false;
 
-    private int currentStep = 0;
+    public int currentStep = 0;
     private bool isWaitingForAction = false;
     private Coroutine failureTimer;
     private bool tutorialSkipped = false;
-    private bool stepComplete = false;
+    public bool stepComplete = false;
 
     //tutorial canvas groups
     public CanvasGroup grabCanvasGroup;
     public CanvasGroup propelCanvasGroup;
     //public CanvasGroup pushOffCanvasGroup;
-    //public CanvasGroup throwItemCanvasGroup;
+    public CanvasGroup pickUpItemCanvasGroup;
+    public CanvasGroup throwItemCanvasGroup;
     public CanvasGroup rollQCanvasGroup;
     public CanvasGroup rollECanvasGroup;
     public CanvasGroup enterCanvasGroup;
@@ -35,9 +36,9 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Slider rollProgressBar;
     [SerializeField] private float requiredRotation = 180f; // how much roll needed
 
-    [Header("Hazard Alarm Audio")]
-    [SerializeField] private EnvironmentAudio environmentAudio;
-    [SerializeField] private float hazardFadeInDuration = 4f;
+    [SerializeField] private AudioClip tutorialStingerClip;
+
+    public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
 
     public float fadeDuration = 1f;
 
@@ -61,7 +62,11 @@ public class TutorialManager : MonoBehaviour
 
     public DialogueAudio dialogueAudio;
     public AmbientController ambientController;
-    private WristMonitor wristMonitor;
+
+    private bool inItemGrabTutorial = false;
+    private bool inItemThrowTutorial = false;
+    private bool detectedPickup = false;
+    private bool hasAttemptedSecondGrab = false;
 
     // rolling threshold (in degrees) beyond which we consider �upside down�
     [SerializeField] private float rollAngleThreshold = 150f;
@@ -70,6 +75,12 @@ public class TutorialManager : MonoBehaviour
     //timer for checking if player is upside down
     private float upsideDownTimer = 0f;
     private const float upsideDownDuration = 3f;
+
+    public bool IsTutorialSkipped
+    {
+        get { return tutorialSkipped; }
+    }
+
 
     private void Awake()
     {
@@ -81,9 +92,8 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
-        wristMonitor = FindFirstObjectByType<WristMonitor>();
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
-        pickupObject = ZeroGPlayer.GetComponent<PickupScript>();
+        pickupScript = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
 
         if (playerController.TutorialMode == true)
@@ -104,6 +114,11 @@ public class TutorialManager : MonoBehaviour
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
                 FadeOut(enterCanvasGroup);
+                if (ambientController != null)
+                {
+                    ambientController.StopStinger(ambientController.TutorialStingerClip, 5f);
+
+                }
                 EndTutorial();
             }
             
@@ -113,7 +128,6 @@ public class TutorialManager : MonoBehaviour
         {
             if (currentStep == 1 && playerController.IsGrabbing)
             {
-                stepComplete = true;
                 FadeOut(grabCanvasGroup);
                 CompleteStep();
             }
@@ -138,7 +152,7 @@ public class TutorialManager : MonoBehaviour
                 {
                     //Debug.Log("Player rolled upside down");
                     playerController.StopRollingQuickly();
-                    stepComplete = true;
+                    
                     FadeOut(rollQCanvasGroup);
                     CompleteStep();
                     playerController.TotalRotation = 0;
@@ -167,7 +181,7 @@ public class TutorialManager : MonoBehaviour
                 {
                     //Debug.Log("Player rolled upright");
                     playerController.StopRollingQuickly();
-                    stepComplete = true;
+                    
                     FadeOut(rollECanvasGroup);
                     CompleteStep();
                     playerController.TotalRotation = 0;
@@ -175,14 +189,38 @@ public class TutorialManager : MonoBehaviour
                 }
             }
             
-            else if (currentStep == 4 && playerController.HasPropelled)
+            else if (currentStep == 4 && playerController.HasPropelled && hasAttemptedSecondGrab == false)
             {
                 //Debug.Log("Detected player propel");
-
+                hasAttemptedSecondGrab = true;
                 playerController.HasPropelled = false; // Reset to prevent multiple detections
                 SetPlayerAbilities(true, true, true, true, true);
                 StartCoroutine(WaitForSecondGrab());
 
+            }
+        }
+
+        if (inItemGrabTutorial)
+        {
+            if(pickupScript.HeldObject != null && !detectedPickup)
+            {
+                detectedPickup = true;
+                inItemGrabTutorial = false;
+                if(pickUpItemCanvasGroup.alpha > 0)
+                {
+                    pickUpItemCanvasGroup.alpha = 0;
+                }
+                FadeIn(throwItemCanvasGroup);
+                inItemThrowTutorial = true;
+            }
+        }
+
+        if(inItemThrowTutorial)
+        {
+            if (pickupScript.HeldObject == null)
+            {
+                FadeOut(throwItemCanvasGroup);
+                inItemThrowTutorial = false;
             }
         }
     }
@@ -193,7 +231,15 @@ public class TutorialManager : MonoBehaviour
         playerController.GrabRange = 1f;
         inTutorial = true;
         yield return new WaitForSeconds(1f);
-        dialogueAudio.PlayJingle();
+        //dialogueAudio.PlayJingle();
+
+        // Play looping tutorial stinger with fade-in
+        if (ambientController != null)
+        {
+            ambientController.PlayStinger(ambientController.TutorialStingerClip, loop: true, fadeInDuration: 8f);
+        }
+
+
         FadeIn(enterCanvasGroup);
         dialogueManager.StartDialogueSequence(0, 2f); // Ensure correct tutorial sequence index
 
@@ -276,48 +322,54 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    //IEnumerator for section 4. After the player has pushed off a bar, they need to grab another bar within 10 seconds to complete this challenge
+    //IEnumerator for section 4. After the player has pushed off a bar, they need to grab another bar within 6 seconds to complete this challenge
     private IEnumerator WaitForSecondGrab()
     {
+        //Debug.Log("Wait for second grab has been called");
         float timer = 0f;
         float maxTime = 6f;
         bool barGrabbed = false;
 
         while (timer < maxTime)
         {
+            //Debug.Log("While Loop is still playing");
             if (playerController.IsGrabbing)
             {
                 barGrabbed = true;
                 break;
             }
-
             timer += Time.deltaTime;
             yield return null;
         }
 
         if (!barGrabbed)
         {
-            //Debug.Log("Player failed to grab in time");
-
-            if (dialogueManager.IsFailureTriggered)
-            {
-                yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-            }
-
-            dialogueManager.IsFailureTriggered = true;
-
-            dialogueManager.SkipNextDialogue = true; // <- Tell it to skip the success dialogue
-            StartCoroutine(dialogueManager.PlayFailureDialogue(0));
+            // Player failed - play failure dialogue and WAIT for it to complete
+            // The failure dialogue will automatically:
+            // 1. Wait for current line to finish typing
+            // 2. Pause the main dialogue sequence
+            // 3. Play the failure dialogue (can be skipped)
+            // 4. Increment currentDialogueIndex to skip the success dialogue (if incrementsDialogue=true)
+            // 5. Resume the main sequence
+            FadeOut(propelCanvasGroup);
+            yield return StartCoroutine(dialogueManager.PlayFailureDialogueRoutine(0));
+        }
+        else
+        {
+            FadeOut(propelCanvasGroup);
+            // Step is now complete
+            
+            CompleteStep();
         }
 
-        FadeOut(propelCanvasGroup);
-        yield return new WaitUntil(() => !dialogueManager.IsFailureTriggered);
-        stepComplete = true;
-        CompleteStep();
+        
+
+        
     }
 
     public void CompleteStep()
     {
+        stepComplete = true;
         isWaitingForAction = false;
     }
 
@@ -327,7 +379,7 @@ public class TutorialManager : MonoBehaviour
         playerController.CanPropel = canPropel;
         playerController.CanPushOff = canPushOff;
         playerController.CanRoll = canRoll;
-        pickupObject.CanPickUp = canThrow;
+        pickupScript.CanPickUp = canThrow;
 
         this.canGrab = canGrab;
         this.canPropel = canPropel;
@@ -342,11 +394,12 @@ public class TutorialManager : MonoBehaviour
         playerController.CanPropel = canPropel;
         playerController.CanPushOff = canPushOff;
         playerController.CanRoll = canRoll;
-        pickupObject.CanPickUp = canThrow;
+        pickupScript.CanPickUp = canThrow;
     }
 
     void EndTutorial()
     {
+        
         SetPlayerAbilities(true, true, true, true, true);
         inTutorial = false;
         isWaitingForAction = false;
@@ -360,10 +413,13 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
+        // Fade out tutorial stinger
+        ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 10f);
+
+
         //remove all tutorial panels
         HideAllPanels();
-        ambientController.Progress();
-        wristMonitor.CompleteObjective();
+        //ambientController.Progress();
         currentStep = 5;
 
         dialogueManager.StartDialogueSequence(1, 0.2f);
@@ -456,9 +512,9 @@ public class TutorialManager : MonoBehaviour
         HideAllPanels();
 
         // Reset skip flags in DialogueManager
-        dialogueManager.SkipNextDialogue = false;
-        dialogueManager.IsFailureTriggered = false;
-        dialogueManager.TutorialSkipped = false;
+        //dialogueManager.SkipNextDialogue = false;
+        //dialogueManager.IsFailureTriggered = false;
+        //dialogueManager.TutorialSkipped = false;
 
         // Reactivate the tutorial door if it was opened
         if (doorToOpen != null)
@@ -514,19 +570,36 @@ public class TutorialManager : MonoBehaviour
         // Rolling right (positive TotalRotation)
         if (requiredRotation > 0)
         {
+            if (playerController.TotalRotation < 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // Rolling left (negative TotalRotation)
         else if (requiredRotation < 0)
         {
+            if (playerController.TotalRotation > 0) playerController.TotalRotation = 0;
             progress = Mathf.Clamp01(playerController.TotalRotation / requiredRotation);
         }
         // else progress = 0
 
+
         rollProgressBar.value = progress;
     }
 
-
+    public void ItemGrabTutorial()
+    {
+        //Debug.Log("Item Grab Tutorial Started");
+        inItemGrabTutorial = true;
+        StartCoroutine(StartGrabTutorial());
+    }
+    private IEnumerator StartGrabTutorial()
+    {
+        FadeIn(pickUpItemCanvasGroup);
+        yield return new WaitForSeconds(7f);
+        if(pickUpItemCanvasGroup.alpha > 0)
+        {
+            FadeOut(pickUpItemCanvasGroup);
+        }
+    }
 }
 
 
