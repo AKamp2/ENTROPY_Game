@@ -37,6 +37,8 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private float requiredRotation = 180f; // how much roll needed
 
     [SerializeField] private AudioClip tutorialStingerClip;
+    [SerializeField] private EnvironmentAudio environmentAudio;
+    [SerializeField] private float hazardFadeInDuration = 5f;
 
     public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
 
@@ -231,14 +233,13 @@ public class TutorialManager : MonoBehaviour
         playerController.GrabRange = 1f;
         inTutorial = true;
         yield return new WaitForSeconds(1f);
-        //dialogueAudio.PlayJingle();
+        dialogueAudio.PlayJingle();
 
-        // Play looping tutorial stinger with fade-in
+        // Start coroutine to delay the stinger only
         if (ambientController != null)
         {
-            ambientController.PlayStinger(ambientController.TutorialStingerClip, loop: true, fadeInDuration: 8f);
+            StartCoroutine(DelayedStinger(7f)); 
         }
-
 
         FadeIn(enterCanvasGroup);
         dialogueManager.StartDialogueSequence(0, 2f); // Ensure correct tutorial sequence index
@@ -246,6 +247,15 @@ public class TutorialManager : MonoBehaviour
         //fading out the tutorial skip panel
         StartCoroutine(DelayFadeOut(7, enterCanvasGroup));
     }
+
+    private IEnumerator DelayedStinger(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Play looping tutorial stinger with fade-in
+        ambientController.PlayStinger(ambientController.TutorialStingerClip, loop: true, fadeInDuration: 8f);
+    }
+
 
     public void ProgressTutorial()
     {

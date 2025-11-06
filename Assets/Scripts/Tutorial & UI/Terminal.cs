@@ -134,6 +134,7 @@ public class Terminal : MonoBehaviour
         }
 
         screenLight.intensity = 0;
+
     }
 }
 

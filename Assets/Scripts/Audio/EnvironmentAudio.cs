@@ -14,6 +14,10 @@ public class EnvironmentAudio : MonoBehaviour
     [Header("Hazard Lights")]
     [SerializeField] private HazardLight[] hazardLights;
 
+    [Header("Explosion Audio Settings")]
+    public AudioClip explosionClip;
+    public AudioSource explosionSource;
+
     private void Start()
     {
         if (doorsContainer != null)
@@ -57,6 +61,18 @@ public class EnvironmentAudio : MonoBehaviour
         }
 
         hazard.SetVolume(1f);
+    }
+
+    public void PlayExplosion()
+    {
+        if (explosionSource != null && explosionClip != null)
+        {
+            explosionSource.PlayOneShot(explosionClip);
+        }
+        else
+        {
+            Debug.LogWarning("EnvironmentAudio: Missing explosionSource or explosionClip!");
+        }
     }
 }
 

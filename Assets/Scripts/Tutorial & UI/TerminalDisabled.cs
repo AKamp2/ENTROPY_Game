@@ -5,9 +5,13 @@ public class TerminalDisabled : MonoBehaviour
 {
     [SerializeField] private GameObject disabledScreen;
     [SerializeField] private Light screenLight;
+    [SerializeField] private TerminalAudioManager terminalAudio;
+    [SerializeField] private AudioSource offBeepSource;
     private float lightIntensity;
     private bool isDisabled = false;
     private Coroutine disabledRoutine;
+
+    
 
     public bool IsDisabled
     {
@@ -31,6 +35,7 @@ public class TerminalDisabled : MonoBehaviour
     public void StartFlashing()
     {
         disabledRoutine = StartCoroutine(ShowDisabledScreen());
+
     }
 
     public void StopFlashing()
@@ -38,6 +43,7 @@ public class TerminalDisabled : MonoBehaviour
         StopCoroutine(disabledRoutine);
         disabledScreen.SetActive(false);
         screenLight.intensity = lightIntensity;
+
     }
 
     /// <summary>
@@ -57,6 +63,7 @@ public class TerminalDisabled : MonoBehaviour
             if (disabledScreen == null) continue;
             disabledScreen.SetActive(true);
             screenLight.intensity = lightIntensity;
+            offBeepSource.PlayOneShot(terminalAudio.offBeepClip);
 
             yield return new WaitForSeconds(1f);
 
