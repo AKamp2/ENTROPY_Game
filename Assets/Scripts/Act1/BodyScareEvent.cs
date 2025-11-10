@@ -9,7 +9,7 @@ public class BodyScareEvent : MonoBehaviour
     [SerializeField]
     private DoorScript[] doorsToUnlock;
     [SerializeField]
-    private Transform[] barsToGrab;
+    private Collider[] barsToGrab;
     [SerializeField]
     private GameObject body;
     [SerializeField]
@@ -51,16 +51,16 @@ public class BodyScareEvent : MonoBehaviour
     {
         if(waitForGrabbingBar)
         {
-           foreach(Transform bar in barsToGrab)
+           foreach(Collider bar in barsToGrab)
             {
                 if(player.GrabbedBar != null)
                 {
-                    Debug.Log(player.GrabbedBar.name);
+                    //Debug.Log(player.GrabbedBar.name);
                 }
                 
                 if (bar == player.GrabbedBar)
                 {
-                    Debug.Log("Grabbed bar detected");
+                    //Debug.Log("Grabbed bar detected");
                     waitForGrabbingBar = false;
                     StartCoroutine(PlayBodyScare());
                 }

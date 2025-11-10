@@ -445,7 +445,7 @@ public class PlayerUIManager : MonoBehaviour
     {
         //Debug.Log("raycast called");
         barInRaycast = true;
-        player.PotentialGrabbedBar = hit.Value.transform;
+        player.PotentialGrabbedBar = hit.Value.collider;
 
     }
 
@@ -699,7 +699,7 @@ public class PlayerUIManager : MonoBehaviour
     /// one singular update grabber position call per frame
     /// </summary>
     /// <returns></returns>
-    public Transform UpdateClosestBarInView()
+    public Collider UpdateClosestBarInView()
     {
         //Debug.Log("updated closest bar in view executed");
         //check for all nearby bars to the player
@@ -727,7 +727,7 @@ public class PlayerUIManager : MonoBehaviour
 
 
         //initialize a transform for the closest bar and distance to that bar
-        Transform closestObject = null;
+        Collider closestObject = null;
         float closestDistance = Mathf.Infinity;
         // this will be for checking the data of a barrier that may be hit between the player and the grabbable
         RaycastHit hit;
@@ -738,11 +738,11 @@ public class PlayerUIManager : MonoBehaviour
             //if (obj.CompareTag("Barrier")) continue;
 
             // we are going to skip objects that are blocked by an obstacle
-            float distanceToObj = (obj.transform.position - transform.position).magnitude;
-            Vector3 directionToObj = (obj.transform.position - transform.position).normalized;
+            float distanceToObj = (obj.ClosestPoint(transform.position) - transform.position).magnitude;
+            Vector3 directionToObj = (obj.ClosestPoint(transform.position) - transform.position).normalized;
 
             // Raycast toward object to see if a barrier is in the way
-            
+
             if (Physics.Raycast(transform.position, directionToObj, out hit, distanceToObj, barrierLayer))
             {
                 if(hit.transform.parent == null || !hit.transform.parent.CompareTag("Bar"))
@@ -752,16 +752,16 @@ public class PlayerUIManager : MonoBehaviour
             }
 
             //set specifications for the viewport
-            Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.transform.position);
+            Vector3 viewportPoint = player.cam.WorldToViewportPoint(obj.ClosestPoint(transform.position));
 
             //check if the bar is in the viewport and in front of the player
             if (viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1)
             {
-                float distanceToBar = Vector3.Distance(transform.position, obj.transform.position);
+                float distanceToBar = Vector3.Distance(transform.position, obj.ClosestPoint(transform.position));
                 if (distanceToBar < closestDistance)
                 {
                     closestDistance = distanceToBar;
-                    closestObject = obj.transform;
+                    closestObject = obj;
                 }
             }
         }
@@ -795,7 +795,7 @@ public class PlayerUIManager : MonoBehaviour
     }
 
     // this method will update the grabber icon's position based on the nearest grabbable object
-    public void UpdateGrabberPosition(Transform bar)
+    public void UpdateGrabberPosition(Collider bar)
     {
         if (bar == null)
         {
@@ -807,8 +807,28 @@ public class PlayerUIManager : MonoBehaviour
             if (bar != null)
             {
                 //Debug.Log("updateGrabberexecuted");
+                if (!player.IsGrabbing)
+                {
+                    // we need to calculate the point of the bar that is the closest to where the player is looking
+                    // to do this first I will calculate the distance of the bar from the player
+                    float distanceFromBar = Vector3.Distance(bar.transform.position, transform.position);
+                    // I will use a for loop here to incase the focus point is out of grab range
+                    for (float r = distanceFromBar; r > 0; r -= 0.01f)
+                    {
+                        // now I will find the point that is the distance of the bar away from the player's forward
+                        Vector3 focusPoint = player.cam.transform.position + player.cam.transform.forward * distanceFromBar;
+                        // finally, I will test the grab point to the closest point on the bar to that focus point
+                        Vector3 potentialGrabPosition = bar.ClosestPoint(focusPoint);
+                        if (Vector3.Distance(player.transform.position, potentialGrabPosition) < player.GrabRange)
+                        {
+                            player.CurrentGrabPosition = potentialGrabPosition;
+                            // now that the point has been found, I will quit the loop
+                            break;
+                        }
+                    }
+                }
                 //set the position of the bar as a screen point
-                Vector3 screenPoint = player.cam.WorldToScreenPoint(bar.position);
+                Vector3 screenPoint = player.cam.WorldToScreenPoint(player.CurrentGrabPosition);
 
                 //ensure the grabber is on the screen
                 if (screenPoint.z > 0 &&
