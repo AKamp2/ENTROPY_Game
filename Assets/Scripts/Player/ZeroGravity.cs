@@ -978,12 +978,10 @@ public class ZeroGravity : MonoBehaviour
 
         //Debug.Log(grabbedBar.name);
 
-        Transform barParent = grabbedBar.transform.parent;
-        AudioSource barSource = barParent.GetComponentInChildren<AudioSource>();
 
         if (barAudioHandler != null)
         {
-            barAudioHandler.PlayGrabSound(barSource);
+            barAudioHandler.PlayGrabSound(grabbedBar.transform.position);
         }
       
 
@@ -1301,8 +1299,7 @@ public class ZeroGravity : MonoBehaviour
         //set justgrabbed to false to send for the cool down to nullify
         justGrabbed = false;
 
-        Transform barParent = grabbedBar.transform.parent;
-        AudioSource barSource = barParent.GetComponentInChildren<AudioSource>();
+        Vector3 barLoc = grabbedBar.transform.position;
 
         grabbedBar = null;
 
@@ -1317,7 +1314,7 @@ public class ZeroGravity : MonoBehaviour
         
         if (barAudioHandler != null)
         {
-            barAudioHandler.PlayReleaseSound(barSource);
+            barAudioHandler.PlayReleaseSound(barLoc);
         }
 
         //lock grabbed bar and change icon
