@@ -36,11 +36,11 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Slider rollProgressBar;
     [SerializeField] private float requiredRotation = 180f; // how much roll needed
 
-    [SerializeField] private AudioClip tutorialStingerClip;
+    //[SerializeField] private AudioClip tutorialStingerClip;
     [SerializeField] private EnvironmentAudio environmentAudio;
     [SerializeField] private float hazardFadeInDuration = 5f;
 
-    public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
+    //public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
 
     public float fadeDuration = 1f;
 
@@ -64,6 +64,7 @@ public class TutorialManager : MonoBehaviour
 
     public DialogueAudio dialogueAudio;
     public AmbientController ambientController;
+    public StingerManager stingerManager;
 
     private bool inItemGrabTutorial = false;
     private bool inItemThrowTutorial = false;
@@ -116,9 +117,9 @@ public class TutorialManager : MonoBehaviour
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
                 FadeOut(enterCanvasGroup);
-                if (ambientController != null)
+                if (stingerManager != null)
                 {
-                    ambientController.StopStinger(ambientController.TutorialStingerClip, 5f);
+                    stingerManager.StopTutorialStinger(fadeOutDuration: 5f);
 
                 }
                 EndTutorial();
@@ -236,7 +237,7 @@ public class TutorialManager : MonoBehaviour
         dialogueAudio.PlayJingle();
 
         // Start coroutine to delay the stinger only
-        if (ambientController != null)
+        if (stingerManager != null)
         {
             StartCoroutine(DelayedStinger(7f)); 
         }
@@ -253,7 +254,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         // Play looping tutorial stinger with fade-in
-        ambientController.PlayStinger(ambientController.TutorialStingerClip, loop: true, fadeInDuration: 8f);
+        stingerManager.PlayTutorialStinger(fadeInDuration: 8f);
     }
 
 
@@ -424,7 +425,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         // Fade out tutorial stinger
-        ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 13f);
+        stingerManager.StopTutorialStinger(fadeOutDuration: 13f);
 
 
         //remove all tutorial panels

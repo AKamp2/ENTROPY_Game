@@ -41,21 +41,7 @@ public class AmbientController : MonoBehaviour
     private bool running = false;
     private int currentProgressStep = 0; //individual steps through audio changes over the course of one progress level
 
-    [Header("Stinger Settings")]
-    [SerializeField] private AudioClip tutorialStingerClip;
-    [SerializeField] private AudioClip dormHallStingerClip;
-    [SerializeField] private AudioClip brokenDoorStingerClip;
-    [SerializeField] private AudioSource tutorialStingerSource;
-    [SerializeField] private AudioSource dormHallStingerSource;
-    [SerializeField] private AudioSource brokenDoorStingerSource;
 
-    public AudioClip TutorialStingerClip => tutorialStingerClip;
-    public AudioClip DormHallStingerClip => dormHallStingerClip;
-    public AudioClip BrokenDoorStingerClip => brokenDoorStingerClip;
-
-    private Coroutine currentTutorialFade;
-    private Coroutine currentDormFade;
-    private Coroutine currentDoorFade;
 
     private void Awake()
     {
@@ -369,7 +355,7 @@ public class AmbientController : MonoBehaviour
         }
     }
 
-    public void PlayStinger(AudioClip clip, bool loop = false, float fadeInDuration = 0f)
+/*    public void PlayStinger(AudioClip clip, bool loop = false, float fadeInDuration = 0f)
     {
         if (clip == null) return;
 
@@ -383,16 +369,7 @@ public class AmbientController : MonoBehaviour
             fadeCoroutine = currentTutorialFade;
             isTutorial = true;
         }
-        else if (clip == dormHallStingerClip && dormHallStingerSource != null)
-        {
-            targetSource = dormHallStingerSource;
-            fadeCoroutine = currentDormFade;
-        }
-        else if (clip == brokenDoorStingerClip && brokenDoorStingerSource != null)
-        {
-            targetSource = brokenDoorStingerSource;
-            fadeCoroutine = currentDoorFade;
-        }
+
         if (targetSource == null) return;
 
         // Stop any existing fade
@@ -416,10 +393,6 @@ public class AmbientController : MonoBehaviour
             {
                 if (isTutorial)
                     currentTutorialFade = StartCoroutine(FadeAudioSource(targetSource, 0f, 1f, fadeInDuration));
-                else if (clip == brokenDoorStingerClip)
-                    currentDoorFade = StartCoroutine(FadeAudioSource(targetSource, 0f, 1f, fadeInDuration));
-                else
-                    currentDormFade = StartCoroutine(FadeAudioSource(targetSource, 0f, 1f, fadeInDuration));
             }
             else
             {
@@ -528,14 +501,9 @@ public class AmbientController : MonoBehaviour
             // Wait for clip to finish
             yield return new WaitForSeconds(clip.length);
         }
-    }
+    }*/
 
-    public void BrokenDoorStingerTriggered()
-    {
-        Debug.Log("Playing broken door stinger");
-        brokenDoorStingerSource.clip = brokenDoorStingerClip;
-        brokenDoorStingerSource.Play();
-    }
+
     
 
 

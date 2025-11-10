@@ -32,7 +32,7 @@ public class DormHallStingerTrigger : MonoBehaviour
 
         if (ambientController != null && dormHallStingerClip != null)
         {
-            ambientController.PlayStinger(dormHallStingerClip, loop: false, fadeInDuration: fadeInDuration);
+            //ambientController.PlayStinger(dormHallStingerClip, loop: false, fadeInDuration: fadeInDuration);
         }
     }
 }
