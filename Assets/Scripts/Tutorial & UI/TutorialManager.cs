@@ -424,7 +424,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         // Fade out tutorial stinger
-        ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 10f);
+        ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 13f);
 
 
         //remove all tutorial panels
