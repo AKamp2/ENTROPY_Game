@@ -254,7 +254,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         // Play looping tutorial stinger with fade-in
-        stingerManager.PlayTutorialStinger(fadeInDuration: 8f);
+        stingerManager.PlayTutorialStinger(fadeInDuration: 4f);
     }
 
 
@@ -425,7 +425,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         // Fade out tutorial stinger
-        stingerManager.StopTutorialStinger(fadeOutDuration: 13f);
+        stingerManager.StopTutorialStinger(fadeOutDuration: 10f);
 
 
         //remove all tutorial panels

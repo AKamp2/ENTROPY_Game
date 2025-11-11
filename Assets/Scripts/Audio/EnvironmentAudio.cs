@@ -65,15 +65,11 @@ public class EnvironmentAudio : MonoBehaviour
 
     public void PlayExplosion()
     {
-        if (explosionSource != null && explosionClip != null)
-        {
-            explosionSource.PlayOneShot(explosionClip);
-        }
-        else
-        {
-            Debug.LogWarning("EnvironmentAudio: Missing explosionSource or explosionClip!");
-        }
+        Debug.Log("Playing explosion sound");
+        explosionSource.clip = explosionClip;
+        explosionSource.Play();
     }
+
 }
 
 

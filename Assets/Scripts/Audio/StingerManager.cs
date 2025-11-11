@@ -50,7 +50,7 @@ public class StingerManager : MonoBehaviour
     /// <summary>
     /// Stops (fades out) the tutorial stinger when the tutorial ends or is skipped.
     /// </summary>
-    public void StopTutorialStinger(float fadeOutDuration = 2f)
+    public void StopTutorialStinger(float fadeOutDuration = 10f)
     {
         if (tutorialStingerSource == null || !tutorialStingerSource.isPlaying)
             return;
@@ -91,12 +91,50 @@ public class StingerManager : MonoBehaviour
         source.volume = 0f;
         source.Stop();
     }
-    public void BrokenDoorStingerTriggered()
+/*    public void BrokenDoorStingerTriggered()
     {
         Debug.Log("Playing broken door stinger");
         brokenDoorStingerSource.clip = brokenDoorStingerClip;
         brokenDoorStingerSource.Play();
+    }*/
+    public void BrokenDoorStingerTriggered(float fadeInDuration = 3f, float fadeOutDuration = 3f)
+    {
+        if (brokenDoorStingerSource == null || brokenDoorStingerClip == null) return;
+
+        brokenDoorStingerSource.clip = brokenDoorStingerClip;
+        brokenDoorStingerSource.loop = false;
+        brokenDoorStingerSource.volume = 0f;
+        brokenDoorStingerSource.Play();
+
+        // Fade in at start
+        StartCoroutine(FadeAudioSource(brokenDoorStingerSource, 0f, 1f, fadeInDuration));
+
+        // Auto fade out near the end of the clip
+        StartCoroutine(AutoFadeOut(brokenDoorStingerSource, brokenDoorStingerClip.length, fadeOutDuration));
     }
+
+    private IEnumerator AutoFadeOut(AudioSource source, float clipLength, float fadeDuration)
+    {
+        if (source == null) yield break;
+
+        float waitTime = Mathf.Max(0f, clipLength - fadeDuration);
+        yield return new WaitForSeconds(waitTime);
+
+        // Fade out
+        float startVolume = source.volume;
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            if (source == null) yield break;
+            source.volume = Mathf.Lerp(startVolume, 0f, elapsed / fadeDuration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        source.volume = 0f;
+        source.Stop();
+    }
+
 }
 
 
