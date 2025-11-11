@@ -334,8 +334,9 @@ public class LockdownEvent : MonoBehaviour
         
         yield return new WaitForSeconds(19.5f);
 
-        auxLightObj.GetComponent<Renderer>().material = leverMaterial;
-        auxLight.color = endButtonColor;
+        // needs to be updated with new auxiliary lights to function base on emission color
+        //auxLightObj.GetComponent<Renderer>().material = leverMaterial;
+        //auxLight.color = endButtonColor;
 
         brokenDoor.SetState(DoorScript.States.Open);
     }

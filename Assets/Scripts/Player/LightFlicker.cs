@@ -63,13 +63,13 @@ public class LightFlicker : MonoBehaviour
 
             if (isActive)
             {
-                lightBaseRenderer.material = onMaterial;
+                //lightBaseRenderer.material = onMaterial;
                 spotLight.intensity = defaultIntensity;
                 timer = Random.Range(minOnDuration, maxOnDuration);
             }
             else
             {
-                lightBaseRenderer.material = offMaterial;
+                //lightBaseRenderer.material = offMaterial;
                 spotLight.intensity = Random.Range(minIntensity, maxIntensity);
                 timer = Random.Range(-minOffDuration, maxOffDuration);
             }
