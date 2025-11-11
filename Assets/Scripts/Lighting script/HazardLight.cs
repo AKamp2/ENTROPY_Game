@@ -31,7 +31,7 @@ public class HazardLight : MonoBehaviour
                 light.enabled = true;
                 lightBase.enabled = true;
             }
-            light.transform.Rotate(transform.up * rotateParam * Time.deltaTime);
+            light.transform.Rotate(Vector3.up * rotateParam * Time.deltaTime);
         }
         else if (!isHazard)
         {
