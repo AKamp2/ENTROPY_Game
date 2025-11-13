@@ -14,6 +14,13 @@ public class EnvironmentAudio : MonoBehaviour
     public AudioClip doorMoving;
     public AudioClip doorClosingClick;
 
+    [Header("Explosion Audio Settings")]
+    public AudioClip explosionClip;
+    public AudioSource explosionSource;
+
+    [Header("HazardLight Audio Settings")]
+    public AudioClip hazardLightClip;
+
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentGroup;
 
@@ -32,12 +39,27 @@ public class EnvironmentAudio : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PlayExplosion()
     {
-        
+        Debug.Log("Playing explosion sound");
+        explosionSource.clip = explosionClip;
+        explosionSource.loop = false;
+        explosionSource.Play();
     }
 
+    public void PlayHazardAlarm()
+    {
+        Debug.Log("Playing hazard alarm sound");
+        hazardLightSource.clip = hazardLightClip;
+        hazardLightSource.loop = true;
+        hazardLightSource.Play();
+    }
+
+    public void StopHazardAlarm()
+    {
+        Debug.Log("Stopping hazard alarm sound");
+        hazardLightSource.Stop();
+    }
 
     /*
     public void playDoorOpenAudio(float speed, DoorScript door)

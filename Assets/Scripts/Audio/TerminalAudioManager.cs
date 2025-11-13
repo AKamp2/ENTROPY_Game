@@ -6,6 +6,7 @@ public class TerminalAudioManager : MonoBehaviour
     [Header("Audio Clips")]
     public AudioClip bootupClip;
     public AudioClip uploadCompleteClip;
+    public AudioClip offBeepClip;
 
     //[Header("Audio Sources")]
     //public AudioSource bootupSource;            // For bootup sound
@@ -48,6 +49,15 @@ public class TerminalAudioManager : MonoBehaviour
         if (source == null || uploadCompleteClip == null) return;
 
         source.clip = uploadCompleteClip;
+        source.loop = false;
+        source.volume = 1f;
+        source.Play();
+    }
+
+    public void PlayOffBeepSound(AudioSource source)
+    {
+        if (source == null || offBeepClip == null) return;
+        source.clip = offBeepClip;
         source.loop = false;
         source.volume = 1f;
         source.Play();

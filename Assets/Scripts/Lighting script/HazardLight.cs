@@ -12,6 +12,10 @@ public class HazardLight : MonoBehaviour
     private Light lightBase;
     [SerializeField]
     private float rotateParam;
+    
+    public EnvironmentAudio environmentAudio;
+
+    public AudioSource hazardLightSource;
 
     public bool IsHazard
     {
@@ -30,6 +34,7 @@ public class HazardLight : MonoBehaviour
             {
                 light.enabled = true;
                 lightBase.enabled = true;
+                environmentAudio.PlayHazardAlarm();
             }
             light.transform.Rotate(Vector3.up * rotateParam * Time.deltaTime);
         }
@@ -39,6 +44,7 @@ public class HazardLight : MonoBehaviour
             {
                 light.enabled = false;
                 lightBase.enabled = false;
+                environmentAudio.StopHazardAlarm(); 
             }
         }
     }

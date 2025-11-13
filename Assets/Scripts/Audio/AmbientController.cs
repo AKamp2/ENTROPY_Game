@@ -41,17 +41,17 @@ public class AmbientController : MonoBehaviour
     private bool running = false;
     private int currentProgressStep = 0; //individual steps through audio changes over the course of one progress level
 
-    [Header("Stinger Settings")]
+/*    [Header("Stinger Settings")]
     [SerializeField] private AudioClip tutorialStingerClip;
     [SerializeField] private AudioClip dormHallStingerClip;
     [SerializeField] private AudioSource tutorialStingerSource;
-    [SerializeField] private AudioSource dormHallStingerSource;
+    [SerializeField] private AudioSource dormHallStingerSource;*/
 
-    public AudioClip TutorialStingerClip => tutorialStingerClip;
+/*    public AudioClip TutorialStingerClip => tutorialStingerClip;
     public AudioClip DormHallStingerClip => dormHallStingerClip;
 
     private Coroutine currentTutorialFade;
-    private Coroutine currentDormFade;
+    private Coroutine currentDormFade;*/
 
     private void Awake()
     {
@@ -365,7 +365,7 @@ public class AmbientController : MonoBehaviour
         }
     }
 
-    public void PlayStinger(AudioClip clip, bool loop = false, float fadeInDuration = 0f)
+/*    public void PlayStinger(AudioClip clip, bool loop = false, float fadeInDuration = 0f)
     {
         if (clip == null) return;
 
@@ -508,7 +508,7 @@ public class AmbientController : MonoBehaviour
             // Wait for clip to finish
             yield return new WaitForSeconds(clip.length);
         }
-    }
+    }*/
 
 
 }
