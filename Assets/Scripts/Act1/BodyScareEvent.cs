@@ -33,6 +33,8 @@ public class BodyScareEvent : MonoBehaviour
 
     private AmbientController ambientController;
 
+    public LightManager lightManager;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -40,7 +42,7 @@ public class BodyScareEvent : MonoBehaviour
         ambientController = FindFirstObjectByType<AmbientController>();
         player = FindFirstObjectByType<ZeroGravity>();
 
-        foreach(Light light in escapePodLights)
+        foreach (Light light in escapePodLights)
         {
             light.intensity = 0;
         }
@@ -49,15 +51,15 @@ public class BodyScareEvent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(waitForGrabbingBar)
+        if (waitForGrabbingBar)
         {
-           foreach(Collider bar in barsToGrab)
+            foreach (Collider bar in barsToGrab)
             {
-                if(player.GrabbedBar != null)
+                if (player.GrabbedBar != null)
                 {
                     //Debug.Log(player.GrabbedBar.name);
                 }
-                
+
                 if (bar == player.GrabbedBar)
                 {
                     //Debug.Log("Grabbed bar detected");
@@ -76,15 +78,15 @@ public class BodyScareEvent : MonoBehaviour
     public IEnumerator PlayBodyScare()
     {
 
-        
-        
+
+
 
         //bodyRb.AddForce(new Vector3(-.5f, -1, 0) * 30f, ForceMode.Impulse);
-        
+
 
         bodyDoor.SetState(DoorScript.States.JoltOpen);
 
-        
+
 
         //put any body movement Logic here;
 
@@ -109,9 +111,9 @@ public class BodyScareEvent : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         ActivateLights();
 
-        
 
-       
+
+
 
         //ambientController.Progress();
 
@@ -120,35 +122,55 @@ public class BodyScareEvent : MonoBehaviour
 
     public void ActivateLights()
     {
-        StartCoroutine(TurnOnLights(3));
+        StartCoroutine(TurnOnLights(2));
     }
+
+    //public IEnumerator TurnOnLights(float duration)
+    //{
+    //    float elapsed = 0f;
+    //    audioManager.playBodyStinger();
+
+    //    while (elapsed < duration)
+    //    {
+    //        elapsed += Time.deltaTime;
+    //        float t = elapsed / duration;
+    //        float intensity = lightCurve.Evaluate(t) * intensityMultiplier;
+
+    //        foreach (Light light in escapePodLights)
+    //        {
+    //            light.intensity = intensity;
+    //        }
+
+    //        yield return null;
+    //    }
+
+
+    //    // Ensure final value is set
+    //    float finalIntensity = lightCurve.Evaluate(1f) * intensityMultiplier;
+    //    foreach (Light light in escapePodLights)
+    //    {
+    //        light.intensity = finalIntensity;
+    //    }
+
+    //    foreach (DoorScript door in doorsToUnlock)
+    //    {
+    //        door.SetState(DoorScript.States.Closed);
+    //    }
+
+    //    yield return new WaitForSeconds(5.5f);
+
+    //    dialogueManager.StartDialogueSequence(8, 0f);
+
+    //    yield return new WaitForSeconds(5f);
+    //}
 
     public IEnumerator TurnOnLights(float duration)
     {
-        float elapsed = 0f;
+        //float elapsed = 0f;
         audioManager.playBodyStinger();
 
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-            float intensity = lightCurve.Evaluate(t) * intensityMultiplier;
-
-            foreach (Light light in escapePodLights)
-            {
-                light.intensity = intensity;
-            }
-
-            yield return null;
-        }
-
-        
-        // Ensure final value is set
-        float finalIntensity = lightCurve.Evaluate(1f) * intensityMultiplier;
-        foreach (Light light in escapePodLights)
-        {
-            light.intensity = finalIntensity;
-        }
+        yield return lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, true);
+        yield return lightManager.FadeOutLights(LightLocation.EscapePod, 2.0f);
 
         foreach (DoorScript door in doorsToUnlock)
         {

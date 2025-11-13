@@ -33,7 +33,7 @@ public class BrokenDoorEvent : MonoBehaviour
         StartCoroutine(BrokenDoorBeat());
 
         //flicker lights
-        lightManager.FlickerLights(lightManager.diningLightGroup);
+        lightManager.FlickerLights(LightLocation.Dining, 1.0f, 2.0f, true);
     }
 
     private IEnumerator BrokenDoorBeat()
