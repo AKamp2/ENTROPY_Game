@@ -7,6 +7,7 @@ public class EnvironmentAudio : MonoBehaviour
 {
 
     public GameObject doorsContainer;
+    public HazardLight hazardLight;
     private DoorScript[] doors;
 
     [Header("SFX Clips")]
@@ -17,9 +18,6 @@ public class EnvironmentAudio : MonoBehaviour
     [Header("Explosion Audio Settings")]
     public AudioClip explosionClip;
     public AudioSource explosionSource;
-
-    [Header("HazardLight Audio Settings")]
-    public AudioClip hazardLightClip;
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentGroup;
@@ -47,19 +45,6 @@ public class EnvironmentAudio : MonoBehaviour
         explosionSource.Play();
     }
 
-    public void PlayHazardAlarm()
-    {
-        Debug.Log("Playing hazard alarm sound");
-        hazardLightSource.clip = hazardLightClip;
-        hazardLightSource.loop = true;
-        hazardLightSource.Play();
-    }
-
-    public void StopHazardAlarm()
-    {
-        Debug.Log("Stopping hazard alarm sound");
-        hazardLightSource.Stop();
-    }
 
     /*
     public void playDoorOpenAudio(float speed, DoorScript door)

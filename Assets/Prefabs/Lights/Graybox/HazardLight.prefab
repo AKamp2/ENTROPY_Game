@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6997165322584421162}
   - component: {fileID: 372588621909684887}
   - component: {fileID: 6793737349086196666}
-  - component: {fileID: 2588211376933868796}
+  - component: {fileID: 7057161233428563010}
   m_Layer: 6
   m_Name: HazardLight
   m_TagString: Untagged
@@ -74,8 +74,9 @@ MonoBehaviour:
   light: {fileID: 3461516693301953957}
   lightBase: {fileID: 4306427076983254127}
   rotateParam: 250
-  environmentAudio: {fileID: 0}
---- !u!82 &2588211376933868796
+  hazardLightSource: {fileID: 7057161233428563010}
+  hazardLightClip: {fileID: 8300000, guid: e6c1ac20ddae9394bbff6995275b4ad2, type: 3}
+--- !u!82 &7057161233428563010
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,12 +88,12 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 2662280588814888990, guid: 720f457489e44c440b5082c1b507453e, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
-  Spatialize: 0
+  Spatialize: 1
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
@@ -118,15 +119,15 @@ AudioSource:
     - serializedVersion: 3
       time: 0.09891489
       value: 0.74541116
-      inSlope: -8.706359
-      outSlope: -8.706359
+      inSlope: -1.4707634
+      outSlope: -1.4707634
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.33333334
+      outWeight: 0.5336596
     - serializedVersion: 3
-      time: 0.14986211
-      value: 0.25180054
+      time: 0.38741094
+      value: 0.35897827
       inSlope: -0.92515856
       outSlope: -0.92515856
       tangentMode: 0
@@ -150,7 +151,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

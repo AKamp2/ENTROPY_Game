@@ -13,9 +13,10 @@ public class HazardLight : MonoBehaviour
     [SerializeField]
     private float rotateParam;
     
-    public EnvironmentAudio environmentAudio;
+
 
     public AudioSource hazardLightSource;
+    public AudioClip hazardLightClip;
 
     public bool IsHazard
     {
@@ -34,9 +35,11 @@ public class HazardLight : MonoBehaviour
             {
                 light.enabled = true;
                 lightBase.enabled = true;
-                environmentAudio.PlayHazardAlarm();
+                
             }
             light.transform.Rotate(Vector3.up * rotateParam * Time.deltaTime);
+
+            PlayHazardAlarm();
         }
         else if (!isHazard)
         {
@@ -44,8 +47,37 @@ public class HazardLight : MonoBehaviour
             {
                 light.enabled = false;
                 lightBase.enabled = false;
-                environmentAudio.StopHazardAlarm(); 
+                 
             }
+            StopHazardAlarm();
         }
+    }
+    public void PlayHazardAlarm()
+    {
+        /*        Debug.Log("PlayHazardAlarm called");
+                if (hazardLightSource == null)
+                {
+                      Debug.LogError("Hazard Light Source is not assigned!");
+                    return;
+                }
+                if (hazardLightClip == null)
+                {
+                    Debug.LogError("Hazard Light Clip is not assigned!");
+                    return;
+                }
+                Debug.Log("Playing hazard alarm sound");
+                */
+        hazardLightSource.clip = hazardLightClip;
+        hazardLightSource.loop = true;
+        hazardLightSource.Play();
+
+        /*        Debug.Log($"AudioSource isPlaying: {hazardLightSource.isPlaying}");
+                Debug.Log($"AudioClip: {hazardLightSource.clip?.name}");*/
+    }
+
+    public void StopHazardAlarm()
+    {
+        Debug.Log("Stopping hazard alarm sound");
+        hazardLightSource.Stop();
     }
 }
