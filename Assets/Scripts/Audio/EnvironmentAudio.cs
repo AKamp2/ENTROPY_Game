@@ -5,7 +5,6 @@ using UnityEngine.Audio;
 
 public class EnvironmentAudio : MonoBehaviour
 {
-
     public GameObject doorsContainer;
     public HazardLight hazardLight;
     private DoorScript[] doors;
@@ -15,9 +14,7 @@ public class EnvironmentAudio : MonoBehaviour
     public AudioClip doorMoving;
     public AudioClip doorClosingClick;
 
-    [Header("Explosion Audio Settings")]
-    public AudioClip explosionClip;
-    public AudioSource explosionSource;
+
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentGroup;
@@ -37,13 +34,6 @@ public class EnvironmentAudio : MonoBehaviour
         }
     }
 
-    public void PlayExplosion()
-    {
-        Debug.Log("Playing explosion sound");
-        explosionSource.clip = explosionClip;
-        explosionSource.loop = false;
-        explosionSource.Play();
-    }
 
 
     /*

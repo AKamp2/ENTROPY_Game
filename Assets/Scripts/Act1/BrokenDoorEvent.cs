@@ -13,6 +13,7 @@ public class BrokenDoorEvent : MonoBehaviour
     private AudioSource brokenDoorAudio;
     private DialogueManager manager;
     private WristMonitor monitor;
+    public StingerManager stingerManager;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -31,7 +32,7 @@ public class BrokenDoorEvent : MonoBehaviour
     public void StartBrokenDoorBeat()
     {
         StartCoroutine(BrokenDoorBeat());
-
+        stingerManager.BrokenDoorStingerTriggered();
         //flicker lights
         lightManager.FlickerLights(lightManager.diningLightGroup);
     }

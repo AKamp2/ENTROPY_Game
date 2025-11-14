@@ -5,15 +5,20 @@ public class StingerManager : MonoBehaviour
 {
     [Header("Stinger Settings")]
     [SerializeField] private AudioClip tutorialStingerClip;
-    [SerializeField] private AudioClip dormHallStingerClip;
+    [SerializeField] private AudioClip dormRoomStingerClip;
     [SerializeField] private AudioClip brokenDoorStingerClip;
+    [SerializeField] private AudioClip explosionClip;
     [SerializeField] private AudioSource tutorialStingerSource;
-    [SerializeField] private AudioSource dormHallStingerSource;
+    [SerializeField] private AudioSource dormRoomStingerSource;
     [SerializeField] private AudioSource brokenDoorStingerSource;
+    [SerializeField] private AudioSource explosionSource;
+
+    [SerializeField] private int priority = 10;
 
     public AudioClip TutorialStingerClip => tutorialStingerClip;
-    public AudioClip DormHallStingerClip => dormHallStingerClip;
+    public AudioClip DormRoomStingerClip => dormRoomStingerClip;
     public AudioClip BrokenDoorStingerClip => brokenDoorStingerClip;
+    public AudioClip ExplosionClip => explosionClip;
 
     private Coroutine tutorialFadeCoroutine;
     /*    private Coroutine currentDormFade;
@@ -38,6 +43,7 @@ public class StingerManager : MonoBehaviour
         if (tutorialFadeCoroutine != null)
             StopCoroutine(tutorialFadeCoroutine);
 
+        tutorialStingerSource.priority = priority;
         tutorialStingerSource.clip = tutorialStingerClip;
         tutorialStingerSource.loop = true;
         tutorialStingerSource.volume = 0f;
@@ -50,7 +56,7 @@ public class StingerManager : MonoBehaviour
     /// <summary>
     /// Stops (fades out) the tutorial stinger when the tutorial ends or is skipped.
     /// </summary>
-    public void StopTutorialStinger(float fadeOutDuration = 10f)
+    public void StopTutorialStinger(float fadeOutDuration = 12f)
     {
         if (tutorialStingerSource == null || !tutorialStingerSource.isPlaying)
             return;
@@ -97,20 +103,48 @@ public class StingerManager : MonoBehaviour
             brokenDoorStingerSource.clip = brokenDoorStingerClip;
             brokenDoorStingerSource.Play();
         }*/
-    public void BrokenDoorStingerTriggered(float fadeInDuration = 3f, float fadeOutDuration = 3f)
+    public void BrokenDoorStingerTriggered()
     {
         if (brokenDoorStingerSource == null || brokenDoorStingerClip == null) return;
-
+        brokenDoorStingerSource.priority = priority;
         brokenDoorStingerSource.clip = brokenDoorStingerClip;
         brokenDoorStingerSource.loop = false;
         brokenDoorStingerSource.volume = 0f;
         brokenDoorStingerSource.Play();
 
         // Fade in at start
-        StartCoroutine(FadeAudioSource(brokenDoorStingerSource, 0f, 1f, fadeInDuration));
+        StartCoroutine(FadeAudioSource(brokenDoorStingerSource, 0f, 1f, 5f));
 
         // Auto fade out near the end of the clip
-        StartCoroutine(AutoFadeOut(brokenDoorStingerSource, brokenDoorStingerClip.length, fadeOutDuration));
+        StartCoroutine(AutoFadeOut(brokenDoorStingerSource, brokenDoorStingerClip.length, 4f));
+    }
+    public void PlayExplosion()
+    {
+        Debug.Log("Playing explosion sound");
+        explosionSource.priority = priority;
+        explosionSource.clip = explosionClip;
+        explosionSource.loop = false;
+        explosionSource.Play();
+
+        StartCoroutine(FadeAudioSource(explosionSource, 0f, 1f, 4f));
+    }
+
+    public void PlayDormRoomStinger()
+        {
+        if (dormRoomStingerSource == null || dormRoomStingerClip == null)
+        {
+            Debug.LogWarning("StingerManager: Missing dorm hall stinger AudioSource or Clip.");
+            return;
+        }
+        dormRoomStingerSource.priority = priority;
+        dormRoomStingerSource.clip = dormRoomStingerClip;
+        dormRoomStingerSource.loop = false;
+        dormRoomStingerSource.volume = 0f;
+        dormRoomStingerSource.Play();
+        // Fade in at start
+        StartCoroutine(FadeAudioSource(dormRoomStingerSource, 0f, 1f, 8f));
+        // Auto fade out near the end of the clip
+        StartCoroutine(AutoFadeOut(dormRoomStingerSource, dormRoomStingerClip.length, 3f));
     }
 
     private IEnumerator AutoFadeOut(AudioSource source, float clipLength, float fadeDuration)
