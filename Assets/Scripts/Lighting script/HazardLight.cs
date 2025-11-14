@@ -13,6 +13,11 @@ public class HazardLight : MonoBehaviour
     [SerializeField]
     private float rotateParam;
 
+    [SerializeField]
+    private GameObject lightActive;
+    [SerializeField]
+    private GameObject lightInactive;
+
     public bool IsHazard
     {
         get { return isHazard; }
@@ -39,6 +44,8 @@ public class HazardLight : MonoBehaviour
             {
                 light.enabled = false;
                 lightBase.enabled = false;
+                lightActive.SetActive(false);
+                lightInactive.SetActive(true);
             }
         }
     }
