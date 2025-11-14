@@ -18,6 +18,8 @@ public class HazardLight : MonoBehaviour
     public AudioSource hazardLightSource;
     public AudioClip hazardLightClip;
 
+    private bool alarmPlaying = false;
+
     public bool IsHazard
     {
         get { return isHazard; }
@@ -38,8 +40,11 @@ public class HazardLight : MonoBehaviour
                 
             }
             light.transform.Rotate(Vector3.up * rotateParam * Time.deltaTime);
-
-            PlayHazardAlarm();
+            if (!alarmPlaying)
+            {
+                PlayHazardAlarm();
+                alarmPlaying = true;
+            }
         }
         else if (!isHazard)
         {
@@ -49,7 +54,11 @@ public class HazardLight : MonoBehaviour
                 lightBase.enabled = false;
                  
             }
-            StopHazardAlarm();
+            if (alarmPlaying)
+            {
+                StopHazardAlarm();
+                alarmPlaying = false;
+            }           
         }
     }
     public void PlayHazardAlarm()
