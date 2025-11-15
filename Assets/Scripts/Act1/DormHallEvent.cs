@@ -28,6 +28,8 @@ public class DormHallEvent : MonoBehaviour
 
     [SerializeField] private Light monitorLight;
 
+    public StingerManager stingerManager;
+
     public bool CanGrab
     {
         get { return canGrab; }
@@ -95,7 +97,7 @@ public class DormHallEvent : MonoBehaviour
     {
         medDoor.SetState(DoorScript.States.Closed);
         dialogueManager.StartDialogueSequence(6, 1f);
-
+        stingerManager.PlayDormRoomStinger();
         yield return new WaitUntil(() => dialogueManager.IsDialogueActive == false);
         wristMonitor.CompleteObjective();
 

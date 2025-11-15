@@ -5,14 +5,16 @@ using UnityEngine.Audio;
 
 public class EnvironmentAudio : MonoBehaviour
 {
-
     public GameObject doorsContainer;
+    public HazardLight hazardLight;
     private DoorScript[] doors;
 
     [Header("SFX Clips")]
     public AudioClip doorOpenClick;
     public AudioClip doorMoving;
     public AudioClip doorClosingClick;
+
+
 
     [Header("Audio Mixer Groups")]
     public AudioMixerGroup environmentGroup;
@@ -32,11 +34,6 @@ public class EnvironmentAudio : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
 
     /*
