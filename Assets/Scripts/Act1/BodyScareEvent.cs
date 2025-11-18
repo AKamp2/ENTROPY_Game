@@ -125,7 +125,7 @@ public class BodyScareEvent : MonoBehaviour
 
     public void ActivateLights()
     {
-        StartCoroutine(TurnOnLights(3));
+        StartCoroutine(TurnOnLights(6));
     }
 
     //public IEnumerator TurnOnLights(float duration)
