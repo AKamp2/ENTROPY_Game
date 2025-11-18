@@ -155,6 +155,7 @@ public class StimDispenser : MonoBehaviour
     {
         // Replace this with logic to update wrist monitor and stim counts
         //Debug.Log("Stim refill complete!");
+        audioSource.priority = 15;
         audioSource.Play();
         playerScript.AddStimsToInv(3);
     }

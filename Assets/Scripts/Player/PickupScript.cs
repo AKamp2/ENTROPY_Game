@@ -218,8 +218,8 @@ public class PickupScript : MonoBehaviour
 
             AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
 
-            if (itemAudioHandler != null && itemSource != null)
-                itemAudioHandler.PlayPickUpSound(itemSource);
+            if (itemAudioHandler != null)
+                itemAudioHandler.PlayPickUpSound(holdPos.position);
         }
     }
     void DropObject()
@@ -263,8 +263,8 @@ public class PickupScript : MonoBehaviour
 
         AudioSource itemSource = heldObj.GetComponentInChildren<AudioSource>();
 
-        if (itemAudioHandler != null && itemSource != null)
-            itemAudioHandler.PlayThrowSound(itemSource);
+        if (itemAudioHandler != null)
+            itemAudioHandler.PlayThrowSound(holdPos.position);
 
         heldObj = null;
         hasThrownObject = true;

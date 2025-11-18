@@ -36,9 +36,9 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Slider rollProgressBar;
     [SerializeField] private float requiredRotation = 180f; // how much roll needed
 
-    [SerializeField] private AudioClip tutorialStingerClip;
+    //[SerializeField] private AudioClip tutorialStingerClip;
 
-    public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
+    //public AudioClip TutorialStingerClip => tutorialStingerClip; // property accessor
 
     public float fadeDuration = 1f;
 
@@ -61,7 +61,7 @@ public class TutorialManager : MonoBehaviour
     private float initialRollZ;
 
     public DialogueAudio dialogueAudio;
-    public AmbientController ambientController;
+    public StingerManager stingerManager;
 
     private bool inItemGrabTutorial = false;
     private bool inItemThrowTutorial = false;
@@ -114,10 +114,9 @@ public class TutorialManager : MonoBehaviour
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
                 FadeOut(enterCanvasGroup);
-                if (ambientController != null)
+                if (stingerManager != null)
                 {
-                    ambientController.StopStinger(ambientController.TutorialStingerClip, 5f);
-
+                    stingerManager.StopTutorialStinger(fadeOutDuration: 5f);
                 }
                 EndTutorial();
             }
@@ -231,12 +230,12 @@ public class TutorialManager : MonoBehaviour
         playerController.GrabRange = 1f;
         inTutorial = true;
         yield return new WaitForSeconds(1f);
-        //dialogueAudio.PlayJingle();
+        dialogueAudio.PlayJingle();
 
         // Play looping tutorial stinger with fade-in
-        if (ambientController != null)
+        if (stingerManager != null)
         {
-            ambientController.PlayStinger(ambientController.TutorialStingerClip, loop: true, fadeInDuration: 8f);
+            StartCoroutine(DelayedStinger(8f));
         }
 
 
@@ -245,6 +244,14 @@ public class TutorialManager : MonoBehaviour
 
         //fading out the tutorial skip panel
         StartCoroutine(DelayFadeOut(7, enterCanvasGroup));
+    }
+
+    private IEnumerator DelayedStinger(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Play looping tutorial stinger with fade-in
+        stingerManager.PlayTutorialStinger(fadeInDuration: 7f);
     }
 
     public void ProgressTutorial()
@@ -414,7 +421,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         // Fade out tutorial stinger
-        ambientController.StopStinger(ambientController.TutorialStingerClip, fadeOutDuration: 10f);
+        stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
 
 
         //remove all tutorial panels

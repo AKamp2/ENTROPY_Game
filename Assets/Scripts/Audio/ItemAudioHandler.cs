@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
+
 public class ItemAudioHandler : MonoBehaviour
 {
     //[Header("Audio Source")]
@@ -12,33 +12,52 @@ public class ItemAudioHandler : MonoBehaviour
     [Header("Throw Sounds")]
     public AudioClip[] throwSounds;
 
-/*    [Header("Impact Sounds")]
-    public AudioClip[] impactSounds;
+    public GameObject audioSourcePrefab;
+    public Transform audioSourceContainer;
 
-    [Tooltip("Minimum collision velocity to trigger an impact sound")]
-    public float impactThreshold = 1.5f;*/
+    /*    [Header("Impact Sounds")]
+        public AudioClip[] impactSounds;
 
-/*    private void Awake()
+        [Tooltip("Minimum collision velocity to trigger an impact sound")]
+        public float impactThreshold = 1.5f;*/
+
+    /*    private void Awake()
+        {
+
+        }*/
+
+    public void PlayPickUpSound(Vector3 position)
     {
-        
-    }*/
+        if (pickupSounds.Length == 0) return;
 
-    public void PlayPickUpSound(AudioSource source)
-    {
-        if (pickupSounds.Length == 0 || source == null) return;
-        int index = Random.Range(0, pickupSounds.Length);
-        source.pitch = Random.Range(0.95f, 1.05f);
-        source.PlayOneShot(pickupSounds[index]);
+        int index = Random.Range(0, pickupSounds.Length);        
+        PlayThrowSoundAtPosition(pickupSounds[index], position);
     }
 
-    public void PlayThrowSound(AudioSource source)
+    public void PlayThrowSound(Vector3 position)
     {
-        if (throwSounds.Length == 0 || source == null) return;
+        if (throwSounds.Length == 0) return;
+        
         int index = Random.Range(0, throwSounds.Length);
-        source.pitch = Random.Range(0.95f, 1.05f);
-        source.PlayOneShot(throwSounds[index]);
+        PlayThrowSoundAtPosition(throwSounds[index], position);
+    }
+
+    private void PlayThrowSoundAtPosition(AudioClip clip, Vector3 position)
+    {
+        if (clip == null || audioSourcePrefab == null) return;
+        
+        GameObject tempAudioObj = Instantiate(audioSourcePrefab, position, Quaternion.identity, audioSourceContainer);
+        AudioSource tempSource = tempAudioObj.GetComponent<AudioSource>();
+        if (tempAudioObj == null) return;
+        tempSource.clip = clip;
+        tempSource.pitch = Random.Range(0.8f, 1.2f);
+        
+        tempSource.Play();
+        Destroy(tempAudioObj, clip.length + 0.1f); // Clean up after sound finishes
     }
 }
+
+
 
 /*private void OnCollisionEnter(Collision collision)
 {
