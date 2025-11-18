@@ -35,6 +35,9 @@ public class BodyScareEvent : MonoBehaviour
 
     public LightManager lightManager;
 
+    [SerializeField]
+    private GameObject[] sparksToDisable;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -122,7 +125,7 @@ public class BodyScareEvent : MonoBehaviour
 
     public void ActivateLights()
     {
-        StartCoroutine(TurnOnLights(2));
+        StartCoroutine(TurnOnLights(3));
     }
 
     //public IEnumerator TurnOnLights(float duration)
@@ -169,15 +172,21 @@ public class BodyScareEvent : MonoBehaviour
         //float elapsed = 0f;
         audioManager.playBodyStinger();
 
-        yield return lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, true);
-        yield return lightManager.FadeOutLights(LightLocation.EscapePod, 2.0f);
+        yield return lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, false);
+        yield return new WaitForSeconds(2.0f);
+        yield return lightManager.FadeOutLights(LightLocation.EscapePod, 1.0f);
 
         foreach (DoorScript door in doorsToUnlock)
         {
             door.SetState(DoorScript.States.Closed);
         }
 
-        yield return new WaitForSeconds(5.5f);
+        foreach (GameObject spark in sparksToDisable)
+        {
+            spark.SetActive(false);
+        }
+
+        yield return new WaitForSeconds(3.5f);
 
         dialogueManager.StartDialogueSequence(8, 0f);
 
