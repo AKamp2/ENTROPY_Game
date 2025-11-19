@@ -174,7 +174,7 @@ public class BodyScareEvent : MonoBehaviour
 
         yield return lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, false);
         yield return new WaitForSeconds(2.0f);
-        yield return lightManager.FadeOutLights(LightLocation.EscapePod, 1.0f);
+        yield return lightManager.FadeOutLights(LightLocation.EscapePod, 0.5f);
 
         foreach (DoorScript door in doorsToUnlock)
         {
