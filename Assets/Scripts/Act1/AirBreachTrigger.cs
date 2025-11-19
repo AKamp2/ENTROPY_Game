@@ -1,20 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static CheckpointManager;
 
-public class AirBreachTrigger : MonoBehaviour, ISaveable
+public class AirBreachTrigger : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    [SerializeField] private VentScript vent1;
-    [SerializeField] private VentScript vent2;
-    [SerializeField] private VentScript vent3;
-    private bool triggered = false;
-
+    public AirBreachScript breachScript;
+    
     void Start()
     {
-        // continue from save
-        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
+        
     }
 
     // Update is called once per frame
@@ -23,47 +17,26 @@ public class AirBreachTrigger : MonoBehaviour, ISaveable
         
     }
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            GetComponent<Collider>().enabled = false;
-            StartCoroutine(TriggerVents());
-            triggered = true;
-        }
-    }
+        if (!breachScript.IsCurrentlyBlowing) return;
 
-    private IEnumerator TriggerVents()
-    {
-        vent1.TurnOn();
-        yield return new WaitForSeconds(3f);
-        vent2.TurnOn();
-        yield return new WaitForSeconds(0.5f);
-        vent3.TurnOn();
-    }
-
-    public void LoadSaveFile(string fileName)
-    {
-        // this will load data from the file to a variable we will use to change this objects data
-        string path = Application.persistentDataPath;
-        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
-        if (loadedData != null && loadedData != "")
+        if (other.CompareTag("PickupObject") || other.CompareTag("Player"))
         {
-            if (loadedData == "True")
+            Rigidbody rb = other.attachedRigidbody;
+            if (rb != null && !breachScript.affectedRigidbodies.Contains(rb))
             {
-                GetComponent<Collider>().enabled = false;
-                triggered = true;
-                vent1.TurnOn();
-                vent2.TurnOn();
-                vent3.TurnOn();
+                breachScript.affectedRigidbodies.Add(rb);
             }
         }
     }
 
-    public void CreateSaveFile(string fileName)
+    void OnTriggerExit(Collider other)
     {
-        // this will create a file backing up the data we give it
-        string path = Application.persistentDataPath;
-        GlobalSaveManager.SaveTextToFile(path, fileName, triggered.ToString());
+        Rigidbody rb = other.attachedRigidbody;
+        if (rb != null)
+        {
+            breachScript.affectedRigidbodies.Remove(rb);
+        }
     }
 }

@@ -6,7 +6,8 @@ using UnityEngine.InputSystem;
 public class TerminalManager : MonoBehaviour, ISaveable
 {
 
-    private Terminal currentTerminal;
+    public Terminal currentTerminal;
+    
     
     public Terminal CurrentTerminal
     {
