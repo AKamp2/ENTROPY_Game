@@ -76,6 +76,11 @@ public class TutorialManager : MonoBehaviour
     private float upsideDownTimer = 0f;
     private const float upsideDownDuration = 3f;
 
+    [SerializeField] private Slider skipProgressSlider;
+    [SerializeField] private float holdDuration = 1f;
+    private float currentHoldTime = 0f;
+
+
     public bool IsTutorialSkipped
     {
         get { return tutorialSkipped; }
@@ -102,28 +107,24 @@ public class TutorialManager : MonoBehaviour
             StartCoroutine(StartTutorial());
         }
 
+        if (skipProgressSlider != null)
+        {
+            skipProgressSlider.minValue = 0f;
+            skipProgressSlider.maxValue = 1f;
+            skipProgressSlider.value = 0f;
+        }
+
     }
 
     void Update()
     {
         // Skip tutorial with Enter
-        if (Keyboard.current.enterKey.wasPressedThisFrame)
+        if (!tutorialSkipped && inTutorial)
         {
-            if (!tutorialSkipped && inTutorial)
-            {
-                tutorialSkipped = true;
-                dialogueManager.SkipTutorial();
-                FadeOut(enterCanvasGroup);
-                if (stingerManager != null)
-                {
-                    stingerManager.StopTutorialStinger(fadeOutDuration: 5f);
-                }
-                EndTutorial();
-            }
-            
+            HandleTutorialSkip();
         }
 
-        if (isWaitingForAction)
+            if (isWaitingForAction)
         {
             if (currentStep == 1 && playerController.IsGrabbing)
             {
@@ -600,6 +601,59 @@ public class TutorialManager : MonoBehaviour
         if(pickUpItemCanvasGroup.alpha > 0)
         {
             FadeOut(pickUpItemCanvasGroup);
+        }
+    }
+
+    private void HandleTutorialSkip()
+    {
+        if (Keyboard.current.enterKey.isPressed)
+        {
+            if(enterCanvasGroup.alpha < 1)
+            {
+                enterCanvasGroup.alpha = 1f;
+            }
+
+            skipProgressSlider.GetComponent<CanvasGroup>().alpha = 1.0f;
+            currentHoldTime += Time.deltaTime;
+            
+            // Update slider progress
+            if (skipProgressSlider != null)
+            {
+                skipProgressSlider.value = Mathf.Clamp01(currentHoldTime / holdDuration);
+            }
+            
+            // Check if hold duration is complete
+            if (currentHoldTime >= holdDuration)
+            {
+                tutorialSkipped = true;
+                dialogueManager.SkipTutorial();
+                FadeOut(enterCanvasGroup);
+                if (stingerManager != null)
+                {
+                    stingerManager.StopTutorialStinger(fadeOutDuration: 5f);
+                }
+                EndTutorial();
+                
+                // Reset after skipping
+                currentHoldTime = 0f;
+                if (skipProgressSlider != null)
+                {
+                    skipProgressSlider.value = 0f;
+                }
+            }
+        }
+        else
+        {
+            skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
+            // Reset when key is released
+            if (currentHoldTime > 0f)
+            {
+                currentHoldTime = 0f;
+                if (skipProgressSlider != null)
+                {
+                    skipProgressSlider.value = 0f;
+                }
+            }
         }
     }
 }

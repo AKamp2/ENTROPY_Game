@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TerminalTextureRendererManager : MonoBehaviour
 {
@@ -13,7 +14,6 @@ public class TerminalTextureRendererManager : MonoBehaviour
 
 
     private int[] textureDensity = new int[] { 1024, 1024 };
-
 
 
 
@@ -73,14 +73,11 @@ public class TerminalTextureRendererManager : MonoBehaviour
 
 
 
-
-
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 }
