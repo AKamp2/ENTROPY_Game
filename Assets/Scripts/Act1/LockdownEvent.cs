@@ -100,6 +100,8 @@ public class LockdownEvent : MonoBehaviour
     public Animator alienAnimator;
     public Light alienLight;
 
+    public Transform panelMovePos;
+
     [SerializeField] private ServerProgressBars serverProgress;
     [SerializeField] private Terminal serverTerminal;
     [SerializeField] private LockdownPanel lockdownPanel;
@@ -250,6 +252,7 @@ public class LockdownEvent : MonoBehaviour
         if (canPull && isActive)
         {
             audioManager.PlayButtonClick();
+            StartCoroutine(LerpPosition(panelMovePos.position, 1f));
             buttonLight.intensity = 0;
             // open the broken door first
             //brokenDoor.SetState(DoorScript.States.Open);
@@ -292,7 +295,7 @@ public class LockdownEvent : MonoBehaviour
         //audioManager.playAlienRunAway();
         StartCoroutine(PlayAlienAnimation());
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(26f);
 
         audioManager.playPowerOn();
         serverProgress.Reboot();
@@ -471,6 +474,27 @@ public class LockdownEvent : MonoBehaviour
         lockdownPanel.SwitchToDeactivate();
         isActive = true;
         dialogueManager.StartDialogueSequence(9, 0.5f);
+    }
+
+    /// <summary>
+    /// Method for moving the player to the panel position;
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    private IEnumerator LerpPosition(Vector3 destination, float duration)
+    {
+        Vector3 start = player.transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            player.transform.position = Vector3.Lerp(start, destination, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        player.transform.position = destination;
     }
 
 }
