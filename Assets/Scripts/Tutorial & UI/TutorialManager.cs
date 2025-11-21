@@ -101,7 +101,7 @@ public class TutorialManager : MonoBehaviour
         pickupScript = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
 
-        if (playerController.TutorialMode == true)
+        if (playerController.TutorialMode == true && !GlobalSaveManager.LoadFromSave)
         {
             dialogueManager.OnDialogueEnd += OnDialogueComplete;
             StartCoroutine(StartTutorial());
@@ -625,6 +625,7 @@ public class TutorialManager : MonoBehaviour
             // Check if hold duration is complete
             if (currentHoldTime >= holdDuration)
             {
+                skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
                 FadeOut(enterCanvasGroup);

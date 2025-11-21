@@ -171,8 +171,6 @@ public class DoorScript : MonoBehaviour
         set
         {
             states = value;
-            // track door updates for saving purposes
-            doorManager.StoreDoorStates();
         }
     }
 
@@ -202,9 +200,11 @@ public class DoorScript : MonoBehaviour
     {
         GetChildButtons();
 
-        closedPos = doorPart.position;
-        Vector3 right = doorPart.forward * -1;
-        openPos = closedPos + right * openSize;
+        closedPos = doorPart.transform.localPosition;
+        Vector3 worldRight = doorPart.forward * -1;  // Direction in world space
+        Vector3 localRight = doorPart.parent.InverseTransformDirection(worldRight);  // Convert to local space
+        //Debug.Log(closedPos.ToString());
+        openPos = closedPos + localRight * openSize;
         isClosing = false;
 
         //default unlock
@@ -214,13 +214,13 @@ public class DoorScript : MonoBehaviour
 
         if (states == States.Open)
         {
-            doorPart.position = openPos;
+            doorPart.localPosition = openPos;
             SetButtonColor(greenBase, greenEmis);
         }
 
         if (states == States.Closed)
         {
-            doorPart.position = closedPos;
+            doorPart.localPosition = closedPos;
             SetButtonColor(greenBase, greenEmis);
         }
 
@@ -235,7 +235,7 @@ public class DoorScript : MonoBehaviour
 
         if (states == States.Locked)
         {
-            doorPart.position = closedPos;
+            doorPart.localPosition = closedPos;
             SetButtonColor(redBase, redEmis);
             decal.material = doorManager.LockedMaterial;
             LockHologram();
@@ -259,17 +259,17 @@ public class DoorScript : MonoBehaviour
 
         if (midReference != null)
         {
-            midPos = midReference.transform.position;
+            midPos = midReference.transform.localPosition;
         }
 
         if (shortReference != null)
         {
-            shortPos = shortReference.transform.position;
+            shortPos = shortReference.transform.localPosition;
         }
 
         if (bodyOpenReference != null)
         {
-            bodyPos = bodyOpenReference.transform.position;
+            bodyPos = bodyOpenReference.transform.localPosition;
         }
 
 
@@ -290,12 +290,12 @@ public class DoorScript : MonoBehaviour
         while (elapsed < duration)
         {
             float t = 0.5f * Mathf.Sin((elapsed / duration) * Mathf.PI - Mathf.PI / 2f) + 0.5f;
-            doorPart.position = Vector3.Lerp(fromPos, toPos, t);
+            doorPart.localPosition = Vector3.Lerp(fromPos, toPos, t);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        doorPart.position = toPos;
+        doorPart.localPosition = toPos;
         onComplete?.Invoke();
     }
 
@@ -469,7 +469,7 @@ public class DoorScript : MonoBehaviour
 
         aboutToJolt = true;
 
-        yield return MoveDoor(doorPart.position, bodyPos, 0.2f, null);
+        yield return MoveDoor(doorPart.localPosition, bodyPos, 0.2f, null);
 
         showingBody = true;
 
@@ -478,7 +478,7 @@ public class DoorScript : MonoBehaviour
 
 
     /// <summary>
-    /// Set the state of a door
+    /// Change the state of a door
     /// </summary>
     /// <param name="state"></param>
     public void SetState(States state)
@@ -544,6 +544,100 @@ public class DoorScript : MonoBehaviour
             StartCoroutine(HandleDoorStuck());
         }
     }
+
+    /// <summary>
+    /// Sets the state of the door without playing the whole moving animation. Used by the save manager to load doors
+    /// </summary>
+    /// <param name="state"></param>
+    public void ForceState(States state)
+    {
+        States previousState = this.states;
+        this.DoorState = state;
+
+        if (state == States.Closed || state == States.Open)
+        {
+            SetButtonColor(greenBase, greenEmis);
+            decal.material = doorManager.UnlockedMaterial;
+            UnlockHologram();
+
+            if (state == States.Open)
+            {
+                //Debug.Log("This part of the script is happening");
+                //open the door if it wasn't already opening
+                if(doorTrigger)
+                {
+                    doorPart.localPosition = closedPos;
+                }
+                else
+                {
+                    doorPart.localPosition = openPos;
+                }
+                
+            }
+            if (state == States.Closed)
+            {
+                //close the door if it wasn't already closed
+                
+                doorPart.localPosition = closedPos;
+            }
+        }
+        else if (state == States.Broken)
+        {
+            SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
+            StartCoroutine(HandleBrokenDoorLoop());
+        }
+        else if (state == States.Locked)
+        {
+            SetButtonColor(redBase, redEmis);
+            LockHologram();
+            decal.material = doorManager.LockedMaterial;
+
+            doorPart.localPosition = closedPos;
+
+        }
+        else if (state == States.BrokenShort)
+        {
+            SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
+            StartCoroutine(HandleBrokenDoorShort());
+        }
+        else if (state == States.JoltOpen)
+        {
+            SetButtonColor(yellowBase, yellowEmis);
+            decal.material = doorManager.WarningMaterial;
+            BrokenHologram();
+            doorPart.localPosition = bodyPos;
+        }
+        else if (state == States.Closing)
+        {
+            if (doorTrigger)
+            {
+                this.DoorState = States.Closed;
+                SetButtonColor(greenBase, greenEmis);
+                decal.material = doorManager.UnlockedMaterial;
+                UnlockHologram();
+                doorPart.localPosition = closedPos;
+            }
+            
+        }
+        else if (state == States.Opening)
+        {
+            if (doorTrigger)
+            {
+                this.DoorState = States.Closed;
+                SetButtonColor(greenBase, greenEmis);
+                decal.material = doorManager.UnlockedMaterial;
+                UnlockHologram();
+                doorPart.localPosition = closedPos;
+            }
+            
+        }
+    }
+
+
 
     private IEnumerator CloseAndLock()
     {
