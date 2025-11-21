@@ -80,12 +80,12 @@ public class TerminalManager : MonoBehaviour, ISaveable
                     if (i == _terminalData.LatestTerminalIndex)
                     {
                         terminals[i].MediumActivation();
-                        Debug.Log("Loaded with medium activation");
+                        //Debug.Log("Loaded with medium activation");
                     }
                     else
                     {
                         terminals[i].SoftActivation();
-                        Debug.Log("Loaded with soft activation");
+                        //Debug.Log("Loaded with soft activation");
                     }
                 }
             }

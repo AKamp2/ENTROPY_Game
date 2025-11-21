@@ -209,7 +209,7 @@ public class LightManager : MonoBehaviour, ISaveable
         }
 
         lightData.Add(saveLocation, new LightData(array, initLightIntensity));
-        Debug.Log("Save Successful!");
+        //Debug.Log("Save Successful!");
 
         DisableLights(array);
     }
