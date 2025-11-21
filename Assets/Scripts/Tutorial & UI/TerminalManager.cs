@@ -16,6 +16,7 @@ public class TerminalManager : MonoBehaviour, ISaveable
     }
     [SerializeField]
     private List<Terminal> terminals;
+
     void Start()
     {
         // continue from save
@@ -76,13 +77,15 @@ public class TerminalManager : MonoBehaviour, ISaveable
             {
                 if (_terminalData.TerminalStates[i])
                 {
-                    if (GlobalSaveManager.SavedWithTerminal && i == _terminalData.LatestTerminalIndex)
+                    if (i == _terminalData.LatestTerminalIndex)
                     {
                         terminals[i].MediumActivation();
+                        Debug.Log("Loaded with medium activation");
                     }
                     else
                     {
                         terminals[i].SoftActivation();
+                        Debug.Log("Loaded with soft activation");
                     }
                 }
             }

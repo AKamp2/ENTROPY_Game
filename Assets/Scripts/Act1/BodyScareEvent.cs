@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class BodyScareEvent : MonoBehaviour
+public class BodyScareEvent : MonoBehaviour, ISaveable
 {
     private ZeroGravity player;
     [SerializeField]
@@ -38,6 +38,8 @@ public class BodyScareEvent : MonoBehaviour
     [SerializeField]
     private GameObject[] sparksToDisable;
 
+    private bool eventTriggered;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -48,6 +50,17 @@ public class BodyScareEvent : MonoBehaviour
         foreach (Light light in escapePodLights)
         {
             light.intensity = 0;
+        }
+
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
+
+        if (eventTriggered)
+        {
+            body.SetActive(true);
+            body.transform.position = bodyPos.transform.position;
+            bodyRb.isKinematic = false;
+            //turn off the collider that keeps the player from moving through the door prematurely.
+            tempCollider.SetActive(false);
         }
     }
 
@@ -67,6 +80,7 @@ public class BodyScareEvent : MonoBehaviour
                 {
                     //Debug.Log("Grabbed bar detected");
                     waitForGrabbingBar = false;
+                    eventTriggered = true;
                     StartCoroutine(PlayBodyScare());
                 }
             }
@@ -191,5 +205,36 @@ public class BodyScareEvent : MonoBehaviour
         dialogueManager.StartDialogueSequence(8, 0f);
 
         yield return new WaitForSeconds(5f);
+    }
+
+    public class BodyScareEventData
+    {
+        public bool eventTriggered;
+
+        public BodyScareEventData(bool triggered)
+        {
+            eventTriggered = triggered;
+        }
+    }
+
+    // Add these methods to your BodyScareEvent class
+    public void LoadSaveFile(string fileName)
+    {
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        if (loadedData != null && loadedData != "")
+        {
+            BodyScareEventData _bodyScareEventData = JsonUtility.FromJson<BodyScareEventData>(loadedData);
+            eventTriggered = _bodyScareEventData.eventTriggered;
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
+    {
+        BodyScareEventData _bodyScareEventData = new BodyScareEventData(eventTriggered);
+
+        string json = JsonUtility.ToJson(_bodyScareEventData);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
 }

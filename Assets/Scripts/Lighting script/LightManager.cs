@@ -20,7 +20,7 @@ public class LightData
     }
 }
 
-public class LightManager : MonoBehaviour
+public class LightManager : MonoBehaviour, ISaveable
 {
     [SerializeField]
     public Dictionary<LightLocation, LightData> lightData;
@@ -41,10 +41,12 @@ public class LightManager : MonoBehaviour
         SaveLightData(LightLocation.Dining, diningLightGroup);
         SaveLightData(LightLocation.EscapePod, escapeLightGroup);
 
-        
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
+
+
     }
 
- 
+
 
     public Coroutine FlickerLights(LightLocation lightEnum, float totalDuration, float singleLightDuration, bool randomSequence)
     {
@@ -241,11 +243,81 @@ public class LightManager : MonoBehaviour
             // Get a random index from 0 to n-1
             int k = rng.Next(n--);
             // Swap the element at the current end with the random element
-            Transform temp = array[n];     
+            Transform temp = array[n];
             array[n] = array[k];
             array[k] = temp;
         }
 
         return array;
+    }
+
+    // Data class to hold the save information
+    [System.Serializable]
+    public class LightManagerData
+    {
+        public List<float> lightIntensities;
+
+        public LightManagerData(List<float> intensities)
+        {
+            lightIntensities = intensities;
+        }
+    }
+
+    // Add these methods to your LightManager class
+    public void LoadSaveFile(string fileName)
+    {
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        if (loadedData != null && loadedData != "")
+        {
+            LightManagerData _lightManagerData = JsonUtility.FromJson<LightManagerData>(loadedData);
+
+            // Get all lights in the same order as when we saved
+            List<Light> allLights = GetAllLightsInOrder();
+
+            for (int i = 0; i < _lightManagerData.lightIntensities.Count && i < allLights.Count; i++)
+            {
+                allLights[i].intensity = _lightManagerData.lightIntensities[i];
+            }
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
+    {
+        LightManagerData _lightManagerData = new LightManagerData(new List<float>());
+
+        // Get all lights in consistent order
+        List<Light> allLights = GetAllLightsInOrder();
+
+        foreach (Light light in allLights)
+        {
+            _lightManagerData.lightIntensities.Add(light.intensity);
+        }
+
+        string json = JsonUtility.ToJson(_lightManagerData);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
+    }
+
+    // Helper method to get all lights in a consistent order
+    private List<Light> GetAllLightsInOrder()
+    {
+        List<Light> allLights = new List<Light>();
+
+        // Add dining lights
+        foreach (Transform transform in diningLightGroup)
+        {
+            Light[] lights = transform.GetComponentsInChildren<Light>();
+            allLights.AddRange(lights);
+        }
+
+        // Add escape pod lights
+        foreach (Transform transform in escapeLightGroup)
+        {
+            Light[] lights = transform.GetComponentsInChildren<Light>();
+            allLights.AddRange(lights);
+        }
+
+        return allLights;
     }
 }

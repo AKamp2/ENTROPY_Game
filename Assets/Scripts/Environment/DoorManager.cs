@@ -124,7 +124,7 @@ public class DoorManager : MonoBehaviour, ISaveable
             DoorData _doorData = JsonUtility.FromJson<DoorData>(loadedData);
             for (int i = 0; i < _doorData.DoorStates.Count; i++)
             {
-                doors[i].SetState(_doorData.DoorStates[i]);
+                doors[i].ForceState(_doorData.DoorStates[i]);
             }
         }
     }

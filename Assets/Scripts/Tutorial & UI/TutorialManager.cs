@@ -625,6 +625,7 @@ public class TutorialManager : MonoBehaviour
             // Check if hold duration is complete
             if (currentHoldTime >= holdDuration)
             {
+                skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
                 FadeOut(enterCanvasGroup);
