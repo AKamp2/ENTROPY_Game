@@ -49,6 +49,8 @@ public class BodyScareEvent : MonoBehaviour
         {
             light.intensity = 0;
         }
+
+        StartCoroutine(PlayBodyScare());
     }
 
     // Update is called once per frame
@@ -82,7 +84,7 @@ public class BodyScareEvent : MonoBehaviour
     {
 
 
-
+        yield return new WaitForSeconds(2.0f);
 
         //bodyRb.AddForce(new Vector3(-.5f, -1, 0) * 30f, ForceMode.Impulse);
 
@@ -93,8 +95,8 @@ public class BodyScareEvent : MonoBehaviour
 
         //put any body movement Logic here;
 
-
-        yield return new WaitUntil(() => bodyDoor.aboutToJolt == true);
+        //uncomment when done testing
+        //yield return new WaitUntil(() => bodyDoor.aboutToJolt == true);
 
         body.SetActive(true);
         body.transform.position = bodyPos.transform.position;
@@ -172,9 +174,11 @@ public class BodyScareEvent : MonoBehaviour
         //float elapsed = 0f;
         audioManager.playBodyStinger();
 
-        yield return lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, false);
-        yield return new WaitForSeconds(2.0f);
-        yield return lightManager.FadeOutLights(LightLocation.EscapePod, 0.5f);
+        yield return StartCoroutine(lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, false));
+        //yield return new WaitForSeconds(1.0f);
+        //yield return lightManager.MultiplyLights(LightLocation.EscapePod, 2.0f, 0.1f);
+        //yield return new WaitForSeconds(0.2f);
+        yield return StartCoroutine(lightManager.FadeOutAllLights(LightLocation.EscapePod, 0.0f, 0.3f));
 
         foreach (DoorScript door in doorsToUnlock)
         {

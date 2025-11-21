@@ -46,26 +46,44 @@ public class LightManager : MonoBehaviour
 
  
 
-    public Coroutine FlickerLights(LightLocation lightEnum, float totalDuration, float singleLightDuration, bool randomSequence)
+    //private Coroutine FickerLights(LightLocation lightEnum, float totalDuration, float singleLightDuration, bool randomSequence)
+    //{
+
+    //    if (randomSequence)
+    //    {
+    //        lightData[lightEnum].lightGroup = Shuffle(lightData[lightEnum].lightGroup);
+    //    }
+
+    //    return StartCoroutine(EnableLights(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, totalDuration, singleLightDuration));
+    //}
+
+    //public Coroutine FadeOutLights(LightLocation lightEnum, float totalDuration)
+    //{
+    //    return StartCoroutine(ControlAllLights(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, 0.0f, totalDuration));
+    //}
+
+    public Coroutine MultiplyLights(LightLocation lightEnum, float multiplier, float totalDuration)
     {
+        return StartCoroutine(MultiplyLightsTask(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, multiplier, totalDuration));
+    }
+
+    public IEnumerator FlickerLights(LightLocation lightEnum, float totalDuration, float singleLightDuration, bool randomSequence)
+    {
+        Transform[] lightGroup = lightData[lightEnum].lightGroup;
+        Dictionary<Light, float> initLightIntensity = lightData[lightEnum].initLightIntensity;
 
         if (randomSequence)
         {
-            lightData[lightEnum].lightGroup = Shuffle(lightData[lightEnum].lightGroup);
+            lightGroup = Shuffle(lightGroup);
         }
 
-        return StartCoroutine(EnableLights(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, totalDuration, singleLightDuration));
-    }
+        // calculate delay time such that it is based on total duration and time of each light
+        float delayBetweenLights;
 
-    public Coroutine FadeOutLights(LightLocation lightEnum, float totalDuration)
-    {
-        return StartCoroutine(DimLights(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, totalDuration));
-    }
-
-    private IEnumerator EnableLights(Transform[] lightGroup, Dictionary<Light, float> initLightIntensity, float totalDuration, float singleLightDuration)
-    {
-
-        float delayBetweenLights = totalDuration / lightGroup.Length;
+        if (lightGroup.Length > 1)
+            delayBetweenLights = (totalDuration - singleLightDuration) / (lightGroup.Length - 1);
+        else
+            delayBetweenLights = 0f;
 
         // each light group
         foreach (Transform t in lightGroup)
@@ -91,39 +109,6 @@ public class LightManager : MonoBehaviour
             }
 
             yield return new WaitForSeconds(delayBetweenLights);
-        }
-    }
-
-    private IEnumerator DimLights(Transform[] lightGroup, Dictionary<Light, float> initLightIntensity, float totalDuration)
-    {
-        // Gather all lights first
-        List<Light> allLights = new List<Light>();
-
-        foreach (Transform t in lightGroup)
-        {
-            allLights.AddRange(t.GetComponentsInChildren<Light>());
-        }
-
-        float time = 0.0f;
-
-        while (time < totalDuration)
-        {
-            time += Time.deltaTime;
-            float t = time / totalDuration;
-
-            foreach (Light light in allLights)
-            {
-                light.intensity = Mathf.Lerp(initLightIntensity[light], 0.0f, t);
-            }
-
-            // yield once per frame for smooth fading
-            yield return null;
-        }
-
-        // Ensure final intensity is exactly 0
-        foreach (Light light in allLights)
-        {
-            light.intensity = 0.0f;
         }
     }
 
@@ -191,6 +176,88 @@ public class LightManager : MonoBehaviour
 
         yield return null;
     }
+
+    public IEnumerator FadeOutAllLights(LightLocation lightEnum, float endIntensity, float totalDuration)
+    {
+        Transform[] lightGroup = lightData[lightEnum].lightGroup;
+        Dictionary<Light, float> initLightIntensity = lightData[lightEnum].initLightIntensity;
+
+        // Gather all lights first
+        List<Light> allLights = new List<Light>();
+
+        foreach (Transform t in lightGroup)
+        {
+            allLights.AddRange(t.GetComponentsInChildren<Light>());
+        }
+
+        float time = 0.0f;
+
+        while (time < totalDuration)
+        {
+            time += Time.deltaTime;
+            float t = time / totalDuration;
+
+            foreach (Light light in allLights)
+            {
+                light.intensity = Mathf.Lerp(initLightIntensity[light], endIntensity, t);
+            }
+
+            // yield once per frame for smooth fading
+            yield return null;
+        }
+
+        // Ensure final intensity is exactly 0
+        foreach (Light light in allLights)
+        {
+            light.intensity = endIntensity;
+        }
+    }
+
+    
+    private IEnumerator MultiplyLightsTask(Transform[] lightGroup, Dictionary<Light, float> initLightIntensity, float multiplier, float totalDuration)
+    {
+        // Gather all lights first
+        List<Light> allLights = new List<Light>();
+
+        Dictionary<Light, float> multipliedLightIntensity = new Dictionary<Light, float>(initLightIntensity);
+        List<Light> multipliedKeys = new List<Light>(multipliedLightIntensity.Keys); 
+        foreach (Light key in multipliedKeys)
+        {
+            multipliedLightIntensity[key] *= multiplier;
+        }
+
+
+        foreach (Transform t in lightGroup)
+        {
+            allLights.AddRange(t.GetComponentsInChildren<Light>());
+        }
+
+        float time = 0.0f;
+
+        while (time < totalDuration)
+        {
+            time += Time.deltaTime;
+            float t = time / totalDuration;
+
+            foreach (Light light in allLights)
+            {
+                light.intensity = Mathf.Lerp(initLightIntensity[light], multipliedLightIntensity[light], t);
+            }
+
+            // yield once per frame for smooth fading
+            yield return null;
+        }
+
+        // Ensure final intensity is exactly 0
+        foreach (Light light in allLights)
+        {
+            light.intensity = multipliedLightIntensity[light];
+        }
+    }
+
+
+
+   
 
     private void SaveLightData(LightLocation saveLocation, Transform[] array)
     {
