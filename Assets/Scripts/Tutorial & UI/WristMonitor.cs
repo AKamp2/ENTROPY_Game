@@ -17,15 +17,14 @@ public class WristMonitor : MonoBehaviour
         get { return isActive; }
         set { isActive = value; }
     }
-    [SerializeField] ZeroGravity player;
-    [SerializeField] Slider healthSlider;
+    ZeroGravity player;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
-    [SerializeField] GameObject wristMonitor;
+    [SerializeField] GameObject wristMonitorObject;
     // checks the wrist monitor object and manipulates the state of having the wrist monitor accordingly
     public bool HasWristMonitor
     {
-        get { return !wristMonitor.activeSelf; }
-        set {  wristMonitor.SetActive(!value); }
+        get { return !wristMonitorObject.activeSelf; }
+        set {  wristMonitorObject.SetActive(!value); }
     }
     [SerializeField] TextMeshProUGUI stimText;
     public List<Objective> mainObjectives = new List<Objective>();
@@ -35,7 +34,7 @@ public class WristMonitor : MonoBehaviour
     public float lerpDuration;
 
     Vector3 startPosition;
-    public float duration;
+    private float duration;
     Vector3 currentPosition;
 
     [SerializeField] private GameObject[] _displayTexts;
@@ -96,6 +95,7 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        player = GetComponent<ZeroGravity>();
         //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Empty", "<size=14><color=orange>Current Objective: </size></color><size=12>\nConnect ALAN to the nearest terminal</size>\n", "<size=10><color=orange>Sub Objective: </color>\n</size>", false));
         mainObjectives.Add(new Objective("Medbay", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Medbay</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Reconnect ALAN</size>", false));
@@ -120,7 +120,7 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     public void ToggleWristMonitor(InputAction.CallbackContext context)
     {
-        if (context.performed && !wristMonitor.activeSelf)
+        if (context.performed && !wristMonitorObject.activeSelf)
         {
             isActive = true;
             this.gameObject.SetActive(true);
@@ -153,9 +153,12 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
-        healthSlider.value = player.PlayerHealth;
+        if (player != null) 
+        { 
         stimText.text = $"{player.NumStims}/3";
-        if(mainObjectives.Count > 0)
+        }
+
+        if (mainObjectives.Count > 0)
         {
             currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";
         }
