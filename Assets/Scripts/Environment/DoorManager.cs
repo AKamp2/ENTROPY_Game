@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.ProBuilder.Shapes;
 
-public class DoorManager : MonoBehaviour
+public class DoorManager : MonoBehaviour, ISaveable
 {
 
     [SerializeField]
@@ -68,12 +69,8 @@ public class DoorManager : MonoBehaviour
     {
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
         doorsInRange = new List<DoorScript>();
-
-        // when loading from save, overwrite the doors
-        if (GlobalSaveManager.Instance.LoadFromSave)
-        {
-            LoadDoorStates(GlobalSaveManager.Instance.Data.DoorStates);
-        }
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
     }
 
     // Update is called once per frame
@@ -102,26 +99,54 @@ public class DoorManager : MonoBehaviour
         }
 
     }
-
-    // backs up door states for saving
-    public void StoreDoorStates()
+    // these are for serialization and will be created during the save
+    [Serializable]
+    public class DoorData
     {
-        // store a copy of the checkpoint data in the global save manager
-        DoorScript.States[] _doorStates = new DoorScript.States[doors.Length];
-        for (int i = 0; i < doors.Length; i++)
+        [SerializeField]
+        private List<DoorScript.States> doorStates;
+        public List<DoorScript.States> DoorStates
         {
-            _doorStates[i] = doors[i].DoorState;
+            get { return doorStates; }
         }
-        GlobalSaveManager.Instance.Data.DoorStates = _doorStates;
+        public DoorData(List<DoorScript.States> _doorStates)
+        {
+            doorStates = _doorStates;
+        }
+    }
+    public void LoadSaveFile(string fileName)
+    {
+        // this will load data from the file to a variable we will use to change this objects data
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        if (loadedData != null && loadedData != "")
+        {
+            DoorData _doorData = JsonUtility.FromJson<DoorData>(loadedData);
+            for (int i = 0; i < _doorData.DoorStates.Count; i++)
+            {
+                doors[i].ForceState(_doorData.DoorStates[i]);
+            }
+        }
     }
 
-    // called when loading a save
-    public void LoadDoorStates(DoorScript.States[] _doorStates)
+    public void CreateSaveFile(string fileName)
     {
-        for (int i = 0; i < doors.Length; i++)
+        // store a copy of the checkpoint data in the global save manager
+        DoorData _doorData = new DoorData(new List<DoorScript.States>());
+        foreach (DoorScript _door in doors)
         {
-            doors[i].SetState(_doorStates[i]);
+            if (_door.DoorState == DoorScript.States.Opening)
+            {
+                _doorData.DoorStates.Add(DoorScript.States.Closed);
+            } else
+            {
+                _doorData.DoorStates.Add(_door.DoorState);
+            }
         }
+        // this will create a file backing up the data we give it
+        string json = JsonUtility.ToJson(_doorData);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
 
     private void ScanDoors()

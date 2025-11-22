@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.XPath;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,6 +15,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject optionsMenu;
     [SerializeField] private Volume volume;
     [SerializeField] private UIAudioManager uiAudio;
+    private bool continueButtonEnabled = false;
 
     private void Start()
     {
@@ -29,8 +31,13 @@ public class MainMenu : MonoBehaviour
         Time.timeScale = 1f;
         //if(//GlobalSaveManager.Instance.Data.PlayerData. == 0)
         //{
-            
+
         //}
+        // show continue button
+        if (GlobalSaveManager.SaveDataExists())
+        {
+            continueButtonEnabled = true;
+        }
     }
 
     /// <summary>
@@ -39,10 +46,9 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         uiAudio?.PlaySelectSound();
-        // don't load from save, start a new game
-        GlobalSaveManager.Instance.LoadFromSave = false;
+        GlobalSaveManager.LoadFromSave = false;
+        GlobalSaveManager.DeleteTempFiles();
         SceneManager.LoadScene("Level1New");
-
     }
 
     /// <summary>
@@ -50,7 +56,17 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
-        GlobalSaveManager.Instance.LoadFromSave = true;
+        if (continueButtonEnabled)
+        {
+            uiAudio?.PlaySelectSound();
+            GlobalSaveManager.LoadFromSave = true;
+            GlobalSaveManager.DeleteTempFiles();
+            GlobalSaveManager.OverwriteTempFiles();
+            SceneManager.LoadScene("Level1New");
+        } else
+        {
+            uiAudio?.PlayBackSound();
+        }
     }
 
     /// <summary>

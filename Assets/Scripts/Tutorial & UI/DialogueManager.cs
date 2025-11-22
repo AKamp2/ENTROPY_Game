@@ -20,7 +20,8 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI dialogueTextUI;
 
     [Header("Audio / Typewriter")]
-    public AudioSource audioSource;
+    public AudioSource defaultAudioSource;
+    public List<AudioSource> sourceList;
     public AudioClip fillerLineBeep;
     public float defaultTextSpeed = 0.08f;
     public float textSpeedMultiplier = 1.1f;
@@ -93,6 +94,7 @@ public class DialogueManager : MonoBehaviour
     private void Start()
     {
         if (player != null) playerManager = player.GetComponent<ZeroGravity>();
+        sourceList.Add(defaultAudioSource);
     }
 
     private void Update()
@@ -142,7 +144,12 @@ public class DialogueManager : MonoBehaviour
         sequenceQueue.Clear();
         if (clearQueue) numDialoguesQueued = 0;
 
-        if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
+        //stop all potential audio sources
+        foreach(AudioSource source in sourceList)
+        {
+            if (source != null && source.isPlaying) source.Stop();
+        }
+        
         ClearTextsImmediate();
         HideCanvasImmediate();
     }
@@ -179,8 +186,10 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Stop audio
-        if (audioSource != null && audioSource.isPlaying)
-            audioSource.Stop();
+        foreach (AudioSource source in sourceList)
+        {
+            if (source != null && source.isPlaying) source.Stop();
+        }
 
         // Clear any skip requests
         skipDialogueRequested = false;
@@ -235,6 +244,22 @@ public class DialogueManager : MonoBehaviour
         if (sequenceIndex < 0 || sequenceIndex >= dialogueSequences.Length) yield break;
         DialogueSequence sequence = dialogueSequences[sequenceIndex];
 
+        //keep track of the source being used for this sequence
+        AudioSource sequenceSource;
+        if (sequence.audioSource)
+        {
+            sequenceSource = sequence.audioSource;
+        }
+        else
+        {
+            sequenceSource = defaultAudioSource;
+        }
+
+        if(!sourceList.Contains(sequenceSource))
+        {
+            sourceList.Add(sequenceSource);
+        }
+
         currentDialogueIndex = 0;
 
         ClearDialogueTextBeforeShow();
@@ -260,7 +285,7 @@ public class DialogueManager : MonoBehaviour
 
             //Debug.Log("Dialogue at index " + currentDialogueIndex + " about to play the dialogue");
             // Play the dialogue and check if it was skipped
-            yield return StartCoroutine(PlaySingleDialogue(d));
+            yield return StartCoroutine(PlaySingleDialogue(d, sequenceSource));
             bool wasSkipped = lastDialogueWasSkipped;
 
             // Handle tutorial advancement
@@ -273,10 +298,10 @@ public class DialogueManager : MonoBehaviour
             }
 
             // Wait for audio to finish if not skipped
-            if (!wasSkipped && audioSource != null && audioSource.clip != null)
+            if (!wasSkipped && sequenceSource != null && sequenceSource.clip != null)
             {
                 
-                yield return new WaitWhile(() => audioSource.isPlaying);
+                yield return new WaitWhile(() => sequenceSource.isPlaying);
                 //Debug.Log("Dialogue at index " + currentDialogueIndex + " successfully waiting for the audio source to stop playing");
             }
 
@@ -311,7 +336,7 @@ public class DialogueManager : MonoBehaviour
     /// Used by both normal sequences and failure dialogues.
     /// Sets lastDialogueWasSkipped to indicate if it was skipped.
     /// </summary>
-    private IEnumerator PlaySingleDialogue(Dialogue d)
+    private IEnumerator PlaySingleDialogue(Dialogue d, AudioSource audioSource)
     {
         lastDialogueWasSkipped = false;
 
@@ -351,7 +376,7 @@ public class DialogueManager : MonoBehaviour
 
             // Type the line
             if (typewriterCoroutine != null) { StopCoroutine(typewriterCoroutine); typewriterCoroutine = null; }
-            typewriterCoroutine = StartCoroutine(TypewriterEffect(line, typeSpeed));
+            typewriterCoroutine = StartCoroutine(TypewriterEffect(line, typeSpeed, audioSource));
             yield return typewriterCoroutine;
             typewriterCoroutine = null;
 
@@ -383,8 +408,11 @@ public class DialogueManager : MonoBehaviour
     private void HandleDialogueSkip(Dialogue d)
     {
         // Stop audio and play skip SFX
-        if (audioSource != null && audioSource.isPlaying)
-            audioSource.Stop();
+        //stop all potential audio sources
+        foreach (AudioSource source in sourceList)
+        {
+            if (source != null && source.isPlaying) source.Stop();
+        }
 
         if (sfxSource && skipSfxClip)
             sfxSource.PlayOneShot(skipSfxClip);
@@ -471,7 +499,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Play the failure dialogue using the same PlaySingleDialogue method
-        yield return StartCoroutine(PlaySingleDialogue(d));
+        yield return StartCoroutine(PlaySingleDialogue(d, failureDialogues.audioSource));
         bool wasSkipped = lastDialogueWasSkipped;
 
         // Handle tutorial advancement if this failure dialogue advances the tutorial
@@ -509,7 +537,7 @@ public class DialogueManager : MonoBehaviour
 
     #region Typewriter & Helpers
 
-    private IEnumerator TypewriterEffect(string fullText, float charDelay)
+    private IEnumerator TypewriterEffect(string fullText, float charDelay, AudioSource audioSource)
     {
         isLineTyping = true;
         dialogueTextUI.text = "";

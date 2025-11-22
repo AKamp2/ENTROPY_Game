@@ -17,6 +17,7 @@ public class Dialogue
 public class DialogueSequence
 {
     public Dialogue[] dialogues;
+    public AudioSource audioSource;
 }
 
 struct TutorialStep
