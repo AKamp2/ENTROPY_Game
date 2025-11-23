@@ -12,20 +12,12 @@ public class WristMonitor : MonoBehaviour
 {
     // Variables
     bool isActive = false;
-    public bool IsActive
-    {
-        get { return isActive; }
-        set { isActive = value; }
-    }
-    ZeroGravity player;
+    
+    private ZeroGravity player;
     [SerializeField] TextMeshProUGUI currentObjectiveText;
     [SerializeField] GameObject wristMonitorObject;
     // checks the wrist monitor object and manipulates the state of having the wrist monitor accordingly
-    public bool HasWristMonitor
-    {
-        get { return !wristMonitorObject.activeSelf; }
-        set {  wristMonitorObject.SetActive(!value); }
-    }
+    
     [SerializeField] TextMeshProUGUI stimText;
     public List<Objective> mainObjectives = new List<Objective>();
     public List<Objective> completedObjectives = new List<Objective>();
@@ -40,13 +32,22 @@ public class WristMonitor : MonoBehaviour
     [SerializeField] private GameObject[] _displayTexts;
     [SerializeField] ObjectiveUpdate objectiveUpdator;
 
-    
-
     private bool tutorialShowing = true;
     [SerializeField]
     private DormHallEvent dormHallScript;
 
+    // Properties
+    public bool IsActive
+    {
+        get { return isActive; }
+        set { isActive = value; }
+    }
 
+    public bool HasWristMonitor
+    {
+        get { return !wristMonitorObject.activeSelf; }
+        set { wristMonitorObject.SetActive(!value); }
+    }
     /// <summary>
     /// Public class used to display vital information to the player of how they must proceed
     /// </summary>
@@ -95,7 +96,7 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        player = GetComponent<ZeroGravity>();
+        player = GameObject.FindWithTag("Player").GetComponent<ZeroGravity>();
         //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Empty", "<size=14><color=orange>Current Objective: </size></color><size=12>\nConnect ALAN to the nearest terminal</size>\n", "<size=10><color=orange>Sub Objective: </color>\n</size>", false));
         mainObjectives.Add(new Objective("Medbay", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Medbay</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Reconnect ALAN</size>", false));
@@ -107,15 +108,43 @@ public class WristMonitor : MonoBehaviour
             Debug.LogError("TargetRectTransform not assigned");
             return;
         }
-        startPosition = targetRectTransform.anchoredPosition3D;
-        duration = 0f;
+        //startPosition = targetRectTransform.anchoredPosition3D;
+        //duration = 0f;
         //this.enabled = false;
         
     }
 
+    //public void ToggleWristMonitor(InputAction.CallbackContext context)
+    //{
+    //    isActive = !isActive;
+    //    if (context.performed && !wristMonitorObject.activeSelf)
+    //    {
+    //        isActive = true;
+    //        gameObject.SetActive(true);
+    //        if (player != null)
+    //        {
+    //            stimText.text = $"{player.NumStims}/3";
+    //        }
+    //        if (tutorialShowing && dormHallScript != null)
+    //        {
+    //            tutorialShowing = false;
+    //            dormHallScript.FadeOutMonitorTutorial();
+    //        }
+    //    }
+    //    if (!isActive)
+    //    {
+    //        gameObject.SetActive(false);
+    //    }
+    //    else if (context.canceled)
+    //    {
+    //        isActive = false;
+    //        gameObject.SetActive(false);
+    //    }
 
+    //}
 
-    /// <summary>
+    //Hold to open Logic
+    /// <summary> 
     /// Public method called by the zero gravity controller to turn the monitor on and off
     /// </summary>
     public void ToggleWristMonitor(InputAction.CallbackContext context)
@@ -126,36 +155,37 @@ public class WristMonitor : MonoBehaviour
             this.gameObject.SetActive(true);
             StartLerp();
 
-            if(tutorialShowing && dormHallScript != null)
+            if (tutorialShowing && dormHallScript != null)
             {
                 tutorialShowing = false;
                 dormHallScript.FadeOutMonitorTutorial();
             }
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
         else if (context.canceled)
         {
             isActive = false;
             StartLerp();
-            
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 
     public void StartLerp()
     {
-        startPosition = new Vector3(-300,0,0);
+        startPosition = new Vector3(-100, -350, 0);
         duration = 0f;
     }
-
-    
 
     /// <summary>
     /// Updates health text as well as the current objective. Also handles Lerp logic 
     /// </summary>
     private void FixedUpdate()
     {
-        if (player != null) 
-        { 
-        stimText.text = $"{player.NumStims}/3";
+        if (player != null)
+        {
+            stimText.text = $"{player.NumStims}/3";
         }
 
         if (mainObjectives.Count > 0)
@@ -163,7 +193,7 @@ public class WristMonitor : MonoBehaviour
             currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";
         }
         currentPosition = targetRectTransform.anchoredPosition3D;
-        if(isActive && duration < lerpDuration)
+        if (isActive && duration < lerpDuration)
         {
             duration += Time.deltaTime;
             float t = duration / lerpDuration;
@@ -177,7 +207,8 @@ public class WristMonitor : MonoBehaviour
 
             targetRectTransform.anchoredPosition3D = Vector3.Lerp(currentPosition, startPosition, t);
 
-            if (targetRectTransform.anchoredPosition3D == startPosition) {
+            if (targetRectTransform.anchoredPosition3D == startPosition)
+            {
                 this.gameObject.SetActive(false);
             }
         }
@@ -210,6 +241,10 @@ public class WristMonitor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Switches the active display of the Wrist Monitor
+    /// </summary>
+    /// <param name="displayIndex"></param>
     public void SwitchDisplay(int displayIndex)
     {
         for(int i = 0; i < _displayTexts.Length; i++)
