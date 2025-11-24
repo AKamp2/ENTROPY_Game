@@ -5,26 +5,25 @@ public class GlobalTrigger : MonoBehaviour
 {
 
     [Header("Events")]
-    [Tooltip("The method that this trigger calls when it's triggered.")]
+    //The method that this trigger calls when it's triggered.
     public UnityEvent triggeredEvent;
 
-    [Tooltip("Specify a specialized method that is called when useLoadEvent is true, only when the scene is reloaded and the trigger is recalled")]
+    //Specify a specialized method that is called when useLoadEvent is true, only when the scene is reloaded and the trigger is recalled
     public UnityEvent loadEvent;
 
     [Header("Save Data")]
     
     public bool isTriggered = false;
 
-    [Tooltip("When we reload the scene and this trigger has already been set off, do we call the behavior of this trigger again?")]
+    //When we reload the scene and this trigger has already been set off, do we call the behavior of this trigger again?
     public bool recallUponSceneLoad;
 
-    [Tooltip("When when we recall this trigger, do we use the triggered event or the specialized load event?")]
+    //When when we recall this trigger, do we use the triggered event or the specialized load event?
     public bool useLoadEvent;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
     }
 
     /// <summary>
@@ -48,6 +47,11 @@ public class GlobalTrigger : MonoBehaviour
     {
         this.GetComponent<Collider>().enabled = true;
         isTriggered = false;
+    }
+
+    public void Deactivate()
+    {
+        this.GetComponent<Collider>().enabled = false;
     }
 
     /// <summary>

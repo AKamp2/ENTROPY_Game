@@ -10,14 +10,14 @@ public class Win : MonoBehaviour
     public bool canWin = true;
     public CanvasGroup fadeCanvasGroup;
     public CanvasGroup thanksGroup;
-    private GameObject _uiCam;
+    public GameObject _uiCam;
 
     private void Start()
     {
         if (fadeCanvasGroup == null)
             Debug.LogError("fadeCanvasGroup is NOT assigned in the inspector!");
         winCondition = false;
-        _uiCam = GameObject.FindGameObjectWithTag("UICamera");
+        //_uiCam = GameObject.FindGameObjectWithTag("UICamera");
         if(_uiCam == null)
         {
             print("NULL UI CAM");

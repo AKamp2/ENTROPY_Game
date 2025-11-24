@@ -100,7 +100,7 @@ public class AirBreachScript : MonoBehaviour
         {
             if (rb != null)
             {
-                Debug.Log("Adding force");
+                //Debug.Log("Adding force");
                 rb.AddForce(transform.up * thrust);
             }
         }
