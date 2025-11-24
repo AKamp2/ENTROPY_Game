@@ -19,6 +19,11 @@ public class StimEvent : MonoBehaviour
     [SerializeField]
     private WristMonitor wristMonitor;
 
+    [Header("Air Breaches")]
+    [SerializeField] private AirBreachScript air1;
+    [SerializeField] private AirBreachScript air2;
+    [SerializeField] private AirBreachScript air3;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -80,5 +85,19 @@ public class StimEvent : MonoBehaviour
         }
 
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    public void TriggerBreaches()
+    {
+        StartCoroutine(TriggerBreachesRoutine());
+    }
+
+    private IEnumerator TriggerBreachesRoutine()
+    {
+        air1.TurnOn();
+        yield return new WaitForSeconds(3f);
+        air2.TurnOn();
+        yield return new WaitForSeconds(0.5f);
+        air3.TurnOn();
     }
 }

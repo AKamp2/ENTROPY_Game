@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI.Table;
 
-public class ZeroGravity : MonoBehaviour
+public class ZeroGravity : MonoBehaviour, ISaveable
 {
     [Header("== Player Elements ==")]
     [SerializeField]
@@ -240,6 +240,9 @@ public class ZeroGravity : MonoBehaviour
 
     private int doorCollisionCooldownFrames = 0;
 
+    // for storing the respawn information
+    public PlayerData playerData;
+
     #region properties
     //Properties
     //this property allows showTutorialMessages to be assigned outside of the script. Needed for the tutorial mission
@@ -379,17 +382,10 @@ public class ZeroGravity : MonoBehaviour
 
     private void Awake()
     {
-        // when loading from save, overwrite the player data
-        if (GlobalSaveManager.Instance.LoadFromSave)
-        {
-            LoadPlayerData(GlobalSaveManager.Instance.Data.PlayerData);
-        } else
-        {
-            //set the player health
-            playerHealth = 3;
-            //make sure there are no stims in teh plaeyr inventory
-            numStims = 0;
-        }
+        //set the player health
+        playerHealth = 3;
+        //make sure there are no stims in teh plaeyr inventory
+        numStims = 0;
     }
 
     // Start is called before the first frame update
@@ -437,6 +433,8 @@ public class ZeroGravity : MonoBehaviour
             grabDrag = 0.1f;
             jointSpringForce = 5.5f;
         }
+        // continue from save
+        if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
     }
 
     // Update is called once per frame
@@ -1592,10 +1590,10 @@ public class ZeroGravity : MonoBehaviour
         //    rb.linearVelocity = Vector3.zero; // Reset velocity to prevent unwanted movement
         //    rb.angularVelocity = Vector3.zero;
         //}
-        GlobalSaveManager.Instance.LoadSaveFile();
-        GlobalSaveManager.Instance.LoadFromSave = true;
-        string currentSceneName = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene(currentSceneName);
+
+        // whether or not we load from save depends on whether temp data exists
+        GlobalSaveManager.LoadFromSave = GlobalSaveManager.TempDataExists();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private IEnumerator UseStim()
@@ -1703,9 +1701,9 @@ public class ZeroGravity : MonoBehaviour
     // backs up player data for saving
     public void StorePlayerData(Vector3 _position) // takes the checkpoints respawn point
     {
-        GlobalSaveManager.Instance.Data.PlayerData = new PlayerData(
+        playerData = new PlayerData(
             _position,
-            transform.rotation,
+            cam.transform.rotation,
             playerHealth, 
             numStims, 
             hasUsedStim,
@@ -1719,10 +1717,10 @@ public class ZeroGravity : MonoBehaviour
     }
 
     // called when loading a save
-    public void LoadPlayerData(PlayerData playerData)
+    private void LoadPlayerData()
     {
         transform.position = playerData.Position;
-        transform.rotation = playerData.Rotation;
+        cam.transform.rotation = playerData.Rotation;
         playerHealth = playerData.Health;
         numStims = playerData.Stims;
         hasUsedStim = playerData.HasUsedStim;
@@ -1747,5 +1745,26 @@ public class ZeroGravity : MonoBehaviour
         wristMonitor.IsActive = playerData.ShowingWristMonitor;
         wristMonitor.mainObjectives = new List<WristMonitor.Objective>(playerData.MainObjectives);
         wristMonitor.completedObjectives = new List<WristMonitor.Objective>(playerData.CompletedObjectives);
+    }
+
+    public void LoadSaveFile(string fileName)
+    {
+        string path = Application.persistentDataPath;
+        string loadedData = GlobalSaveManager.LoadTextFromFile(path, fileName);
+        if (loadedData != null && loadedData != "")
+        {
+            playerData = JsonUtility.FromJson<PlayerData>(loadedData);
+            LoadPlayerData();
+            // stop the player from moving on respawn
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+    }
+
+    public void CreateSaveFile(string fileName)
+    {
+        string json = JsonUtility.ToJson(playerData);
+        string path = Application.persistentDataPath;
+        GlobalSaveManager.SaveTextToFile(path, fileName, json);
     }
 }
