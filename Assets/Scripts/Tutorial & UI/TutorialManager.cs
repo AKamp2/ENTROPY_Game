@@ -413,16 +413,10 @@ public class TutorialManager : MonoBehaviour
         isWaitingForAction = false;
         playerController.TutorialMode = false;
         playerController.GrabRange = playerGrabRange;
-        if(doorToOpen!=null)
-        {
-            if(doorToOpen.DoorState != DoorScript.States.Open)
-            {
-                doorToOpen.SetState(DoorScript.States.Open);
-            }
-        }
+
 
         // Fade out tutorial stinger
-        stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
+        
 
 
         //remove all tutorial panels
@@ -431,7 +425,34 @@ public class TutorialManager : MonoBehaviour
         currentStep = 5;
 
         dialogueManager.StartDialogueSequence(1, 0.2f);
+
+        dialogueManager.OnDialogueEnd += HandleDialogueFinished;
+
+        /*        if (doorToOpen != null)
+                {
+                    if (doorToOpen.DoorState != DoorScript.States.Open)
+                    {
+                        doorToOpen.SetState(DoorScript.States.Open);
+                    }
+                }*/
     }
+
+    private void HandleDialogueFinished(int sequenceIndex)
+    {
+        // Only react to sequence 1 finishing
+        if (sequenceIndex == 1)
+        {
+            dialogueManager.OnDialogueEnd -= HandleDialogueFinished; // Unsubscribe
+
+            if (doorToOpen != null && doorToOpen.DoorState != DoorScript.States.Open)
+            {
+                doorToOpen.SetState(DoorScript.States.Open);
+            }
+
+            stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
+        }
+    }
+
 
     //checks to see if the tutorial step is complete
     public bool TutorialStepCompleted()
