@@ -215,6 +215,7 @@ public class DialogueManager : MonoBehaviour
         // Don't hide or fade out the canvas - leave it ready for the next sequence
     }
 
+
     #endregion
 
     #region Queue Processing & Display Flow
