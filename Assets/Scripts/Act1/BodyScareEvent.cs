@@ -62,6 +62,9 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
             //turn off the collider that keeps the player from moving through the door prematurely.
             tempCollider.SetActive(false);
         }
+
+
+        StartCoroutine(TurnOnLights(6));
     }
 
     // Update is called once per frame
@@ -193,8 +196,9 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
         audioManager.playBodyStinger();
 
         yield return StartCoroutine(lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, false));
-        yield return StartCoroutine(lightManager.MultiplyAllLights(LightLocation.EscapePod, 2.0f, 0.7f));
-        yield return StartCoroutine(lightManager.FadeOutAllLights(LightLocation.EscapePod, 0.0f, 0.3f));
+        StartCoroutine(lightManager.FlickerLightsForever(LightLocation.EscapePod));
+        //yield return StartCoroutine(lightManager.MultiplyAllLights(LightLocation.EscapePod, 2.0f, 0.7f));
+        //yield return StartCoroutine(lightManager.FadeOutAllLights(LightLocation.EscapePod, 0.0f, 0.3f));
 
         foreach (DoorScript door in doorsToUnlock)
         {

@@ -98,13 +98,13 @@ public class LightManager : MonoBehaviour, ISaveable
 
             foreach (MeshRenderer mesh in meshes)
             {
-                runningCoroutines.Add(StartCoroutine(FlickerIntensity(null, mesh, 2.0f, singleLightDuration)));
+                runningCoroutines.Add(StartCoroutine(FlickerIntensity(null, mesh, 2.0f, singleLightDuration, true)));
             }
 
             // flicker lights on with coroutine
             foreach (Light light in lights)
             {
-                runningCoroutines.Add(StartCoroutine(FlickerIntensity(light, null, initLightIntensity[light], singleLightDuration)));
+                runningCoroutines.Add(StartCoroutine(FlickerIntensity(light, null, initLightIntensity[light], singleLightDuration, true)));
             }
 
             // if there is no delay, dont wait
@@ -121,21 +121,21 @@ public class LightManager : MonoBehaviour, ISaveable
         }
     }
 
-    private IEnumerator FlickerIntensity(Light light, MeshRenderer mesh, float maxIntensity, float singleLightDuration)
+    private IEnumerator FlickerIntensity(Light light, MeshRenderer mesh, float maxIntensity, float singleLightDuration, bool lerpLightIntensity = false)
     {
         // do flicker logic here
         float timer = 0f; // overall time of flickering
         float flickerTimer = 0f; // time on a current state
         float flickerDelay = 0f; // time till next flicker
 
-        float lerpIntensity;
+        float lerpIntensity = maxIntensity;
         bool isOn = false;
 
         // loops duration of flicker. 2.0f duration
         while (timer < singleLightDuration)
         {
             // lerp the brightness of max intensity so it gradually fades brighter
-            lerpIntensity = Mathf.Lerp(0, maxIntensity, Mathf.Clamp01(timer / singleLightDuration));
+            if (lerpLightIntensity) lerpIntensity = Mathf.Lerp(0, maxIntensity, Mathf.Clamp01(timer / singleLightDuration));
 
             // swaps to lowlight after flickerdelay
             if (flickerTimer > flickerDelay)
@@ -184,6 +184,47 @@ public class LightManager : MonoBehaviour, ISaveable
 
 
         yield return null;
+    }
+
+    public IEnumerator FlickerLightsForever(LightLocation lightEnum, float minFlickerDuration = 0.1f, float maxFlickerDuration = 2.0f, float minPauseDuration = 0.1f, float maxPauseDuration = 1.5f)
+    {
+
+        Transform[] lightGroup = lightData[lightEnum].lightGroup;
+        Dictionary<Light, float> initLightIntensity = lightData[lightEnum].initLightIntensity;
+
+        while (true)
+        {
+            // Pick a random light from the group (skipping index 0, this is hard coded for the escape pod rn)
+            Transform randomLight = lightGroup[Random.Range(1, lightGroup.Length)];
+
+            Light[] lights = randomLight.GetComponentsInChildren<Light>();
+            MeshRenderer[] meshes = randomLight.GetComponentsInChildren<MeshRenderer>();
+
+            float flickerDuration = Random.Range(minFlickerDuration, maxFlickerDuration);
+
+            List<Coroutine> runningCoroutines = new List<Coroutine>();
+
+            // Start all flickers for this light
+            foreach (MeshRenderer mesh in meshes)
+            {
+                runningCoroutines.Add(StartCoroutine(FlickerIntensity(null, mesh, 2.0f, flickerDuration)));
+            }
+
+            foreach (Light light in lights)
+            {
+                runningCoroutines.Add(StartCoroutine(FlickerIntensity(light, null, initLightIntensity[light], flickerDuration)));
+            }
+
+            // Wait for this light to finish flickering
+            foreach (Coroutine coroutine in runningCoroutines)
+            {
+                yield return coroutine;
+            }
+
+            // Random pause before next flicker
+            float pauseDuration = Random.Range(minPauseDuration, maxPauseDuration);
+            yield return new WaitForSeconds(pauseDuration);
+        }
     }
 
     public IEnumerator FadeOutAllLights(LightLocation lightEnum, float endIntensity, float totalDuration)
