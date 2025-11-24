@@ -62,10 +62,10 @@ public class LightManager : MonoBehaviour
     //    return StartCoroutine(ControlAllLights(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, 0.0f, totalDuration));
     //}
 
-    public Coroutine MultiplyLights(LightLocation lightEnum, float multiplier, float totalDuration)
-    {
-        return StartCoroutine(MultiplyLightsTask(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, multiplier, totalDuration));
-    }
+    //public Coroutine MultiplyLights(LightLocation lightEnum, float multiplier, float totalDuration)
+    //{
+    //    return StartCoroutine(MultiplyLightsTask(lightData[lightEnum].lightGroup, lightData[lightEnum].initLightIntensity, multiplier, totalDuration));
+    //}
 
     public IEnumerator FlickerLights(LightLocation lightEnum, float totalDuration, float singleLightDuration, bool randomSequence)
     {
@@ -85,6 +85,9 @@ public class LightManager : MonoBehaviour
         else
             delayBetweenLights = 0f;
 
+
+        List<Coroutine> runningCoroutines = new List<Coroutine>();
+
         // each light group
         foreach (Transform t in lightGroup)
         {
@@ -93,22 +96,26 @@ public class LightManager : MonoBehaviour
 
             foreach (MeshRenderer mesh in meshes)
             {
-                StartCoroutine(FlickerIntensity(null, mesh, 2.0f, singleLightDuration));
+                runningCoroutines.Add(StartCoroutine(FlickerIntensity(null, mesh, 2.0f, singleLightDuration)));
             }
 
             // flicker lights on with coroutine
             foreach (Light light in lights)
             {
-                StartCoroutine(FlickerIntensity(light, null, initLightIntensity[light], singleLightDuration));
+                runningCoroutines.Add(StartCoroutine(FlickerIntensity(light, null, initLightIntensity[light], singleLightDuration)));
             }
 
             // if there is no delay, dont wait
-            if (delayBetweenLights <= 0.0f)
+            if (delayBetweenLights > 0.0f)
             {
-                yield return null;
+                yield return new WaitForSeconds(delayBetweenLights);
             }
 
-            yield return new WaitForSeconds(delayBetweenLights);
+        }
+
+        foreach (Coroutine coroutine in runningCoroutines)
+        {
+            yield return coroutine;
         }
     }
 
@@ -214,22 +221,26 @@ public class LightManager : MonoBehaviour
     }
 
     
-    private IEnumerator MultiplyLightsTask(Transform[] lightGroup, Dictionary<Light, float> initLightIntensity, float multiplier, float totalDuration)
+    public IEnumerator MultiplyAllLights(LightLocation lightEnum, float multiplier, float totalDuration)
     {
+        Transform[] lightGroup = lightData[lightEnum].lightGroup;
+        Dictionary<Light, float> initLightIntensity = lightData[lightEnum].initLightIntensity;
+
         // Gather all lights first
         List<Light> allLights = new List<Light>();
-
-        Dictionary<Light, float> multipliedLightIntensity = new Dictionary<Light, float>(initLightIntensity);
-        List<Light> multipliedKeys = new List<Light>(multipliedLightIntensity.Keys); 
-        foreach (Light key in multipliedKeys)
-        {
-            multipliedLightIntensity[key] *= multiplier;
-        }
-
+        Dictionary<Light, float> targetIntensities = new Dictionary<Light, float>();
 
         foreach (Transform t in lightGroup)
         {
-            allLights.AddRange(t.GetComponentsInChildren<Light>());
+            Light[] lights = t.GetComponentsInChildren<Light>();
+            foreach (Light light in lights)
+            {
+                if (initLightIntensity.ContainsKey(light))
+                {
+                    allLights.Add(light);
+                    targetIntensities[light] = initLightIntensity[light] * multiplier;
+                }
+            }
         }
 
         float time = 0.0f;
@@ -241,7 +252,7 @@ public class LightManager : MonoBehaviour
 
             foreach (Light light in allLights)
             {
-                light.intensity = Mathf.Lerp(initLightIntensity[light], multipliedLightIntensity[light], t);
+                light.intensity = Mathf.Lerp(initLightIntensity[light], targetIntensities[light], t);
             }
 
             // yield once per frame for smooth fading
@@ -251,7 +262,7 @@ public class LightManager : MonoBehaviour
         // Ensure final intensity is exactly 0
         foreach (Light light in allLights)
         {
-            light.intensity = multipliedLightIntensity[light];
+            light.intensity = targetIntensities[light];
         }
     }
 

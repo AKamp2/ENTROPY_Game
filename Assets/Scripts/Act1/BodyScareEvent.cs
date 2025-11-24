@@ -49,8 +49,6 @@ public class BodyScareEvent : MonoBehaviour
         {
             light.intensity = 0;
         }
-
-        StartCoroutine(PlayBodyScare());
     }
 
     // Update is called once per frame
@@ -95,8 +93,8 @@ public class BodyScareEvent : MonoBehaviour
 
         //put any body movement Logic here;
 
-        //uncomment when done testing
-        //yield return new WaitUntil(() => bodyDoor.aboutToJolt == true);
+
+        yield return new WaitUntil(() => bodyDoor.aboutToJolt == true);
 
         body.SetActive(true);
         body.transform.position = bodyPos.transform.position;
@@ -172,12 +170,16 @@ public class BodyScareEvent : MonoBehaviour
     public IEnumerator TurnOnLights(float duration)
     {
         //float elapsed = 0f;
+        // disable sparks on door open
+        foreach (GameObject spark in sparksToDisable)
+        {
+            spark.SetActive(false);
+        }
+
         audioManager.playBodyStinger();
 
         yield return StartCoroutine(lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, false));
-        //yield return new WaitForSeconds(1.0f);
-        //yield return lightManager.MultiplyLights(LightLocation.EscapePod, 2.0f, 0.1f);
-        //yield return new WaitForSeconds(0.2f);
+        yield return StartCoroutine(lightManager.MultiplyAllLights(LightLocation.EscapePod, 2.0f, 0.7f));
         yield return StartCoroutine(lightManager.FadeOutAllLights(LightLocation.EscapePod, 0.0f, 0.3f));
 
         foreach (DoorScript door in doorsToUnlock)
@@ -185,11 +187,7 @@ public class BodyScareEvent : MonoBehaviour
             door.SetState(DoorScript.States.Closed);
         }
 
-        foreach (GameObject spark in sparksToDisable)
-        {
-            spark.SetActive(false);
-        }
-
+        
         yield return new WaitForSeconds(3.5f);
 
         dialogueManager.StartDialogueSequence(8, 0f);
