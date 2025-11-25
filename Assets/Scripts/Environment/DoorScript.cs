@@ -9,7 +9,7 @@ using UnityEngine.Rendering.Universal;
 public class DoorScript : MonoBehaviour
 {
     // emergency state means a door can be breached,
-    // set it to locked or closed in editor to set its default breach state
+    // set it to unpowered or closed in editor to set its default breach state
     [SerializeField]
     bool emergencyState = false;
     // breached denotes whether or not an emergency door has been breached,
