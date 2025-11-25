@@ -13,7 +13,7 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     bool emergencyState = false;
     // breached denotes whether or not an emergency door has been breached,
-    // this will give it the opposite doorstate from its default (closed -> locked) (locked -> closed)
+    // this will give it the opposite doorstate from its default (closed -> unpowered) (unpowered -> closed)
     [SerializeField]
     bool breached = false;
 
@@ -27,7 +27,8 @@ public class DoorScript : MonoBehaviour
         Opening,
         Broken,
         BrokenShort,
-        JoltOpen
+        JoltOpen,
+        Unpowered
     }
 
     public enum PermissionLevel
@@ -255,6 +256,14 @@ public class DoorScript : MonoBehaviour
             SetButtonColor(yellowBase, yellowEmis);
             decal.material = doorManager.WarningMaterial;
             StartCoroutine(HandleBrokenDoorShort());
+        }
+
+        if (states == States.Unpowered)
+        {
+            doorPart.localPosition = closedPos;
+            SetButtonColor(redBase, redEmis);
+            decal.material = doorManager.LockedMaterial;
+            LockHologram();
         }
 
         foreach (Sparks spark in sparks)
@@ -933,6 +942,9 @@ public class DoorScript : MonoBehaviour
             if (breached)
             {
                 StartCoroutine(UnbreachRoutine(0.3f));
+            } else
+            {
+                StartCoroutine(BreachRoutine(0.3f));
             }
         }
     }
@@ -944,7 +956,7 @@ public class DoorScript : MonoBehaviour
             yield return null;
         }
         breached = true;
-        DoorState = States.Closed;
+        DoorState = States.Unpowered;
     }
     public IEnumerator UnbreachRoutine(float delay)
     {
