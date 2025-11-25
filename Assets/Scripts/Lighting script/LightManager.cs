@@ -193,14 +193,14 @@ public class LightManager : MonoBehaviour, ISaveable
             {
                 // longer delay if on
                 flickerDelay = Random.Range(onDelayMin, onDelayMax);
-                Debug.Log("Delay when on: " + flickerDelay);
+                //Debug.Log("Delay when on: " + flickerDelay);
             }
             else if (!isOn && flickerTimer == 0.0f)
             {
                 // randomize the intensity if flickering
                 lerpIntensity = Random.Range(0.0f, lerpIntensity);
                 flickerDelay = Random.Range(offDelayMin, offDelayMax);
-                Debug.Log("Delay when off: " + flickerDelay);
+                //Debug.Log("Delay when off: " + flickerDelay);
             }
 
             // applies intensity to respective item
