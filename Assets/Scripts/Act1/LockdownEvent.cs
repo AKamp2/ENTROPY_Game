@@ -88,11 +88,10 @@ public class LockdownEvent : MonoBehaviour
 
 
     [SerializeField]
-    private GameObject serverObj;
+    private MeshRenderer[] emissiveMeshes;
     [SerializeField]
-    private Material serverMaterial;
-    private Material serverMaterialInstance;
-    private Color initialEmissionColor;
+    private Material[] serverEmissives;
+    private Color[] initialEmissionColor;
 
 
 
@@ -146,10 +145,23 @@ public class LockdownEvent : MonoBehaviour
 
         dialogueManager = FindFirstObjectByType<DialogueManager>();
 
-        
-        Renderer rend = serverObj.GetComponent<Renderer>();
-        serverMaterialInstance = rend.materials[1]; // this clones the material at runtime
-        initialEmissionColor = serverMaterialInstance.GetColor("_EmissionColor");
+
+        // Renderer rend = serverObj.GetComponent<Renderer>();
+        //serverMaterialInstance = rend.materials[1]; // this clones the material at runtime
+
+        // manual setup for getting material references (annoying)
+        serverEmissives = new Material[3];
+       
+        serverEmissives[0] = emissiveMeshes[0].materials[1]; // Server material
+        serverEmissives[1] = emissiveMeshes[0].materials[2]; // Wire Material
+        serverEmissives[2] = emissiveMeshes[1].materials[2]; // Floor material
+
+        initialEmissionColor = new Color[serverEmissives.Length];
+        for (int i = 0; i < serverEmissives.Length; i++)
+        {
+            initialEmissionColor[i] = serverEmissives[i].GetColor("_EmissionColor");
+        }
+     
 
     }
 
@@ -284,7 +296,13 @@ public class LockdownEvent : MonoBehaviour
         audioManager.FadeServers(false);
         audioManager.playPowerCut();
         serverProgress.Shutdown();
-        StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, initialEmissionColor, 4f, 0, 6.5f, 0f));
+
+        for (int i = 0; i < serverEmissives.Length; i++)
+        {
+            StartCoroutine(FadeEmission(serverEmissives, initialEmissionColor[i], initialEmissionColor[i], 4f, 0, 6.5f, 0f));
+        }
+
+        
         poweringDown = true;
         
         yield return new WaitForSeconds(13f);
@@ -296,7 +314,12 @@ public class LockdownEvent : MonoBehaviour
 
         audioManager.playPowerOn();
         serverProgress.Reboot();
-        StartCoroutine(FadeEmission(serverMaterialInstance, initialEmissionColor, endEmissionColor, 0, 4f, 4f, 2f));
+
+        for (int i = 0; i < serverEmissives.Length; i++)
+        {
+            StartCoroutine(FadeEmission(serverEmissives, initialEmissionColor[i], endEmissionColor, 0, 4f, 4f, 2f));
+        }
+        
         glitchLights = true;
         foreach(Light light in lights)
         {
@@ -389,11 +412,10 @@ public class LockdownEvent : MonoBehaviour
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
     }
 
-    public IEnumerator FadeEmission(Material mat, Color fromColor, Color toColor, float fromIntensity, float toIntensity, float duration, float delayTime)
+    public IEnumerator FadeEmission(Material[] materials, Color fromColor, Color toColor, float fromIntensity, float toIntensity, float duration, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
-        // Ensure the emission is enabled on the material
-        mat.EnableKeyword("_EMISSION");
+
 
         float elapsedTime = 0f;
 
@@ -406,14 +428,21 @@ public class LockdownEvent : MonoBehaviour
             float currentIntensity = Mathf.Lerp(fromIntensity, toIntensity, t);
 
             // Apply combined color * intensity as emission
-            mat.SetColor("_EmissionColor", currentColor * currentIntensity);
+            foreach (Material mat in materials)
+            {
+                mat.SetColor("_EmissionColor", currentColor * currentIntensity);
+            }
+
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         // Final value at end of fade
-        mat.SetColor("_EmissionColor", toColor * toIntensity);
+        foreach (Material mat in materials)
+        {
+            mat.SetColor("_EmissionColor", toColor * toIntensity);
+        }
     }
 
 
