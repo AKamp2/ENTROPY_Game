@@ -121,7 +121,7 @@ public class LightManager : MonoBehaviour, ISaveable
         }
     }
 
-        public IEnumerator FlickerLightsForever(LightLocation lightEnum, float minFlickerDuration = 1f, float maxFlickerDuration = 3.0f, float minPauseDuration = 0.1f, float maxPauseDuration = 1.0f)
+    public IEnumerator FlickerLightsForever(LightLocation lightEnum, float minFlickerDuration = 5f, float maxFlickerDuration = 10f, float minPauseDuration = 3f, float maxPauseDuration = 8f)
     {
 
         Transform[] lightGroup = lightData[lightEnum].lightGroup;
@@ -136,6 +136,7 @@ public class LightManager : MonoBehaviour, ISaveable
             MeshRenderer[] meshes = randomLight.GetComponentsInChildren<MeshRenderer>();
 
             float flickerDuration = Random.Range(minFlickerDuration, maxFlickerDuration);
+            //Debug.Log(flickerDuration);
 
             List<Coroutine> runningCoroutines = new List<Coroutine>();
 
@@ -147,14 +148,14 @@ public class LightManager : MonoBehaviour, ISaveable
 
             foreach (Light light in lights)
             {
-                runningCoroutines.Add(StartCoroutine(FlickerIntensity(light, null, initLightIntensity[light], flickerDuration, 0.5f, 2, 0, 0.5f, false)));
+                runningCoroutines.Add(StartCoroutine(FlickerIntensity(light, null, initLightIntensity[light], flickerDuration, 0.0f, 0.02f, 0.8f, 1.5f, false)));
             }
 
             // Wait for this light to finish flickering
-            foreach (Coroutine coroutine in runningCoroutines)
-            {
-                yield return coroutine;
-            }
+            //foreach (Coroutine coroutine in runningCoroutines)
+            //{
+            //    yield return coroutine;
+            //}
 
             // Random pause before next flicker
             float pauseDuration = Random.Range(minPauseDuration, maxPauseDuration);
@@ -163,7 +164,7 @@ public class LightManager : MonoBehaviour, ISaveable
     }
 
     private IEnumerator FlickerIntensity(Light light, MeshRenderer mesh, float maxIntensity, float singleLightDuration,
-        float onDelayMin = 0.5f, float onDelayMax = 2.0f, float offDelayMin = 0.0f, float offDelayMax = 0.5f, bool lerpLightIntensity = true)
+        float onDelayMin = 0.05f, float onDelayMax = 0.5f, float offDelayMin = 0.0f, float offDelayMax = 0.01f, bool lerpLightIntensity = true)
     {
         // do flicker logic here
         float timer = 0f; // overall time of flickering
@@ -178,7 +179,9 @@ public class LightManager : MonoBehaviour, ISaveable
         {
             // lerp the brightness of max intensity so it gradually fades brighter
             if (lerpLightIntensity) lerpIntensity = Mathf.Lerp(0, maxIntensity, Mathf.Clamp01(timer / singleLightDuration));
+            else lerpIntensity = maxIntensity;
 
+           
             // swaps to lowlight after flickerdelay
             if (flickerTimer > flickerDelay)
             {
@@ -186,24 +189,26 @@ public class LightManager : MonoBehaviour, ISaveable
                 flickerTimer = 0.0f;
             }
 
-            if (isOn)
+            if (isOn && flickerTimer == 0.0f)
             {
                 // longer delay if on
-                flickerDelay = Random.Range(0.5f, 2);
+                flickerDelay = Random.Range(onDelayMin, onDelayMax);
+                Debug.Log("Delay when on: " + flickerDelay);
             }
-            else
+            else if (!isOn && flickerTimer == 0.0f)
             {
                 // randomize the intensity if flickering
-                lerpIntensity = Random.Range(0.01f, lerpIntensity);
-                flickerDelay = Random.Range(0, 0.5f);
+                lerpIntensity = Random.Range(0.0f, lerpIntensity);
+                flickerDelay = Random.Range(offDelayMin, offDelayMax);
+                Debug.Log("Delay when off: " + flickerDelay);
             }
 
             // applies intensity to respective item
-            if (mesh != null)
+            if (mesh != null && flickerTimer == 0)
             {
                 mesh.material.SetColor("_EmissionColor", lightColor * lerpIntensity);
             }
-            else if (light != null)
+            else if (light != null && flickerTimer == 0)
             {
                 light.intensity = lerpIntensity;
             }

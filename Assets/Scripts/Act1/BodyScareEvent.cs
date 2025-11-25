@@ -63,8 +63,6 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
             tempCollider.SetActive(false);
         }
 
-
-        StartCoroutine(TurnOnLights(6));
     }
 
     // Update is called once per frame
