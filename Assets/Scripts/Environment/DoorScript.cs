@@ -8,10 +8,12 @@ using UnityEngine.ProBuilder;
 using UnityEngine.Rendering.Universal;
 public class DoorScript : MonoBehaviour
 {
-    // emergency state means door won't auto open
+    // emergency state means a door can be breached,
+    // set it to locked or closed in editor to set its default breach state
     [SerializeField]
     bool emergencyState = false;
-    // breached emergency doors can auto open
+    // breached denotes whether or not an emergency door has been breached,
+    // this will give it the opposite doorstate from its default (closed -> locked) (locked -> closed)
     [SerializeField]
     bool breached = false;
 
