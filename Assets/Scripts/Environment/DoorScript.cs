@@ -8,6 +8,11 @@ using UnityEngine.ProBuilder;
 using UnityEngine.Rendering.Universal;
 public class DoorScript : MonoBehaviour
 {
+    [SerializeField]
+    bool emergencyState = false;
+    [SerializeField]
+    bool breached = false;
+
     [Serializable]
     public enum States
     {
@@ -917,5 +922,34 @@ public class DoorScript : MonoBehaviour
         StartCoroutine(FadeOutAndStop(endAudioSource, 0.3f));
     }
 
-
+    public void Breach()
+    {
+        if (emergencyState)
+        {
+            if (breached)
+            {
+                StartCoroutine(UnbreachRoutine(0.3f));
+            }
+        }
+    }
+    public IEnumerator BreachRoutine(float delay)
+    {
+        while (delay > 0)
+        {
+            delay -= Time.deltaTime;
+            yield return null;
+        }
+        breached = true;
+        DoorState = States.Closed;
+    }
+    public IEnumerator UnbreachRoutine(float delay)
+    {
+        while (delay > 0)
+        {
+            delay -= Time.deltaTime;
+            yield return null;
+        }
+        breached = false;
+        DoorState = States.Locked;
+    }
 }

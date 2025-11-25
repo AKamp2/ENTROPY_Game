@@ -42,6 +42,20 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI grabUIText;
 
+    [SerializeField]
+    private int breachCapacity;
+    public int BreachCapacity
+    {
+        get { return breachCapacity; }
+        set { breachCapacity = value; }
+    }
+    [SerializeField]
+    private int breachesUsed;
+    public int BreachesUsed
+    {
+        get { return breachesUsed; }
+        set { breachesUsed = value; }
+    }
 
     //canvas elements
     [SerializeField]
@@ -462,14 +476,14 @@ public class PlayerUIManager : MonoBehaviour
                 //set the selected door in the door manager as this door
                 doorManager.CurrentSelectedDoor = door;
                 inputIndicator.sprite = keyFIndicator;
-                grabUIText.text = "Close Door";
+                grabUIText.text = "Unbreach Door";
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
             else if (ds.DoorState == DoorScript.States.Closed)
             {
                 doorManager.CurrentSelectedDoor = door;
                 inputIndicator.sprite = keyFIndicator;
-                grabUIText.text = "Open Door";
+                grabUIText.text = "Breach Door";
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
 
@@ -1033,5 +1047,12 @@ public class PlayerUIManager : MonoBehaviour
             }
         }
     }
-
+    private void BreachDoor(DoorScript door)
+    {
+        if (breachesUsed < breachCapacity)
+        {
+            breachesUsed += 1;
+            door.Breach();
+        }
+    }
 }
