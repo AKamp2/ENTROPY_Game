@@ -8,8 +8,10 @@ using UnityEngine.ProBuilder;
 using UnityEngine.Rendering.Universal;
 public class DoorScript : MonoBehaviour
 {
+    // emergency state means door won't auto open
     [SerializeField]
     bool emergencyState = false;
+    // breached emergency doors can auto open
     [SerializeField]
     bool breached = false;
 
@@ -921,7 +923,7 @@ public class DoorScript : MonoBehaviour
         yield return new WaitForSeconds(duration);
         StartCoroutine(FadeOutAndStop(endAudioSource, 0.3f));
     }
-
+    // breaches the door with delay by starting a coroutine
     public void Breach()
     {
         if (emergencyState)

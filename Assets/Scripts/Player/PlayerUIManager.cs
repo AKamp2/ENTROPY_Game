@@ -1047,6 +1047,8 @@ public class PlayerUIManager : MonoBehaviour
             }
         }
     }
+
+    // uses the breach tool on the door, toggling its breach state (for emergency doors only)
     private void BreachDoor(DoorScript door)
     {
         if (breachesUsed < breachCapacity)
