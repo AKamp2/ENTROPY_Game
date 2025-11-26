@@ -98,50 +98,21 @@ public class WristMonitor : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player").GetComponent<ZeroGravity>();
         //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Empty", "<size=14><color=orange>Current Objective: </size></color><size=12>\nConnect ALAN to the nearest terminal</size>\n", "<size=10><color=orange>Sub Objective: </color>\n</size>", false));
-        mainObjectives.Add(new Objective("Medbay", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Medbay</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Reconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Dining Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\nRefill your stims</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Heal yourself</size>", false));
-        mainObjectives.Add(new Objective("Dining Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\nReach the Dining room</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8></size>", false));
-        mainObjectives.Add(new Objective("Server Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Server Room</size> \n", "<size=10><color=orange>Sub Objective: </color></size>\n  <size=8>Override Manual Lockdown</size>", false));
-        mainObjectives.Add(new Objective("Facilities Room", "<size=14><color=orange>Current Objective: </size></color><size=12>\n  Reach the Facilities Room</size> \n", "", false));
+        mainObjectives.Add(new Objective("Empty", "Connect ALAN to the nearest terminal", "", false));
+        mainObjectives.Add(new Objective("Reach Medbay", "    -Reach the Medbay\n    -Reconnect ALAN", "", false));
+        mainObjectives.Add(new Objective("Meday Stim", "    -Refill your stims\n    -Heal yourself", "", false));
+        mainObjectives.Add(new Objective("Dining Room", "    -Reach the Dining room\n    -Reconnect ALAN", "", false));
+        mainObjectives.Add(new Objective("Server Room", "    -Reach the Server Room\n    -Override Manual Lockdown", "", false));
+        mainObjectives.Add(new Objective("Facilities Room", "    -Reach the Facilities Room</size> \n", "", false));
         if (targetRectTransform == null) {
             Debug.LogError("TargetRectTransform not assigned");
             return;
         }
         //startPosition = targetRectTransform.anchoredPosition3D;
-        //duration = 0f;
-        //this.enabled = false;
+        duration = 0f;
+        gameObject.SetActive(false);
         
     }
-
-    //public void ToggleWristMonitor(InputAction.CallbackContext context)
-    //{
-    //    isActive = !isActive;
-    //    if (context.performed && !wristMonitorObject.activeSelf)
-    //    {
-    //        isActive = true;
-    //        gameObject.SetActive(true);
-    //        if (player != null)
-    //        {
-    //            stimText.text = $"{player.NumStims}/3";
-    //        }
-    //        if (tutorialShowing && dormHallScript != null)
-    //        {
-    //            tutorialShowing = false;
-    //            dormHallScript.FadeOutMonitorTutorial();
-    //        }
-    //    }
-    //    if (!isActive)
-    //    {
-    //        gameObject.SetActive(false);
-    //    }
-    //    else if (context.canceled)
-    //    {
-    //        isActive = false;
-    //        gameObject.SetActive(false);
-    //    }
-
-    //}
 
     //Hold to open Logic
     /// <summary> 
