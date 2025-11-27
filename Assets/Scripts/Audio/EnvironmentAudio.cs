@@ -24,8 +24,8 @@ public class EnvironmentAudio : MonoBehaviour
     void Start()
     {
         doors = doorsContainer.GetComponentsInChildren<DoorScript>();
-        
-        foreach(DoorScript door in doors)
+
+        foreach (DoorScript door in doors)
         {
             door.startAudioSource.outputAudioMixerGroup = environmentGroup;
             door.middleAudioSource.outputAudioMixerGroup = environmentGroup;
@@ -33,6 +33,11 @@ public class EnvironmentAudio : MonoBehaviour
             door.audioManager = this;
         }
     }
+
+/*    public void PlayOneShotOf(AudioClip clip);
+    {
+        
+    }*/
 
 
 
