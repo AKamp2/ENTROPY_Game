@@ -2441,8 +2441,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2604388808342650535}
         m_TargetAssemblyTypeName: WristMonitor, Assembly-CSharp
-        m_MethodName: SwitchDisplay
-        m_Mode: 3
+        m_MethodName: set_IsActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2461,6 +2461,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9083490734538419541}
   - component: {fileID: 2604388808342650535}
+  - component: {fileID: 3666733227655893455}
   m_Layer: 5
   m_Name: WristMonitor
   m_TagString: Untagged
@@ -2517,6 +2518,22 @@ MonoBehaviour:
   - {fileID: 8251390368175467845}
   objectiveUpdator: {fileID: 0}
   dormHallScript: {fileID: 0}
+  tabCanvasGroup: {fileID: 0}
+  wristMonitorCanvasGroup: {fileID: 3666733227655893455}
+  skipProgressSlider: {fileID: 0}
+  holdDuration: 0.25
+--- !u!225 &3666733227655893455
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5082115626392848824}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5468958049366670695
 GameObject:
   m_ObjectHideFlags: 0

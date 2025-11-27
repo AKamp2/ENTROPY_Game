@@ -36,6 +36,12 @@ public class WristMonitor : MonoBehaviour
     [SerializeField]
     private DormHallEvent dormHallScript;
 
+    public CanvasGroup tabCanvasGroup;
+    public CanvasGroup wristMonitorCanvasGroup;
+    [SerializeField] private Slider skipProgressSlider;
+    [SerializeField] private float holdDuration = 0.5f;
+    private float currentHoldTime = 0f;
+
     // Properties
     public bool IsActive
     {
@@ -104,50 +110,122 @@ public class WristMonitor : MonoBehaviour
         mainObjectives.Add(new Objective("Dining Room", "    -Reach the Dining room\n    -Reconnect ALAN", "", false));
         mainObjectives.Add(new Objective("Server Room", "    -Reach the Server Room\n    -Override Manual Lockdown", "", false));
         mainObjectives.Add(new Objective("Facilities Room", "    -Reach the Facilities Room</size> \n", "", false));
-        if (targetRectTransform == null) {
-            Debug.LogError("TargetRectTransform not assigned");
-            return;
-        }
+        //if (targetRectTransform == null) {
+        //    Debug.LogError("TargetRectTransform not assigned");
+        //    return;
+        //}
         //startPosition = targetRectTransform.anchoredPosition3D;
-        duration = 0f;
-        gameObject.SetActive(false);
-        
+        //duration = 0f;
     }
-
+  
     //Hold to open Logic
     /// <summary> 
     /// Public method called by the zero gravity controller to turn the monitor on and off
     /// </summary>
-    public void ToggleWristMonitor(InputAction.CallbackContext context)
+    public void HandleWristMonitorToggle()
     {
-        if (context.performed && !wristMonitorObject.activeSelf)
-        {
-            isActive = true;
-            this.gameObject.SetActive(true);
-            StartLerp();
+        //if (context.performed && !wristMonitorObject.activeSelf)
+        //{
+        //    isActive = true;
+        //    this.gameObject.SetActive(true);
+        //    StartLerp();
 
-            if (tutorialShowing && dormHallScript != null)
+        //    if (tutorialShowing && dormHallScript != null)
+        //    {
+        //        tutorialShowing = false;
+        //        dormHallScript.FadeOutMonitorTutorial();
+        //    }
+        //    Cursor.lockState = CursorLockMode.None;
+        //    Cursor.visible = true;
+        //}
+        //else if (context.canceled)
+        //{
+        //    isActive = false;
+        //    StartLerp();
+        //    Cursor.lockState = CursorLockMode.Locked;
+        //    Cursor.visible = false;
+        //}
+        if (Keyboard.current.tabKey.isPressed && !isActive)
+        {
+            if (tabCanvasGroup.alpha < 1)
             {
-                tutorialShowing = false;
-                dormHallScript.FadeOutMonitorTutorial();
+                tabCanvasGroup.alpha = 1f;
             }
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+
+            skipProgressSlider.GetComponent<CanvasGroup>().alpha = 1.0f;
+            currentHoldTime += Time.deltaTime;
+
+            // Update slider progress
+            if (skipProgressSlider != null)
+            {
+                skipProgressSlider.value = Mathf.Clamp01(currentHoldTime / holdDuration);
+            }
+
+            // Check if hold duration is complete
+            if (currentHoldTime >= holdDuration)
+            {
+                skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
+                FadeOut(tabCanvasGroup);
+                isActive = true;
+                // Reset after skipping
+                currentHoldTime = 0f;
+                if (skipProgressSlider != null)
+                {
+                    skipProgressSlider.value = 0f;
+                }
+            }
         }
-        else if (context.canceled)
+        else if (!Keyboard.current.tabKey.isPressed && !isActive) 
+        {
+            skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
+            // Reset when key is released
+            if (currentHoldTime > 0f)
+            {
+                currentHoldTime = 0f;
+                if (skipProgressSlider != null)
+                {
+                    skipProgressSlider.value = 0f;
+                }
+            }
+            isActive = false;
+        }
+    }
+
+    public void CloseWristMonitor(InputAction.CallbackContext context)
+    {
+        if(isActive && context.performed)
         {
             isActive = false;
-            StartLerp();
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
     }
 
-    public void StartLerp()
+    // Fade out the UI element (make it invisible)
+    public void FadeOut(CanvasGroup groupToFade)
     {
-        startPosition = new Vector3(-100, -350, 0);
-        duration = 0f;
+        StartCoroutine(FadeCanvasGroup(groupToFade, groupToFade.alpha, 0f));
     }
+
+    // Coroutine to fade the CanvasGroup over time
+    private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
+    {
+        float timeElapsed = 0f;
+
+        while (timeElapsed < .5f)
+        {
+            // Lerp alpha from start to end
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timeElapsed / .5f);
+            timeElapsed += Time.deltaTime;
+            yield return null; // Wait until the next frame
+        }
+
+        canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
+    }
+
+    //public void StartLerp()
+    //{
+    //    startPosition = new Vector3(-100, -350, 0);
+    //    duration = 0f;
+    //}
 
     /// <summary>
     /// Updates health text as well as the current objective. Also handles Lerp logic 
@@ -158,31 +236,46 @@ public class WristMonitor : MonoBehaviour
         {
             stimText.text = $"{player.NumStims}/3";
         }
-
+        if (!wristMonitorObject.activeSelf)
+        {
+            HandleWristMonitorToggle();
+        }
         if (mainObjectives.Count > 0)
         {
             currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";
         }
-        currentPosition = targetRectTransform.anchoredPosition3D;
-        if (isActive && duration < lerpDuration)
+        if (isActive)
         {
-            duration += Time.deltaTime;
-            float t = duration / lerpDuration;
-
-            targetRectTransform.anchoredPosition3D = Vector3.Lerp(startPosition, targetPosition, t);
+            wristMonitorCanvasGroup.alpha = 1f;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
-        if (!isActive && duration < lerpDuration)
+        else
         {
-            duration += Time.deltaTime;
-            float t = duration / lerpDuration;
-
-            targetRectTransform.anchoredPosition3D = Vector3.Lerp(currentPosition, startPosition, t);
-
-            if (targetRectTransform.anchoredPosition3D == startPosition)
-            {
-                this.gameObject.SetActive(false);
-            }
+            wristMonitorCanvasGroup.alpha = 0f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
+        //currentPosition = targetRectTransform.anchoredPosition3D;
+        //if (isActive && duration < lerpDuration)
+        //{
+        //    duration += Time.deltaTime;
+        //    float t = duration / lerpDuration;
+
+        //    targetRectTransform.anchoredPosition3D = Vector3.Lerp(startPosition, targetPosition, t);
+        //}
+        //if (!isActive && duration < lerpDuration)
+        //{
+        //    duration += Time.deltaTime;
+        //    float t = duration / lerpDuration;
+
+        //    targetRectTransform.anchoredPosition3D = Vector3.Lerp(currentPosition, startPosition, t);
+
+        //    if (targetRectTransform.anchoredPosition3D == startPosition)
+        //    {
+        //        this.gameObject.SetActive(false);
+        //    }
+        //}
     }
 
     /// <summary>
