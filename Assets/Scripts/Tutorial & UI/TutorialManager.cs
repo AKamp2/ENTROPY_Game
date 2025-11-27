@@ -262,6 +262,13 @@ public class TutorialManager : MonoBehaviour
         RunTutorialStep();
     }
 
+    public void ForceCompleteAllSteps()
+    {
+        stepComplete = true;
+        isWaitingForAction = false;
+    }
+
+
     void RunTutorialStep()
     {
         //Debug.Log("Current Step: " + currentStep);
@@ -415,7 +422,7 @@ public class TutorialManager : MonoBehaviour
 
 
         // Fade out tutorial stinger
-        
+
 
 
         //remove all tutorial panels
@@ -432,7 +439,7 @@ public class TutorialManager : MonoBehaviour
         dialogueManager.StartDialogueSequence(1, 0.2f);
 
         StartCoroutine(WaitForDialogue1AndOpenDoor());
-
+        
         /*        if (doorToOpen != null)
                 {
                     if (doorToOpen.DoorState != DoorScript.States.Open)
@@ -459,6 +466,7 @@ public class TutorialManager : MonoBehaviour
         {
             stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
         }
+        
     }
 
 /*    private void HandleDialogueFinished(int sequenceIndex)
@@ -698,6 +706,7 @@ public class TutorialManager : MonoBehaviour
                 skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
+                ForceCompleteAllSteps();
                 FadeOut(enterCanvasGroup);
                 if (stingerManager != null)
                 {
