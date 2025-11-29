@@ -11244,6 +11244,12 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 415961582}
+  - {fileID: 1646937406}
+  - {fileID: 1891096689}
+  - {fileID: 1206990534}
+  - {fileID: 513746806}
+  - {fileID: 1136926737}
+  - {fileID: 1067672941}
   - {fileID: 422673365}
   - {fileID: 1331265984}
   - {fileID: 966999581}
@@ -18540,6 +18546,62 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2100871417}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &513746805
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 513746806}
+  - component: {fileID: 513746807}
+  m_Layer: 0
+  m_Name: BloodShader (8)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &513746806
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 513746805}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.65334225, y: -0.2704526, z: 0.27045235, w: 0.65334135}
+  m_LocalPosition: {x: 33.499, y: -1.83, z: 1.602}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454467375}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 44.974}
+--- !u!114 &513746807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 513746805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 8b786a9f18045ab45a06c4df8b8e6ef7, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.035}
+  m_Size: {x: 0.4, y: 0.4, z: 0.07}
+  m_FadeFactor: 1
 --- !u!1 &517179767 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8301431491434576220, guid: f6ce02a895be6a54f8b0d1e5c6759e9b, type: 3}
@@ -32137,6 +32199,62 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1067672940
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1067672941}
+  - component: {fileID: 1067672942}
+  m_Layer: 0
+  m_Name: BloodShader (7)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1067672941
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067672940}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.61295193, y: -0.35254872, z: 0.3525484, w: 0.6129511}
+  m_LocalPosition: {x: 33.425, y: -1.839, z: 2.964}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454467375}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 59.812}
+--- !u!114 &1067672942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067672940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: f7935dc73205c5342b54541df55a68c0, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.025
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.035}
+  m_Size: {x: 0.49, y: 0.4, z: 0.07}
+  m_FadeFactor: 1
 --- !u!82 &1069040085 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 5981430507143272806, guid: 030ca38db5a058f47a1f28de0193f80d, type: 3}
@@ -33307,6 +33425,62 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1136926736
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1136926737}
+  - component: {fileID: 1136926738}
+  m_Layer: 0
+  m_Name: BloodShader (9)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1136926737
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136926736}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.47232422, y: -0.52622294, z: 0.52622217, w: 0.47232354}
+  m_LocalPosition: {x: 33.398, y: -1.83, z: 2.646}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454467375}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 96.179}
+--- !u!114 &1136926738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136926736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 8b786a9f18045ab45a06c4df8b8e6ef7, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.035}
+  m_Size: {x: 0.4, y: 0.4, z: 0.07}
+  m_FadeFactor: 1
 --- !u!1 &1149432316
 GameObject:
   m_ObjectHideFlags: 0
@@ -34702,6 +34876,62 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9137169048138212020, guid: d75ee38de02809145be4e79d13b2b155, type: 3}
   m_PrefabInstance: {fileID: 2106088715}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1206990533
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1206990534}
+  - component: {fileID: 1206990535}
+  m_Layer: 0
+  m_Name: BloodShader (6)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1206990534
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206990533}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.34347114, y: -0.6180842, z: 0.61808354, w: 0.34347087}
+  m_LocalPosition: {x: 33.379, y: -1.83, z: 2.419}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454467375}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 121.878}
+--- !u!114 &1206990535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206990533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: f7935dc73205c5342b54541df55a68c0, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.035}
+  m_Size: {x: 0.4, y: 0.4, z: 0.07}
+  m_FadeFactor: 1
 --- !u!4 &1209515244 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8153601496802245547, guid: 1903864e2fd1db74a890c0340fea924d, type: 3}
@@ -46371,6 +46601,62 @@ AudioSource:
   m_CorrespondingSourceObject: {fileID: 7080385994257114936, guid: 030ca38db5a058f47a1f28de0193f80d, type: 3}
   m_PrefabInstance: {fileID: 2066810373}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1646937405
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1646937406}
+  - component: {fileID: 1646937407}
+  m_Layer: 0
+  m_Name: BloodShader (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1646937406
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1646937405}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.3015077, y: 0.6396042, z: 0.30150712, w: -0.6396038}
+  m_LocalPosition: {x: 33.0348, y: -1.314, z: 1.9727}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454467375}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -410.478}
+--- !u!114 &1646937407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1646937405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: f7935dc73205c5342b54541df55a68c0, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.035}
+  m_Size: {x: 0.4, y: 0.4, z: 0.07}
+  m_FadeFactor: 1
 --- !u!1001 &1649003495
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -53099,6 +53385,62 @@ Transform:
   - {fileID: 425273377}
   m_Father: {fileID: 540189441}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1891096688
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1891096689}
+  - component: {fileID: 1891096690}
+  m_Layer: 0
+  m_Name: BloodShader (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1891096689
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891096688}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.14251904, y: 0.6925957, z: -0.14251925, w: -0.69259506}
+  m_LocalPosition: {x: 33.049, y: -1.539, z: 1.991}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454467375}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -336.744}
+--- !u!114 &1891096690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891096688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: f7935dc73205c5342b54541df55a68c0, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.035}
+  m_Size: {x: 0.4, y: 0.4, z: 0.07}
+  m_FadeFactor: 1
 --- !u!1 &1891433550
 GameObject:
   m_ObjectHideFlags: 0
