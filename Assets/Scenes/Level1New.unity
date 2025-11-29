@@ -4167,6 +4167,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6c9527059043b3a48b7348e7dbd397a8, type: 3}
   audioSourcePrefab: {fileID: 7718569169722747656, guid: 86db1edfd9d3f1c4c95a6a7c26a89fbd, type: 3}
   audioSourceContainer: {fileID: 878308942}
+  lightImpactThreshold: 1.5
+  metalLightImpacts: []
+  metalHardImpacts: []
+  plasticLightImpacts: []
+  plasticHardImpacts: []
+  softLightImpacts: []
+  softHardImpacts: []
 --- !u!4 &219704857
 Transform:
   m_ObjectHideFlags: 0
@@ -33383,7 +33390,7 @@ MonoBehaviour:
   buttonSource: {fileID: 1539666155566241152}
   ventSource: {fileID: 1160633707}
   grateSource: {fileID: 776208994}
-  bodyFoundStinger: {fileID: 8300000, guid: 267723bf9ceae974bbe969dff79b9150, type: 3}
+  bodyFoundStinger: {fileID: 8300000, guid: d661ad8c8b7aed94ea76aa9b156ec049, type: 3}
   powerCutSFX: {fileID: 8300000, guid: b89d5ccc3e7184447b6704143832ca99, type: 3}
   powerOnSFX: {fileID: 8300000, guid: 36fea43b36409c149a2006b8d7b9fc24, type: 3}
   takeItem: {fileID: 8300000, guid: e5f654ab90d930847ae4ed184e77842d, type: 3}
@@ -74628,6 +74635,10 @@ PrefabInstance:
       propertyPath: ObjectContainer
       value: 
       objectReference: {fileID: 1774461998}
+    - target: {fileID: 6971612179707629685, guid: d85d2de73afa837409f59fdc7310d96f, type: 3}
+      propertyPath: itemAudioHandler
+      value: 
+      objectReference: {fileID: 219704856}
     - target: {fileID: 8212061845775604770, guid: d85d2de73afa837409f59fdc7310d96f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -30.952719
