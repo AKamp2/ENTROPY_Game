@@ -1,11 +1,7 @@
 using UnityEngine;
 
-
 public class ItemAudioHandler : MonoBehaviour
 {
-    //[Header("Audio Source")]
-    //public AudioSource audioSource;
-
     [Header("Grab Sounds")]
     public AudioClip[] pickupSounds;
 
@@ -15,47 +11,47 @@ public class ItemAudioHandler : MonoBehaviour
     public GameObject audioSourcePrefab;
     public Transform audioSourceContainer;
 
-    /*    [Header("Impact Sounds")]
-        public AudioClip[] impactSounds;
-
-        [Tooltip("Minimum collision velocity to trigger an impact sound")]
-        public float impactThreshold = 1.5f;*/
-
-    /*    private void Awake()
-        {
-
-        }*/
-
     public void PlayPickUpSound(Vector3 position)
     {
         if (pickupSounds.Length == 0) return;
 
-        int index = Random.Range(0, pickupSounds.Length);        
-        PlayThrowSoundAtPosition(pickupSounds[index], position);
+        int index = Random.Range(0, pickupSounds.Length);
+        PlaySoundAtPosition(pickupSounds[index], position);
     }
 
     public void PlayThrowSound(Vector3 position)
     {
         if (throwSounds.Length == 0) return;
-        
+
         int index = Random.Range(0, throwSounds.Length);
-        PlayThrowSoundAtPosition(throwSounds[index], position);
+        PlaySoundAtPosition(throwSounds[index], position);
     }
 
-    private void PlayThrowSoundAtPosition(AudioClip clip, Vector3 position)
+    private void PlaySoundAtPosition(AudioClip clip, Vector3 position)
     {
         if (clip == null || audioSourcePrefab == null) return;
-        
-        GameObject tempAudioObj = Instantiate(audioSourcePrefab, position, Quaternion.identity, audioSourceContainer);
+
+        GameObject tempAudioObj =
+            Instantiate(audioSourcePrefab, position, Quaternion.identity, audioSourceContainer);
+
         AudioSource tempSource = tempAudioObj.GetComponent<AudioSource>();
-        if (tempAudioObj == null) return;
+
+        if (tempSource == null)
+        {
+            Debug.LogError("Audio prefab missing AudioSource!");
+            Destroy(tempAudioObj);
+            return;
+        }
+
         tempSource.clip = clip;
         tempSource.pitch = Random.Range(0.8f, 1.2f);
-        
+        tempSource.spatialBlend = 1f; // Ensure 3D sound
         tempSource.Play();
-        Destroy(tempAudioObj, clip.length + 0.1f); // Clean up after sound finishes
+
+        Destroy(tempAudioObj, clip.length + 0.1f);
     }
 }
+
 
 
 
