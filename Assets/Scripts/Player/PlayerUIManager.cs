@@ -535,6 +535,16 @@ public class PlayerUIManager : MonoBehaviour
                 HideInteractables();
             }
         }
+        else if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && !lockdownEvent.IsActive)
+        {
+            if (inputIndicator.sprite == null)
+            {
+                lockdownEvent.CanPull = true;
+                grabUIText.text = "Initiate Lever Release";
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+            }
+        }
         else if (hit.Value.transform.CompareTag("WristGrab") && dormHallEvent && dormHallEvent.IsGrabbable)
         {
             if (dormHallEvent.IsGrabbable)

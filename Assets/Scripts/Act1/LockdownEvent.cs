@@ -100,7 +100,7 @@ public class LockdownEvent : MonoBehaviour
     public Light alienLight;
 
     [SerializeField] private ServerProgressBars serverProgress;
-    [SerializeField] private Terminal serverTerminal;
+    //[SerializeField] private Terminal serverTerminal;
     [SerializeField] private LockdownPanel lockdownPanel;
 
 
@@ -258,22 +258,35 @@ public class LockdownEvent : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        //Handle lockdown lever
-        if (canPull && isActive)
-        {
-            audioManager.PlayButtonClick();
-            buttonLight.intensity = 0;
-            // open the broken door first
-            //brokenDoor.SetState(DoorScript.States.Open);
-            
-            DoorTrigger.enabled = true;
-            isActive = false;
 
-            // begin lighting and audio queues
-            player.PlayerCutSceneHandler(true);
-            StartCoroutine(PlayLockdownFX());
-            
+        if (context.performed)
+        {
+            Debug.Log(isActive);
+            //Handle lockdown lever
+            if (canPull && isActive)
+            {
+                audioManager.PlayButtonClick();
+                buttonLight.intensity = 0;
+                // open the broken door first
+                //brokenDoor.SetState(DoorScript.States.Open);
+
+                DoorTrigger.enabled = true;
+                isActive = false;
+
+                // begin lighting and audio queues
+                player.PlayerCutSceneHandler(true);
+                StartCoroutine(PlayLockdownFX());
+
+            }
+            else if (canPull && !isActive)
+            {
+                // lever must be pulled first
+                lockdownPanel.SwitchToDeactivate();
+                isActive = true;
+                dialogueManager.StartDialogueSequence(9, 0.5f);
+            }
         }
+        
     }
 
     private IEnumerator PlayLockdownFX()

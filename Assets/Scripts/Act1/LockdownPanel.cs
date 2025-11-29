@@ -4,6 +4,12 @@ using System.Collections;
 
 public class LockdownPanel : MonoBehaviour
 {
+
+    [SerializeField] private MeshRenderer terminalMesh;
+    private Material screenMaterial;
+    [SerializeField] private Color screenEmissiveColor = new Color(0.113f, 0.113f, 0.113f);
+    private Material baseMaterial;
+    [SerializeField] private Color baseEmissiveColor = new Color(0.12f, 0.12f, 0.12f);
     [Header("Panels")]
     [SerializeField] private GameObject reactivatePanel;
     [SerializeField] private GameObject deactivatePanel;
@@ -13,9 +19,9 @@ public class LockdownPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI deactivateText;
 
     [Header("Screen Components")]
-    [SerializeField] private GameObject screenBacking;
-    [SerializeField] private Material offMaterial;
-    [SerializeField] private Material onMaterial;
+    //[SerializeField] private GameObject screenBacking;
+    //[SerializeField] private Material offMaterial;
+    //[SerializeField] private Material onMaterial;
     [SerializeField] private GameObject offScreen;
 
     [Header("Lockdown Status")]
@@ -32,6 +38,9 @@ public class LockdownPanel : MonoBehaviour
         // Initialize panels
         reactivatePanel.SetActive(true);
         deactivatePanel.SetActive(false);
+
+        baseMaterial = terminalMesh.materials[1];
+        screenMaterial = terminalMesh.materials[2];
 
         // Initialize lockdown status
         if (awaitingLockdown != null) awaitingLockdown.SetActive(true);
@@ -74,12 +83,15 @@ public class LockdownPanel : MonoBehaviour
 
     public void TurnOn()
     {
-        if (screenBacking != null && onMaterial != null)
-        {
-            var renderer = screenBacking.GetComponent<Renderer>();
-            if (renderer != null)
-                renderer.material = onMaterial;
-        }
+        //if (screenBacking != null && onMaterial != null)
+        //{
+        //    var renderer = screenBacking.GetComponent<Renderer>();
+        //    if (renderer != null)
+        //        renderer.material = onMaterial;
+        //}
+
+        baseMaterial.SetColor("_EmissionColor", baseEmissiveColor);
+        screenMaterial.SetColor("_EmissionColor", screenEmissiveColor);
 
         if (offScreen != null)
             offScreen.SetActive(false);
@@ -87,12 +99,15 @@ public class LockdownPanel : MonoBehaviour
 
     public void TurnOff()
     {
-        if (screenBacking != null && offMaterial != null)
-        {
-            var renderer = screenBacking.GetComponent<Renderer>();
-            if (renderer != null)
-                renderer.material = offMaterial;
-        }
+        //if (screenBacking != null && offMaterial != null)
+        //{
+        //    var renderer = screenBacking.GetComponent<Renderer>();
+        //    if (renderer != null)
+        //        renderer.material = offMaterial;
+        //}
+
+        baseMaterial.SetColor("_EmissionColor", baseEmissiveColor * -10.0f);
+        screenMaterial.SetColor("_EmissionColor", screenEmissiveColor * -10.0f);
 
         if (offScreen != null)
             offScreen.SetActive(true);
