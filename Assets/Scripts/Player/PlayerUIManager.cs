@@ -519,7 +519,7 @@ public class PlayerUIManager : MonoBehaviour
 
     public void RayCastHandleManualLockdown(RaycastHit? hit)
     {
-        if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
+        if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.LeverPulled && !lockdownEvent.IsComplete && lockdownEvent.IsActive)
         {
             //Debug.Log("lockdown lever hit by raycast");
             if (lockdownEvent.IsActive)
@@ -535,7 +535,7 @@ public class PlayerUIManager : MonoBehaviour
                 HideInteractables();
             }
         }
-        else if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && !lockdownEvent.IsActive)
+        else if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && !lockdownEvent.LeverPulled && !lockdownEvent.IsComplete && !lockdownEvent.IsActive)
         {
             if (inputIndicator.sprite == null)
             {

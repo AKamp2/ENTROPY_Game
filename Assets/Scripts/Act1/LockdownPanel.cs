@@ -1,11 +1,13 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using static UnityEngine.GraphicsBuffer;
 
 public class LockdownPanel : MonoBehaviour
 {
 
     [SerializeField] private MeshRenderer terminalMesh;
+    [SerializeField] private Transform LeverPivot;
     private Material screenMaterial;
     [SerializeField] private Color screenEmissiveColor = new Color(0.113f, 0.113f, 0.113f);
     private Material baseMaterial;
@@ -111,6 +113,24 @@ public class LockdownPanel : MonoBehaviour
 
         if (offScreen != null)
             offScreen.SetActive(true);
+    }
+
+ 
+    public IEnumerator PlayLeverAnimation()
+    {
+        Quaternion startRot = LeverPivot.rotation;
+        Quaternion endRot = Quaternion.Euler(82f, LeverPivot.eulerAngles.y, LeverPivot.eulerAngles.z);
+        float duration = 0.8f;
+
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            LeverPivot.rotation = Quaternion.Lerp(startRot, endRot, t / duration);
+            yield return null;
+        }
+
+        LeverPivot.rotation = endRot; // ensure final rotation
     }
 
     /// <summary>
