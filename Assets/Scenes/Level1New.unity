@@ -10278,7 +10278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: b672617b8e1ed0949bc6f5cf54e79464, type: 2}
+  m_Material: {fileID: 2100000, guid: e3126f3d428e3f940a4ea1865ab00be8, type: 2}
   m_DrawDistance: 1000
   m_FadeScale: 0.9
   m_StartAngleFade: 180
@@ -10738,7 +10738,7 @@ Transform:
   m_GameObject: {fileID: 422673364}
   serializedVersion: 2
   m_LocalRotation: {x: -0.08429125, y: 0.37872505, z: 0.16257834, w: -0.9072104}
-  m_LocalPosition: {x: 33.705, y: -1.183, z: 6.527}
+  m_LocalPosition: {x: 33.828, y: -1.25, z: 6.65}
   m_LocalScale: {x: 1.9722998, y: 1.9722998, z: 1.9723}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11244,6 +11244,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 415961582}
+  - {fileID: 1255564348}
   - {fileID: 1646937406}
   - {fileID: 1891096689}
   - {fileID: 1206990534}
@@ -32225,7 +32226,7 @@ Transform:
   m_GameObject: {fileID: 1067672940}
   serializedVersion: 2
   m_LocalRotation: {x: 0.61295193, y: -0.35254872, z: 0.3525484, w: 0.6129511}
-  m_LocalPosition: {x: 33.425, y: -1.839, z: 2.964}
+  m_LocalPosition: {x: 33.425, y: -1.814, z: 2.964}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36183,6 +36184,62 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5274551648669334933, guid: 9c56da26d55396441b458f226af239ba, type: 3}
   m_PrefabInstance: {fileID: 864291439}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1255564347
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1255564348}
+  - component: {fileID: 1255564349}
+  m_Layer: 0
+  m_Name: BloodShader (10)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1255564348
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255564347}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.43577692, y: -0.43577582, z: -0.55686533, w: 0.5568653}
+  m_LocalPosition: {x: 33.519, y: -1.087, z: 3.604}
+  m_LocalScale: {x: 1.9722998, y: 1.9722998, z: 1.9723}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454467375}
+  m_LocalEulerAnglesHint: {x: 0, y: -76.09, z: -90}
+--- !u!114 &1255564349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255564347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: e3126f3d428e3f940a4ea1865ab00be8, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 4294967295
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.5}
+  m_Size: {x: 1.4, y: 1.57, z: 1}
+  m_FadeFactor: 1
 --- !u!1 &1264313818
 GameObject:
   m_ObjectHideFlags: 0
