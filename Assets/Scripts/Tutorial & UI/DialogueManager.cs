@@ -485,6 +485,22 @@ public class DialogueManager : MonoBehaviour
         ShowCanvasImmediate();
         yield return StartCoroutine(FadeCanvas(true));
 
+        //keep track of the source being used for this sequence
+        AudioSource sequenceSource;
+        if (failureDialogues.audioSource)
+        {
+            sequenceSource = failureDialogues.audioSource;
+        }
+        else
+        {
+            sequenceSource = defaultAudioSource;
+        }
+
+        if (!sourceList.Contains(sequenceSource))
+        {
+            sourceList.Add(sequenceSource);
+        }
+
         Dialogue d = failureDialogues.dialogues[index];
 
         // If this failure should skip the success dialogue in the main sequence
@@ -499,7 +515,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         // Play the failure dialogue using the same PlaySingleDialogue method
-        yield return StartCoroutine(PlaySingleDialogue(d, failureDialogues.audioSource));
+        yield return StartCoroutine(PlaySingleDialogue(d, sequenceSource));
         bool wasSkipped = lastDialogueWasSkipped;
 
         // Handle tutorial advancement if this failure dialogue advances the tutorial
