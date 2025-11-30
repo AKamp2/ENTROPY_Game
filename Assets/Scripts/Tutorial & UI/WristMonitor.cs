@@ -12,23 +12,24 @@ public class WristMonitor : MonoBehaviour
 {
     // Variables
     bool isActive = false;
-    
-    private ZeroGravity player;
-    [SerializeField] TextMeshProUGUI currentObjectiveText;
+
+    [Header("Dependencies")]
+    [SerializeField] private ZeroGravity player;
     [SerializeField] GameObject wristMonitorObject;
     // checks the wrist monitor object and manipulates the state of having the wrist monitor accordingly
-    
+
+    [Header("Health Section")]
     [SerializeField] TextMeshProUGUI stimText;
+    [SerializeField] TextMeshProUGUI healthText;
+    [SerializeField] GameObject fullHealthAnimationImage;
+    [SerializeField] GameObject injuredAnimationImage;
+    [SerializeField] GameObject lowHealthAnimationImage;
+
+    [Header("Objectives")]
     public List<Objective> mainObjectives = new List<Objective>();
     public List<Objective> completedObjectives = new List<Objective>();
-    public RectTransform targetRectTransform;
-    public Vector3 targetPosition;
-    public float lerpDuration;
-
-    Vector3 startPosition;
-    private float duration;
-    Vector3 currentPosition;
-
+    [SerializeField] TextMeshProUGUI currentObjectiveText;
+    [SerializeField] TextMeshProUGUI completedObjectiveText;
     [SerializeField] private GameObject[] _displayTexts;
     [SerializeField] ObjectiveUpdate objectiveUpdator;
 
@@ -36,6 +37,7 @@ public class WristMonitor : MonoBehaviour
     [SerializeField]
     private DormHallEvent dormHallScript;
 
+    [Header("Feedback Sliders")]
     public CanvasGroup tabCanvasGroup;
     public CanvasGroup wristMonitorCanvasGroup;
     [SerializeField] private Slider skipProgressSlider;
@@ -102,7 +104,7 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        player = GameObject.FindWithTag("Player").GetComponent<ZeroGravity>();
+        //player = GameObject.FindWithTag("Player").GetComponent<ZeroGravity>();
         //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
         mainObjectives.Add(new Objective("Empty", "Connect ALAN to the nearest terminal", "", false));
         mainObjectives.Add(new Objective("Reach Medbay", "    -Reach the Medbay\n    -Reconnect ALAN", "", false));
@@ -124,27 +126,6 @@ public class WristMonitor : MonoBehaviour
     /// </summary>
     public void HandleWristMonitorToggle()
     {
-        //if (context.performed && !wristMonitorObject.activeSelf)
-        //{
-        //    isActive = true;
-        //    this.gameObject.SetActive(true);
-        //    StartLerp();
-
-        //    if (tutorialShowing && dormHallScript != null)
-        //    {
-        //        tutorialShowing = false;
-        //        dormHallScript.FadeOutMonitorTutorial();
-        //    }
-        //    Cursor.lockState = CursorLockMode.None;
-        //    Cursor.visible = true;
-        //}
-        //else if (context.canceled)
-        //{
-        //    isActive = false;
-        //    StartLerp();
-        //    Cursor.lockState = CursorLockMode.Locked;
-        //    Cursor.visible = false;
-        //}
         if (Keyboard.current.tabKey.isPressed && !isActive)
         {
             if (tabCanvasGroup.alpha < 1)
@@ -221,32 +202,19 @@ public class WristMonitor : MonoBehaviour
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
     }
 
-    //public void StartLerp()
-    //{
-    //    startPosition = new Vector3(-100, -350, 0);
-    //    duration = 0f;
-    //}
-
     /// <summary>
-    /// Updates health text as well as the current objective. Also handles Lerp logic 
+    /// Updates health text as well as the current objective. 
     /// </summary>
     private void FixedUpdate()
     {
-        if (player != null)
-        {
-            stimText.text = $"{player.NumStims}/3";
-        }
         if (!wristMonitorObject.activeSelf)
         {
             HandleWristMonitorToggle();
         }
-        if (mainObjectives.Count > 0)
-        {
-            currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";
-        }
         if (isActive)
         {
             wristMonitorCanvasGroup.alpha = 1f;
+            UpdateHealthAndInfo();
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
@@ -256,28 +224,43 @@ public class WristMonitor : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-        //currentPosition = targetRectTransform.anchoredPosition3D;
-        //if (isActive && duration < lerpDuration)
-        //{
-        //    duration += Time.deltaTime;
-        //    float t = duration / lerpDuration;
-
-        //    targetRectTransform.anchoredPosition3D = Vector3.Lerp(startPosition, targetPosition, t);
-        //}
-        //if (!isActive && duration < lerpDuration)
-        //{
-        //    duration += Time.deltaTime;
-        //    float t = duration / lerpDuration;
-
-        //    targetRectTransform.anchoredPosition3D = Vector3.Lerp(currentPosition, startPosition, t);
-
-        //    if (targetRectTransform.anchoredPosition3D == startPosition)
-        //    {
-        //        this.gameObject.SetActive(false);
-        //    }
-        //}
     }
 
+    /// <summary>
+    /// Updates the health animation as well as the stim charges
+    /// </summary>
+    private void UpdateHealthAndInfo()
+    {
+        // Show current objective
+        if (mainObjectives.Count > 0)
+        {
+            currentObjectiveText.text = $"{mainObjectives[0].ObjectiveDescription}\n{mainObjectives[0].SubObjective}";
+        }
+        // Update stim number
+        stimText.text = $"{player.NumStims}/3";
+
+        if(player.PlayerHealth <= 1)
+        {
+            healthText.text = "<Color=red>Status: DYING</color>";
+            fullHealthAnimationImage.SetActive(false);
+            injuredAnimationImage.SetActive(false);
+            lowHealthAnimationImage.SetActive(true);
+        }
+        if (player.PlayerHealth <= 3)
+        {
+            healthText.text = "<Color=yellow>Status: INJURED</color>";
+            fullHealthAnimationImage.SetActive(false);
+            injuredAnimationImage.SetActive(true);
+            lowHealthAnimationImage.SetActive(false);
+        }
+        if (player.PlayerHealth == 4)
+        {
+            healthText.text = "<Color=green>Status: HEALTHY</color>";
+            fullHealthAnimationImage.SetActive(true);
+            injuredAnimationImage.SetActive(false);
+            lowHealthAnimationImage.SetActive(false);
+        }
+    }
     /// <summary>
     /// Public method called outside of script (by objective triggers) to complete the first objective in the list
     /// </summary>
@@ -305,6 +288,14 @@ public class WristMonitor : MonoBehaviour
         }
     }
 
+    public void ShowCompleted()
+    {
+        completedObjectiveText.text = "";
+        foreach (var objective in completedObjectives)
+        {
+            completedObjectiveText.text += objective.ObjectiveName.ToString();
+        }
+    }
     /// <summary>
     /// Switches the active display of the Wrist Monitor
     /// </summary>
