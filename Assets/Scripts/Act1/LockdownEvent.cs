@@ -98,6 +98,7 @@ public class LockdownEvent : MonoBehaviour
     public GameObject alienBody;
     public Animator alienAnimator;
     public Light alienLight;
+    public Light alienSpotLight;
 
     public Transform panelMovePos;
 
@@ -498,7 +499,8 @@ public class LockdownEvent : MonoBehaviour
         while (elapsed < duration / 2)
         {
             elapsed += Time.deltaTime;
-            alienLight.intensity = Mathf.Lerp(0f, 20f, elapsed / (duration / 2));
+            alienLight.intensity = Mathf.Lerp(0f, 30f, elapsed / (duration / 2));
+            alienSpotLight.intensity = Mathf.Lerp(0f, 30f, elapsed / (duration / 2));
             yield return null;
         }
 
@@ -508,12 +510,14 @@ public class LockdownEvent : MonoBehaviour
         while (elapsed < duration / 2)
         {
             elapsed += Time.deltaTime;
-            alienLight.intensity = Mathf.Lerp(20f, 0f, elapsed / (duration / 2));
+            alienLight.intensity = Mathf.Lerp(30f, 0f, elapsed / (duration / 2));
+            alienSpotLight.intensity = Mathf.Lerp(30f, 0f, elapsed / (duration / 2));
             yield return null;
         }
 
         // Ensure final value is exactly 0
         alienLight.intensity = 0f;
+        alienSpotLight.intensity = 0f;
     }
 
     public void TerminalActivated()
