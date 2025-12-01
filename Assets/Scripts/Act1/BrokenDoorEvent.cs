@@ -42,7 +42,7 @@ public class BrokenDoorEvent : MonoBehaviour
     {
         manager.StartDialogueSequence(5, delay);
 
-        yield return new WaitForSeconds(35f);
+        yield return new WaitForSeconds(40f);
         brokenDoorAudio.Play();
         yield return new WaitForSeconds(3f);
         brokenDoor.SetState(DoorScript.States.Broken);

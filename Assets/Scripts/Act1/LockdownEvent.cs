@@ -341,7 +341,7 @@ public class LockdownEvent : MonoBehaviour
         yield return new WaitForSeconds(4f);
         player.PlayerCutSceneHandler(false);
         StartCoroutine(MoveDoor(gratePos, grateMovePos, 4f, null));
-        dialogueManager.StartDialogueSequence(4, 0f);
+        
         //Open doors in the doors to open array, this is the dining hall to facilities door.
 
         OpenDoors();
@@ -499,7 +499,7 @@ public class LockdownEvent : MonoBehaviour
         //change the lockdown panel and make it interactable
         lockdownPanel.SwitchToDeactivate();
         isActive = true;
-        dialogueManager.StartDialogueSequence(9, 0.5f);
+        
     }
 
 }
