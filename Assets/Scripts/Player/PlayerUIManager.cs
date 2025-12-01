@@ -108,6 +108,8 @@ public class PlayerUIManager : MonoBehaviour
     private RectTransform grabberRectTransform;
     private RectTransform crosshairRectTransform;
 
+    public Collider uiBar;
+
     #region properties
     public bool BarInRaycast
     {
@@ -801,9 +803,12 @@ public class PlayerUIManager : MonoBehaviour
         {
             return;
         }
+
+        uiBar = bar;
+
         if (player.CanGrab)
         {
-            //check if their is a bar in the viewport
+            //check if there is a bar in the viewport
             if (bar != null)
             {
                 //Debug.Log("updateGrabberexecuted");
