@@ -33,6 +33,25 @@ AudioMixerEffectController:
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
+--- !u!243 &-8565019302509613559
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AlienBuzz
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: e241d7177c5ea0b4a8536c10fbaa05bb
+  m_Children: []
+  m_Volume: cc0fa89df49f06c498627034cdad4876
+  m_Pitch: f97d520b65af0c34b99d8d76b07f93aa
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -5154313069903976026}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
 --- !u!243 &-8430559412889440113
 AudioMixerGroupController:
   m_ObjectHideFlags: 0
@@ -260,6 +279,20 @@ AudioMixerEffectController:
   m_Parameters:
   - m_ParameterName: Binaural
     m_GUID: 95f57a127106f694d87af4d39c983a3b
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &-5154313069903976026
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 9ea7525c09045414687a370212c7e69a
+  m_EffectName: Attenuation
+  m_MixLevel: 52c0f4c2061e741478bcbce0358edd17
+  m_Parameters: []
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
@@ -750,6 +783,7 @@ AudioMixerController:
     - 2dfa303783fe8af47b95b154b52b13c6
     - 1b6063b42e04902458e40781385261f0
     - a36dd20e507218f43ab946a16ec824f6
+    - e241d7177c5ea0b4a8536c10fbaa05bb
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -822,6 +856,7 @@ AudioMixerSnapshotController:
     b136d35cc6db1f64697765fbb35d1ece: 7.9871106
     5c8ea29c31bdab44eaa887fbc023863e: -11.400904
     839d59ecb506fc943a0b87a91d3808c4: -15.421318
+    cc0fa89df49f06c498627034cdad4876: -9.833286
     fed0891e43abce147a11482f3717b12b: -7.436929
     970b226e896c4460bb04eed39c80961c: 1
     0fcb1b6e236165f438115cc1f8d89edc: -4.1973577
@@ -1018,6 +1053,7 @@ AudioMixerGroupController:
   m_Children:
   - {fileID: 35100898426074859}
   - {fileID: -5092529737966864261}
+  - {fileID: -8565019302509613559}
   m_Volume: f1d8dd42a0e09c746a628fe44bcb8fef
   m_Pitch: 26c63c1bf0dbaac44857e5ee36207caf
   m_Send: 00000000000000000000000000000000

@@ -45,10 +45,22 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         uiAudio?.PlaySelectSound();
         GlobalSaveManager.LoadFromSave = false;
         GlobalSaveManager.DeleteTempFiles();
-        SceneManager.LoadScene("Level1New");
+
+        // Use fade transition instead of direct scene load
+        if (SceneFadeTransition.Instance != null)
+        {
+            SceneFadeTransition.Instance.LoadSceneWithFade("Level1New");
+        }
+        else
+        {
+            SceneManager.LoadScene("Level1New");
+        }
     }
 
     /// <summary>
@@ -58,12 +70,25 @@ public class MainMenu : MonoBehaviour
     {
         if (continueButtonEnabled)
         {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
             uiAudio?.PlaySelectSound();
             GlobalSaveManager.LoadFromSave = true;
             GlobalSaveManager.DeleteTempFiles();
             GlobalSaveManager.OverwriteTempFiles();
-            SceneManager.LoadScene("Level1New");
-        } else
+
+            // Use fade transition instead of direct scene load
+            if (SceneFadeTransition.Instance != null)
+            {
+                SceneFadeTransition.Instance.LoadSceneWithFade("Level1New");
+            }
+            else
+            {
+                SceneManager.LoadScene("Level1New");
+            }
+        }
+        else
         {
             uiAudio?.PlayBackSound();
         }
