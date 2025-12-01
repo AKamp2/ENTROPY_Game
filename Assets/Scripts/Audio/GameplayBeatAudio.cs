@@ -119,12 +119,12 @@ public class GameplayBeatAudio : MonoBehaviour
         alienSource.Play();
 
         yield return new WaitForSeconds(5f);
-        alienSource2.clip = alienBuzz;
-        StartCoroutine(Fade(alienSource2, 0, 2, true, 1f));
-        alienSource2.Play();
+        //alienSource2.clip = alienBuzz;
+        //StartCoroutine(Fade(alienSource2, 0, 2, true, 1f));
+        //alienSource2.Play();
 
         yield return new WaitForSeconds(10f);
-        StartCoroutine(Fade(alienSource2, 0, 2, false, 1f));
+        //StartCoroutine(Fade(alienSource2, 0, 2, false, 1f));
         alienSource.clip = alien2;
         alienSource.Play();
 

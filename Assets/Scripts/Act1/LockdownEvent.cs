@@ -442,30 +442,49 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator PlayAlienAnimation()
     {
         alienBody.SetActive(true);
-        alienLight.intensity = 10f;
 
-        yield return new WaitForSeconds(0.3f);
-
-        alienLight.intensity = 0f;
+        StartCoroutine(FadeAlienLight());
 
         alienAnimator.SetTrigger("PlayLockdown");
 
         audioManager.playAlienRunAway();
 
-        yield return new WaitForSeconds(6.9f);
+        yield return new WaitForSeconds(29f);
 
         
         alienBody.SetActive(false);
         alienAnimator.SetTrigger("ReturnToIdle");
 
-        alienLight.intensity = 10f;
 
-        yield return new WaitForSeconds(0.1f);
 
+
+    }
+
+    IEnumerator FadeAlienLight()
+    {
+        float duration = 2f;
+        float elapsed = 0f;
+
+        // Fade from 0 to 10
+        while (elapsed < duration / 2)
+        {
+            elapsed += Time.deltaTime;
+            alienLight.intensity = Mathf.Lerp(0f, 20f, elapsed / (duration / 2));
+            yield return null;
+        }
+
+        elapsed = 0f;
+
+        // Fade from 10 back to 0
+        while (elapsed < duration / 2)
+        {
+            elapsed += Time.deltaTime;
+            alienLight.intensity = Mathf.Lerp(20f, 0f, elapsed / (duration / 2));
+            yield return null;
+        }
+
+        // Ensure final value is exactly 0
         alienLight.intensity = 0f;
-
-
-
     }
 
     public void TerminalActivated()
