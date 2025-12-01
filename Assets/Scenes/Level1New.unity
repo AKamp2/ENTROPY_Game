@@ -3118,7 +3118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.59130734, b: 0.7075472, a: 0.36078432}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4844,7 +4844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -11690,7 +11690,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Left click
+  m_text: left click
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -11699,8 +11699,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -29398,6 +29398,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922700790}
   m_Mesh: {fileID: 2239598380301062371, guid: fb6ea6ee245edd0478eb36f0a682ca92, type: 3}
+--- !u!1 &923761292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 923761293}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &923761293
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923761292}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1679673153}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &923910660
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32675,7 +32706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.64705884}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -32753,6 +32784,72 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1094303085
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1094303086}
+  - component: {fileID: 1094303088}
+  - component: {fileID: 1094303087}
+  m_Layer: 0
+  m_Name: EndOfLevel1Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1094303086
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094303085}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 22.09, y: 3.63, z: 10.89}
+  m_LocalScale: {x: 3.0448, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1679673153}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1094303087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094303085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9d65f8136c3ce4b8967e20ceee1f11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &1094303088
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094303085}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.8903469, y: 6.0850215, z: 9.645093}
+  m_Center: {x: 0.18043591, y: 0.10879854, z: -1.2062674}
 --- !u!1 &1097116306
 GameObject:
   m_ObjectHideFlags: 0
@@ -34103,9 +34200,9 @@ Transform:
   m_Children:
   - {fileID: 178424442}
   - {fileID: 8327659007309216022}
-  - {fileID: 1679673153}
   - {fileID: 631252248}
   - {fileID: 269946595}
+  - {fileID: 1679673153}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1169560662
@@ -35489,7 +35586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -42137,7 +42234,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hold to open wrist monitor
+  m_text: tap open wrist monitor
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -42146,8 +42243,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -42170,7 +42267,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -43775,7 +43872,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Use stim
+  m_text: administer low-impact convulsive shock
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -43784,8 +43881,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -43808,7 +43905,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -46546,7 +46643,7 @@ GameObject:
   - component: {fileID: 1628078938}
   - component: {fileID: 1628078939}
   m_Layer: 0
-  m_Name: LifeRaftDialogueAudioSource
+  m_Name: EndOfLevelDialogueAudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46561,7 +46658,7 @@ Transform:
   m_GameObject: {fileID: 1628078937}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.654, y: 12.927, z: -9.668}
+  m_LocalPosition: {x: 42.569, y: 3.814, z: 0.766}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -47998,6 +48095,8 @@ Transform:
   - {fileID: 2066427519}
   - {fileID: 1215338197}
   - {fileID: 325968972}
+  - {fileID: 923761293}
+  - {fileID: 1094303086}
   m_Father: {fileID: 1165611647}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1679673154
@@ -48024,6 +48123,7 @@ MonoBehaviour:
   body: {fileID: 517179767}
   bodyRb: {fileID: 1010082073}
   tempCollider: {fileID: 947212520}
+  colliderTriggerEnd: {fileID: 1094303085}
   waitForGrabbingBar: 0
   escapePodLights:
   - {fileID: 1184000330}
@@ -49836,7 +49936,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -51546,7 +51646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.59130734, b: 0.7075472, a: 0.59607846}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -69821,8 +69921,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -71114,7 +71214,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press F
+  m_text: press F
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -71123,8 +71223,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -71269,8 +71369,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -71408,7 +71508,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: While grabbing, look around and use WASD
+  m_text: while grabbing, use WASD
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -71417,8 +71517,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -71571,8 +71671,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -71740,7 +71840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueSequences:
   - dialogues:
-    - characterName: ALAN
+    - characterName: alan:\
       dialogueLines:
       - " Good, Dr. Sanchez, you\u2019re finally awake."
       - 'Unfortunately, this will not be a pleasant wake-up call. '
@@ -71749,8 +71849,9 @@ MonoBehaviour:
       advancesTutorial: 0
       skipWithTutorial: 1
       incrementsDialogue: 0
-      delayBetweenDialogues: 0.5
-    - characterName: ALAN
+      delayBetweenDialogues: 2
+      delayBetweenLines: 0.5
+    - characterName: alan:\
       dialogueLines:
       - However, in an effort to maintain procedures, we must first complete preliminary
         testing.
@@ -71758,12 +71859,14 @@ MonoBehaviour:
       - 'Remember, you are in zero gravity. '
       - 'Beginning <Post-Cryo Reacclimation Exam>  '
       - 'Exam part A: <Roll Out of Bed Exam> begin.'
+      - Please start by grabbing onto a bar wirhin reach.
       audioClip: {fileID: 0}
       advancesTutorial: 1
       skipWithTutorial: 1
       incrementsDialogue: 0
-      delayBetweenDialogues: 0.5
-    - characterName: ALAN
+      delayBetweenDialogues: 2
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - "To re-acclimate to our ship\u2019s environment. Roll 180 degrees."
       audioClip: {fileID: 0}
@@ -71771,7 +71874,8 @@ MonoBehaviour:
       skipWithTutorial: 1
       incrementsDialogue: 0
       delayBetweenDialogues: 0
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - Now, roll yourself back, please.
       audioClip: {fileID: 0}
@@ -71779,73 +71883,78 @@ MonoBehaviour:
       skipWithTutorial: 1
       incrementsDialogue: 0
       delayBetweenDialogues: 0
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
-      - 'Exam part A: <Roll Out of Bed> complete. Getting better acquainted?'
-      - Remember, if you ever feel uncomfortable. It is advised to stop, inhale,
-        and recollect yourself.
+      - 'Exam part A: <Roll Out of Bed> complete. '
+      - Getting better acquainted?
+      - 'Remember, if you ever feel uncomfortable. '
+      - It is advised to stop, take a breath, and roll to a view that feels best.
       audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 1
       incrementsDialogue: 0
-      delayBetweenDialogues: 0
-    - characterName: ALAN
+      delayBetweenDialogues: 2
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - ' Proceeding with exam part B: <Dexterity Evaluation>'
       - Please grab and hold onto a bar within your reach.
+      - And get comfortable moving around the chamber.
       audioClip: {fileID: 0}
       advancesTutorial: 1
       skipWithTutorial: 1
       incrementsDialogue: 0
-      delayBetweenDialogues: 0
-    - characterName: ALAN
-      dialogueLines:
-      - Now, take some time to get comfortable moving around.
-      audioClip: {fileID: 0}
-      advancesTutorial: 1
-      skipWithTutorial: 1
-      incrementsDialogue: 0
-      delayBetweenDialogues: 0.5
-    - characterName: ALAN
+      delayBetweenDialogues: 2
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - Exam part B complete.
       - Dr. Valentina Sanchez. <Post-Cryo Reacclimation Exam> score comes in at
       - 66.57%.......
       - Definitely some room for improvement.
       - However, we must move on. There are important matters to disclose.
-      - 'Do feel free to continue moving around, but please pay attention. '
+      - Feel free to continue moving around,
+      - 'but please pay attention. '
       audioClip: {fileID: 0}
       advancesTutorial: 1
       skipWithTutorial: 1
       incrementsDialogue: 0
-      delayBetweenDialogues: 0.5
-    - characterName: ALAN
+      delayBetweenDialogues: 2
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
-      - Now, on to the news.
-      - Due to unknown circumstances, the alan:\ system has gone through a full reboot.
+      - On to the news.
+      - 'Due to unknown circumstances, '
+      - the alan:\ system has gone through a full reboot.
       - Primary alan:\ functions are completely severed.
-      - 'While this is a sporadic occurrence, please do not be alarmed just yet.  '
+      - 'While this is a unusual occurrence, '
+      - 'please do not be alarmed just yet.  '
       - "Printing and reviewing MODUS log\u2026 "
       audioClip: {fileID: 0}
       advancesTutorial: 1
       skipWithTutorial: 1
       incrementsDialogue: 0
-      delayBetweenDialogues: 0.5
-    - characterName: ALAN
+      delayBetweenDialogues: 2
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
-      - This print is a restart report for the alan:\ system.
-      - But there is no information on what caused the system to be restarted.
+      - ...
+      - There is no information on what caused the system to be restarted.
+      - 
       - In short, we both have awoken equally lost.
-      - Apologies, Dr. Sanchez. This is not usual. Admittedly a bit concerning.
+      - 'Apologies, Dr. Sanchez. '
+      - Admittedly, this is a bit concerning.
       - Taking time to parse a plan...
       audioClip: {fileID: 0}
       advancesTutorial: 1
       skipWithTutorial: 1
       incrementsDialogue: 0
-      delayBetweenDialogues: 3
+      delayBetweenDialogues: 2
+      delayBetweenLines: 1
     audioSource: {fileID: 1641590646}
   - dialogues:
-    - characterName: ALAN
+    - characterName: alan:\
       dialogueLines:
       - Procedure instructs us to carry out a manual restart across the ship
       - Reconnect all alan:\ terminals, one by one
@@ -71858,9 +71967,10 @@ MonoBehaviour:
       skipWithTutorial: 1
       incrementsDialogue: 0
       delayBetweenDialogues: 0.5
+      delayBetweenLines: 1
     audioSource: {fileID: 1641590646}
   - dialogues:
-    - characterName: ALAN
+    - characterName: alan:\
       dialogueLines:
       - 'alan:\ restored, Thank you, Dr. Valentina Sanchez! :] '
       audioClip: {fileID: 0}
@@ -71868,7 +71978,8 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 1
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - Personal vital records are viewable again. You seem a little depleted.
       audioClip: {fileID: 0}
@@ -71876,7 +71987,8 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 1
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - 'A common side effect. You have been asleep for some time. '
       audioClip: {fileID: 0}
@@ -71884,7 +71996,8 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 1
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - If we go through Medical_Bay, we can get you a remedy.
       audioClip: {fileID: 0}
@@ -71892,9 +72005,10 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 1
+      delayBetweenLines: 1
     audioSource: {fileID: 1448511332}
   - dialogues:
-    - characterName: ALAN
+    - characterName: alan:\
       dialogueLines:
       - ' Medical_Bay Overhead is back to alan:\ support. Now we may utilize the
         amenities.'
@@ -71904,9 +72018,10 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 0
+      delayBetweenLines: 1
     audioSource: {fileID: 562700345}
   - dialogues:
-    - characterName: ALAN
+    - characterName: alan:\
       dialogueLines:
       - That ought to make you feel chipper.
       - Ready to push on to DIning_Room?
@@ -71916,23 +72031,26 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 0
+      delayBetweenLines: 1
     audioSource: {fileID: 562700345}
   - dialogues:
-    - characterName: ALAN
+    - characterName: alan:\
       dialogueLines:
       - Congratulations, Dr. Sanchez. all alan:\ Living_Quarters terminals are back
         online. And in proper working order. Admittedly, better than expected.
-      - Initiating a query to find out more about the emergency protocol across the
-        ship.
+      - Initiating a query to find out more about the emergency protocol.
+      - ...
       - Nothing found. Disappointing for sure.
-      - "Afraid we\u2019ll have to keep searching. Proceed to Vocational_Wing. "
+      - "Afraid we\u2019ll have to keep searching. "
+      - 'Go through the door behind you to Vocational_Wing. '
       - ...
       audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 1.5
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - Crap, a manual lockdown is currently in place, blocking us from leaving Living_Quarters.
       - The lockdown was placed manually in the Server_Farm.
@@ -71945,32 +72063,36 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 2
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
-      - "Got an idea! Surging the door\u2019s activation devices. Hopefully, it will
-        force it open. "
+      - 'Got an idea! '
+      - "Surging the door\u2019s activation devices, hopefully, will force it open. "
       audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 4
-    - characterName: ALAN
+      delayBetweenLines: 1
+    - characterName: alan:\
       dialogueLines:
       - Oops, that was not intended.
-      - "You\u2019ll need to try to make it through. Do be careful. "
+      - "Afraid you\u2019ll need to try to make it through."
+      - 'Do be careful. '
       audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 0.5
+      delayBetweenLines: 1
     audioSource: {fileID: 2128927597}
   - dialogues:
-    - characterName: ALAN
+    - characterName: alan:\
       dialogueLines:
-      - Congratulations once again, the manual lockdown has been lifted.
-      - 'We may continue next to Vocational_Wing to investigate the emergency protocol
+      - Congratulations, the manual lockdown has been lifted.
+      - 'We now can continue Vocational_Wing to investigate the emergency protocol
         further. '
-      - "By the way, pairing to Dr. Tadesse\u2019s wrist monitor performed successfully."
+      - "Side bar, pairing to Dr. Tadesse\u2019s wrist monitor was successful."
       - 'Vitals. Untraceable. '
       - Condolences, Dr. Sanchez. Proceed with caution.
       audioClip: {fileID: 0}
@@ -71978,6 +72100,7 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 0
+      delayBetweenLines: 1
     audioSource: {fileID: 1628078939}
   failureDialogues:
     dialogues:
@@ -71993,6 +72116,7 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 1
       delayBetweenDialogues: 1
+      delayBetweenLines: 1
     - characterName: ALAN
       dialogueLines:
       - Very funny, Dr. Sanchez. There are many ways to do the same thing.
@@ -72002,6 +72126,7 @@ MonoBehaviour:
       skipWithTutorial: 0
       incrementsDialogue: 0
       delayBetweenDialogues: 1
+      delayBetweenLines: 1
     audioSource: {fileID: 0}
   dialogueCanvas: {fileID: 1886071226749602260}
   dialogueCanvasGroup: {fileID: 2517449878438318875}
@@ -72038,7 +72163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -72324,8 +72449,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4291804251
+  m_fontColor: {r: 0.35590956, g: 0.7379491, b: 0.8113208, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -72903,7 +73028,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -74043,7 +74168,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press space
+  m_text: press Space
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -74052,8 +74177,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -74160,8 +74285,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -147, y: -137}
-  m_SizeDelta: {x: 800, y: 80}
+  m_AnchoredPosition: {x: -247.50537, y: -137}
+  m_SizeDelta: {x: 598.9893, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2302785597120008371
 GameObject:
@@ -74436,7 +74561,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press and hold
+  m_text: press and hold
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -74445,8 +74570,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -74469,7 +74594,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -74845,7 +74970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -75511,7 +75636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -75588,8 +75713,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -75613,7 +75738,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -76103,7 +76228,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -76377,8 +76502,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4291804251
+  m_fontColor: {r: 0.35590956, g: 0.7379491, b: 0.8113208, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -76760,7 +76885,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ALAN
+  m_text: alan:\
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 95702b758710aa5419e7e2477e684178, type: 2}
   m_sharedMaterial: {fileID: -6118342966491494153, guid: 95702b758710aa5419e7e2477e684178, type: 2}
@@ -76787,13 +76912,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46
-  m_fontSizeBase: 46
+  m_fontSize: 32
+  m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -76845,10 +76970,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 8443458984427088238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -839}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 714, y: -169}
+  m_SizeDelta: {x: 227.92212, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &4294314921150980339
 RectTransform:
@@ -76910,8 +77035,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4291804251
+  m_fontColor: {r: 0.35590956, g: 0.7379491, b: 0.8113208, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -77052,7 +77177,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -77132,7 +77257,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hold right click
+  m_text: right click-and-hold
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -77141,8 +77266,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -77166,7 +77291,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -77255,8 +77380,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4291804251
+  m_fontColor: {r: 0.35590956, g: 0.7379491, b: 0.8113208, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -77519,16 +77644,15 @@ RectTransform:
   m_GameObject: {fileID: 3568417689469604040}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6242187, y: 0.53748, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5547762745035093569}
+  m_Children: []
   m_Father: {fileID: 8443458984427088238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 18.99707, y: -409}
-  m_SizeDelta: {x: -776.828, y: -800}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 966, y: -221.6967}
+  m_SizeDelta: {x: 1143.172, y: 322.2108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &5001619850196510997
 PrefabInstance:
@@ -77689,12 +77813,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
+  m_fontSize: 28
   m_fontSizeBase: 34
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 12
-  m_fontSizeMax: 32
+  m_fontSizeMin: 10
+  m_fontSizeMax: 28
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -78036,12 +78160,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4944556782485347239}
+  m_Father: {fileID: 8443458984427088238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -18}
-  m_SizeDelta: {x: 831.1172, y: 150}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 1049.649, y: -207.6289}
+  m_SizeDelta: {x: 522.415, y: 119.2579}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!136 &5554847401302445143 stripped
 CapsuleCollider:
@@ -78872,8 +78996,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 329, y: -137.00006}
-  m_SizeDelta: {x: 800, y: 80}
+  m_AnchoredPosition: {x: 390.49, y: -137}
+  m_SizeDelta: {x: 677.01, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6033363273455255260
 GameObject:
@@ -79031,7 +79155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -79169,7 +79293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -79282,8 +79406,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -64.644}
-  m_SizeDelta: {x: 38.0968, y: 37.0878}
+  m_AnchoredPosition: {x: -0.000013351, y: -32.4}
+  m_SizeDelta: {x: 19.9342, y: 19.4062}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6479176489306626201
 GameObject:
@@ -79431,8 +79555,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000029087067, y: 0}
-  m_SizeDelta: {x: 10, y: 10}
+  m_AnchoredPosition: {x: 0.0000039339, y: 0.0000091791}
+  m_SizeDelta: {x: 7.3774, y: 7.3774}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &6636311797193733779
 RectTransform:
@@ -79765,7 +79889,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.11764706}
+  m_Color: {r: 0, g: 0.1440454, b: 0.1981132, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -80043,8 +80167,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -80738,7 +80862,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press and hold
+  m_text: press and hold
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -80747,8 +80871,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -80771,7 +80895,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -81487,8 +81611,9 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4292340829170992512}
   - {fileID: 4944556782485347239}
+  - {fileID: 4292340829170992512}
+  - {fileID: 5547762745035093569}
   m_Father: {fileID: 1683406266}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -82061,7 +82186,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
+      propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
       propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
+      propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
@@ -82069,12 +82202,32 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 269946596}
     - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
+      propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 269946596}
+    - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
+      propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
       propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: StartBrokenDoorBeat
       objectReference: {fileID: 0}
     - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
+      propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
       propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: BrokenDoorEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
+      propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: BrokenDoorEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445929492877617362, guid: 0fa769b896c9e69479acfd63b62ff727, type: 3}
+      propertyPath: onUploadComplete.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -82439,8 +82592,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292922993
+  m_fontColor: {r: 0.44281775, g: 0.8061837, b: 0.8773585, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

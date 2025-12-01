@@ -392,7 +392,7 @@ public class DialogueManager : MonoBehaviour
             // Small buffer between lines
             if (lineIndex < d.dialogueLines.Length - 1)
             {
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(d.delayBetweenLines);
             }
         }
 

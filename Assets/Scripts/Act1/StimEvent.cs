@@ -67,8 +67,6 @@ public class StimEvent : MonoBehaviour
 
         yield return StartCoroutine(doorToOpen.PlayDoorAlarm(1.2f));
         doorToOpen.SetState(DoorScript.States.Closed);
-
-
     }
 
     private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)
