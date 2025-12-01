@@ -1391,43 +1391,64 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
       propertyPath: m_Color.b
-      value: 0.7169812
+      value: 0.36078432
       objectReference: {fileID: 0}
     - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
       propertyPath: m_Color.g
-      value: 0.69907653
+      value: 0.81960785
       objectReference: {fileID: 0}
     - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
       propertyPath: m_Color.r
-      value: 0.5647918
+      value: 0.7647059
       objectReference: {fileID: 0}
     - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
-      propertyPath: m_Lightmapping
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
-      propertyPath: m_BounceIntensity
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
-      propertyPath: m_BoundingSphereOverride.w
-      value: 4.3e-44
-      objectReference: {fileID: 0}
-    - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
-      propertyPath: m_BoundingSphereOverride.x
-      value: 8.06e-43
-      objectReference: {fileID: 0}
-    - target: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
-      propertyPath: m_BoundingSphereOverride.y
-      value: 9.8e-44
+      propertyPath: m_Intensity
+      value: 1.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 5386715937733104226, guid: 3c901128268e940429c172411294d6e9, type: 3}
     - {fileID: 1726041744454709664, guid: 3c901128268e940429c172411294d6e9, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 932288554841194501, guid: 3c901128268e940429c172411294d6e9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8397579519123832078}
   m_SourcePrefab: {fileID: 100100000, guid: 3c901128268e940429c172411294d6e9, type: 3}
+--- !u!108 &3640817406049852605 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 6526277244496121240, guid: 3c901128268e940429c172411294d6e9, type: 3}
+  m_PrefabInstance: {fileID: 7500523865831969061}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7270799051991929120 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 932288554841194501, guid: 3c901128268e940429c172411294d6e9, type: 3}
+  m_PrefabInstance: {fileID: 7500523865831969061}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8397579519123832078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7270799051991929120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50efe8e2d0dc02b4092f1ed7d489ab8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spotLight: {fileID: 3640817406049852605}
+  maxOnDuration: 4
+  minOnDuration: 1
+  maxOffDuration: 0.4
+  minOffDuration: 0.1
+  defaultIntensity: 1.1
+  maxIntensity: 1.1
+  minIntensity: 0.7
+  lightBase: {fileID: 0}
+  onMaterial: {fileID: 0}
+  offMaterial: {fileID: 0}
+  useSwapMaterial: 0
 --- !u!4 &8446583946039647319 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2103038019567406450, guid: 3c901128268e940429c172411294d6e9, type: 3}

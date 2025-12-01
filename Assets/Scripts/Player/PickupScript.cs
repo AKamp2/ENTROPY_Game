@@ -232,11 +232,10 @@ public class PickupScript : MonoBehaviour
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
         //heldObj.GetComponent<Collider>().enabled = true;
 
-        Debug.Log(objectLayer.value);
         heldObj.layer = 9; //object assigned back to default layer
         foreach (Transform child in heldObj.GetComponentInChildren<Transform>())
         {
-            child.gameObject.layer = 9;
+            child.gameObject.layer = 0;
         }
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
@@ -265,6 +264,10 @@ public class PickupScript : MonoBehaviour
         Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, false);
         //heldObj.GetComponent<Collider>().enabled = true;
         heldObj.layer = 9;
+        foreach (Transform child in heldObj.GetComponentInChildren<Transform>())
+        {
+            child.gameObject.layer = 0;
+        }
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform;
         heldObjRb.AddForce(cam.transform.forward.normalized * throwForce, ForceMode.VelocityChange);

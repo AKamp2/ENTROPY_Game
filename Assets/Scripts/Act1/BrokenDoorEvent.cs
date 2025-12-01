@@ -66,7 +66,7 @@ public class BrokenDoorEvent : MonoBehaviour
     private IEnumerator MalfunctionDispenser()
     {
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(8f);
         sparksToEnable.active = true;
 
         while (true)
