@@ -124,53 +124,53 @@ public class WristMonitor : MonoBehaviour
     /// <summary> 
     /// Public method called by the zero gravity controller to turn the monitor on and off
     /// </summary>
-    public void HandleWristMonitorToggle()
-    {
-        if (Keyboard.current.tabKey.isPressed && !isActive)
-        {
-            if (tabCanvasGroup.alpha < 1)
-            {
-                tabCanvasGroup.alpha = 1f;
-            }
+    //public void HandleWristMonitorToggle()
+    //{
+    //    if (Keyboard.current.tabKey.isPressed && !isActive)
+    //    {
+    //        if (tabCanvasGroup.alpha < 1)
+    //        {
+    //            tabCanvasGroup.alpha = 1f;
+    //        }
 
-            skipProgressSlider.GetComponent<CanvasGroup>().alpha = 1.0f;
-            currentHoldTime += Time.deltaTime;
+    //        skipProgressSlider.GetComponent<CanvasGroup>().alpha = 1.0f;
+    //        currentHoldTime += Time.deltaTime;
 
-            // Update slider progress
-            if (skipProgressSlider != null)
-            {
-                skipProgressSlider.value = Mathf.Clamp01(currentHoldTime / holdDuration);
-            }
+    //        // Update slider progress
+    //        if (skipProgressSlider != null)
+    //        {
+    //            skipProgressSlider.value = Mathf.Clamp01(currentHoldTime / holdDuration);
+    //        }
 
-            // Check if hold duration is complete
-            if (currentHoldTime >= holdDuration)
-            {
-                skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
-                FadeOut(tabCanvasGroup);
-                isActive = true;
-                // Reset after skipping
-                currentHoldTime = 0f;
-                if (skipProgressSlider != null)
-                {
-                    skipProgressSlider.value = 0f;
-                }
-            }
-        }
-        else if (!Keyboard.current.tabKey.isPressed && !isActive) 
-        {
-            skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
-            // Reset when key is released
-            if (currentHoldTime > 0f)
-            {
-                currentHoldTime = 0f;
-                if (skipProgressSlider != null)
-                {
-                    skipProgressSlider.value = 0f;
-                }
-            }
-            isActive = false;
-        }
-    }
+    //        // Check if hold duration is complete
+    //        if (currentHoldTime >= holdDuration)
+    //        {
+    //            skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
+    //            FadeOut(tabCanvasGroup);
+    //            isActive = true;
+    //            // Reset after skipping
+    //            currentHoldTime = 0f;
+    //            if (skipProgressSlider != null)
+    //            {
+    //                skipProgressSlider.value = 0f;
+    //            }
+    //        }
+    //    }
+    //    else if (!Keyboard.current.tabKey.isPressed && !isActive) 
+    //    {
+    //        skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
+    //        // Reset when key is released
+    //        if (currentHoldTime > 0f)
+    //        {
+    //            currentHoldTime = 0f;
+    //            if (skipProgressSlider != null)
+    //            {
+    //                skipProgressSlider.value = 0f;
+    //            }
+    //        }
+    //        isActive = false;
+    //    }
+    //}
 
     public void CloseWristMonitor(InputAction.CallbackContext context)
     {
@@ -202,21 +202,33 @@ public class WristMonitor : MonoBehaviour
         canvasGroup.alpha = endAlpha; // Ensure it's set to the final alpha
     }
 
+    public void ToggleMonitor()
+    {
+        if (!wristMonitorObject.activeSelf)
+        {
+            isActive = !isActive;
+        }
+    }
+
     /// <summary>
     /// Updates health text as well as the current objective. 
     /// </summary>
     private void FixedUpdate()
     {
-        if (!wristMonitorObject.activeSelf)
-        {
-            HandleWristMonitorToggle();
-        }
         if (isActive)
         {
             wristMonitorCanvasGroup.alpha = 1f;
             UpdateHealthAndInfo();
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            if (player.IsGrabbing)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
+            }
         }
         else
         {
