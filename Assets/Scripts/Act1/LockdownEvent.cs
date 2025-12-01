@@ -98,6 +98,9 @@ public class LockdownEvent : MonoBehaviour
     public GameObject alienBody;
     public Animator alienAnimator;
     public Light alienLight;
+    public Light alienSpotLight;
+
+    public Transform panelMovePos;
 
     [SerializeField] private ServerProgressBars serverProgress;
     [SerializeField] private Terminal serverTerminal;
@@ -262,6 +265,7 @@ public class LockdownEvent : MonoBehaviour
         if (canPull && isActive)
         {
             audioManager.PlayButtonClick();
+            StartCoroutine(LerpPosition(panelMovePos.position, 1f));
             buttonLight.intensity = 0;
             // open the broken door first
             //brokenDoor.SetState(DoorScript.States.Open);
@@ -310,7 +314,7 @@ public class LockdownEvent : MonoBehaviour
         //audioManager.playAlienRunAway();
         StartCoroutine(PlayAlienAnimation());
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(26f);
 
         audioManager.playPowerOn();
         serverProgress.Reboot();
@@ -468,30 +472,52 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator PlayAlienAnimation()
     {
         alienBody.SetActive(true);
-        alienLight.intensity = 10f;
 
-        yield return new WaitForSeconds(0.3f);
-
-        alienLight.intensity = 0f;
+        StartCoroutine(FadeAlienLight());
 
         alienAnimator.SetTrigger("PlayLockdown");
 
         audioManager.playAlienRunAway();
 
-        yield return new WaitForSeconds(6.9f);
+        yield return new WaitForSeconds(29f);
 
         
         alienBody.SetActive(false);
         alienAnimator.SetTrigger("ReturnToIdle");
 
-        alienLight.intensity = 10f;
 
-        yield return new WaitForSeconds(0.1f);
 
+
+    }
+
+    IEnumerator FadeAlienLight()
+    {
+        float duration = 2f;
+        float elapsed = 0f;
+
+        // Fade from 0 to 10
+        while (elapsed < duration / 2)
+        {
+            elapsed += Time.deltaTime;
+            alienLight.intensity = Mathf.Lerp(0f, 30f, elapsed / (duration / 2));
+            alienSpotLight.intensity = Mathf.Lerp(0f, 30f, elapsed / (duration / 2));
+            yield return null;
+        }
+
+        elapsed = 0f;
+
+        // Fade from 10 back to 0
+        while (elapsed < duration / 2)
+        {
+            elapsed += Time.deltaTime;
+            alienLight.intensity = Mathf.Lerp(30f, 0f, elapsed / (duration / 2));
+            alienSpotLight.intensity = Mathf.Lerp(30f, 0f, elapsed / (duration / 2));
+            yield return null;
+        }
+
+        // Ensure final value is exactly 0
         alienLight.intensity = 0f;
-
-
-
+        alienSpotLight.intensity = 0f;
     }
 
     public void TerminalActivated()
@@ -500,6 +526,27 @@ public class LockdownEvent : MonoBehaviour
         lockdownPanel.SwitchToDeactivate();
         isActive = true;
         dialogueManager.StartDialogueSequence(9, 0.5f);
+    }
+
+    /// <summary>
+    /// Method for moving the player to the panel position;
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    private IEnumerator LerpPosition(Vector3 destination, float duration)
+    {
+        Vector3 start = player.transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            player.transform.position = Vector3.Lerp(start, destination, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        player.transform.position = destination;
     }
 
 }
