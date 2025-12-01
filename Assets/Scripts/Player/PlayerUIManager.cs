@@ -525,7 +525,7 @@ public class PlayerUIManager : MonoBehaviour
             if (lockdownEvent.IsActive)
             {
                 lockdownEvent.CanPull = true;
-                grabUIText.text = "Deactivate manual lockdown";
+                grabUIText.text = "deactivate manual lockdown";
                 inputIndicator.sprite = keyFIndicator;
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
@@ -540,7 +540,7 @@ public class PlayerUIManager : MonoBehaviour
             if (dormHallEvent.IsGrabbable)
             {
                 dormHallEvent.CanGrab = true;
-                grabUIText.text = "Take wrist monitor";
+                grabUIText.text = "take wrist monitor";
                 inputIndicator.sprite = keyFIndicator;
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
@@ -574,7 +574,7 @@ public class PlayerUIManager : MonoBehaviour
 
                         lookingAtStim = true;
                         stim.CanRefill = true;
-                        grabUIText.text = "Hold to refill stim";
+                        grabUIText.text = "hold to refill stim";
                         inputIndicator.sprite = keyFIndicator;
                         inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
 
@@ -582,7 +582,7 @@ public class PlayerUIManager : MonoBehaviour
                     else
                     {
                         stim.CanRefill = false;
-                        grabUIText.text = "Stims Full";
+                        grabUIText.text = "stims full";
                         inputIndicator.sprite = null;
                         inputIndicator.color = new Color(0, 0, 0, 0);
                     }
@@ -613,7 +613,7 @@ public class PlayerUIManager : MonoBehaviour
                 terminalManager.CurrentTerminal = terminal;
                 if (!wristMonitor.HasWristMonitor)
                 {
-                    grabUIText.text = "Requires wrist monitor";
+                    grabUIText.text = "requires wrist monitor";
                     inputIndicator.sprite = null;
                     inputIndicator.color = new Color(0, 0, 0, 0);
                     return;
@@ -626,7 +626,7 @@ public class PlayerUIManager : MonoBehaviour
                 }
                 else
                 {
-                    grabUIText.text = "Press to reconnect ALAN";
+                    grabUIText.text = @"press to reconnect alan:\";
                     terminal.isLookedAt = true;
                     inputIndicator.sprite = keyFIndicator;
                     inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
