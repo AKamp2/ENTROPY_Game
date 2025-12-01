@@ -35,8 +35,7 @@ public class BrokenDoorEvent : MonoBehaviour
         StartCoroutine(BrokenDoorBeat());
         stingerManager.BrokenDoorStingerTriggered();
         //flicker lights
-        lightManager.FlickerLights(LightLocation.Dining, 1.0f, 2.0f, true);
-        
+        StartCoroutine(lightManager.FlickerLights(LightLocation.Dining, 1.0f, 2.5f, true));
     }
 
     private IEnumerator BrokenDoorBeat()
