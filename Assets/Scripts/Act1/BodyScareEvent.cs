@@ -191,7 +191,7 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
             spark.SetActive(false);
         }
 
-        audioManager.playBodyStinger();
+        //audioManager.playBodyStinger();
 
         yield return StartCoroutine(lightManager.FlickerLights(LightLocation.EscapePod, duration, 3.0f, false));
         StartCoroutine(lightManager.FlickerLightsForever(LightLocation.EscapePod));

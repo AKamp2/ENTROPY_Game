@@ -8,10 +8,12 @@ public class StingerManager : MonoBehaviour
     [SerializeField] private AudioClip dormRoomStingerClip;
     [SerializeField] private AudioClip brokenDoorStingerClip;
     [SerializeField] private AudioClip explosionClip;
+    [SerializeField] private AudioClip bodyScareStingerClip;
     [SerializeField] private AudioSource tutorialStingerSource;
     [SerializeField] private AudioSource dormRoomStingerSource;
     [SerializeField] private AudioSource brokenDoorStingerSource;
     [SerializeField] private AudioSource explosionSource;
+    [SerializeField] private AudioSource bodyScareStingerSource;
 
     [SerializeField] private int priority = 10;
 
@@ -127,6 +129,16 @@ public class StingerManager : MonoBehaviour
         explosionSource.Play();
 
         StartCoroutine(FadeAudioSource(explosionSource, 0f, 1f, 4f));
+    }
+
+    public void PlayBodyScare()
+        {
+        Debug.Log("Playing body scare stinger");
+         bodyScareStingerSource.priority = priority;
+         bodyScareStingerSource.clip = bodyScareStingerClip;
+         bodyScareStingerSource.loop = false;
+         bodyScareStingerSource.Play();
+
     }
 
     public void PlayDormRoomStinger()

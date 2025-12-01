@@ -13,7 +13,7 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioSource grateSource;
 
     [Header("SFX Clips")]
-    public AudioClip bodyFoundStinger;
+    //public AudioClip bodyFoundStinger;
     public AudioClip powerCutSFX;
     public AudioClip powerOnSFX;
     public AudioClip takeItem;
@@ -61,10 +61,10 @@ public class GameplayBeatAudio : MonoBehaviour
         bodyStingerSource.PlayOneShot(takeItem);
     }
 
-    public void playBodyStinger()
+/*    public void playBodyStinger()
     {
         bodyStingerSource.PlayOneShot(bodyFoundStinger);
-    }
+    }*/
 
     public void playPowerCut()
     {
