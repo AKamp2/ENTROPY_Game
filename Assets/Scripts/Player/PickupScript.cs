@@ -197,6 +197,10 @@ public class PickupScript : MonoBehaviour
             heldObjRb.isKinematic = true;
             heldObjRb.transform.parent = holdPos.transform; //parent object to holdposition
             heldObj.layer = 8; //change the object layer to the holdLayer
+            foreach (Transform child in heldObj.GetComponentInChildren<Transform>())
+            {
+                child.gameObject.layer = 8;
+            }
             //make sure object doesnt collide with player, it can cause weird bugs
             Physics.IgnoreCollision(heldObj.GetComponent<Collider>(), playerCollider, true);
             //heldObj.GetComponent<Collider>().enabled = false;
@@ -230,6 +234,10 @@ public class PickupScript : MonoBehaviour
 
         Debug.Log(objectLayer.value);
         heldObj.layer = 9; //object assigned back to default layer
+        foreach (Transform child in heldObj.GetComponentInChildren<Transform>())
+        {
+            child.gameObject.layer = 9;
+        }
         heldObjRb.isKinematic = false;
         heldObj.transform.parent = ObjectContainer.transform; //unparent object
         heldObj = null; //undefine game object
