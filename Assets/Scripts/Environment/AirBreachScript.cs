@@ -112,7 +112,7 @@ public class AirBreachScript : MonoBehaviour
 
     private void EnableVent()
     {
-        PlayPipeBurstOnce();
+        PlayPipeBurst();
         StartCoroutine(PlayBreachStartup());
     }
 
@@ -210,16 +210,13 @@ public class AirBreachScript : MonoBehaviour
         
 
     }
-    private void PlayPipeBurstOnce()
+    private void PlayPipeBurst()
     {
-        if (hasPlayedPipeBurst) return;   // Already played once
-
-        hasPlayedPipeBurst = true;        // Mark as played
 
         if (pipeBurstAudio != null && pipeBurstSFX != null)
         {
             pipeBurstAudio.clip = pipeBurstSFX;
-            pipeBurstAudio.pitch = Random.Range(0.9f, 1.1f);
+            pipeBurstAudio.pitch = Random.Range(0.7f, 1.1f);
             pipeBurstAudio.Play();
         }
     }
