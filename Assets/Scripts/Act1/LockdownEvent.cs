@@ -280,7 +280,7 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator WaitForBodyVisible()
     {
         yield return new WaitForSeconds(2f);
-        audioManager.playBodyStinger();
+        //audioManager.playBodyStinger();
 
     }
 
