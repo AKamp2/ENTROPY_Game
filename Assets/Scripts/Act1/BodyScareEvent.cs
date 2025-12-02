@@ -17,6 +17,9 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
 
     [SerializeField]
     private GameObject tempCollider;
+    //this trigger box is for when the player returns to the dining room after the dead body reveal
+    [SerializeField]
+    private GameObject colliderTriggerEnd;
     private DialogueManager dialogueManager;
 
     public bool waitForGrabbingBar = false;
@@ -46,6 +49,8 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
         dialogueManager = FindFirstObjectByType<DialogueManager>();
         ambientController = FindFirstObjectByType<AmbientController>();
         player = FindFirstObjectByType<ZeroGravity>();
+        //ensure that the collider is set inactive so we don't have the end dialogue play until we complete the body scare sequence
+        colliderTriggerEnd.SetActive(false);
 
         foreach (Light light in escapePodLights)
         {
@@ -105,7 +110,6 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
         bodyDoor.SetState(DoorScript.States.JoltOpen);
 
 
-
         //put any body movement Logic here;
 
 
@@ -129,13 +133,7 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
         yield return new WaitForSeconds(1.5f);
         ActivateLights();
 
-
-
-
-
         //ambientController.Progress();
-
-
     }
 
     public void ActivateLights()
@@ -205,8 +203,8 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
 
         
         yield return new WaitForSeconds(3.5f);
-
-        dialogueManager.StartDialogueSequence(8, 0f);
+        //where we use to play the dialogue we will now instead make the trigger for that dialogue active in the dining room
+        colliderTriggerEnd.SetActive(true);
 
         yield return new WaitForSeconds(5f);
     }
@@ -221,7 +219,7 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
         }
     }
 
-    // Add these methods to your BodyScareEvent class
+    
     public void LoadSaveFile(string fileName)
     {
         string path = Application.persistentDataPath;

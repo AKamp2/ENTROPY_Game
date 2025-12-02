@@ -262,6 +262,13 @@ public class TutorialManager : MonoBehaviour
         RunTutorialStep();
     }
 
+    public void ForceCompleteAllSteps()
+    {
+        stepComplete = true;
+        isWaitingForAction = false;
+    }
+
+
     void RunTutorialStep()
     {
         //Debug.Log("Current Step: " + currentStep);
@@ -407,22 +414,15 @@ public class TutorialManager : MonoBehaviour
 
     void EndTutorial()
     {
-        
         SetPlayerAbilities(true, true, true, true, true);
         inTutorial = false;
         isWaitingForAction = false;
         playerController.TutorialMode = false;
         playerController.GrabRange = playerGrabRange;
-        if(doorToOpen!=null)
-        {
-            if(doorToOpen.DoorState != DoorScript.States.Open)
-            {
-                doorToOpen.SetState(DoorScript.States.Open);
-            }
-        }
+
 
         // Fade out tutorial stinger
-        stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
+
 
 
         //remove all tutorial panels
@@ -430,8 +430,84 @@ public class TutorialManager : MonoBehaviour
         //ambientController.Progress();
         currentStep = 5;
 
+
+/*        Debug.Log("EndTutorial called. Subscribing to OnDialogueEnd.");
         dialogueManager.StartDialogueSequence(1, 0.2f);
+
+        dialogueManager.OnDialogueEnd += HandleDialogueFinished;
+*/
+        dialogueManager.StartDialogueSequence(1, 0.2f);
+
+        StartCoroutine(WaitForDialogue1AndOpenDoor());
+        
+        /*        if (doorToOpen != null)
+                {
+                    if (doorToOpen.DoorState != DoorScript.States.Open)
+                    {
+                        doorToOpen.SetState(DoorScript.States.Open);
+                    }
+                }*/
     }
+
+    private IEnumerator WaitForDialogue1AndOpenDoor()
+    {
+        // Wait until DialogueManager is idle and sequence 1 has finished
+        while (dialogueManager.IsDialogueActive)
+        {
+            yield return null;
+        }
+
+        if (doorToOpen != null && doorToOpen.DoorState != DoorScript.States.Open)
+        {
+            doorToOpen.SetState(DoorScript.States.Open);
+        }
+
+        if (stingerManager != null)
+        {
+            stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
+        }
+        
+    }
+
+/*    private void HandleDialogueFinished(int sequenceIndex)
+    {
+        // Only react to sequence 1 finishing
+
+
+        Debug.Log("HandleDialogueFinished RECEIVED index: " + sequenceIndex);
+        dialogueManager.OnDialogueEnd -= HandleDialogueFinished; // Unsubscribe
+
+        if (doorToOpen != null && doorToOpen.DoorState != DoorScript.States.Open)
+        {
+            doorToOpen.SetState(DoorScript.States.Open);
+        }
+
+        *//*            if (doorToOpen != null)
+                    {
+                        if (doorToOpen.DoorState != DoorScript.States.Open)
+                        {
+                            doorToOpen.SetState(DoorScript.States.Open);
+                        }
+                    }*//*
+
+        stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
+   
+    }
+
+    private IEnumerator ForcePlayEndTutorialDialogue()
+    {
+        // Wait one frame so EndTutorial() finishes
+        yield return null;
+
+        // Ensure handler is correctly wired
+        dialogueManager.OnDialogueEnd -= HandleDialogueFinished;
+        dialogueManager.OnDialogueEnd += HandleDialogueFinished;
+
+        // Force start sequence 1 manually
+        dialogueManager.ForceStartSequence(1);
+    }
+*/
+
 
     //checks to see if the tutorial step is complete
     public bool TutorialStepCompleted()
@@ -604,6 +680,8 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+
+
     private void HandleTutorialSkip()
     {
         if (Keyboard.current.enterKey.isPressed)
@@ -628,19 +706,20 @@ public class TutorialManager : MonoBehaviour
                 skipProgressSlider.GetComponent<CanvasGroup>().alpha = 0f;
                 tutorialSkipped = true;
                 dialogueManager.SkipTutorial();
+                ForceCompleteAllSteps();
                 FadeOut(enterCanvasGroup);
                 if (stingerManager != null)
                 {
-                    stingerManager.StopTutorialStinger(fadeOutDuration: 5f);
+                    stingerManager.StopTutorialStinger(fadeOutDuration: 12f);
                 }
                 EndTutorial();
-                
                 // Reset after skipping
                 currentHoldTime = 0f;
                 if (skipProgressSlider != null)
                 {
                     skipProgressSlider.value = 0f;
                 }
+                
             }
         }
         else
