@@ -326,10 +326,11 @@ public class LockdownEvent : MonoBehaviour
 
         lockdownPanel.SwitchToDeactivate();
 
+        //genuinely idk if this sequence is used??? it doesnt play so is it just a empty line idk???
         dialogueManager.StartDialogueSequence(9, 0.5f);
 
         // I need isactive to be true when dialogue concludes
-        yield return new WaitForSeconds(8f);
+        yield return new WaitForSeconds(1f);
         isActive = true;
     }
 
@@ -359,7 +360,7 @@ public class LockdownEvent : MonoBehaviour
             StartCoroutine(FadeEmission(serverEmissives, initialEmissionColor[i], initialEmissionColor[i], 4f, 0, 6.5f, 0f));
         }
 
-        StartCoroutine(FadeEmission(barsMaterials, initBarEmissive, initBarEmissive, 1f, -10, 6.5f, 0f));
+        StartCoroutine(FadeEmission(barsMaterials, initBarEmissive, initBarEmissive, 1f, -10, 8f, 0f));
 
         StartCoroutine(FadeEmission(lightMaterials, initLightEmissiveColor, endLightEmissiveColor, initLightEmissiveMultiplier, -10, 6.5f, 0f));
 
