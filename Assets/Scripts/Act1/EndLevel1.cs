@@ -5,6 +5,8 @@ public class EndLevel1 : MonoBehaviour
 {
     //[SerializeField]
     //private Collider player;
+    [SerializeField]
+    private GameObject endLevel1Trigger;
     private DialogueManager dialogueManager;
     //public GameplayBeatAudio audioManager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -28,6 +30,7 @@ public class EndLevel1 : MonoBehaviour
     {
         dialogueManager.StartDialogueSequence(6, 0f);
         yield return new WaitForSeconds(6f);
+        endLevel1Trigger.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
