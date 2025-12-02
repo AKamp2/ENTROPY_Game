@@ -19650,6 +19650,7 @@ GameObject:
   - component: {fileID: 562219539}
   - component: {fileID: 562219538}
   - component: {fileID: 562219537}
+  - component: {fileID: 562700345}
   m_Layer: 6
   m_Name: Cube (11)
   m_TagString: Barrier
@@ -19657,13 +19658,44 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
+--- !u!4 &559918816
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 562700343}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 17.538, y: 4.019, z: -6.66}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1616440986}
+  m_Father: {fileID: 706758066}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &559918817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 562700343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a7aec52906f9b14eab52c7aa0792cdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gizmoLength: 1
+  gizmoColor: {r: 0, g: 1, b: 1, a: 1}
+  activeTendril: {fileID: 1616440987}
 --- !u!4 &562219536
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562219535}
+  m_GameObject: {fileID: 559918815}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.332, y: -113.3, z: -0.554}
@@ -19678,7 +19710,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562219535}
+  m_GameObject: {fileID: 559918815}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e829c87dc2a2ed2419c5f67848317fe4, type: 3}
@@ -19693,7 +19725,7 @@ BoxCollider:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562219535}
+  m_GameObject: {fileID: 559918815}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -19714,7 +19746,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562219535}
+  m_GameObject: {fileID: 559918815}
   m_Mesh: {fileID: 762696897}
 --- !u!23 &562219540
 MeshRenderer:
@@ -19722,7 +19754,7 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562219535}
+  m_GameObject: {fileID: 559918815}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -19767,7 +19799,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562219535}
+  m_GameObject: {fileID: 559918815}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ca002da428252441b92f28d83c8a65f, type: 3}
@@ -19791,7 +19823,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562219535}
+  m_GameObject: {fileID: 559918815}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8233d90336aea43098adf6dbabd606a2, type: 3}
@@ -20010,56 +20042,25 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 562700344}
-  - component: {fileID: 562700345}
-  m_Layer: 0
-  m_Name: MedBayDialogueAudioSource
   - component: {fileID: 559918816}
   - component: {fileID: 559918817}
   m_Layer: 0
-  m_Name: origin1 (3)
+  m_Name: MedBayDialogueAudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &559918816
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562700343}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.538, y: 4.019, z: -6.66}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8506786234058232378}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &562700345
 AudioSource:
-  m_GameObject: {fileID: 559918815}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.17932044, y: 0.7870329, z: 0.08537005, w: -0.58406806}
-  m_LocalPosition: {x: -1.426, y: -0.911, z: -0.236}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1616440986}
-  m_Father: {fileID: 706758066}
-  m_LocalEulerAnglesHint: {x: -20.112, y: 251.16501, z: 11.209}
---- !u!114 &559918817
-MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562700343}
+  m_GameObject: {fileID: 559918815}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 5848671730583347741, guid: 720f457489e44c440b5082c1b507453e, type: 2}
+  OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -20067,14 +20068,14 @@ MonoBehaviour:
   m_Pitch: 1
   Loop: 0
   Mute: 0
-  Spatialize: 1
+  Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 0.3627118
-  MaxDistance: 7.513424
+  MinDistance: 1
+  MaxDistance: 500
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -20082,59 +20083,23 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.048275165
+      time: 0
       value: 1
-      inSlope: -20.722868
-      outSlope: -20.722868
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.09655033
-      value: 0.5
-      inSlope: -5.180717
-      outSlope: -5.180717
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.19310066
-      value: 0.25
-      inSlope: -1.2951792
-      outSlope: -1.2951792
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.38620132
-      value: 0.125
-      inSlope: -0.3237948
-      outSlope: -0.3237948
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.77240264
-      value: 0.0625
-      inSlope: -0.0809487
-      outSlope: -0.0809487
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
+      time: 0.002
       value: 0
-      inSlope: -0.048294384
-      outSlope: -0.048294384
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -20143,7 +20108,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -20183,15 +20148,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_GameObject: {fileID: 559918815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a7aec52906f9b14eab52c7aa0792cdf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gizmoLength: 1
-  gizmoColor: {r: 0, g: 1, b: 1, a: 1}
-  activeTendril: {fileID: 1616440987}
 --- !u!1 &580238600
 GameObject:
   m_ObjectHideFlags: 0
@@ -74988,7 +74944,7 @@ MonoBehaviour:
     - characterName: alan:\
       dialogueLines:
       - ' Proceeding with exam part B: <Dexterity Evaluation>'
-      - Please grab and hold onto a bar within your reach.
+      - Please, again, grab and hold onto a bar within your reach.
       - Then, get comfortable moving around the chamber.
       audioClip: {fileID: 0}
       advancesTutorial: 1
@@ -75032,7 +74988,7 @@ MonoBehaviour:
       - There is no information on what caused the system to be restarted.
       - In short, we both have awoken equally lost.
       - 'Apologies, Dr. Sanchez. '
-      - Admittedly, this is a bit concerning.
+      - Sorry to say, this is a bit concerning.
       - Taking time to parse a plan.
       - ...
       - Procedure instructs us to carry out a manual restart across the ship.
@@ -75186,7 +75142,8 @@ MonoBehaviour:
       - "pairing to Dr. Tadesse\u2019s wrist monitor was successful."
       - Vitals...
       - 'Untraceable. '
-      - Condolences, Dr. Sanchez. Proceed with caution.
+      - 'Condolences, Dr. Sanchez. '
+      - Proceed with caution.
       audioClip: {fileID: 0}
       advancesTutorial: 0
       skipWithTutorial: 0
@@ -84785,7 +84742,6 @@ Transform:
   - {fileID: 8447415719632150430}
   - {fileID: 1641590645}
   - {fileID: 1448511331}
-  - {fileID: 562700344}
   - {fileID: 2128927596}
   - {fileID: 1628078938}
   m_Father: {fileID: 0}
