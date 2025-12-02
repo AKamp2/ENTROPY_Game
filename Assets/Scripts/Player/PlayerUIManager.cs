@@ -521,7 +521,7 @@ public class PlayerUIManager : MonoBehaviour
 
     public void RayCastHandleManualLockdown(RaycastHit? hit)
     {
-        if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
+        if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.LeverPulled && !lockdownEvent.IsComplete && lockdownEvent.IsActive)
         {
             //Debug.Log("lockdown lever hit by raycast");
             if (lockdownEvent.IsActive)
@@ -535,6 +535,16 @@ public class PlayerUIManager : MonoBehaviour
             {
                 lockdownEvent.CanPull = false;
                 HideInteractables();
+            }
+        }
+        else if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && !lockdownEvent.LeverPulled && !lockdownEvent.IsComplete && !lockdownEvent.IsActive)
+        {
+            if (inputIndicator.sprite == null)
+            {
+                lockdownEvent.CanPull = true;
+                grabUIText.text = "Initiate Lever Release";
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
         }
         else if (hit.Value.transform.CompareTag("WristGrab") && dormHallEvent && dormHallEvent.IsGrabbable)
@@ -576,7 +586,7 @@ public class PlayerUIManager : MonoBehaviour
 
                         lookingAtStim = true;
                         stim.CanRefill = true;
-                        grabUIText.text = "hold to refill stim";
+                        grabUIText.text = "hold to refill e-stims";
                         inputIndicator.sprite = keyFIndicator;
                         inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
 
@@ -584,7 +594,7 @@ public class PlayerUIManager : MonoBehaviour
                     else
                     {
                         stim.CanRefill = false;
-                        grabUIText.text = "stims full";
+                        grabUIText.text = "e-stims full";
                         inputIndicator.sprite = null;
                         inputIndicator.color = new Color(0, 0, 0, 0);
                     }

@@ -203,8 +203,6 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
 
         
         yield return new WaitForSeconds(3.5f);
-
-        //dialogueManager.StartDialogueSequence(6, 0f);
         //where we use to play the dialogue we will now instead make the trigger for that dialogue active in the dining room
         colliderTriggerEnd.SetActive(true);
 

@@ -49,7 +49,9 @@ public class LightFlicker : MonoBehaviour
     {
         timer = Random.Range(minOnDuration, maxOnDuration);
         isActive = true;
-        lightBaseRenderer = lightBase.GetComponent<Renderer>();
+
+
+        if (lightBase) lightBaseRenderer = lightBase.GetComponent<Renderer>();
     }
 
     // Update is called once per frame

@@ -3,15 +3,16 @@ using UnityEngine;
 
 public class EndLevel1 : MonoBehaviour
 {
-    private ZeroGravity player;
+    //[SerializeField]
+    //private Collider player;
+    [SerializeField]
+    private GameObject endLevel1Trigger;
     private DialogueManager dialogueManager;
     //public GameplayBeatAudio audioManager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        dialogueManager = FindFirstObjectByType<DialogueManager>();
-        player = FindFirstObjectByType<ZeroGravity>();
-        
+        dialogueManager = FindFirstObjectByType<DialogueManager>();     
     }
 
     // Update is called once per frame
@@ -29,10 +30,14 @@ public class EndLevel1 : MonoBehaviour
     {
         dialogueManager.StartDialogueSequence(6, 0f);
         yield return new WaitForSeconds(6f);
+        endLevel1Trigger.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        StartEndLevel1Event();
+        if(other.tag == "Player")
+        {
+            StartEndLevel1Event();
+        }
     }
 }

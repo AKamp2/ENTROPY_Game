@@ -20,8 +20,6 @@ public class LockdownEvent : MonoBehaviour
     //[SerializeField]
     //private GameObject lever;
     [SerializeField]
-    private Light buttonLight;
-    [SerializeField]
     private GameObject wrist;
     [SerializeField]
     private DoorScript[] doorsToOpen;
@@ -51,8 +49,10 @@ public class LockdownEvent : MonoBehaviour
     private Material leverMaterial;
 
     // lockdown bools
+    private bool leverPulled;
     private bool isActive;
     private bool canPull;
+    private bool isComplete;
 
     // wrist monitor
     private bool canGrab;
@@ -87,13 +87,27 @@ public class LockdownEvent : MonoBehaviour
     private Vector3 grateMovePos;
 
 
+    [SerializeField] private ServerProgressBars serverProgress;
+    //[SerializeField] private Terminal serverTerminal;
+    [SerializeField] private LockdownPanel lockdownPanel;
+
     [SerializeField]
     private MeshRenderer[] emissiveMeshes;
     [SerializeField]
     private Material[] serverEmissives;
     private Color[] initialEmissionColor;
 
+    [SerializeField] private GameObject BarsGroup;
+    [SerializeField] private MeshRenderer TerminalBars;
+    private Material[] barsMaterials;
+    private Color initBarEmissive;
 
+    [SerializeField] private MeshRenderer[] lightMeshes = new MeshRenderer[12];
+    private Material[] lightMaterials = new Material[12];
+    [SerializeField] private Color initLightEmissiveColor;
+    [SerializeField] private float initLightEmissiveMultiplier;
+    [SerializeField] private Color endLightEmissiveColor;
+    [SerializeField] private float endLightEmissiveMultiplier;
 
     public GameObject alienBody;
     public Animator alienAnimator;
@@ -102,11 +116,11 @@ public class LockdownEvent : MonoBehaviour
 
     public Transform panelMovePos;
 
-    [SerializeField] private ServerProgressBars serverProgress;
-    [SerializeField] private Terminal serverTerminal;
-    [SerializeField] private LockdownPanel lockdownPanel;
 
-
+    public bool LeverPulled
+    {
+        get { return leverPulled; }
+    }
     public bool CanPull
     {
         get { return canPull; }
@@ -116,6 +130,11 @@ public class LockdownEvent : MonoBehaviour
     public bool IsActive
     {
         get { return isActive; }
+    }
+
+    public bool IsComplete
+    {
+        get { return isComplete; }
     }
 
 
@@ -140,8 +159,12 @@ public class LockdownEvent : MonoBehaviour
         cuttingOutTrigger.enabled = false;
         // checks if player is currently hovering over lever
         canPull = false;
+        // checks if the first sequence is complete
+        leverPulled = false;
         // checks if system is able to be turned on
         isActive = false;
+        // all player action is completed for this sequence.
+        isComplete = false;
 
         canGrab = false;
         isGrabbable = true;
@@ -164,8 +187,10 @@ public class LockdownEvent : MonoBehaviour
         {
             initialEmissionColor[i] = serverEmissives[i].GetColor("_EmissionColor");
         }
-     
 
+
+        GetBarMaterials();
+        GetLightMaterials();
     }
 
     // Update is called once per frame
@@ -261,23 +286,52 @@ public class LockdownEvent : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        //Handle lockdown lever
-        if (canPull && isActive)
-        {
-            audioManager.PlayButtonClick();
-            StartCoroutine(LerpPosition(panelMovePos.position, 1f));
-            buttonLight.intensity = 0;
-            // open the broken door first
-            //brokenDoor.SetState(DoorScript.States.Open);
-            
-            DoorTrigger.enabled = true;
-            isActive = false;
 
-            // begin lighting and audio queues
-            player.PlayerCutSceneHandler(true);
-            StartCoroutine(PlayLockdownFX());
-            
+        if (context.performed)
+        {
+            Debug.Log(isActive);
+            //Handle lockdown lever
+            if (canPull && isActive && !isComplete)
+            {
+                audioManager.PlayButtonClick();
+                StartCoroutine(LerpPosition(panelMovePos.position, 1f));
+ 
+                // open the broken door first
+                //brokenDoor.SetState(DoorScript.States.Open);
+
+                DoorTrigger.enabled = true;
+                //isActive = false;
+                isComplete = true;
+
+                // begin lighting and audio queues
+                player.PlayerCutSceneHandler(true);
+                StartCoroutine(PlayLockdownFX());
+
+            }
+            else if (canPull && !isActive)
+            {
+                // lever must be pulled first
+                StartCoroutine(ActivateLever());
+                
+            }
         }
+        
+    }
+
+    private IEnumerator ActivateLever()
+    {
+
+        leverPulled = true;
+        yield return StartCoroutine(lockdownPanel.PlayLeverAnimation());
+
+        lockdownPanel.SwitchToDeactivate();
+
+        //genuinely idk if this sequence is used??? it doesnt play so is it just a empty line idk???
+        dialogueManager.StartDialogueSequence(9, 0.5f);
+
+        // I need isactive to be true when dialogue concludes
+        yield return new WaitForSeconds(1f);
+        isActive = true;
     }
 
     private IEnumerator PlayLockdownFX()
@@ -306,7 +360,12 @@ public class LockdownEvent : MonoBehaviour
             StartCoroutine(FadeEmission(serverEmissives, initialEmissionColor[i], initialEmissionColor[i], 4f, 0, 6.5f, 0f));
         }
 
-        
+        StartCoroutine(FadeEmission(barsMaterials, initBarEmissive, initBarEmissive, 1f, -10, 8f, 0f));
+
+        StartCoroutine(FadeEmission(lightMaterials, initLightEmissiveColor, endLightEmissiveColor, initLightEmissiveMultiplier, -10, 6.5f, 0f));
+
+
+
         poweringDown = true;
         
         yield return new WaitForSeconds(13f);
@@ -323,7 +382,10 @@ public class LockdownEvent : MonoBehaviour
         {
             StartCoroutine(FadeEmission(serverEmissives, initialEmissionColor[i], endEmissionColor, 0, 4f, 4f, 2f));
         }
-        
+
+        StartCoroutine(FadeEmission(barsMaterials, initBarEmissive, initBarEmissive, -10, 1, 8.5f, 0f));
+        StartCoroutine(FadeEmission(lightMaterials, endLightEmissiveColor, endLightEmissiveColor, -10, endLightEmissiveMultiplier, 6.5f, 0f));
+
         glitchLights = true;
         foreach(Light light in lights)
         {
@@ -331,11 +393,12 @@ public class LockdownEvent : MonoBehaviour
         }
         foreach (Light lightSource in softLights)
         {
-            StartCoroutine(FadeLightIntensity(lightSource, 0.2f, 5f));
+            StartCoroutine(FadeLightIntensity(lightSource, 0.6f, 5f));
         }
-        StartCoroutine(FadeLightIntensity(buttonLight, 0.5f, 5f));
-        StartCoroutine(FadeLightColor(buttonLight, buttonLight.color, endButtonColor, 0.5f));
-        
+
+        //adjust intensity to be lower onreboot
+        intensityMultiplier = 0.2f;
+
         yield return new WaitUntil(() => !glitchLights);
         foreach(Light lightSource in lights)
         {
@@ -547,6 +610,35 @@ public class LockdownEvent : MonoBehaviour
         }
 
         player.transform.position = destination;
+    }
+
+    private void GetBarMaterials()
+    {
+        MeshRenderer[] barMeshes = BarsGroup.GetComponentsInChildren<MeshRenderer>();
+
+        barsMaterials = new Material[barMeshes.Length + 1];
+
+
+        for (int i = 0; i < barMeshes.Length; i++)
+        {
+            barsMaterials[i] = barMeshes[i].material;
+        }
+
+        barsMaterials[barsMaterials.Length-1] = TerminalBars.materials[0];
+
+        initBarEmissive = barsMaterials[0].GetColor("_EmissionColor");
+    }
+
+    private void GetLightMaterials()
+    {
+
+
+
+        for (int i = 0; i < lightMeshes.Length; i++)
+        {
+            lightMaterials[i] = lightMeshes[i].material;
+        }
+
     }
 
 }
