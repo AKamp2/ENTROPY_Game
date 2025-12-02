@@ -106,12 +106,12 @@ public class WristMonitor : MonoBehaviour
     {
         //player = GameObject.FindWithTag("Player").GetComponent<ZeroGravity>();
         //mainObjectives.Add(new Objective("Empty", "<color=orange>Current Objective: </color>\nEMPTY", "<size=8><color=orange>Sub Objective: </color>\n\tReconnect ALAN</size>", false));
-        mainObjectives.Add(new Objective("Empty", "Connect ALAN to the nearest terminal", "", false));
-        mainObjectives.Add(new Objective("Reach Medbay", "    -Reach the Medbay\n    -Reconnect ALAN", "", false));
-        mainObjectives.Add(new Objective("Meday Stim", "    -Refill your stims\n    -Heal yourself", "", false));
-        mainObjectives.Add(new Objective("Dining Room", "    -Reach the Dining room\n    -Reconnect ALAN", "", false));
-        mainObjectives.Add(new Objective("Server Room", "    -Reach the Server Room\n    -Override Manual Lockdown", "", false));
-        mainObjectives.Add(new Objective("Facilities Room", "    -Reach the Facilities Room</size> \n", "", false));
+        mainObjectives.Add(new Objective("Empty", @"Connect alan:\ to the nearest terminal", "", false));
+        mainObjectives.Add(new Objective("Medbay", @"    -reach Medical_Bay\n    -reconnect alan:\", "", false));
+        mainObjectives.Add(new Objective("Medbay_Stim", @"    -refill e-stims\n    -administer e-stim", "", false));
+        mainObjectives.Add(new Objective("Dining_Room", @"    -reach Dining_Room\n    -reconnect alan:\", "", false));
+        mainObjectives.Add(new Objective("Server_Farm", "    -reach Server_Farm\n    -override Manual_Lockdown", "", false));
+        mainObjectives.Add(new Objective("Vocational_Wing", "    -reach Vocational_Wing</size> \n", "", false));
         //if (targetRectTransform == null) {
         //    Debug.LogError("TargetRectTransform not assigned");
         //    return;
