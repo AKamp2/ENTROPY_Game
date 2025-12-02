@@ -454,7 +454,7 @@ public class ZeroGravity : MonoBehaviour, ISaveable
                 }
                 else if (!isGrabbing)
                 {
-                    if (potentialGrabbedBar != null) uiManager.UpdateGrabberPosition(potentialGrabbedBar);
+                    uiManager.UpdateGrabberPosition(potentialGrabbedBar);
                 }
             }
             //allow the player to bounce off the barriers
