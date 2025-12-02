@@ -412,7 +412,7 @@ public class LockdownEvent : MonoBehaviour
         //Open doors in the doors to open array, this is the dining hall to facilities door.
 
         OpenDoors();
-        escapeDoor.SetState(DoorScript.States.Open);
+        escapeDoor.SetState(DoorScript.States.Closed);
         audioManager.FadeServers(true);
         ambientController.Progress();
         
@@ -421,14 +421,14 @@ public class LockdownEvent : MonoBehaviour
     private IEnumerator LockServerEntrance()
     {
         brokenDoor.SetState(DoorScript.States.Closed);
-        
-        yield return new WaitForSeconds(19.5f);
+
+        yield return null;
 
         // needs to be updated with new auxiliary lights to function base on emission color
         //auxLightObj.GetComponent<Renderer>().material = leverMaterial;
         //auxLight.color = endButtonColor;
 
-        brokenDoor.SetState(DoorScript.States.Open);
+        //brokenDoor.SetState(DoorScript.States.Open);
     }
 
     public IEnumerator FadeLightColor(Light lightSource, Color fromColor, Color toColor, float duration)
