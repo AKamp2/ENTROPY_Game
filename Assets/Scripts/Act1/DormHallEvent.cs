@@ -98,7 +98,7 @@ public class DormHallEvent : MonoBehaviour, ISaveable
     private IEnumerator TerminalComplete()
     {
         medDoor.SetState(DoorScript.States.Closed);
-        dialogueManager.StartDialogueSequence(6, 1f);
+        dialogueManager.StartDialogueSequence(2, 1f);
         stingerManager.PlayDormRoomStinger();
         yield return new WaitUntil(() => dialogueManager.IsDialogueActive == false);
         wristMonitor.CompleteObjective();

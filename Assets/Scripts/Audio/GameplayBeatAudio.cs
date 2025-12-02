@@ -10,7 +10,8 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioSource[] lockdownSources;
     public AudioSource leverSource;
     public AudioSource buttonSource;
-    public AudioSource ventSource;
+    public AudioSource alienSource;
+    public AudioSource alienSource2;
     public AudioSource grateSource;
 
     [Header("SFX Clips")]
@@ -23,6 +24,10 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioClip buttonPress;
     public AudioClip alienRunAway;
     public AudioClip moveGrate;
+    public AudioClip alien1;
+    public AudioClip alien2;
+    public AudioClip alien3;
+    public AudioClip alienBuzz;
 
     //[Header("Audio Mixer Groups")]
     //public AudioMixerGroup environmentalGroup;
@@ -107,8 +112,7 @@ public class GameplayBeatAudio : MonoBehaviour
 
     public void playAlienRunAway()
     {
-        ventSource.clip = alienRunAway;
-        ventSource.Play();
+        StartCoroutine(AlienRunAwaySequence());
     }
 
     public void PlayMoveGrate()
@@ -116,6 +120,29 @@ public class GameplayBeatAudio : MonoBehaviour
         grateSource.clip = moveGrate;
         grateSource.Play();
     }
+
+    private IEnumerator AlienRunAwaySequence()
+    {
+        alienSource.clip = alien1;
+        alienSource.Play();
+
+        yield return new WaitForSeconds(5f);
+        //alienSource2.clip = alienBuzz;
+        //StartCoroutine(Fade(alienSource2, 0, 2, true, 1f));
+        //alienSource2.Play();
+
+        yield return new WaitForSeconds(10f);
+        //StartCoroutine(Fade(alienSource2, 0, 2, false, 1f));
+        alienSource.clip = alien2;
+        alienSource.Play();
+
+        yield return new WaitForSeconds(12f);
+
+        alienSource.clip = alien3;
+        alienSource.Play();
+
+    }
+
 
     public IEnumerator Fade(AudioSource source, float timeBeforeFade, float fadeDuration, bool fadeIn, float originalVolume)
     {

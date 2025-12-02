@@ -215,6 +215,7 @@ public class DialogueManager : MonoBehaviour
         // Don't hide or fade out the canvas - leave it ready for the next sequence
     }
 
+
     #endregion
 
     #region Queue Processing & Display Flow
@@ -391,7 +392,7 @@ public class DialogueManager : MonoBehaviour
             // Small buffer between lines
             if (lineIndex < d.dialogueLines.Length - 1)
             {
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(d.delayBetweenLines);
             }
         }
 
