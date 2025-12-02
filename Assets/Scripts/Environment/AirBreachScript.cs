@@ -112,7 +112,6 @@ public class AirBreachScript : MonoBehaviour
 
     private void EnableVent()
     {
-        PlayPipeBurst();
         StartCoroutine(PlayBreachStartup());
     }
 
@@ -207,8 +206,8 @@ public class AirBreachScript : MonoBehaviour
         crackAudio.Play();
         shortPuff.Play();
         yield return new WaitForSeconds(1.5f);
-        
 
+        PlayPipeBurst();
     }
     private void PlayPipeBurst()
     {

@@ -574,7 +574,7 @@ public class PlayerUIManager : MonoBehaviour
 
                         lookingAtStim = true;
                         stim.CanRefill = true;
-                        grabUIText.text = "hold to refill stim";
+                        grabUIText.text = "hold to refill e-stims";
                         inputIndicator.sprite = keyFIndicator;
                         inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
 
@@ -582,7 +582,7 @@ public class PlayerUIManager : MonoBehaviour
                     else
                     {
                         stim.CanRefill = false;
-                        grabUIText.text = "stims full";
+                        grabUIText.text = "e-stims full";
                         inputIndicator.sprite = null;
                         inputIndicator.color = new Color(0, 0, 0, 0);
                     }
