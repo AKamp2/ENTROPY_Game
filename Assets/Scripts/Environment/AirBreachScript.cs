@@ -23,12 +23,16 @@ public class AirBreachScript : MonoBehaviour
     [SerializeField] private ParticleSystem shortPuff;
     [SerializeField] private AudioSource breachAudio;
     [SerializeField] private AudioSource crackAudio;
+    [SerializeField] private AudioSource pipeBurstAudio;
+    [SerializeField] private AudioClip pipeBurstSFX;
     [SerializeField] private AudioClip airBlowSFX;
-    [SerializeField] private AudioClip breachLeadupSFX;
+    [SerializeField] private AudioClip[] breachLeadupSFX;
 
     // State tracking
     public bool isPoweredOn = true;
     private bool isCurrentlyBlowing = true;
+    private bool hasPlayedPipeBurst = false;
+
     private float cycleTimer;
     private float originalVolume;
     public HashSet<Rigidbody> affectedRigidbodies = new HashSet<Rigidbody>();
@@ -108,6 +112,7 @@ public class AirBreachScript : MonoBehaviour
 
     private void EnableVent()
     {
+        PlayPipeBurst();
         StartCoroutine(PlayBreachStartup());
     }
 
@@ -196,12 +201,23 @@ public class AirBreachScript : MonoBehaviour
 
     private IEnumerator PlayLeadUp()
     {
-        crackAudio.clip = breachLeadupSFX;
+        int index = Random.Range(0, breachLeadupSFX.Length);
+        crackAudio.clip = breachLeadupSFX[index];
         crackAudio.pitch = Random.Range(0.8f, 1.2f);
         crackAudio.Play();
         shortPuff.Play();
         yield return new WaitForSeconds(1.5f);
         
 
+    }
+    private void PlayPipeBurst()
+    {
+
+        if (pipeBurstAudio != null && pipeBurstSFX != null)
+        {
+            pipeBurstAudio.clip = pipeBurstSFX;
+            pipeBurstAudio.pitch = Random.Range(0.7f, 1.1f);
+            pipeBurstAudio.Play();
+        }
     }
 }
