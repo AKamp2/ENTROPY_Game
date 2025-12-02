@@ -1390,9 +1390,6 @@ MonoBehaviour:
   intensityMultiplier: 1.5
   grateToMove: {fileID: 0}
   grateMoveLocation: {fileID: 0}
-  alienBody: {fileID: 4240093845558930606}
-  alienAnimator: {fileID: 2665222812139141437}
-  alienLight: {fileID: 75532495281688002}
   serverProgress: {fileID: 6952088275522341225}
   lockdownPanel: {fileID: 6645493884930146568}
   emissiveMeshes:
@@ -1421,6 +1418,11 @@ MonoBehaviour:
   initLightEmissiveMultiplier: 5.5
   endLightEmissiveColor: {r: 1, g: 1, b: 1, a: 0}
   endLightEmissiveMultiplier: 3.6
+  alienBody: {fileID: 4240093845558930606}
+  alienAnimator: {fileID: 2665222812139141437}
+  alienLight: {fileID: 75532495281688002}
+  alienSpotLight: {fileID: 0}
+  panelMovePos: {fileID: 0}
 --- !u!114 &6952088275522341225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4874,7 +4876,7 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: f47dc8df87038ca4098568b2c2c728cf, type: 2}
