@@ -46,7 +46,7 @@ public class StimEvent : MonoBehaviour
 
     public IEnumerator StimTutorial()
     {
-        manager.StartDialogueSequence(5, 0.5f);
+        manager.StartDialogueSequence(3, 0.5f);
 
         yield return new WaitForSeconds(6f);
         dispenser.ToggleUsability(true);
@@ -61,14 +61,12 @@ public class StimEvent : MonoBehaviour
 
         wristMonitor.CompleteObjective();
         StartCoroutine(FadeCanvasGroup(stimUseCanvasGroup, 1f, 0f));
-        
+        manager.StartDialogueSequence(4, 0.5f);
 
         yield return new WaitForSeconds(2f);
 
         yield return StartCoroutine(doorToOpen.PlayDoorAlarm(1.2f));
         doorToOpen.SetState(DoorScript.States.Closed);
-
-
     }
 
     private IEnumerator FadeCanvasGroup(CanvasGroup canvasGroup, float startAlpha, float endAlpha)

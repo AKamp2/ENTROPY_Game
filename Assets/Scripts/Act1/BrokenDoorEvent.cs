@@ -40,9 +40,9 @@ public class BrokenDoorEvent : MonoBehaviour
 
     private IEnumerator BrokenDoorBeat()
     {
-        manager.StartDialogueSequence(3, delay);
+        manager.StartDialogueSequence(5, delay);
 
-        yield return new WaitForSeconds(16f);
+        yield return new WaitForSeconds(51f);
         brokenDoorAudio.Play();
         yield return new WaitForSeconds(3f);
         brokenDoor.SetState(DoorScript.States.Broken);
