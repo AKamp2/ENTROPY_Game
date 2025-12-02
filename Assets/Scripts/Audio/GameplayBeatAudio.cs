@@ -8,6 +8,7 @@ public class GameplayBeatAudio : MonoBehaviour
     public AudioSource bodyStingerSource;
     public AudioSource[] serverSources;
     public AudioSource[] lockdownSources;
+    public AudioSource leverSource;
     public AudioSource buttonSource;
     public AudioSource ventSource;
     public AudioSource grateSource;
@@ -16,6 +17,7 @@ public class GameplayBeatAudio : MonoBehaviour
     //public AudioClip bodyFoundStinger;
     public AudioClip powerCutSFX;
     public AudioClip powerOnSFX;
+    public AudioClip leverSFX;
     public AudioClip takeItem;
     public AudioClip serverHum;
     public AudioClip buttonPress;
@@ -83,6 +85,12 @@ public class GameplayBeatAudio : MonoBehaviour
             source.Play();
         }
     }
+
+    public void playLeverSFX()
+    {
+        leverSource.PlayOneShot(leverSFX);
+    }
+
 
     public void FadeServers(bool fadeIn)
     {
