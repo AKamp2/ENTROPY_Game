@@ -106,6 +106,11 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
 
         //bodyRb.AddForce(new Vector3(-.5f, -1, 0) * 30f, ForceMode.Impulse);
 
+        // disable sparks on door open
+        foreach (GameObject spark in sparksToDisable)
+        {
+            spark.SetActive(false);
+        }
 
         bodyDoor.SetState(DoorScript.States.JoltOpen);
 
@@ -183,11 +188,6 @@ public class BodyScareEvent : MonoBehaviour, ISaveable
     public IEnumerator TurnOnLights(float duration)
     {
         //float elapsed = 0f;
-        // disable sparks on door open
-        foreach (GameObject spark in sparksToDisable)
-        {
-            spark.SetActive(false);
-        }
 
         audioManager.playBodyStinger();
 
