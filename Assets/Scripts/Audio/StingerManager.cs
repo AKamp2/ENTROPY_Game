@@ -22,6 +22,8 @@ public class StingerManager : MonoBehaviour
     public AudioClip BrokenDoorStingerClip => brokenDoorStingerClip;
     public AudioClip ExplosionClip => explosionClip;
 
+    public AudioClip BodyScareStingerClip => bodyScareStingerClip;
+
     private Coroutine tutorialFadeCoroutine;
     /*    private Coroutine currentDormFade;
         private Coroutine currentDoorFade;*/
@@ -115,10 +117,10 @@ public class StingerManager : MonoBehaviour
         brokenDoorStingerSource.Play();
 
         // Fade in at start
-        StartCoroutine(FadeAudioSource(brokenDoorStingerSource, 0f, 1f, 5f));
+        StartCoroutine(FadeAudioSource(brokenDoorStingerSource, 0f, 1f, 2f));
 
         // Auto fade out near the end of the clip
-        StartCoroutine(AutoFadeOut(brokenDoorStingerSource, brokenDoorStingerClip.length, 4f));
+        StartCoroutine(AutoFadeOut(brokenDoorStingerSource, brokenDoorStingerClip.length, 2f));
     }
     public void PlayExplosion()
     {
@@ -131,14 +133,21 @@ public class StingerManager : MonoBehaviour
         StartCoroutine(FadeAudioSource(explosionSource, 0f, 1f, 4f));
     }
 
-    public void PlayBodyScare()
+    public void PlayBodyScareStinger()
+    {
+        if (bodyScareStingerSource == null || bodyScareStingerClip == null)
         {
-        Debug.Log("Playing body scare stinger");
-         bodyScareStingerSource.priority = priority;
-         bodyScareStingerSource.clip = bodyScareStingerClip;
-         bodyScareStingerSource.loop = false;
-         bodyScareStingerSource.Play();
-
+            Debug.LogWarning("StingerManager: Missing body scare stinger AudioSource or Clip.");
+            return;
+        }
+        bodyScareStingerSource.priority = priority;
+        bodyScareStingerSource.clip = bodyScareStingerClip;
+        bodyScareStingerSource.loop = false;
+        bodyScareStingerSource.Play();
+        // Fade in at start
+        StartCoroutine(FadeAudioSource(bodyScareStingerSource, 0f, 1f, 5f));
+        // Auto fade out near the end of the clip
+        
     }
 
     public void PlayDormRoomStinger()

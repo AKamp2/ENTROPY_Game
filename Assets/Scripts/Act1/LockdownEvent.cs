@@ -312,7 +312,7 @@ public class LockdownEvent : MonoBehaviour
             {
                 // lever must be pulled first
                 StartCoroutine(ActivateLever());
-                
+                audioManager.playLeverSFX();
             }
         }
         
