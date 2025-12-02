@@ -8,10 +8,12 @@ public class StingerManager : MonoBehaviour
     [SerializeField] private AudioClip dormRoomStingerClip;
     [SerializeField] private AudioClip brokenDoorStingerClip;
     [SerializeField] private AudioClip explosionClip;
+    [SerializeField] private AudioClip bodyScareStingerClip;
     [SerializeField] private AudioSource tutorialStingerSource;
     [SerializeField] private AudioSource dormRoomStingerSource;
     [SerializeField] private AudioSource brokenDoorStingerSource;
     [SerializeField] private AudioSource explosionSource;
+    [SerializeField] private AudioSource bodyScareStingerSource;
 
     [SerializeField] private int priority = 10;
 
@@ -19,6 +21,8 @@ public class StingerManager : MonoBehaviour
     public AudioClip DormRoomStingerClip => dormRoomStingerClip;
     public AudioClip BrokenDoorStingerClip => brokenDoorStingerClip;
     public AudioClip ExplosionClip => explosionClip;
+
+    public AudioClip BodyScareStingerClip => bodyScareStingerClip;
 
     private Coroutine tutorialFadeCoroutine;
     /*    private Coroutine currentDormFade;
@@ -113,10 +117,10 @@ public class StingerManager : MonoBehaviour
         brokenDoorStingerSource.Play();
 
         // Fade in at start
-        StartCoroutine(FadeAudioSource(brokenDoorStingerSource, 0f, 1f, 5f));
+        StartCoroutine(FadeAudioSource(brokenDoorStingerSource, 0f, 1f, 2f));
 
         // Auto fade out near the end of the clip
-        StartCoroutine(AutoFadeOut(brokenDoorStingerSource, brokenDoorStingerClip.length, 4f));
+        StartCoroutine(AutoFadeOut(brokenDoorStingerSource, brokenDoorStingerClip.length, 2f));
     }
     public void PlayExplosion()
     {
@@ -127,6 +131,23 @@ public class StingerManager : MonoBehaviour
         explosionSource.Play();
 
         StartCoroutine(FadeAudioSource(explosionSource, 0f, 1f, 4f));
+    }
+
+    public void PlayBodyScareStinger()
+    {
+        if (bodyScareStingerSource == null || bodyScareStingerClip == null)
+        {
+            Debug.LogWarning("StingerManager: Missing body scare stinger AudioSource or Clip.");
+            return;
+        }
+        bodyScareStingerSource.priority = priority;
+        bodyScareStingerSource.clip = bodyScareStingerClip;
+        bodyScareStingerSource.loop = false;
+        bodyScareStingerSource.Play();
+        // Fade in at start
+        StartCoroutine(FadeAudioSource(bodyScareStingerSource, 0f, 1f, 5f));
+        // Auto fade out near the end of the clip
+        
     }
 
     public void PlayDormRoomStinger()
