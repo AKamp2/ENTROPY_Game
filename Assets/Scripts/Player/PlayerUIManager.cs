@@ -519,7 +519,7 @@ public class PlayerUIManager : MonoBehaviour
 
     public void RayCastHandleManualLockdown(RaycastHit? hit)
     {
-        if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.IsActive)
+        if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && lockdownEvent.LeverPulled && !lockdownEvent.IsComplete && lockdownEvent.IsActive)
         {
             //Debug.Log("lockdown lever hit by raycast");
             if (lockdownEvent.IsActive)
@@ -533,6 +533,16 @@ public class PlayerUIManager : MonoBehaviour
             {
                 lockdownEvent.CanPull = false;
                 HideInteractables();
+            }
+        }
+        else if (hit.Value.transform.CompareTag("LockdownLever") && lockdownEvent && !lockdownEvent.LeverPulled && !lockdownEvent.IsComplete && !lockdownEvent.IsActive)
+        {
+            if (inputIndicator.sprite == null)
+            {
+                lockdownEvent.CanPull = true;
+                grabUIText.text = "Initiate Lever Release";
+                inputIndicator.sprite = keyFIndicator;
+                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
         }
         else if (hit.Value.transform.CompareTag("WristGrab") && dormHallEvent && dormHallEvent.IsGrabbable)
