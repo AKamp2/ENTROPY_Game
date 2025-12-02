@@ -819,29 +819,134 @@ public class PlayerUIManager : MonoBehaviour
                     // we need to calculate the point of the bar that is the closest to where the player is looking
                     // to do this first I will calculate the distance of the bar from the player
                     float distanceFromBar = Vector3.Distance(bar.transform.position, transform.position);
+                    // now I will find the point that is the distance of the bar away from the player's forward
+                    Vector3 focusPoint = player.cam.transform.position + player.cam.transform.forward * distanceFromBar;
+                    // finally, I will test the grab point to the closest point on the bar to that focus point
+                    Vector3 potentialGrabPosition = bar.ClosestPoint(focusPoint);
 
-                    // I will use a for loop here to incase the focus point is out of grab range
-                    for (float r = distanceFromBar; r > 0; r -= 0.01f)
+                    player.CurrentGrabPosition = potentialGrabPosition;
+                }
+            }
+            //set the position of the bar as a screen point
+            Vector3 screenPoint = player.cam.WorldToScreenPoint(player.CurrentGrabPosition);
+
+            //ensure the grabber is on the screen
+            if (screenPoint.z > 0 &&
+                screenPoint.x > 0 && screenPoint.x < Screen.width &&
+                screenPoint.y > 0 && screenPoint.y < Screen.height)
+            {
+                //update grabber position
+                grabberRectTransform.position = screenPoint;
+
+                //set hand icon open if not grabbing
+                if (!player.IsGrabbing)
+                {
+                    grabber.sprite = openHand;
+                    grabber.color = Color.white;
+
+                    //if in tutorial mode
+                    if (player.TutorialMode && player.CanGrab)
                     {
-                        // now I will find the point that is the distance of the bar away from the player's forward
-                        Vector3 focusPoint = player.cam.transform.position + player.cam.transform.forward * distanceFromBar;
-                        // finally, I will test the grab point to the closest point on the bar to that focus point
-                        Vector3 potentialGrabPosition = bar.ClosestPoint(focusPoint);
-  
-                        player.CurrentGrabPosition = potentialGrabPosition;
-                        // now that the point has been found, I will quit the loop
-                        break;
+                        //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
+                        //set the sprite for the right click
+                        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                        inputIndicator.sprite = rightClickIndicator;
+                        inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                     }
                 }
-                //set the position of the bar as a screen point
-                Vector3 screenPoint = player.cam.WorldToScreenPoint(player.CurrentGrabPosition);
+                //set closed hand icon if grabbing
+                else if (player.IsGrabbing)
+                {
+                    grabber.sprite = closedHand;
+                    grabber.color = Color.white;
 
-                //ensure the grabber is on the screen
-                if (screenPoint.z > 0 &&
-                    screenPoint.x > 0 && screenPoint.x < Screen.width &&
-                    screenPoint.y > 0 && screenPoint.y < Screen.height)
+                    //if in tutorial mode
+                    if (player.TutorialMode)
+                    {
+                        //set the sprite for the wasd pending if they can propel
+                        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                        if (player.CanPropel)
+                        {
+                            inputIndicator.sprite = WASDIndicator;
+                            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
+                        }
+                        else if (!player.CanPropel)
+                        {
+                            inputIndicator.sprite = null;
+                            inputIndicator.color = new Color(0f, 0f, 0f, 0f);
+                        }
+                    }
+                }
+                //else
+                //{
+                //    //if in tutorial mode
+                //    if (player.TutorialMode)
+                //    {
+                //        //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
+                //        //set the sprite for the right click
+                //        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                //        inputIndicator.sprite = null;
+                //        inputIndicator.color = new Color(0f, 0f, 0f, 0f);
+                //    }
+                //}
+                HidePushIndicator();
+            }
+            //if the z position of the grabber is off screen
+            else
+            {
+                if (player.IsGrabbing)
                 {
                     //update grabber position
+                    if (screenPoint.z < 0)
+                    {
+                        screenPoint *= -1;
+                    }
+                    //create the screen center so we can translate the grabber to the edge relative to its position behind us
+                    Vector3 screenCenter = new Vector3(Screen.width, Screen.height, 0) / 2;
+
+                    //make 00 center of the screen instead of bottom left
+                    screenPoint -= screenCenter;
+
+                    //find angle from center of screen to mouse position
+                    //takes x and y and creates an angle between them
+                    float angle = Mathf.Atan2(screenPoint.y, screenPoint.x);
+                    //subtract by 90 degrees converted to radians
+                    angle -= 90 * Mathf.Deg2Rad;
+
+                    //create a cos and sin from our angle created
+                    float cos = Mathf.Cos(angle);
+                    float sin = -Mathf.Sin(angle);
+
+                    //apply a translation to the screenpoint from center based on the angle we created
+                    screenPoint = screenCenter + new Vector3(sin * 150, cos * 150, 0);
+
+                    // y = mx + b format
+                    float m = cos / sin;
+
+                    Vector3 screenBounds = screenCenter * 0.9f;
+
+                    //check up and down to see which boundary of the screen to place the marker on
+                    if (cos > 0)
+                    {
+                        screenPoint = new Vector3(screenBounds.y / m, screenBounds.y, 0);
+                    }
+                    else
+                    {
+                        //down 
+                        screenPoint = new Vector3(-screenBounds.y / m, -screenBounds.y, 0);
+                    }
+                    //if out of bounds, get point on appropriate side
+                    if (screenPoint.x > screenBounds.x) //out of bounds, must be on the right
+                    {
+                        screenPoint = new Vector3(screenBounds.x, screenBounds.x * m, 0);
+                    }
+                    else if (screenPoint.x < -screenBounds.x) // out of bounds left
+                    {
+                        screenPoint = new Vector3(-screenBounds.x, -screenBounds.x * m, 0);
+                    } //else in bounds
+
+                    //remove coordinate translation
+                    screenPoint += screenCenter;
                     grabberRectTransform.position = screenPoint;
 
                     //set hand icon open if not grabbing
@@ -849,138 +954,25 @@ public class PlayerUIManager : MonoBehaviour
                     {
                         grabber.sprite = openHand;
                         grabber.color = Color.white;
-
-                        //if in tutorial mode
-                        if (player.TutorialMode && player.CanGrab)
-                        {
-                            //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
-                            //set the sprite for the right click
-                            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                            inputIndicator.sprite = rightClickIndicator;
-                            inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
-                        }
                     }
                     //set closed hand icon if grabbing
                     else if (player.IsGrabbing)
                     {
                         grabber.sprite = closedHand;
                         grabber.color = Color.white;
-
-                        //if in tutorial mode
-                        if (player.TutorialMode)
-                        {
-                            //set the sprite for the wasd pending if they can propel
-                            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                            if (player.CanPropel)
-                            {
-                                inputIndicator.sprite = WASDIndicator;
-                                inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
-                            }
-                            else if (!player.CanPropel)
-                            {
-                                inputIndicator.sprite = null;
-                                inputIndicator.color = new Color(0f, 0f, 0f, 0f);
-                            }
-                        }
                     }
-                    //else
-                    //{
-                    //    //if in tutorial mode
-                    //    if (player.TutorialMode)
-                    //    {
-                    //        //grabUIText.text = "press and hold 'RIGHT MOUSE BUTTON'";
-                    //        //set the sprite for the right click
-                    //        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                    //        inputIndicator.sprite = null;
-                    //        inputIndicator.color = new Color(0f, 0f, 0f, 0f);
-                    //    }
-                    //}
+
+                    //grabber.transform.localRotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
                     HidePushIndicator();
                 }
-                //if the z position of the grabber is off screen
-                else
-                {
-                    if (player.IsGrabbing)
-                    {
-                        //update grabber position
-                        if (screenPoint.z < 0)
-                        {
-                            screenPoint *= -1;
-                        }
-                        //create the screen center so we can translate the grabber to the edge relative to its position behind us
-                        Vector3 screenCenter = new Vector3(Screen.width, Screen.height, 0) / 2;
-
-                        //make 00 center of the screen instead of bottom left
-                        screenPoint -= screenCenter;
-
-                        //find angle from center of screen to mouse position
-                        //takes x and y and creates an angle between them
-                        float angle = Mathf.Atan2(screenPoint.y, screenPoint.x);
-                        //subtract by 90 degrees converted to radians
-                        angle -= 90 * Mathf.Deg2Rad;
-
-                        //create a cos and sin from our angle created
-                        float cos = Mathf.Cos(angle);
-                        float sin = -Mathf.Sin(angle);
-
-                        //apply a translation to the screenpoint from center based on the angle we created
-                        screenPoint = screenCenter + new Vector3(sin * 150, cos * 150, 0);
-
-                        // y = mx + b format
-                        float m = cos / sin;
-
-                        Vector3 screenBounds = screenCenter * 0.9f;
-
-                        //check up and down to see which boundary of the screen to place the marker on
-                        if (cos > 0)
-                        {
-                            screenPoint = new Vector3(screenBounds.y / m, screenBounds.y, 0);
-                        }
-                        else
-                        {
-                            //down 
-                            screenPoint = new Vector3(-screenBounds.y / m, -screenBounds.y, 0);
-                        }
-                        //if out of bounds, get point on appropriate side
-                        if (screenPoint.x > screenBounds.x) //out of bounds, must be on the right
-                        {
-                            screenPoint = new Vector3(screenBounds.x, screenBounds.x * m, 0);
-                        }
-                        else if (screenPoint.x < -screenBounds.x) // out of bounds left
-                        {
-                            screenPoint = new Vector3(-screenBounds.x, -screenBounds.x * m, 0);
-                        } //else in bounds
-
-                        //remove coordinate translation
-                        screenPoint += screenCenter;
-                        grabberRectTransform.position = screenPoint;
-
-                        //set hand icon open if not grabbing
-                        if (!player.IsGrabbing)
-                        {
-                            grabber.sprite = openHand;
-                            grabber.color = Color.white;
-                        }
-                        //set closed hand icon if grabbing
-                        else if (player.IsGrabbing)
-                        {
-                            grabber.sprite = closedHand;
-                            grabber.color = Color.white;
-                        }
-
-                        //grabber.transform.localRotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
-                        HidePushIndicator();
-                    }
-                }
-            }
-            else if (bar == null)
-            {
-                //remove the grabber
-                HideGrabber();
             }
         }
+        else if (bar == null)
+        {
+            //remove the grabber
+            HideGrabber();
+        }
     }
-
     //Health Methods
     //controls the UI for the Player Health
     public void HandleHealthUI()
