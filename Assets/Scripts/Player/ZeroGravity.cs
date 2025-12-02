@@ -108,8 +108,8 @@ public class ZeroGravity : MonoBehaviour, ISaveable
     private bool justGrabbed = false;
     private bool prevJustGrabbed = false;
 
-    private Collider potentialGrabbedBar = null; //tracks a potential grabbable bar that the player looks at
-    private Collider grabbedBar; //stores the bar the player is currently grabbing
+    public Collider potentialGrabbedBar = null; //tracks a potential grabbable bar that the player looks at
+    public Collider grabbedBar; //stores the bar the player is currently grabbing
     // the position of the current bar where the player is grabbing
     private Vector3 currentGrabPosition;
     [SerializeField]
