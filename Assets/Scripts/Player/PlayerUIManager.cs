@@ -274,7 +274,7 @@ public class PlayerUIManager : MonoBehaviour
                 string tag = null;
 
                 //don't do this if the player is grabbing
-                if(!player.IsGrabbing)
+                if (!player.IsGrabbing)
                 {
                     // 1. Raycast to detect a bar
                     if (Physics.Raycast(ray, out hit, player.GrabRange, barLayer))
@@ -408,20 +408,20 @@ public class PlayerUIManager : MonoBehaviour
                     stim.CanRefill = false;
                 }
             }
-            if(dormHallEvent.CanGrab)
+            if (dormHallEvent.CanGrab)
             {
                 dormHallEvent.CanGrab = false;
             }
-            
-            if(lockdownEvent.CanPull)
+
+            if (lockdownEvent.CanPull)
             {
                 lockdownEvent.CanPull = false;
             }
-            if(terminalManager.CurrentTerminal != null)
+            if (terminalManager.CurrentTerminal != null)
             {
                 terminalManager.CurrentTerminal = null;
             }
-            
+
         }
 
         if (barHit != null && player.CanGrab && !player.IsGrabbing)
@@ -503,12 +503,12 @@ public class PlayerUIManager : MonoBehaviour
                     {
                         //grabUIText.text = "'SPACEBAR'";
                         //set the sprite for the space bar indicator
-                        if(inputIndicator.sprite == null && grabUIText.text == "")
+                        if (inputIndicator.sprite == null && grabUIText.text == "")
                         {
                             inputIndicator.sprite = spaceIndicator;
                             inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
                         }
-                        
+
                     }
                 }
             }
@@ -546,7 +546,7 @@ public class PlayerUIManager : MonoBehaviour
                 inputIndicator.sprite = keyFIndicator;
                 inputIndicator.color = new Color(1f, 1f, 1f, 0.5f);
             }
-            else if(!dormHallEvent.IsGrabbable)
+            else if (!dormHallEvent.IsGrabbable)
             {
                 dormHallEvent.CanGrab = false;
                 HideInteractables();
@@ -566,7 +566,7 @@ public class PlayerUIManager : MonoBehaviour
 
             if (stim != null)
             {
-                if(stim.IsUsable)
+                if (stim.IsUsable)
                 {
                     //check to see if the player's stims aren't full
                     if (player.NumStims < 3)
@@ -593,7 +593,7 @@ public class PlayerUIManager : MonoBehaviour
                 {
                     //no logic here for now
                 }
-                
+
             }
 
 
@@ -609,7 +609,7 @@ public class PlayerUIManager : MonoBehaviour
         if (hit.Value.transform.CompareTag("Terminal"))
         {
             Terminal terminal = hit.Value.transform.parent.GetComponent<Terminal>();
-            
+
             if (terminal != null)
             {
                 terminalManager.CurrentTerminal = terminal;
@@ -636,7 +636,7 @@ public class PlayerUIManager : MonoBehaviour
                 }
             }
         }
-        
+
     }
 
     /// <summary>
@@ -706,10 +706,10 @@ public class PlayerUIManager : MonoBehaviour
         //Debug.Log("updated closest bar in view executed");
         //check for all nearby bars to the player
         Collider[] nearbyBars = Physics.OverlapSphere(transform.position, player.GrabRange, barLayer);
-        
+
         Collider[] nearbyObjects;
 
-        
+
 
         // Only track floating objects if able to pick up object
         if (pickupScript.CanPickUp && !pickupScript.HeldObject)
@@ -747,7 +747,7 @@ public class PlayerUIManager : MonoBehaviour
 
             if (Physics.Raycast(transform.position, directionToObj, out hit, distanceToObj, barrierLayer))
             {
-                if(hit.transform.parent == null || !hit.transform.parent.CompareTag("Bar"))
+                if (hit.transform.parent == null || !hit.transform.parent.CompareTag("Bar"))
                 {
                     continue;
                 }
@@ -801,10 +801,12 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (bar == null)
         {
+            player.CurrentGrabPosition = Vector3.zero;
             return;
         }
 
         uiBar = bar;
+
 
         if (player.CanGrab)
         {
@@ -817,6 +819,7 @@ public class PlayerUIManager : MonoBehaviour
                     // we need to calculate the point of the bar that is the closest to where the player is looking
                     // to do this first I will calculate the distance of the bar from the player
                     float distanceFromBar = Vector3.Distance(bar.transform.position, transform.position);
+
                     // I will use a for loop here to incase the focus point is out of grab range
                     for (float r = distanceFromBar; r > 0; r -= 0.01f)
                     {
@@ -824,12 +827,10 @@ public class PlayerUIManager : MonoBehaviour
                         Vector3 focusPoint = player.cam.transform.position + player.cam.transform.forward * distanceFromBar;
                         // finally, I will test the grab point to the closest point on the bar to that focus point
                         Vector3 potentialGrabPosition = bar.ClosestPoint(focusPoint);
-                        if (Vector3.Distance(player.transform.position, potentialGrabPosition) < player.GrabRange)
-                        {
-                            player.CurrentGrabPosition = potentialGrabPosition;
-                            // now that the point has been found, I will quit the loop
-                            break;
-                        }
+  
+                        player.CurrentGrabPosition = potentialGrabPosition;
+                        // now that the point has been found, I will quit the loop
+                        break;
                     }
                 }
                 //set the position of the bar as a screen point
@@ -860,7 +861,7 @@ public class PlayerUIManager : MonoBehaviour
                         }
                     }
                     //set closed hand icon if grabbing
-                    else if(player.IsGrabbing)
+                    else if (player.IsGrabbing)
                     {
                         grabber.sprite = closedHand;
                         grabber.color = Color.white;
