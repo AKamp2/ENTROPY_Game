@@ -956,7 +956,7 @@ public class DoorScript : MonoBehaviour
             yield return null;
         }
         breached = true;
-        DoorState = States.Unpowered;
+        DoorState = States.Locked;
     }
     public IEnumerator UnbreachRoutine(float delay)
     {
@@ -966,6 +966,6 @@ public class DoorScript : MonoBehaviour
             yield return null;
         }
         breached = false;
-        DoorState = States.Locked;
+        DoorState = States.Unpowered;
     }
 }
